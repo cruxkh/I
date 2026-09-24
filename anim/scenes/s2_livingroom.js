@@ -485,7 +485,7 @@
   function room(ctx, t, opt = {}) {
     const L = tvLight(t);
     A.drawLivingRoom(ctx, t, { tvGlow: { color: L.color, intensity: L.intensity } });
-    if (t >= 25.45) coverShelf(ctx);
+    if (t >= 25.2) coverShelf(ctx);
     const tv = LR.tv;
     A.drawTV(ctx, tv.x, tv.y, tv.w, tv.h, t, tvState(t));
     tvOverlays(ctx, tv.x, tv.y, tv.w, tv.h, t);
@@ -510,10 +510,10 @@
     // Noa + the backgammon case
     const n = noaState(t);
     if (!n.caseP && t >= 21.5) drawCase(ctx, 1108, 790, 0.46, t);
-    if (bs.ph === 'shelf' || bs.ph === 'stuck') { drawOldBox(ctx, bs.x, bs.y, bs.rot, t); }
+    if (bs.ph === 'stuck') { drawSpaghetti(ctx, t, bs); drawOldBox(ctx, bs.x, bs.y, bs.rot, t); }
     A.drawNoa(ctx, n.x, n.y, NOA_S, n.o);
     if (n.caseP) drawCase(ctx, n.caseP[0], n.caseP[1], n.caseP[2], t);
-    if (bs.ph !== 'bin' && bs.ph !== 'shelf') { drawSpaghetti(ctx, t, bs); if (bs.ph !== 'stuck') drawOldBox(ctx, bs.x, bs.y, bs.rot, t); }
+    if (bs.ph !== 'bin' && bs.ph !== 'shelf' && bs.ph !== 'stuck') { drawSpaghetti(ctx, t, bs); drawOldBox(ctx, bs.x, bs.y, bs.rot, t); }
     crashFX(ctx, t);
     roomPhone(ctx, n, t);
     A.glow(ctx, tv.x + tv.w * 0.4, tv.y + tv.h * 0.6, 900, L.color, 0.09 * L.intensity);
@@ -554,18 +554,20 @@
       x: K(t, [[20.35, 880], [21.2, 930], [24.8, 960]]), y: K(t, [[20.35, 560], [21.2, 575], [24.8, 565]]),
       zoom: zkey(t, [[20.35, 1.4], [21.2, 1.5], [24.8, 1.62, 'lin']]),
     };
-    const base = {
-      x: K(t, [[24.8, 960], [25.7, 1428], [28.0, 1426]]),
-      y: K(t, [[24.8, 565], [25.7, 630], [28.0, 640]]),
-      zoom: zkey(t, [[24.8, 1.62], [25.7, 1.92], [28.0, 2.02, 'lin']]),
+    if (t < 26.95) return {
+      x: K(t, [[24.8, 960], [25.35, 1320, 'inOut'], [26.95, 1300]]), y: K(t, [[24.8, 565], [25.35, 690, 'inOut'], [26.95, 680]]),
+      zoom: zkey(t, [[24.8, 1.62], [25.35, 1.75, 'inOut'], [26.95, 1.8, 'lin']]),
     };
-    if (t >= 28.1) {
-      const p = inv(28.1, 28.6, t), q = inv(28.6, 29.2, t);
-      base.x = lerp(base.x, LED[0], E.inOut(Math.min(1, p * 1.4)));
-      base.y = lerp(base.y, LED[1], E.inOut(Math.min(1, p * 1.4)));
-      base.zoom = 2.02 * Math.pow(7 / 2.02, E.in(p)) * Math.pow(18 / 7, E.out(q));
+    if (t < 27.7) return { x: 1300, y: K(t, [[26.95, 640], [27.7, 630]]), zoom: K(t, [[26.95, 2.35], [27.7, 2.5]], 'lin') };
+    // L (from 30.9) → M: push INTO the TV screen
+    const scr = [LR.tv.x + LR.tv.w / 2, LR.tv.y + LR.tv.h / 2];
+    const c = { x: K(t, [[30.9, 1120], [33.0, 1180]]), y: K(t, [[30.9, 520], [33.0, 510]]), zoom: K(t, [[30.9, 1.22], [33.0, 1.28]], 'lin') };
+    if (t >= 33.0) {
+      const p = E.inOut(inv(33.0, 34.1, t));
+      c.x = lerp(c.x, scr[0], p); c.y = lerp(c.y, scr[1], p);
+      c.zoom = 1.28 * Math.pow(2.4 / 1.28, p) * Math.pow(16 / 2.4, E.in(inv(34.1, 35.05, t)));
     }
-    return base;
+    return c;
   }
 
   // full-screen TV insert
