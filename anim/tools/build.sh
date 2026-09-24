@@ -10,5 +10,5 @@ $FF -y -loglevel error -stats_period 30 -framerate 30 -i out/frames_${OUT:-final
   -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -profile:v high -tune animation \
   -c:a aac -b:a 256k -movflags +faststart -shortest out/${OUT:-packet_from_home}.mp4
 # lighter copy for phones / messaging
-$FF -y -loglevel error -i out/${OUT:-packet_from_home}.mp4 -c:v libx264 -preset medium -crf 26 -pix_fmt yuv420p -c:a copy -movflags +faststart out/${OUT:-packet_from_home}_mobile.mp4
+$FF -y -loglevel error -i out/${OUT:-packet_from_home}.mp4 -c:v libx264 -preset medium -b:v 3200k -maxrate 4500k -bufsize 6000k -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart out/${OUT:-packet_from_home}_mobile.mp4
 ls -la out/${OUT:-packet_from_home}*.mp4

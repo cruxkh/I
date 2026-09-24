@@ -29,23 +29,23 @@
   const PK = [];
   for (let r = 0; r < 34; r++) for (let li = 0; li < 5; li++) {
     const lane = LANES[li], seed = r * 7 + li * 3 + 11;
-    const path = (li === 2 || li === 3) && r >= 7 && r <= 13; // rows beside Bit's path: aligned, no jitter
+    const path = (li === 3 || li === 4) && r >= 7 && r <= 13; // rows beside Bit's path: aligned, no jitter
     if (li === 2 && r === 8) continue; // Catpacket's spot
     if (H(seed * 1.7) < 0.07 && !path && r > 2) continue; // occasional gap
     let X = lane + (path ? 0 : (H(seed * 3.1) - 0.5) * 0.12), Z = ROW(r) + (path ? 0 : (H(seed * 5.3) - 0.5) * 0.3) + (li % 2 ? 0.12 : 0);
-    if (path && li === 2) X = 0.03;
-    if (path && li === 3) X = 0.57;
-    if (r === 8 && li === 3) X = 1.0;  // squeezed aside by the cat
+    if (path && li === 3) X = 0.64;
+    if (path && li === 4) X = 1.19;
+    if (r === 8 && li === 3) X = 0.98;
+    if (r === 8 && li === 4) X = 1.3;  // squeezed aside by the cat
     if (r === 8 && li === 1) X = -0.74;
-    if (r === 7 && li === 3) X = 0.66;
     const m = H(seed * 9.9);
     PK.push({ X, Z, seed, r, li, kind: KINDS[Math.floor(H(seed * 2.3) * 6) % 6], mood: m < 0.18 ? 'sleep' : m < 0.36 ? 'annoyed' : 'bored' });
   }
   const pk = (li, r) => PK.find(p => p.li === li && p.r === r);
   // honk pops (synced to the cue sheets)
   const HONKS = [
-    [pk(4, 2), 21.39], [pk(0, 3), 21.75], [pk(1, 10), 22.62], [pk(1, 9), 24.19], [pk(1, 9), 24.50], [pk(4, 9), 24.74],
-    [pk(3, 11), 21.95], [pk(0, 12), 23.62],
+    [pk(4, 2), 21.39], [pk(0, 3), 21.75], [pk(3, 10), 22.62], [pk(2, 9), 24.19], [pk(2, 9), 24.50], [pk(4, 9), 24.74],
+    [pk(4, 11), 21.95], [pk(4, 10), 23.62],
   ];
   const honkAmt = (p, t) => { let h = 0; for (const [q, t0] of HONKS) if (q === p) h = Math.max(h, smooth(t0 - 0.04, t0 + 0.05, t) * (1 - smooth(t0 + 0.24, t0 + 0.42, t))); return h; };
 
@@ -53,13 +53,14 @@
   const BZ = [[21.0, 9.9], [21.9, 9.78], [22.14, 9.6, 'inOut'], [22.3, 9.12, 'out'], [22.92, 8.84, 'inOut'], [23.24, 8.72, 'inOut'],
     [23.4, 8.3, 'out'], [23.98, 8.02, 'inOut'], [24.26, 7.92, 'inOut'], [24.42, 7.5, 'out'], [24.82, 6.95, 'in'], [24.9, 6.92, 'out']];
   const bitZ = t => key(t, BZ);
-  const bitX = t => key(t, [[24.0, 0.3], [24.5, 0.78, 'inOut'], [24.84, 0.7, 'inOut']]);
+  const bitX = t => key(t, [[24.3, 0.915], [24.84, 0.72, 'inOut']]);
   const POPS = [22.18, 23.28, 24.3];
   const pushing = t => (t > 21.9 && t < 22.18) || (t > 22.95 && t < 23.28) || (t > 24.05 && t < 24.3);
   const popK = t => { let k = 0; for (const p of POPS) k = Math.max(k, smooth(p - 0.02, p + 0.03, t) * (1 - smooth(p + 0.06, p + 0.3, t))); return k; };
 
   // projection
-  const proj = (X, Y, Z, zc) => { const d = Z - zc; return [VX + X * F / d, VY + (FL - Y) * F / d, d]; };
+  let CAMX = 0; // lateral camera offset (world units); the tunnel stays centred (it is symmetric)
+  const proj = (X, Y, Z, zc) => { const d = Z - zc; return [VX + (X - CAMX) * F / d, VY + (FL - Y) * F / d, d]; };
 
   // ---------------------------------------------------------------- helpers
   const clampCam = c => { const hw = 960 / c.zoom, hh = 540 / c.zoom; c.x = clamp(c.x, hw + 22 / c.zoom, 1920 - hw - 22 / c.zoom); c.y = clamp(c.y, hh + 22 / c.zoom, 1080 - hh - 22 / c.zoom); return c; };
@@ -156,7 +157,7 @@
     for (const it of items) {
       if (it.bit) { const b = opt.bit, [x, y, d] = proj(b.X, b.Y, b.Z, zc); if (d > 0.3) b.draw(ctx, x, y, BTS / d, d); continue; }
       if (it.cat) {
-        const [x, y, d] = proj(CATX, 0, CATZ, zc); if (d < 0.35) continue;
+        const [x, y, d] = proj(opt.catX ?? CATX, 0, CATZ, zc); if (d < 0.35) continue;
         A.glow(ctx, x, y - 40 * CTS / d, 260 * CTS / d, 'rgba(255,36,60,1)', 0.12);
         A.drawCatPacket(ctx, x, y, CTS / d, Object.assign({ t }, opt.catO ? opt.catO(x, y, d) : {}));
         continue;
@@ -189,7 +190,7 @@
   // neighbours get shoved while Bit squeezes past
   function shoveO(p, t) {
     const bz = bitZ(t), bx = bitX(t);
-    if (!(p.li === 2 || p.li === 3 || (p.li === 1 && p.r === 8))) return {};
+    if (!(p.li === 3 || p.li === 4)) return {};
     const dz = Math.abs(p.Z - bz); if (dz > 0.45) return {};
     const k = (1 - dz / 0.45) * (pushing(t) || t > 24.8 ? 1 : 0.5);
     const side = Math.sign(p.X - bx) || 1;
@@ -199,33 +200,35 @@
 
   // ============================================================ SHOTS
   function shotA(ctx, t) {
-    const zc = key(t, [[21.0, -0.6], [21.45, -0.2, 'out'], [21.9, 5.7, 'in']]);
+    const zc = key(t, [[21.0, -0.6], [21.45, -0.2, 'out'], [21.9, 6.3, 'inOut']]);
+    CAMX = 0.9 * smooth(21.2, 21.85, t);
     const bz = bitZ(t), bx = bitX(t);
     const [bxs, bys] = proj(bx, 0, bz, zc);
-    const zk = ease.in(inv(21.45, 21.9, t));
-    const cam = { x: lerp(960, bxs, zk * 0.7), y: lerp(540, bys - 60, zk * 0.7), zoom: key(t, [[21.0, 1.35], [21.4, 1.03, 'out'], [21.9, 1.5, 'in']]), rot: 0, t };
+    const zk = ease.out(inv(21.5, 21.72, t));
+    const cam = { x: lerp(960, bxs, zk), y: lerp(540, bys - 50, zk), zoom: key(t, [[21.0, 1.35], [21.4, 1.03, 'out'], [21.5, 1.03], [21.72, 2.9, 'out'], [21.9, 3.1, 'lin']]), rot: 0, t };
     clampCam(cam);
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     jamWorld(ctx, t, zc, {
-      jam: 0.95,
-      bit: { X: bx, Y: 0, Z: bz, draw: (c, x, y, sc) => { A.glow(c, x, y - 70 * sc, 260 * sc, '#ffc93c', 0.5 + 0.3 * Math.sin(t * 6)); A.drawBit(c, x, y, sc, Object.assign(bitJamOpts(t), { glow: 1.6 })); } },
+      jam: 0.95, catX: -0.62,
+      bit: { X: bx, Y: 0, Z: bz, draw: (c, x, y, sc) => { A.glow(c, x, y - 70 * sc, 260 * sc, '#ffc93c', 0.5 + 0.3 * Math.sin(t * 6)); const hp = Math.max(0, Math.sin((t - 21.3) * Math.PI * 3.2)) * smooth(21.25, 21.4, t); A.drawBit(c, x, y, sc, Object.assign(bitJamOpts(t), { glow: 1.6, hop: hp * 55, limbs: 'arms-up', mood: 'determined', squash: hp < 0.1 ? 0.12 : -0.08 })); } },
       catO: () => ({ mood: 'bored' }),
       pkO: p => shoveO(p, t),
     });
     ctx.restore();
     // "find Bit" spotlight ping
-    const ping = inv(21.5, 21.9, t);
+    const ping = inv(21.66, 21.9, t);
     if (ping > 0 && ping < 1) {
-      const [sx, sy] = [960 + (bxs - cam.x) * cam.zoom, 540 + (bys - 60 - cam.y) * cam.zoom];
+      const [sx, sy] = [960 + (bxs - cam.x) * cam.zoom, 540 + (bys - 25 - cam.y) * cam.zoom];
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = `rgba(255,220,120,${0.7 * (1 - ping)})`; ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.arc(sx, sy + 20, 40 + ping * 160, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      ctx.beginPath(); ctx.arc(sx, sy, 70 + ping * 220, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
     }
-    speedLines(ctx, t, 960, 470, ease.in(inv(21.55, 21.9, t)) * 0.8, 40);
+    speedLines(ctx, t, 960, 470, Math.sin(inv(21.48, 21.75, t) * Math.PI) * 0.9, 40);
   }
 
   function shotB(ctx, t) {
     const bz = bitZ(t), bx = bitX(t);
     const zc = bitZ(t - 0.18) - 1.28 - 0.1 * smooth(24.25, 24.8, t);
+    CAMX = lerp(0.9, 0.55, smooth(24.2, 24.8, t));
     const [bxs, bys] = proj(bx, 0, bz, zc);
     const bump = t > 24.83 ? Math.exp(-(t - 24.83) * 14) : 0;
     const wk = smooth(24.25, 24.8, t);
@@ -337,15 +340,16 @@
   // --- shot E: BOOST over the jam
   const E0 = 28.6, E1 = 29.85;
   function bitE(t) { // world position of Bit during the boost
-    if (t < E0) return { X: 0.7, Y: 0, Z: 6.92 };
+    if (t < E0) return { X: 0.72, Y: 0, Z: 6.92 };
     const u = inv(E0, E1, t);
     const Z = lerp(6.92, 0.1, Math.pow(u, 1.2));
     const Y = 1.0 * Math.sin(Math.min(1, u * 2.1) * Math.PI * 0.5) - 0.42 * smooth(0.45, 0.9, u);
-    const X = lerp(0.7, 0.1, ease.inOut(u));
+    const X = lerp(0.72, 0.1, ease.inOut(u));
     return { X, Y: Math.max(0, Y), Z };
   }
   function shotE(ctx, t) {
     const zc = key(t, [[28.5, 5.05], [28.62, 5.1], [29.3, 1.7, 'inOut'], [29.85, 0.0, 'lin']]);
+    CAMX = lerp(0.5, 0.05, smooth(28.6, 29.3, t));
     const launch = t >= E0;
     const b = bitE(t);
     const sh = launch ? Math.exp(-(t - E0) * 3) * 1.6 + 0.3 : 0;
@@ -384,7 +388,7 @@
     // launch shockwave ring + flash
     if (launch && t < 29.0) {
       const u = inv(E0, 29.0, t);
-      const [sx, sy] = [960 + (proj(0.52, 0, CATZ, 4.5)[0] - cam.x) * cam.zoom, 540 + (proj(0.52, 0, CATZ, 4.5)[1] - cam.y) * cam.zoom];
+      const [sx, sy] = [960 + (proj(0.72, 0, CATZ, 5.05)[0] - cam.x) * cam.zoom, 540 + (proj(0.72, 0, CATZ, 5.05)[1] - cam.y) * cam.zoom];
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       ctx.strokeStyle = `rgba(255,220,130,${0.8 * (1 - u)})`; ctx.lineWidth = 10 * (1 - u) + 2;
       A.ellipse(ctx, sx, sy, 40 + u * 700, 12 + u * 160); ctx.stroke();
