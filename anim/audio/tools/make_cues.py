@@ -36,7 +36,7 @@ SYNC = [
     (24.2, 'packet_honk_double', -11, -0.4),
     (24.75, 'packet_honk_lo', -12, 0.6),
     (27.85, 'packet_honk_hi', -13, 0.3),
-    (28.6, 'bit_charge', -8, 0.0),             # charge peaks on the boost
+    (28.6, 'bit_charge', -11, 0.0),             # charge peaks on the boost
     (28.6, 'bit_rocket_launch', -4, 0.0),      # BOOST
     (29.8, 'sonic_whoosh', -5, 0.0),           # bursts out the front of the jam
     (30.2, 'zip_streak', -12, 0.3),
@@ -49,10 +49,10 @@ SYNC = [
     (31.0, 'sonar_ping', -16, -0.5),
     (32.3, 'map_ding', -14, 0.5),              # Marseille
     (33.5, 'map_ding', -14, 0.5),              # Gibraltar
-    (36.0, 'shark_lunge', -6, -0.3),           # lunge 35.6, peak on the bite
-    (36.0, 'chomp', -3, -0.1),
-    (36.0, 'spark_zap', -6, 0.0),
-    (36.2, 'boing', -5, 0.0),
+    (36.0, 'shark_lunge', -8, -0.3),           # lunge 35.6, peak on the bite
+    (36.0, 'chomp', -5, -0.1),
+    (36.0, 'spark_zap', -10, 0.0),
+    (36.2, 'boing', -7, 0.0),
     (36.6, 'dazed_stars', -12, -0.2),
     (39.3, 'map_ding', -14, 0.5),              # Halifax
     (40.5, 'map_ding_arrive', -12, 0.5),       # Toronto
@@ -63,19 +63,19 @@ SYNC = [
     (41.5, 'pole_buzz', -14, 0.25),
     (41.8, 'zip_streak', -10, -0.3),           # up the pole
     (42.4, 'wire_zip', -8, 0.0),               # along the wire (sync = start)
-    (44.9, 'delivered_impact', -1, 0.0),       # DELIVERED slam
+    (44.9, 'delivered_impact', -3, 0.0),       # DELIVERED slam
     # --- S7 goal 46.0-60.0
     (46.0, 'room_tone_cozy', -9, 0.0),
     (46.0, 'tv_unfreeze_pop', -6, TV),
     (46.4, 'ball_net_swish', -8, TV),
-    (46.4, 'tv_crowd_goal', -8, TV),
-    (47.6, 'stadium_goal_eruption', -12, 0.0), # the room "becomes the stadium" as Saba leaps
+    (46.4, 'tv_crowd_goal', -11, TV),
+    (47.6, 'stadium_goal_eruption', -14, 0.0), # the room "becomes the stadium" as Saba leaps
     (47.6, 'popcorn_burst', -8, -0.1),
     (47.6, 'confetti_popper', -8, 0.2),
     (47.7, 'cheer_group', -14, 0.0),
     (54.5, 'bit_flop', -8, 0.3),
     (56.9, 'wink_ding', -8, 0.3),
-    (57.3, 'title_slam', -1, 0.0),
+    (57.3, 'title_slam', -3, 0.0),
 ]
 
 cues = []

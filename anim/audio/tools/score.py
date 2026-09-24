@@ -149,10 +149,14 @@ crystal = track('crystal', 'synth', 98, gain=0.45, pan=0.0, rev=0.5)
 blips = track('blips', 'synth', 80, gain=0.22, pan=0.3, rev=0.3)
 okit = track('okit', 'perc', 48, bank=128, drums=True, gain=0.9, pan=0.0, rev=0.35)
 kit = track('kit', 'perc', 0, bank=128, drums=True, gain=0.7, pan=0.0, rev=0.2)
+# balance trims (dB) found by per-stem analysis
+for _k, _db in dict(strings=9, slowstr=9, lowstr=8, violins=10, trem=9, solo=18, horns=8, trumpet=7, trombone=7,
+                    tuba=8, mute=6, ohit=3, clar=6, bassoon=6, ney=5, choir=6, timp=-2, okit=-3, kit=-5).items():
+    TR[_k].gain *= 10 ** (_db / 20)
 # numpy instruments
 oud = track('oud', 'plucks', synth='oud', gain=0.9, pan=0.3, rev=0.3)
-darb = track('darb', 'perc', synth='darbuka', gain=0.8, pan=-0.1, rev=0.22)
-fx = track('fx', 'fx', synth='fx', gain=1.0, pan=0.0, rev=0.3)
+darb = track('darb', 'perc', synth='darbuka', gain=0.36, pan=-0.1, rev=0.22)
+fx = track('fx', 'fx', synth='fx', gain=0.6, pan=0.0, rev=0.3)
 
 # ----------------------------------------------------------------------------------------------
 # Musical material
@@ -383,8 +387,8 @@ def freeze():
     # lonely held note under "No, no, no! Not now!"
     solo.cc(14.6, 11, 20)
     solo.n(14.95, 2.8, 'A5', 60)
-    solo.expr(14.95, 15.8, 20, 70)
-    solo.expr(16.9, 17.75, 70, 0)
+    solo.expr(14.95, 15.8, 40, 100)
+    solo.expr(16.9, 17.75, 100, 0)
     for i in range(120):
         tt = 15.3 + i * 0.02
         solo.bend(tt, 0.08 * np.sin(2 * np.pi * 5.5 * (tt - 15.3)))
@@ -488,7 +492,7 @@ def s4():
     trombone.bend(g(9.9), 0)
     # --- Catpacket: grumpy plodding tuba / bassoon (25.1 - 27.6)
     for i, n_ in enumerate(['D2', 'C2', 'Bb1', 'A1', 'G1']):
-        tuba.n(g(9 + i), b * 0.55, n_, 78)
+        tuba.n(g(9 + i), b * 0.55, n_, 96)
         bassoon.n(g(9 + i), b * 0.45, m(n_) + 12, 58)
         kit.n(g(9 + i + 0.5), 0.05, 42, 34)
     tuba.cc(24.0, 11, 105)
@@ -811,10 +815,10 @@ def s7():
     theme_chords(g, E, chordfn)
     # dip under dialogue (Saba 48.3-50.5, Noa 51.4-52.9)
     for tr_ in (strings, trombone, choir, horns, trumpet, violins):
-        tr_.expr(48.2, 48.5, 122, 98)
-        tr_.expr(50.4, 50.7, 98, 118)
-        tr_.expr(51.3, 51.5, 118, 94)
-        tr_.expr(52.8, 53.0, 94, 116)
+        tr_.expr(48.2, 48.5, 122, 108)
+        tr_.expr(50.4, 50.7, 108, 120)
+        tr_.expr(51.3, 51.5, 120, 104)
+        tr_.expr(52.8, 53.0, 104, 122)
     # timpani + perc
     for bar in range(4):
         timp.n(g(bar * 4), 0.6, 'E2', 118)

@@ -404,6 +404,10 @@
       drawSqTower(g); drawTriTower(g); drawRoundTower(g);
     }]);
     draws.sort((a, b) => a[0] - b[0]).forEach(d => d[1]());
+    // bake atmospheric depth into the mid layer (only onto painted pixels)
+    g.save(); g.globalCompositeOperation = 'source-atop';
+    g.fillStyle = A.linear(g, 0, 700, 0, 1500, [[0, 'rgba(34,22,80,0.30)'], [0.6, 'rgba(70,32,100,0.34)'], [1, 'rgba(110,45,110,0.45)']]);
+    g.fillRect(x0, y0, x1 - x0, y1 - y0); g.restore();
   }
 
   // ======================= NEAR LAYER (f = 1): coast, hotels, city, stadium, IPTV =======================
@@ -1002,11 +1006,5 @@
     ctx.restore();
   };
 
-  // stubs replaced below
-  A.drawStadiumClose = () => {};
-  A.drawDataTunnel = () => {};
-  A.drawOceanFloor = () => {};
-  A.oceanCablePath = () => 800;
-  A.drawRouteMap = () => {};
-  A.drawPacketStream = () => {};
+  //@@REST@@
 })();

@@ -319,9 +319,9 @@
   const SG = (A.SABA_GESTURES = {
     none: { L: [22, -12], R: [18, -8], hL: 'relax', hR: 'relax' },
     noneSit: { L: [18, -62], R: [14, -58], hL: 'relax', hR: 'relax' },
-    fists: { L: [42, -150], R: [36, -150], hL: 'fist', hR: 'fist' },
+    fists: { L: [32, -128], R: [28, -125], tL: [-46, -112], tR: [48, -118], hL: 'fist', hR: 'fist' },
     point: { L: [22, -40], R: [100, 6], hL: 'relax', hR: 'point' },
-    headHands: { L: [152, 78], R: [150, 80], hL: 'open', hR: 'open' },
+    headHands: { L: [152, 78], R: [150, 80], tL: [-64, -302], tR: [72, -306], hL: 'open', hR: 'open' },
     armsUp: { L: [160, 12], R: [158, 14], hL: 'open', hR: 'open' },
     grip: { L: [30, -18], R: [30, -18], hL: 'grip', hR: 'grip' },
   });
@@ -377,7 +377,7 @@
       for (const [x, y, r] of pts) C(c, ox + sx * (-x) * -1 * 1, y, r);
     };
     const farX = 70 - tn * 12, nearX = -70 + tn * 14;
-    part(ctx, R, c => { for (const [x, y, r] of [[8, -26, 15], [16, -8, 17], [14, 12, 15], [6, 28, 11], [-2, -40, 11], [20, 2, 10]]) C(c, farX + x, y, r); }, SC.hair, SC.hairSh, { d: 7 });
+    part(ctx, R, c => { for (const [x, y, r] of [[10, -30, 15], [18, -12, 16], [18, 6, 13], [0, -44, 11], [22, -28, 10]]) C(c, farX + x, y, r); }, SC.hair, SC.hairSh, { d: 7 });
     part(ctx, R, c => E(c, farX + 4, 6, 13, 22, 0.15), SC.skin, SC.skinSh, { d: 6 });
     // head
     const hp = [[0, -84], [44, -76], [72, -46], [80, -6], [76, 30], [62 + fx * 0.2, 58 + jaw * 0.5], [36 + fx * 0.4, 80 + jaw], [fx * 0.4, 88 + jaw], [-38 + fx * 0.3, 80 + jaw], [-64 + fx * 0.1, 56 + jaw * 0.5], [-76, 28], [-80, -8], [-72, -48], [-44, -76]];
@@ -392,14 +392,12 @@
       for (let i = 0; i < 3; i++) { const y = wy - i * 9, w = 34 - i * 4; ctx.moveTo(fx - w, y + 3 + F.browAng * 3); ctx.quadraticCurveTo(fx, y - 4 - F.browAng * 4, fx + w, y + 3 + F.browAng * 3); }
       strokeLine(ctx, R.lw * 0.5, SC.skinSh); ctx.restore();
     }
-    // near ear
-    part(ctx, R, c => E(c, nearX - 4, 6, 14, 23, -0.12), SC.skin, SC.skinSh, { d: 6 });
-    ctx.beginPath(); ctx.moveTo(nearX - 2, -6); ctx.quadraticCurveTo(nearX - 12, 6, nearX - 2, 18); strokeLine(ctx, R.lw * 0.5, SC.skinSh);
-    // near tuft
-    part(ctx, R, c => { for (const [x, y, r] of [[-8, -28, 15], [-16, -10, 17], [-14, 10, 14], [-5, 27, 10], [2, -42, 11], [-20, -24, 10]]) C(c, nearX + x, y, r); }, SC.hair, SC.hairSh, { d: 7 });
-    // tuft strands
-    ctx.beginPath(); ctx.moveTo(nearX - 22, -18); ctx.quadraticCurveTo(nearX - 14, -8, nearX - 20, 4); ctx.moveTo(nearX - 12, -34); ctx.quadraticCurveTo(nearX - 6, -26, nearX - 10, -16);
+    // near tuft (above/behind the ear), then ear on top
+    part(ctx, R, c => { for (const [x, y, r] of [[-10, -30, 15], [-20, -14, 16], [-22, 4, 13], [0, -44, 11], [-24, -30, 10], [-14, 18, 9]]) C(c, nearX + x, y, r); }, SC.hair, SC.hairSh, { d: 7 });
+    ctx.beginPath(); ctx.moveTo(nearX - 26, -24); ctx.quadraticCurveTo(nearX - 18, -14, nearX - 24, -2); ctx.moveTo(nearX - 12, -40); ctx.quadraticCurveTo(nearX - 6, -32, nearX - 10, -22);
     strokeLine(ctx, R.lw * 0.45, SC.hairSh);
+    part(ctx, R, c => E(c, nearX - 2, 12, 13, 21, -0.12), SC.skin, SC.skinSh, { d: 6 });
+    ctx.beginPath(); ctx.moveTo(nearX, 0); ctx.quadraticCurveTo(nearX - 10, 12, nearX, 24); strokeLine(ctx, R.lw * 0.5, SC.skinSh);
 
     // cheeks blush
     const bl = F.blush;
@@ -444,7 +442,7 @@
     }
     ctx.restore();
     ctx.beginPath(); lensP(ctx, eyL[0], nearK); lensP(ctx, eyR[0], farK);
-    ctx.lineWidth = R.lw * 1.9 + 2; ctx.strokeStyle = O; ctx.stroke(); ctx.lineWidth = R.lw * 1.2; ctx.strokeStyle = SC.glasses; ctx.stroke();
+    ctx.lineWidth = R.lw * 1.6 + 2; ctx.strokeStyle = O; ctx.stroke(); ctx.lineWidth = R.lw * 1.0; ctx.strokeStyle = SC.glasses; ctx.stroke();
     ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(160,140,170,0.55)';
     ctx.beginPath(); ctx.arc(eyL[0] - (gw - gr) * nearK, -2 - gh + gr, gr - 1, Math.PI * 1.05, Math.PI * 1.45); ctx.stroke();
     // bridge + near temple
@@ -453,8 +451,8 @@
     ctx.lineWidth = R.lw * 1.3 + 2; ctx.strokeStyle = O; ctx.stroke(); ctx.lineWidth = R.lw * 0.9; ctx.strokeStyle = SC.glasses; ctx.stroke();
 
     // nose (big, bulbous)
-    const nx = fx * 1.35 + 3, ny = 22;
-    part(ctx, R, c => { c.moveTo(nx - 8, ny - 26); c.bezierCurveTo(nx - 12, ny - 12, nx - 26, ny - 4, nx - 22, ny + 8); c.bezierCurveTo(nx - 18, ny + 20, nx + 18, ny + 22, nx + 24, ny + 8); c.bezierCurveTo(nx + 28, ny - 4, nx + 12, ny - 12, nx + 8, ny - 26); c.closePath(); }, SC.nose, SC.skinSh, { d: 8 });
+    const nx = fx * 1.35 + 3, ny = 16;
+    part(ctx, R, c => { c.moveTo(nx - 7, ny - 22); c.bezierCurveTo(nx - 12, ny - 10, nx - 30, ny - 2, nx - 26, ny + 12); c.bezierCurveTo(nx - 22, ny + 26, nx + 22, ny + 28, nx + 28, ny + 12); c.bezierCurveTo(nx + 32, ny - 2, nx + 12, ny - 10, nx + 7, ny - 22); c.closePath(); }, SC.nose, SC.skinSh, { d: 8 });
     ctx.save(); ctx.globalAlpha = 0.55; ctx.beginPath(); E(ctx, nx - 6, ny + 0, 7, 5, -0.4); ctx.fillStyle = SC.skinHi; ctx.fill(); ctx.restore();
     ctx.beginPath(); ctx.moveTo(nx - 13, ny + 12); ctx.quadraticCurveTo(nx - 8, ny + 15, nx - 4, ny + 12); ctx.moveTo(nx + 6, ny + 12); ctx.quadraticCurveTo(nx + 11, ny + 15, nx + 15, ny + 11);
     strokeLine(ctx, R.lw * 0.5, mix(SC.skinSh, O, 0.4));
@@ -465,14 +463,14 @@
     strokeLine(ctx, R.lw * 0.5, SC.skinSh); ctx.restore();
 
     // mouth (under moustache)
-    const mx = nx - 1, myy = 62 + jaw * 0.55 - F.smile * 2;
+    const mx = nx - 1, myy = 67 + jaw * 0.55 - F.smile * 2;
     mouth(ctx, R, mx, myy, { w: 46 * F.mouthW, h: F.mouthH, smile: F.smile, round: F.round, asym: 0, teeth: 1, gritted: F.gritted, tongue: 0 }, SC);
     // chin
     ctx.beginPath(); ctx.moveTo(fx * 0.5 - 12, 80 + jaw); ctx.quadraticCurveTo(fx * 0.5, 84 + jaw, fx * 0.5 + 12, 80 + jaw);
     strokeLine(ctx, R.lw * 0.45, SC.skinSh);
 
     // moustache — bushy two-lobed cloud, tips follow the smile
-    const mu = 40 - F.mouthH * 0.12, tip = -F.smile * 7 + F.round * 3;
+    const mu = 45 - F.mouthH * 0.12, tip = -F.smile * 7 + F.round * 3;
     part(ctx, R, c => {
       const pts = [[0, 0, 13], [-12, 2, 13], [12, 2, 13], [-24, 6, 12], [24, 6, 12], [-35, 11 + tip * 0.6, 10], [35, 11 + tip * 0.6, 10], [-43, 17 + tip, 7.5], [43, 17 + tip, 7.5]];
       for (const [x, y, r] of pts) C(c, nx + x, mu + y, r);
@@ -492,11 +490,11 @@
       part(ctx, R, c => {
         for (let i = 0; i <= 6; i++) { const u = i / 6, p = P(u), r = (13 - u * 5) * (0.9 + 0.1 * k); C(c, p[0], p[1] - u * 2, r); }
         // flyaway tufts at the outer end and inner end
-        const po = P(1.05);
-        c.moveTo(po[0] - side * 6, po[1] - 6); c.lineTo(po[0] + side * 16, po[1] - 16 - ang * 4); c.lineTo(po[0] + side * 3, po[1] + 2); c.closePath();
-        c.moveTo(po[0] - side * 4, po[1] + 2); c.lineTo(po[0] + side * 18, po[1] + 2); c.lineTo(po[0] - side * 2, po[1] + 8); c.closePath();
+        const po = P(1);
+        E(c, po[0] + side * 10, po[1] - 8 - ang * 3, 11, 5.5, side * (-0.5 - ang * 0.3));
+        E(c, po[0] + side * 12, po[1] + 1, 10, 4.5, side * 0.15);
         const pi = P(0);
-        c.moveTo(pi[0] + side * 4, pi[1] - 8); c.lineTo(pi[0] - side * 8, pi[1] - 14 - ang * 6); c.lineTo(pi[0] - side * 2, pi[1]); c.closePath();
+        E(c, pi[0] - side * 2, pi[1] - 9 - ang * 4, 5, 8, side * 0.4);
       }, SC.hair, SC.hairSh, { d: 6, r: 3 });
       ctx.beginPath();
       for (let i = 1; i < 6; i++) { const p = P(i / 6); ctx.moveTo(p[0] - side * 4, p[1] + 4); ctx.lineTo(p[0] + side * 5, p[1] - 5); }
@@ -648,15 +646,16 @@
     // arm angles
     const gName = pose === 'jump' && !o.gesture ? 'armsUp' : (o.gesture || 'none');
     const gKey = g => (g === 'none' && (pose === 'sit' || (pose === 'rise' && rise < 0.5))) ? 'noneSit' : g;
-    let G = SG[gKey(gName)] || SG.none;
-    let armL = G.L.slice(), armR = G.R.slice(), hL = G.hL, hR = G.hR;
+    const shL = [-SABA.shX, SABA.shY - shoulders - br * 1.5], shR = [SABA.shX - 4, SABA.shY - shoulders - br * 1.5];
+    const gArms = g => ({ L: g.tL ? ik(shL, g.tL, SABA.l1, SABA.l2, -1) : g.L, R: g.tR ? ik(shR, g.tR, SABA.l1, SABA.l2, 1) : g.R });
+    let G = SG[gKey(gName)] || SG.none, GA = gArms(G);
+    let armL = GA.L.slice(), armR = GA.R.slice(), hL = G.hL, hR = G.hR;
     if (o.gestureFrom) {
-      const G0 = SG[gKey(o.gestureFrom)] || SG.none, k = A.ease.inOut(clamp(o.gestureK ?? 1));
-      armL = lerpArr(G0.L, G.L, k); armR = lerpArr(G0.R, G.R, k); if (k < 0.5) { hL = G0.hL; hR = G0.hR; }
+      const G0 = SG[gKey(o.gestureFrom)] || SG.none, G0A = gArms(G0), k = A.ease.inOut(clamp(o.gestureK ?? 1));
+      armL = lerpArr(G0A.L, GA.L, k); armR = lerpArr(G0A.R, GA.R, k); if (k < 0.5) { hL = G0.hL; hR = G0.hR; }
     }
     // torso-frame helpers
     const toTorso = p => { const v = rot([p[0] - P[0], p[1] - P[1]], -lean); return v; };
-    const shL = [-SABA.shX, SABA.shY - shoulders - br * 1.5], shR = [SABA.shX - 4, SABA.shY - shoulders - br * 1.5];
     // grip: IK to armrests
     if (gName === 'grip' && !o.handL && !o.handR && (pose === 'sit' || pose === 'rise')) {
       const ax = o.armrestX ?? 122, ay = -floor - (o.armrestY ?? 48);
@@ -693,12 +692,24 @@
     // torso
     ctx.save(); torsoFrame();
     sabaTorso(ctx, Rt, br);
+    // seated: knees come toward camera, in front of the belly's lower edge
+    const kneeFront = pose === 'sit' || (pose === 'rise' && rise < 0.3) ? 1 : 0;
+    if (kneeFront > 0.01) {
+      ctx.restore(); ctx.save();
+      for (const L of [legs.R, legs.L]) {
+        const k0 = lerp2(L[0], L[1], lerp(0.95, 0.45, kneeFront));
+        part(ctx, R, c => cap2(c, k0, L[1], 31, 30), SC.trousers, SC.trousersSh, { d: 12 });
+        ctx.beginPath(); ctx.moveTo(L[1][0] - 14, L[1][1] + 6); ctx.quadraticCurveTo(L[1][0], L[1][1] + 14, L[1][0] + 14, L[1][1] + 6);
+        strokeLine(ctx, R.lw * 0.5, SC.trousersSh);
+      }
+      ctx.restore(); ctx.save(); torsoFrame();
+    }
     sabaScarf(ctx, Rt, t, o, lean, air, clamp((o.scarfWave ?? 0) + air * 0.6), vel);
     // head
     const turn = clamp((o.turn ?? 0.25) + (o.look ? o.look[0] * 0.12 : 0), -1, 1);
     const tilt = ((o.headTilt ?? 0) + (o.look ? o.look[1] * 4 : 0) + idle * A.wob(t, 13, 0.3) * 2.5 + tr(12, 23) * 2 - (pose === 'jump' ? 6 * air : 0)) * D;
-    const headP = [8 + turn * 6 + tr(14) * 1.2, -262 - br * 1.6 - shoulders * 0.4];
-    ctx.save(); ctx.translate(headP[0], headP[1] + 70); ctx.rotate(tilt); ctx.translate(0, -70);
+    const headP = [8 + turn * 6 + tr(14) * 1.2, -266 - br * 1.6 - shoulders * 0.4];
+    ctx.save(); ctx.translate(headP[0], headP[1] + 70); ctx.rotate(tilt); ctx.scale(1.08, 1.08); ctx.translate(0, -70);
     // eye darts
     const dart = idle * 0.18;
     const dph = Math.floor(t * 0.9 + 0.3);

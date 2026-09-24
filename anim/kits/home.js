@@ -120,7 +120,7 @@
     chair: { x: 700, y: 760 },           // Saba seat contact (drawArmchair(ctx, 700, 760, 1, layer))
     sofa: { x: 1100, y: 790 },           // Noa: seat contact on top of the leather pouf
     tv: { x: 1255, y: 350, w: 440, h: 248 }, // TV SCREEN rect (16:9); pass to drawTV — bezel/stand drawn around it
-    router: { x: 1475, y: 824, s: 0.44 },  // bottom centre on the TV-cabinet lower shelf, scale for the wide shot
+    router: { x: 1475, y: 824, s: 0.42 },  // bottom centre on the TV-cabinet lower shelf, scale for the wide shot
     window: { x: WIN.x, y: WIN.y, w: WIN.w, h: WIN.h },
     lamp: { x: 600, y: 292 },            // lamp-shade centre (key light)
     floorY: 880,                         // typical standing/foot line for characters in the master
@@ -961,7 +961,7 @@
     m2: [[-9, [2, 18]], [-6, [5, 16]], [-1.3, [9, 16]], [0, [17, 14]], [1.5, [29, 17]], [2.2, [34, 18]], [5, [46, 8]]],
     m3: [[-9, [10, 50]], [-5, [12, 52]], [-1.3, [11, 47]], [0, [14, 48]], [2, [22, 50]], [5, [38, 20]]],
     m4: [[-9, [-14, 30]], [0, [-6, 32]], [5, [8, 30]]],
-    d1: [[-9, [14, 34]], [-1.3, [18, 32]], [0, [21, 31.5]], [1.35, [34, 32.5]], [1.6, [35.8, 32.5]], [2.2, [37.5, 33]], [5, [40, 32]]],
+    d1: [[-9, [14, 34]], [-1.3, [18, 32]], [0, [19, 32.5]], [1.35, [31.5, 33.5]], [1.6, [33.5, 33.5]], [2.2, [37.5, 33]], [5, [40, 32]]],
     d2: [[-9, [24, 40]], [0, [38, 38]], [1.3, [38.5, 33]], [1.55, [38.9, 31.8]], [2.2, [39.2, 31.4]], [5, [40, 33]]],
     d3: [[-9, [20, 18]], [0, [30, 16]], [1.5, [36, 22]], [2.2, [38, 24]], [5, [41, 26]]],
     d4: [[-9, [8, 44]], [-3, [12, 42]], [0, [18, 40]], [1.5, [26, 40]], [5, [30, 38]]],
@@ -1002,8 +1002,8 @@
 
   function makeCam(mt, goalZoom) {
     // broadcast camera on the halfway gantry, panning to follow the play
-    const T = A.key(mt, [[-9, [8, 30]], [-1.5, [16, 30]], [0, [26, 31]], [1.4, [38, 32]], [2.2, [43, 33]], [3.5, [45, 28]], [6, [46, 22]]], 'inOut');
-    const fov = A.key(mt, [[-9, 56], [0, 46], [1.4, 40], [2.0, 38], [3, 30 - goalZoom * 2]], 'inOut');
+    const T = A.key(mt, [[-9, [8, 30]], [-1.5, [17, 30]], [0, [29, 30]], [1.4, [42.5, 32]], [2.2, [45, 33]], [3.5, [46, 27]], [6, [47, 20]]], 'inOut');
+    const fov = A.key(mt, [[-9, 54], [0, 40], [1.4, 31], [2.0, 30], [3, 26 - goalZoom * 2]], 'inOut');
     const C = { x: 0, y: 24, z: -40 };
     const dx = T[0] - C.x, dz = T[1] - C.z, yaw = Math.atan2(dx, dz), dist = Math.hypot(dx, dz), tilt = Math.atan2(C.y, dist);
     const F = 1920 * dist / fov, cy = Math.cos(yaw), sy = Math.sin(yaw), ct = Math.cos(tilt), st = Math.sin(tilt);
@@ -1215,7 +1215,8 @@
     g.restore();
     if (flash > 0) A.glow(g, 483, 85, 180, '#ffd21f', flash * 0.7);
     // channel bug + LIVE badge (top right)
-    g.save(); g.globalAlpha = 0.92;
+    g.save(); g.fillStyle = 'rgba(6,10,34,0.55)'; A.rrect(g, 1540, 40, 300, 76, 16); g.fill();
+    g.globalAlpha = 0.92;
     A.text(g, 'IPTV', 1700, 78, { font: '900 52px Rubik', fill: '#fff', stroke: 'rgba(0,0,0,0.35)', lw: 6, align: 'right' });
     g.fillStyle = '#ffd21f'; A.ellipse(g, 1718, 78, 8, 8); g.fill();
     A.text(g, 'IL', 1734, 78, { font: '900 52px Rubik', fill: '#5fb8ff', stroke: 'rgba(0,0,0,0.35)', lw: 6, align: 'left' });
@@ -1270,7 +1271,7 @@
     SMALL.width = cw; SMALL.height = ch; SMALL.getContext('2d').drawImage(SCR, 0, 0, cw, ch);
     const r = A.rng(seed * 7 + 3), bs = 48;
     ctx.save(); ctx.imageSmoothingEnabled = false;
-    const n = Math.round(4 + amt * 16);
+    const n = Math.round(6 + amt * 30);
     for (let i = 0; i < n; i++) {
       const bw = bs * (1 + Math.floor(r() * 6)), bh = bs * (1 + Math.floor(r() * 3));
       const bx = Math.floor(r() * (Wr / bs)) * bs, by = Math.floor(r() * (Hr / bs)) * bs;
@@ -1283,7 +1284,7 @@
       } else { // smear: stretch a 1-row slice downwards
         ctx.drawImage(SCR, bx * sx, by * sy, bw * sx, Math.max(1, 2 * sy), bx, by, bw, bh * 1.5);
       }
-      if (r() < 0.35) { ctx.globalAlpha = 0.28 * amt; ctx.fillStyle = r() < 0.5 ? '#ff2a9a' : '#2aff8a'; ctx.fillRect(bx, by, bs, bs); ctx.globalAlpha = 1; }
+      if (r() < 0.4) { ctx.globalAlpha = 0.3 * amt; ctx.fillStyle = r() < 0.5 ? '#ff2a9a' : '#2aff8a'; ctx.fillRect(bx, by, bs, bs); ctx.globalAlpha = 1; }
     }
     // macroblock grid shimmer
     ctx.globalAlpha = 0.08 * amt; ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
@@ -1416,7 +1417,7 @@
     // shadow
     g.fillStyle = A.radial(g, 0, 0, 0, 140, [[0, 'rgba(0,0,0,0.55)'], [1, 'rgba(0,0,0,0)']]); g.save(); g.scale(1, 0.14); g.fillRect(-140, -140, 280, 280); g.restore();
     // antennae (behind body), with secondary sway
-    const ants = [[-78, -0.32, 118], [0, 0.02, 132], [78, 0.34, 118]];
+    const ants = [[-78, -0.42, 100], [0, 0.02, 108], [78, 0.44, 100]];
     ants.forEach(([ax, a0, len], i) => {
       const sway = Math.sin(t * 1.7 + i * 1.9) * 0.03 + shake * Math.sin(t * 26 + i * 2) * 0.22;
       g.save(); g.translate(ax, -78); g.rotate(a0 + sway);
@@ -1481,7 +1482,7 @@
   const pqPoly = (g, Q, zr, uvs) => { g.beginPath(); uvs.forEach(([u, v], i) => { const p = pq(Q, u, v, zr); i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); }); g.closePath(); };
 
   const BLD = { n0: [1990, 1010], n1: [1990, -60], f0: [1360, 712], f1: [1360, 214] }, BZR = 2.3; // our apartment building (right)
-  const ROW = { n0: [-160, 900], n1: [-160, 120], f0: [1060, 660], f1: [1060, 520] }, RZR = 7; // row houses (left)
+  const ROW = { n0: [-160, 900], n1: [-160, 120], f0: [1060, 660], f1: [1060, 530] }, RZR = 3.2; // row houses (left)
   const WPT = pq(BLD, 0.52, 0.55, BZR); // our window centre
   const INS = [612, 214], ATT = (() => { const p = pq(BLD, 0.62, 0.64, BZR); return [p[0], p[1]]; })();
   const wirePts = (a, b, sag, n = 24) => { const out = []; for (let i = 0; i <= n; i++) { const u = i / n; out.push([L(a[0], b[0], u), L(a[1], b[1], u) + sag * 4 * u * (1 - u)]); } return out; };
@@ -1604,10 +1605,10 @@
       for (let c = 0; c < 4; c++) {
         const u0 = 0.06 + c * 0.24, u1 = u0 + 0.12;
         const ours = fl === 2 && c === 2;
-        const lit = ours || hh(fl * 7 + c * 3) > 0.55;
+        const lit = ours || hh(fl * 7 + c * 3) > 0.72;
         pqPoly(g, BLD, BZR, [[u0 - 0.01, v0 - 0.02], [u1 + 0.01, v0 - 0.02], [u1 + 0.01, v1 + 0.02], [u0 - 0.01, v1 + 0.02]]); g.fillStyle = '#c9b8a0'; g.fill();
         pqPoly(g, BLD, BZR, [[u0, v0], [u1, v0], [u1, v1], [u0, v1]]);
-        g.fillStyle = ours ? A.linear(g, 0, pq(BLD, u0, v1, BZR)[1], 0, pq(BLD, u0, v0, BZR)[1], [[0, '#ffcf80'], [1, '#ff9a4a']]) : lit ? '#e8a060' : '#1a1e40'; g.fill();
+        g.fillStyle = ours ? A.linear(g, 0, pq(BLD, u0, v1, BZR)[1], 0, pq(BLD, u0, v0, BZR)[1], [[0, '#ffcf80'], [1, '#ff9a4a']]) : lit ? '#9a6a5a' : A.linear(g, 0, pq(BLD, u0, v1, BZR)[1], 0, pq(BLD, u0, v0, BZR)[1], [[0, '#2a3060'], [1, '#141836']]); g.fill();
         g.strokeStyle = 'rgba(15,8,25,0.9)'; g.lineWidth = 2.5; g.stroke();
         if (ours) {
           // silhouette of the lamp & curtains inside
