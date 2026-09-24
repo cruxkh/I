@@ -248,7 +248,7 @@ their own time base; lipsync compensates). S5 and S6 are unchanged and shifted b
 | 67.0–69.6 | SABA "And now... backgammon! Come, let's play!" |
 | 69.6–72.4 | Payoff: Saba and Noa at the side table playing backgammon (A.drawBackgammon open board, dice roll), laughing; behind them the TV plays smooth live football with GOTV bug and a `LIVE · 4K · ללא תקיעות` badge. The promise delivered: he has time for her. |
 | 72.4–77.8 | Router close-up tag: Bit flopped on the shelf, exhausted and proud. Two competitor brand packets (ILVIP, EMBY) finally stagger in from the cable, panting, late. ILVIP 73.0–74.5 "Did... did we miss the goal?"; BIT 74.8–77.2 "Sorry, guys... GOTV got here first." wink ~77.4. |
-| 77.8–81.0 | GOTV end card (same design), taglines now: Hebrew `הטלוויזיה מהבית. מגיעה ראשונה.` English `Live TV from Israel. First to your home.` Subtitles off from 77.7. Engine fades 80.2–81.0. |
+| 77.8–81.0 | GOTV end card (same design), taglines now: Hebrew `הטלוויזיה של ישראל` second line `(התקנת אפליקציה על המסך החכם)` Subtitles off from 77.7. Engine fades 80.2–81.0. |
 
 Speakers now also include `ILVIP`, `EMBY` (lip-sync via A.mouth('ILVIP', t) etc.).
 

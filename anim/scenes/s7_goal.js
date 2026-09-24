@@ -18,8 +18,8 @@
     logoBox: { cx: 960, cy: 452, w: 1120, h: 330 },     // the wordmark / client logo image is fitted into this box
     logoImage: 'assets/gotv_logo.png',                    // if this file exists it replaces the synthesized wordmark
     wordLeft: 'G', wordRight: 'TV',                        // wordmark = wordLeft + [ring "O"] + wordRight
-    tagHe: 'הטלוויזיה מהבית. מגיעה ראשונה.',
-    tagEn: 'Live TV from Israel. First to your home.',
+    tagHe: 'הטלוויזיה של ישראל',
+    tagEn: '(התקנת אפליקציה על המסך החכם)',
     filmTitle: 'PACKET FROM HOME · חבילה מהבית',
     tagHeY: 738, tagEnY: 812, filmTitleY: 138,
     navy: '#0d1033', yellow: '#ffd21f', blue: '#1f4fbf',
@@ -922,8 +922,8 @@
     if (en > 0) {
       ctx.save(); ctx.globalAlpha = en;
       const y = CARD.tagEnY + (1 - en) * 20;
-      ctx.font = '500 34px Rubik';
-      if ('letterSpacing' in ctx) ctx.letterSpacing = '3px';
+      ctx.font = '500 40px Rubik'; ctx.direction = 'rtl';
+      if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#ffd21f';
       ctx.fillText(CARD.tagEn, 960, y);
       const w = ctx.measureText(CARD.tagEn).width / 2 + 34;

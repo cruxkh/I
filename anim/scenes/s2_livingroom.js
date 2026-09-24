@@ -100,10 +100,20 @@
     g.restore();
     g.restore();
   }
+  let OVL = null;
   function switchOverlay(ctx, x, y, w, h, t) {
-    const p = inv(PRESS, PRESS + 0.3, t);
+    const p = inv(PRESS, PRESS + 0.4, t);
     if (p <= 0) return;
-    if (A.drawSwitchOverlay) { A.drawSwitchOverlay(ctx, x, y, w, h, t, { p }); return; }
+    if (A.drawSwitchOverlay) {
+      // props.js drawSwitchOverlay leaves an unbalanced save() (with its screen clip) while p < ~1, so draw it on a
+      // scratch canvas whose state is reset every call, then composite.
+      if (!OVL) OVL = document.createElement('canvas');
+      OVL.width = 1920; OVL.height = 1080; // also resets the context state stack
+      const g = OVL.getContext('2d'); g.setTransform(ctx.getTransform());
+      A.drawSwitchOverlay(g, x, y, w, h, t, { p });
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(OVL, 0, 0); ctx.restore();
+      return;
+    }
     screenRef(ctx, x, y, w, h, g => {
       g.fillStyle = `rgba(6,10,30,${0.6 * cl(p * 4)})`; g.fillRect(0, 0, 1920, 1080);
       if (p < 0.8) {

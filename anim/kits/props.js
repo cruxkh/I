@@ -886,6 +886,7 @@
         ctx.restore();
         A.glow(ctx, -bw / 2 + fw, by + bh / 2, 22 * u, '#ffe680', 0.8);
       }
+      ctx.restore();
     }
     if (done > 0) {
       ctx.save(); ctx.globalAlpha *= done;
