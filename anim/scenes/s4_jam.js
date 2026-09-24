@@ -87,7 +87,7 @@
     ctx.save(); ctx.globalAlpha = fog;
     if (p.brand) {
       const bo = { t, brand: p.brand, seed: p.seed, mood: o.bmood || BRAND_MOOD[p.brand], spinner: o.spinner ?? (p.brand === 'EMBY' || p.brand === 'LOADING+' ? 1 : 0),
-        mouth: o.mouth ?? A.mouth(p.brand, t), look: o.look, rot: o.rot || 0, squash: o.squash || 0, glow: 0.45 + 0.3 * fog };
+        mouth: o.mouth ?? A.mouth(p.brand, t), spinnerEyes: o.spinnerEyes || 0, shadow: 0.6, look: o.look, rot: o.rot || 0, squash: o.squash || 0, glow: 0.45 + 0.3 * fog };
       drawBrand(ctx, x, y, sc, bo);
       ctx.restore(); return;
     }
@@ -120,8 +120,8 @@
     const sw = Math.sin(t * 1.3) * 0.03;
     ctx.save(); ctx.translate(x, y); ctx.rotate(sw);
     ctx.strokeStyle = 'rgba(200,210,255,0.6)'; ctx.lineWidth = Math.max(1, 3 * s);
-    ctx.beginPath(); ctx.moveTo(-110 * s, -40 * s); ctx.lineTo(-90 * s, -900 * s); ctx.moveTo(110 * s, -40 * s); ctx.lineTo(90 * s, -900 * s); ctx.stroke();
-    if (A.drawQueueSign) A.drawQueueSign(ctx, 0, 0, s, { t });
+    ctx.beginPath(); ctx.moveTo(-110 * s, -44 * s); ctx.lineTo(-90 * s, -900 * s); ctx.moveTo(110 * s, -44 * s); ctx.lineTo(90 * s, -900 * s); ctx.stroke();
+    if (A.drawQueueSign) A.drawQueueSign(ctx, 0, 0, s, { t, ticket: 412, flicker: 0.5 });
     else {
       ctx.scale(s, s);
       A.rrect(ctx, -150, -46, 300, 92, 14); A.fillStroke(ctx, '#1b1540', 5);
@@ -260,7 +260,7 @@
       const talk = t > 32.35 && t < 35.0;
       Object.assign(out, { look: talk ? [0.9, -0.05] : [0.3, 0.1], bmood: 'grumpy', rot: talk ? 0.05 * Math.sin(t * 2.2) + 0.04 : 0, squash: talk ? -0.04 * Math.abs(Math.sin(t * 7)) : 0 });
     }
-    if (p.brand === 'EMBY' && t > 32.25 && t < 36.4) Object.assign(out, { look: [-0.4, 0.3], bmood: 'sleepy', rot: -0.06 + 0.02 * Math.sin(t * 1.1) });
+    if (p.brand === 'EMBY' && t > 32.25 && t < 36.4) Object.assign(out, { look: [-0.4, 0.3], bmood: 'sleepy', rot: -0.06 + 0.02 * Math.sin(t * 1.1), spinnerEyes: smooth(35.5, 35.7, t) });
     const bz = bitZ(t), bx = bitX(t);
     if (!(p.li === 3 || p.li === 4)) return out;
     const dz = Math.abs(p.Z - bz); if (dz > 0.45) return out;

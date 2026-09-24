@@ -329,7 +329,7 @@
   }
   const PIPS = { 1: [[0, 0]], 2: [[-1, -1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]], 4: [[-1, -1], [1, -1], [-1, 1], [1, 1]], 5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]], 6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]] };
   function drawDie(ctx, u, v, z, yaw, val, sq = 0) {
-    const d = 17, hd = d / 2, H = d * (1 - sq);
+    const d = 20, hd = d / 2, H = d * (1 - sq);
     const corner = k => { const a = yaw + Math.PI / 4 + k * Math.PI / 2; return [u + Math.cos(a) * hd * 1.414, v + Math.sin(a) * hd * 1.414 * 1.0]; };
     const cs = [0, 1, 2, 3].map(corner);
     const top = cs.map(c => bproj(c[0], c[1], z + H)), bot = cs.map(c => bproj(c[0], c[1], z));

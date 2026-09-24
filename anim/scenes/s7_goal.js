@@ -451,7 +451,7 @@
   }
   function shotPayoff(ctx, t) {
     const lt = t - 68.85;
-    const cam = { x: 1080 - 6 * lt, y: 575, zoom: 1.5 + 0.03 * lt };
+    const cam = { x: 1100, y: 575, zoom: 1.5 + 0.016 * lt };
     ctx.save();
     A.camera(ctx, { ...cam, t, shake: 0.25 * decay(t, 70.62, 8) });
     roomBase(ctx, t, { tvGlow: 1.2 });
