@@ -1231,11 +1231,12 @@
   }
 
   function drawGoalGraphic(g, mt, tt) {
-    const q = mt - (GOALT + 0.12); if (q < 0) return;
+    const q = mt - (GOALT + 0.3); if (q < 0) return;
+    const up = A.ease.inOut(cl((q - 2.2) / 0.6));
     const sIn = A.ease.outBack(cl(q / 0.35)), pulse = 1 + Math.sin(q * 7) * 0.025 * cl(q - 0.35);
     // rays
     g.save(); g.translate(960, 520); g.rotate(q * 0.4);
-    g.globalAlpha = cl(q / 0.2) * 0.55;
+    g.globalAlpha = cl(q / 0.2) * 0.4 * (1 - up * 0.75);
     for (let i = 0; i < 20; i++) { g.fillStyle = i % 2 ? 'rgba(255,210,31,0.6)' : 'rgba(31,79,191,0.55)'; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, 1400, i / 20 * TAU, (i + 1) / 20 * TAU); g.closePath(); g.fill(); }
     g.restore();
     // confetti (closed-form)
@@ -1246,7 +1247,7 @@
       g.save(); g.translate(x, y); g.rotate(r); g.scale(1, Math.cos(r * 1.3));
       g.fillStyle = i % 3 === 0 ? '#1f4fbf' : i % 3 === 1 ? '#ffd21f' : '#ffffff'; g.fillRect(-9, -5, 18, 10); g.restore();
     }
-    g.save(); g.translate(960, 500); g.scale(sIn * pulse, sIn * pulse); g.rotate(-0.05);
+    g.save(); g.translate(960, L(500, 330, up)); g.scale(sIn * pulse * L(1, 0.62, up), sIn * pulse * L(1, 0.62, up)); g.rotate(-0.05);
     A.text(g, 'גול!', 0, -150, { font: '900 210px Rubik', fill: '#ffffff', stroke: '#0b1a6a', lw: 26, dir: 'rtl' });
     g.fillStyle = A.linear(g, 0, 0, 0, 300, [[0, '#fff27a'], [0.5, '#ffd21f'], [1, '#e89a0a']]);
     g.save(); g.font = '400 300px Bangers'; g.textAlign = 'center'; g.textBaseline = 'middle';

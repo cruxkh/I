@@ -1315,6 +1315,12 @@ def main():
     fade[a:] = np.cos(np.linspace(0, np.pi / 2, N - a)) ** 1.5
     for stem in final:
         final[stem] *= fade[:, None]
+    # section dynamics (emotional shape): the goal must be the peak, ocean a notch below, tag intimate
+    dyn = [(0, 0), (30.4, 0), (30.6, -2.5), (35.0, -2.5), (35.3, -1), (38.0, -2), (40.3, -1.5), (40.6, 0),
+           (46.3, 0), (46.45, 1.5), (53.5, 1.5), (54.4, 3), (57.2, 3), (57.29, 0), (60, 0)]
+    dcurve = 10 ** (np.interp(np.arange(N) / SR, [d[0] for d in dyn], [d[1] for d in dyn]) / 20)
+    for stem in final:
+        final[stem] *= dcurve[:, None]
     mix = sum(final.values())
     # loudness normalise to -18 LUFS and peak-limit to -1.2 dBFS; same gain curve applied to stems
     import pyloudnorm as pyln

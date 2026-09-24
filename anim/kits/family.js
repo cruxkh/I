@@ -219,7 +219,7 @@
   // Eye opening as a lens between an upper and lower lid curve. F: {rx, ry, close, happy, slant (inner-corner up +),
   // look, irisR, pupilR, iris, white, inner (+1 if inner corner is at +x)}
   function eye(ctx, R, ex, ey, F) {
-    const rx = F.rx, ry = F.ry, cl = clamp(F.close, 0, 1), hp = clamp(F.happy, 0, 1);
+    const rx = F.rx, ry = F.ry, hp = clamp(F.happy, 0, 1), cl = clamp(Math.max(F.close, (hp - 0.55) * 1.6), 0, 1);
     const inY = -F.slant * ry * 0.35, outY = F.slant * ry * 0.12 + hp * ry * 0.1;
     const Lx = ex - rx, Rx = ex + rx;
     const Ly = ey + (F.inner > 0 ? outY : inY), Ry = ey + (F.inner > 0 ? inY : outY);
@@ -267,7 +267,7 @@
       strokeLine(ctx, R.lw * 0.5);
       if (M.tongue > 0.05) {
         ctx.save(); ctx.translate(cx + hw * 0.55, my + 1); ctx.rotate(0.35);
-        part(ctx, R, c => E(c, 0, 4 * M.tongue, 6, 6 * M.tongue + 1), P.tongue, mix(P.tongue, '#6a1f3a', 0.35), { lw: R.lw * 0.6, d: 3, rim: false });
+        part(ctx, R, c => E(c, 0, 3 * M.tongue, 4.5, 4.5 * M.tongue + 1), P.tongue, mix(P.tongue, '#6a1f3a', 0.35), { lw: R.lw * 0.6, d: 3, rim: false });
         ctx.restore();
       }
       return;
@@ -321,7 +321,7 @@
     noneSit: { L: [18, -62], R: [14, -58], hL: 'relax', hR: 'relax' },
     fists: { L: [32, -128], R: [28, -125], tL: [-46, -112], tR: [48, -118], hL: 'fist', hR: 'fist' },
     point: { L: [22, -40], R: [100, 6], hL: 'relax', hR: 'point' },
-    headHands: { L: [152, 78], R: [150, 80], tL: [-64, -302], tR: [72, -306], hL: 'open', hR: 'open' },
+    headHands: { L: [152, 78], R: [150, 80], tL: [-88, -316], tR: [94, -318], wL: 75, wR: 75, hL: 'open', hR: 'open' },
     armsUp: { L: [160, 12], R: [158, 14], hL: 'open', hR: 'open' },
     grip: { L: [30, -18], R: [30, -18], hL: 'grip', hR: 'grip' },
   });
@@ -595,7 +595,8 @@
     ctx.save(); ctx.beginPath(); tube(ctx, [sh, e, w], [23, 21, 18]); ctx.clip();
     ctx.beginPath(); ctx.moveTo(e[0] + (sh[0] - e[0]) * 0.18, e[1] + (sh[1] - e[1]) * 0.18); ctx.quadraticCurveTo(e[0], e[1], e[0] + (w[0] - e[0]) * 0.18, e[1] + (w[1] - e[1]) * 0.18);
     strokeLine(ctx, 2.2, 'rgba(50,25,10,0.45)'); ctx.restore();
-    drawHand(ctx, R, [w[0] + Math.cos(dir) * 4, w[1] + Math.sin(dir) * 4], dir, handKind, SABA.handSz, s, SC.skin, SC.skinSh);
+    const hd = dir - s * (arm.wrist || 0) * D;
+    drawHand(ctx, R, [w[0] + Math.cos(dir) * 4, w[1] + Math.sin(dir) * 4], hd, handKind, SABA.handSz, s, SC.skin, SC.skinSh);
     // cuff
     ctx.save(); ctx.translate(w[0], w[1]); ctx.rotate(dir);
     part(ctx, RR(R, dir), c => c.roundRect(-8, -19, 14, 38, 6), SC.trim, SC.trimSh, { d: 5 });
@@ -667,11 +668,14 @@
     if (o.handL) armL = ik(shL, toTorso(o.handL), SABA.l1, SABA.l2, -1);
     if (o.handR) armR = ik(shR, toTorso(o.handR), SABA.l1, SABA.l2, 1);
     hL = o.handShapeL || hL; hR = o.handShapeR || hR;
+    let wrL = G.wL || 0, wrR = G.wR || 0;
+    if (o.gestureFrom) { const G0 = SG[gKey(o.gestureFrom)] || SG.none, k = A.ease.inOut(clamp(o.gestureK ?? 1)); wrL = lerp(G0.wL || 0, wrL, k); wrR = lerp(G0.wR || 0, wrR, k); }
+    wrL = o.wristL ?? wrL; wrR = o.wristR ?? wrR;
     // idle/tremble on arms
     armL = [armL[0] + tr(5, 17) * 3 + idle * A.wob(t, 7, 0.4) * 1.5, armL[1] + tr(6, 21) * 4];
     armR = [armR[0] + tr(8, 17) * 3 + idle * A.wob(t, 9, 0.4) * 1.5, armR[1] + tr(9, 21) * 4];
-    const aL = armPts(shL, armL[0], armL[1], SABA.l1, SABA.l2, -1); aL.sh = shL;
-    const aR = armPts(shR, armR[0], armR[1], SABA.l1, SABA.l2, 1); aR.sh = shR;
+    const aL = armPts(shL, armL[0], armL[1], SABA.l1, SABA.l2, -1); aL.sh = shL; aL.wrist = wrL;
+    const aR = armPts(shR, armR[0], armR[1], SABA.l1, SABA.l2, 1); aR.sh = shR; aR.wrist = wrR;
     const rBehind = o.armRBehind ?? (aR.w[0] > SABA.shX * 0.7 && aR.w[1] > SABA.shY - 60);
 
     // ------------- draw: far arm behind
@@ -751,8 +755,8 @@
     none: { L: [14, -10], R: [12, -6], hL: 'relax', hR: 'relax' },
     mug: { L: [22, -120], R: [22, -118], hL: 'relax', hR: 'relax' },
     reach: { L: [-72, -8], R: [78, 6], hL: 'open', hR: 'open' },
-    shrug: { L: [40, -95], R: [40, -95], hL: 'open', hR: 'open' },
-    cheer: { L: [158, 20], R: [155, 22], hL: 'fist', hR: 'fist' },
+    shrug: { L: [16, 78], R: [14, 74], hL: 'open', hR: 'open' },
+    cheer: { L: [142, 8], R: [140, 10], hL: 'fist', hR: 'fist' },
     hug: { L: [-128, 35], R: [118, 40], hL: 'relax', hR: 'relax' },
   });
   const NOA = { l1: 54, l2: 50, shX: 42, shY: -106, handSz: 15 };
@@ -763,7 +767,7 @@
       if (o.sitStyle === 'floor') return { P: [0, -24], L: [[-22, -20], [-64, -18], [18, -8]], R: [[22, -20], [66, -16], [-14, -4]], cross: true };
       return { P: [0, -floor - 20], L: [[-22, -floor - 16], [-26, -floor + 4], [-28, -14]], R: [[22, -floor - 16], [28, -floor + 2], [32, -14]] };
     }
-    if (pose === 'crouch') return { P: [-18, -62], L: [[-30, -60], [8, -96], [-8, -14]], R: [[-6, -62], [36, -90], [24, -14]] };
+    if (pose === 'crouch') return { P: [-16, -56], L: [[-28, -50], [30, -84], [4, -14]], R: [[-4, -52], [50, -78], [30, -14]] };
     return { P: [0, -128], L: [[-22, -124], [-24, -66], [-26, -14]], R: [[22, -124], [26, -66], [30, -14]] };
   }
 
@@ -785,10 +789,10 @@
     const wob = (i, a = 1.6) => A.wob(t, i, 0.7) * a + bounce * Math.sin(t * 9 - i * 0.7) * 2.5;
     if (layer === 'back') {
       // big puff (behind the head, on top)
-      const cx = fx * 0.3 - 4, cy = -112 + bY * 0.8;
+      const cx = fx * 0.3 - 4, cy = -96 + bY * 0.8;
       part(ctx, R, c => {
-        for (let i = 0; i < 12; i++) { const a = i / 12 * A.TAU, r = 25 + A.hash(i * 3.3) * 6; C(c, cx + Math.cos(a) * 46 + wob(i), cy + Math.sin(a) * 30 + wob(i + 20) - (Math.sin(a) < 0 ? 4 : 0), r); }
-        E(c, cx, cy, 48, 32);
+        for (let i = 0; i < 12; i++) { const a = i / 12 * A.TAU, r = 25 + A.hash(i * 3.3) * 6; C(c, cx + Math.cos(a) * 56 + wob(i), cy + Math.sin(a) * 32 + wob(i + 20) - (Math.sin(a) < 0 ? 4 : 0), r); }
+        E(c, cx, cy, 58, 34);
       }, NC.hair, NC.hairSh, { d: 12, r: 4 });
       // curl highlights
       ctx.beginPath();
@@ -815,9 +819,9 @@
       for (const [x, y] of [[-40, -48], [-14, -56], [12, -58], [36, -48], [fx - 20, -38], [fx + 6, -44]]) { ctx.moveTo(x - 5 + fx * 0.4, y + 3); ctx.arc(x + fx * 0.4, y, 5.5, Math.PI * 0.9, Math.PI * 1.9); }
       strokeLine(ctx, 2.2, NC.hairHi);
       // scrunchie at puff base
-      const sx = fx * 0.3 - 2, sy = -70 + bY * 0.5;
-      part(ctx, R, c => { for (let i = 0; i < 6; i++) C(c, sx - 26 + i * 10.4, sy + Math.sin(i * 1.3) * 2, 8.5); }, NC.scrunchie, NC.scrunchieSh, { d: 4, lw: R.lw * 0.85 });
-      ctx.beginPath(); for (let i = 0; i < 5; i++) { ctx.moveTo(sx - 21 + i * 10.4, sy - 5); ctx.lineTo(sx - 21 + i * 10.4, sy + 5); } strokeLine(ctx, 1.6, NC.scrunchieSh);
+      const sx = fx * 0.3 - 2, sy = -66 + bY * 0.5;
+      part(ctx, R, c => { E(c, sx, sy + 3, 34, 8); for (let i = 0; i < 5; i++) { const qx = -28 + i * 14; E(c, sx + qx, sy + qx * qx / 150 - 1, 9.5, 10.5, qx * 0.012 + 0.2); } }, NC.scrunchie, NC.scrunchieSh, { d: 5, lw: R.lw * 0.85 });
+      ctx.beginPath(); for (let i = 0; i < 4; i++) { const q = -21 + i * 14, qx = sx + q, qy = sy + q * q / 150; ctx.moveTo(qx - 2, qy - 8); ctx.quadraticCurveTo(qx + 3, qy, qx - 1, qy + 8); } strokeLine(ctx, 1.8, NC.scrunchieSh);
       // side ringlets
       for (const sd of [-1, 1]) {
         const bx = sd * 62 + fx * 0.25;
@@ -975,7 +979,7 @@
     }
     const cheerBob = gName === 'cheer' ? Math.abs(Math.sin(t * 7)) * -8 : 0;
     const P = add(legs.P, [0, -br * 0.8 + cheerBob]);
-    const leanDeg = ((o.lean ?? 0) + M.lean) * 22 + (pose === 'crouch' ? 34 : 0) + idle * A.wob(t, 31, 0.33) * 1.2 + hug * -4;
+    const leanDeg = ((o.lean ?? 0) + M.lean) * 22 + (pose === 'crouch' ? 24 : 0) + idle * A.wob(t, 31, 0.33) * 1.2 + hug * -4;
     const lean = leanDeg * D;
     const Rt = RR(R, lean);
     const shoulders = (o.shoulders ?? 0) + (gName === 'shrug' ? 9 : 0);
@@ -1013,9 +1017,9 @@
 
     if (rBehind) { ctx.save(); torsoFrame(); noaArm(ctx, Rt, 1, aR, mix(NC.hoodie, NC.hoodieSh, 0.35), hR); ctx.restore(); }
 
-    // legs
+    // legs (crouch: drawn after the torso so the knees come forward)
     const legOrder = legs.cross ? [[-1, legs.L], [1, legs.R]] : [[1, legs.R], [-1, legs.L]];
-    for (const [side, L] of legOrder) {
+    const drawLegs = () => { for (const [side, L] of legOrder) {
       noaFoot(ctx, R, L[2], side, legs.cross ? side * 0.3 : pose === 'crouch' ? 0.05 : 0);
       part(ctx, R, c => tube(c, [L[0], L[1], L[2]], [19, 16, 13]), NC.jeans, NC.jeansSh, { d: 9 });
       // rolled cuff
@@ -1024,13 +1028,15 @@
       part(ctx, RR(R, a), c => c.roundRect(-6, -15, 11, 30, 4), NC.jeansHi, NC.jeans, { d: 3, lw: R.lw * 0.8 });
       ctx.restore();
       ctx.beginPath(); ctx.moveTo(L[1][0] - 7, L[1][1] - 3); ctx.quadraticCurveTo(L[1][0], L[1][1] + 3, L[1][0] + 7, L[1][1] - 2); strokeLine(ctx, 1.6, NC.jeansSh);
-    }
+    } };
+    if (pose !== 'crouch') drawLegs();
 
     ctx.save(); torsoFrame();
     noaTorso(ctx, Rt, br, t, Math.sin(lean) + A.wob(t, 51, 0.5) * 0.3, vel);
+    if (pose === 'crouch') { ctx.restore(); drawLegs(); ctx.save(); torsoFrame(); }
     // head
     const turn = clamp((o.turn ?? 0.25) + (o.look ? o.look[0] * 0.12 : 0), -1, 1);
-    const tilt = ((o.headTilt ?? 0) + M.tilt + (o.look ? o.look[1] * 5 : 0) + idle * A.wob(t, 57, 0.3) * 2.5 + hug * 10 - (pose === 'crouch' ? 18 : 0)) * D;
+    const tilt = ((o.headTilt ?? 0) + M.tilt + (o.look ? o.look[1] * 5 : 0) + idle * A.wob(t, 57, 0.3) * 2.5 + hug * 10 - (pose === 'crouch' ? 12 : 0)) * D;
     ctx.save(); ctx.translate(4 + turn * 4, -124 - br * 1.2); ctx.rotate(tilt); ctx.translate(0, -58);
     const dph = Math.floor(t * 1.1 + 0.7), dart = idle * 0.2;
     const look = [clamp((o.look ? o.look[0] : 0) + dart * (A.hash(dph * 5.3) - 0.5), -1, 1), clamp((o.look ? o.look[1] : 0) + dart * 0.6 * (A.hash(dph * 2.9) - 0.5), -1, 1)];

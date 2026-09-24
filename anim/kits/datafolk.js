@@ -129,11 +129,11 @@
     ctx.save(); ctx.clip(); ctx.fillStyle = '#1d1733';
     const pent = (cx, cy, rr, a0) => { ctx.beginPath(); for (let i = 0; i < 5; i++) { const a = a0 + (i * TAU) / 5; ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); };
     pent(0, 0, r * 0.36, -Math.PI / 2);
-    ctx.lineWidth = r * 0.09; ctx.strokeStyle = '#1d1733';
+    ctx.lineWidth = r * 0.07; ctx.strokeStyle = '#1d1733';
     for (let i = 0; i < 5; i++) {
       const a = -Math.PI / 2 + (i * TAU) / 5;
-      ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * 0.36, Math.sin(a) * r * 0.36); ctx.lineTo(Math.cos(a) * r * 0.72, Math.sin(a) * r * 0.72); ctx.stroke();
-      pent(Math.cos(a + TAU / 10) * r * 1.02, Math.sin(a + TAU / 10) * r * 1.02, r * 0.34, a + TAU / 10 + Math.PI);
+      ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * 0.36, Math.sin(a) * r * 0.36); ctx.lineTo(Math.cos(a) * r * 0.95, Math.sin(a) * r * 0.95); ctx.stroke();
+      pent(Math.cos(a + TAU / 10) * r * 0.98, Math.sin(a + TAU / 10) * r * 0.98, r * 0.36, a + TAU / 10);
     }
     ctx.restore();
     circle(ctx, 0, 0, r); if (lw) stroke(ctx, OL(), lw);
@@ -156,7 +156,7 @@
     if (e.slit) { A.ellipse(ctx, ix, iy, ri * 0.2 * e.slit, ri * 0.82); fill(ctx, e.pupilCol || '#0d0820'); }
     else { A.ellipse(ctx, ix, iy, ri * 0.56, ri * 0.6); fill(ctx, e.pupilCol || '#0d0820'); }
     // highlights
-    const hs = e.hi ?? 1;
+    const hs = (e.hi ?? 1) * (1 + (e.hiBoost || 0) * 0.3);
     A.ellipse(ctx, ix + ri * 0.36, iy - ri * 0.42, ri * 0.36 * hs, ri * 0.32 * hs, -0.4); fill(ctx, '#ffffff');
     circle(ctx, ix - ri * 0.38, iy + ri * 0.38, ri * 0.14 * hs); fill(ctx, 'rgba(255,255,255,0.9)');
     // upper lid
@@ -238,7 +238,7 @@
     glove: '#fffaf0', shoe: '#1f4fbf', sole: '#f4f6ff', rim: '#a8f7ff', tagPaper: '#fff3d6', tagBand: '#1f4fbf', string: '#e0314f',
   };
   const BM = {
-    determined: { cov: [0.3, 0.3], tilt: 0.55, low: [0.1, 0.1], bi: [-7, -7], bo: [3, 3], curve: -2.5, mw: 18, asym: 0, pupil: 1, eyeS: 1, minOpen: 0 },
+    determined: { cov: [0.2, 0.2], tilt: 0.7, low: [0.14, 0.14], bi: [-8, -8], bo: [3, 3], curve: 2, mw: 18, asym: 4, pupil: 1, eyeS: 1, minOpen: 0 },
     panic: { cov: [0, 0], tilt: 0, low: [0, 0], bi: [13, 13], bo: [4, 4], curve: -6, mw: 20, asym: 0, pupil: 0.6, eyeS: 1.12, minOpen: 0.34, tremble: 1.3, sweat: 1 },
     cheeky: { cov: [0.42, 0.34], tilt: -0.1, low: [0.22, 0.2], bi: [-3, 6], bo: [-2, 12], curve: 7, mw: 22, asym: 6, pupil: 1, eyeS: 1, minOpen: 0, sparkle: 0.6, look: [0.35, -0.1] },
     joy: { cov: [0, 0], tilt: 0, low: [0, 0], bi: [8, 8], bo: [5, 5], curve: 9, mw: 26, asym: 0, pupil: 1.05, eyeS: 1, minOpen: 0.32, arcs: 1, sparkle: 1 },
@@ -344,8 +344,8 @@
     shape(); stroke(ctx, OL(), lw * 0.7);
     circle(ctx, 0, 1.2, 2.6); fs(ctx, '#ffd968', lw * 0.45);
     A.text(ctx, '#5401', 0, 11.5, { font: '800 11px Rubik', fill: '#1a1330' });
-    ball(ctx, -13.5, 22.5, 4.6, lw * 0.35);
-    A.text(ctx, 'GOAL', 5, 23, { font: '900 11px Rubik', fill: '#e0314f' });
+    ball(ctx, -16.5, 22.5, 4.3, lw * 0.3);
+    A.text(ctx, 'GOAL', 6, 23, { font: '900 10px Rubik', fill: '#e0314f' });
     ctx.restore();
   }
 
@@ -371,17 +371,17 @@
     // ---------- light trail (unrotated local frame) ----------
     const trailK = (o.trail ?? 1) * A.clamp((sp - 60) / 360);
     if (trailK > 0.01) {
-      const L = Math.min(sp * 0.17, 560) / scale * (o.trail ?? 1);
+      const L = (Math.min(sp * 0.32, 760) / scale + BA * 0.6) * (o.trail ?? 1);
       const tc = o.trailColor || '#ffc93c';
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(0, BCY - hop); ctx.rotate(Math.atan2(-vy, -vx));
       ctx.globalAlpha = trailK * Math.min(1, 0.5 + g * 0.5);
       ctx.beginPath(); ctx.moveTo(0, -BB * 0.85); ctx.quadraticCurveTo(L * 0.3, -BB * 0.55, L, 0); ctx.quadraticCurveTo(L * 0.3, BB * 0.55, 0, BB * 0.85); ctx.closePath();
-      ctx.fillStyle = A.linear(ctx, 0, 0, L, 0, [[0, A.hex(tc, 0.75)], [0.35, A.hex(tc, 0.3)], [1, A.hex(tc, 0)]]); ctx.fill();
+      ctx.fillStyle = A.linear(ctx, 0, 0, L, 0, [[0, A.hex(tc, 0.85)], [0.45, A.hex(tc, 0.42)], [1, A.hex(tc, 0)]]); ctx.fill();
       ctx.beginPath(); ctx.moveTo(0, -BB * 0.3); ctx.quadraticCurveTo(L * 0.4, -BB * 0.15, L * 0.8, 0); ctx.quadraticCurveTo(L * 0.4, BB * 0.15, 0, BB * 0.3); ctx.closePath();
       ctx.fillStyle = A.linear(ctx, 0, 0, L * 0.8, 0, [[0, 'rgba(255,255,235,0.9)'], [1, 'rgba(255,240,200,0)']]); ctx.fill();
       for (let i = 0; i < 7; i++) { // streaks
         const u = frac(t * 2.6 + A.hash(i * 7.1)), yy = (A.hash(i * 3.3 + 1) - 0.5) * BB * 1.7, x0 = u * L * 0.7 + BA * 0.4, len = L * (0.18 + 0.25 * A.hash(i));
-        ctx.beginPath(); ctx.moveTo(x0, yy); ctx.lineTo(x0 + len, yy); stroke(ctx, A.hex(tc, 0.55 * (1 - u)), 3);
+        ctx.beginPath(); ctx.moveTo(x0, yy); ctx.lineTo(x0 + len, yy); stroke(ctx, `rgba(255,245,210,${0.6 * (1 - u)})`, 2.5);
       }
       ctx.restore();
     }
@@ -400,13 +400,16 @@
       ctx.rotate(Math.atan2(dir[1], dir[0]));
       ctx.translate(BA * 0.72, 0);
       ctx.globalCompositeOperation = 'lighter';
-      const layers = [['#ff3fa4', 1.0, 1.0, 0.55], ['#ff9a2a', 0.8, 0.78, 0.75], ['#ffe98a', 0.55, 0.55, 0.9], ['#ffffff', 0.3, 0.32, 0.95]];
+      const layers = [['#ff3fa4', 1.0, 1.0, 0.7], ['#ff8a2a', 0.85, 0.72, 0.85], ['#ffe98a', 0.66, 0.5, 0.95], ['#ffffff', 0.44, 0.28, 1]];
+      ctx.translate(BA * 0.2, 0);
       layers.forEach(([c, lk, wk, al], i) => {
-        const Lf = (55 + 120 * boost) * lk * (0.85 + 0.2 * A.noise1(t * 18 + i * 3)), W = (22 + 22 * boost) * wk;
-        ctx.beginPath(); ctx.moveTo(-6, -W); ctx.bezierCurveTo(Lf * 0.3, -W * 1.05, Lf * 0.7, -W * 0.4, Lf, A.noise1(t * 12 + i) * W * 0.25);
-        ctx.bezierCurveTo(Lf * 0.7, W * 0.4, Lf * 0.3, W * 1.05, -6, W); ctx.closePath();
-        ctx.globalAlpha = al * Math.min(1, boost * 1.6); fill(ctx, c);
+        const Lf = (70 + 170 * boost) * lk * (0.85 + 0.2 * A.noise1(t * 18 + i * 3)), W = (24 + 20 * boost) * wk;
+        ctx.beginPath(); ctx.moveTo(-10, -W); ctx.bezierCurveTo(Lf * 0.3, -W * 1.05, Lf * 0.7, -W * 0.4, Lf, A.noise1(t * 12 + i) * W * 0.25);
+        ctx.bezierCurveTo(Lf * 0.7, W * 0.4, Lf * 0.3, W * 1.05, -10, W); ctx.closePath();
+        ctx.globalAlpha = al * Math.min(1, boost * 1.6);
+        ctx.fillStyle = A.linear(ctx, 0, 0, Lf, 0, [[0, A.hex(c, 1)], [0.55, A.hex(c, 0.75)], [1, A.hex(c, 0)]]); ctx.fill();
       });
+      A.glow(ctx, 10, 0, 60 + 30 * boost, '#fff4c0', 0.8 * boost);
       ctx.globalAlpha = 1;
       for (let i = 0; i < 12; i++) {
         const u = frac(t * 3.3 + A.hash(i * 5.7)), px = 20 + u * (120 + 160 * boost), py = (A.hash(i * 2.9) - 0.5) * 50 * (0.4 + u) + A.noise1(t * 5 + i) * 6;
@@ -422,7 +425,7 @@
     ctx.translate(0, P.pivotY); ctx.rotate(rot); ctx.translate(0, -P.pivotY);
     const sqv = A.clamp((P.sq || 0) + (o.squash || 0), -0.45, 0.55);
     ctx.scale((1 + sqv * 0.75) * (1 - 0.012 * br), (1 - sqv) * (1 + 0.018 * br));
-    const k = Math.min(sp / 2400, 0.3) * (o.stretch ?? 1);
+    const k = Math.min(sp / 4200, 0.26) * (o.stretch ?? 1) * (limbs === 'run' ? 0.5 : 1);
     if (k > 0.005) { const ang = Math.atan2(vy, vx) - rot; ctx.translate(0, BCY); ctx.rotate(ang); ctx.scale(1 + k, 1 / (1 + k)); ctx.rotate(-ang); ctx.translate(0, -BCY); }
 
     // ---------- limbs behind ----------
@@ -460,7 +463,7 @@
     ctx.fillStyle = A.linear(ctx, 0, CY - BB, 0, tipY, [[0, 'rgba(255,248,210,0.55)'], [1, 'rgba(255,236,160,0.15)']]); ctx.fill();
     ctx.beginPath(); ctx.moveTo(-BA * 1.1, fy0 - 6); ctx.quadraticCurveTo(-BA * 0.45, tipY - 6, 0, tipY); ctx.quadraticCurveTo(BA * 0.45, tipY - 6, BA * 1.1, fy0 - 6);
     ctx.save(); ctx.translate(0, 2.2); stroke(ctx, 'rgba(255,250,220,0.8)', lw * 0.5); ctx.restore();
-    stroke(ctx, 'rgba(120,50,10,0.75)', lw * 0.55);
+    stroke(ctx, 'rgba(110,45,8,0.9)', lw * 0.7);
     // bottom fold hints
     ctx.beginPath(); ctx.moveTo(-BA * 0.95, CY + BB * 0.95); ctx.quadraticCurveTo(-BA * 0.8, CY + BB * 0.62, -BA * 0.62, CY + BB * 0.55);
     ctx.moveTo(BA * 0.95, CY + BB * 0.95); ctx.quadraticCurveTo(BA * 0.8, CY + BB * 0.62, BA * 0.62, CY + BB * 0.55); stroke(ctx, 'rgba(150,70,10,0.35)', lw * 0.45);
@@ -491,14 +494,15 @@
     [0, 1].forEach(i => {
       const sd = i ? 1 : -1, ex = fx + sd * EX, ey = EY;
       const wk = i === wEye ? wink : 0;
-      const arcs = M.arcs && !speak ? 1 : M.arcs ? 0.6 : 0;
+      const arcs = M.arcs && o.joyEyes !== 'open' ? 1 : 0;
       if ((arcs >= 1 && wk < 0.5) || wk > 0.6) {
         arcEye(ctx, ex, ey + 2, ERX, ERY * 0.8, lw, 1);
         if (wk > 0.6) { ctx.beginPath(); ctx.moveTo(ex + sd * ERX * 0.9, ey + 3); ctx.lineTo(ex + sd * (ERX + 6), ey - 2); stroke(ctx, OL(), lw); }
       } else {
-        const cov = Math.max(A.clamp(M.cov[i] + (o.lid || 0) + wk * 0.9 + (arcs ? 0.25 : 0)), blinkV);
+        const jo = M.arcs ? 1 : 0;
+        const cov = Math.max(A.clamp(M.cov[i] + (o.lid || 0) + wk * 0.9), blinkV);
         eye(ctx, ex, ey, ERX, ERY, {
-          lx: look[0], ly: look[1], cov, tilt: M.tilt, inner: -sd, low: M.low[i] + (arcs ? 0.25 : 0), pupil, lid: BIT.lid,
+          lx: look[0], ly: look[1], cov, tilt: M.tilt, inner: -sd, low: M.low[i] + jo * 0.3, pupil, hiBoost: jo, lid: BIT.lid,
           iris: BIT.iris, irisLight: BIT.irisLight, irisDark: BIT.irisDark, lw, hi: mood === 'panic' ? 0.7 : 1.05,
         });
       }
@@ -518,11 +522,11 @@
     P.arms.forEach((Ar, i) => { if (Ar.front) drawArm(Ar, i); });
 
     // ---------- luggage tag ----------
-    const rest = 0.5;
+    const rest = 0.62;
     const Dx = -vx * 0.55 + (limbs === 'run' ? Math.sin(P.ph * 2) * 70 : 0), Dy = 420 - vy * 0.55 + (limbs === 'arms-up' ? Math.cos(t * TAU * 1.7) * 200 : 0);
     let tagA = Math.atan2(-Dx, Dy) * 0.9 - rot + rest * (sp < 200 ? 1 - sp / 200 : 0) + (o.tagAng || 0);
     tagA += (A.wob(t, 11, 1.2) * 0.2 + Math.sin(t * 5.3) * 0.07) * (o.tagSwing ?? 1);
-    const tpx = -BA * 0.86, tpy = CY - BB * 0.8;
+    const tpx = -BA * 0.9, tpy = CY - BB * 0.74;
     drawTag(ctx, tpx, tpy, tagA, lw, flip);
     circle(ctx, tpx, tpy, 3.2); fs(ctx, '#ffe07a', lw * 0.55);
 
@@ -613,8 +617,8 @@
       A.ellipse(g, -a * 0.45, -4, 10, 5.5); fs(g, K.d, lw * 0.8); A.ellipse(g, a * 0.45, -4, 10, 5.5); fs(g, K.d, lw * 0.8);
       const pts = squircle(a, b, 3.0, 36, 0.06, 0, cy);
       blob(g, pts);
-      g.fillStyle = A.radial(g, -a * 0.1, cy + b * 0.1, 0, a * 1.3, [[0, A.mixc(base, '#ffffff', 0.4)], [0.45, base], [1, A.mixc(base, K.d, 0.45)]]); g.fill();
-      cel(g, pts, 7, -9, K.d, 0.45);
+      g.fillStyle = A.radial(g, -a * 0.1, cy + b * 0.1, 0, a * 1.3, [[0, A.mixc(base, '#ffffff', 0.4)], [0.45, base], [1, A.mixc(base, K.d, 0.3)]]); g.fill();
+      cel(g, pts, 7, -9, K.d, 0.3);
       cel(g, pts, -3, 3, '#c8fbff', 0.55);
       // flap
       g.save(); blob(g, pts); g.clip();
@@ -688,8 +692,8 @@
       ctx.save();
       const top = ey - 8 + cov * 16, tl = mood === 'annoyed' ? 5 * s : 0;
       ctx.beginPath(); ctx.moveTo(X - 12, top + tl); ctx.lineTo(X + 12, top - tl); ctx.lineTo(X + 12, ey + 14); ctx.lineTo(X - 12, ey + 14); ctx.closePath(); ctx.clip();
-      A.ellipse(ctx, X + look[0] * 2, ey + look[1] * 1.5, 6.5, 8); fill(ctx, '#140c24');
-      circle(ctx, X + look[0] * 2 + 2, ey - 2.5, 2.2); fill(ctx, '#ffffff');
+      A.ellipse(ctx, X + look[0] * 2, ey + look[1] * 1.5, 7.5, 9); fill(ctx, '#140c24');
+      circle(ctx, X + look[0] * 2 + 2.4, ey - 3, 2.6); fill(ctx, '#ffffff'); circle(ctx, X + look[0] * 2 - 2.4, ey + 3.5, 1.2); fill(ctx, '#ffffff');
       ctx.restore();
       if (cov < 0.97) { ctx.beginPath(); ctx.moveTo(X - 8.5, top + tl * 0.7); ctx.lineTo(X + 8.5, top - tl * 0.7); stroke(ctx, OL(), lw * 0.9); }
       if (mood === 'annoyed') brow(ctx, X - 8 * s, ey - 16 + 1, X + 7 * s, ey - 12 + 1, 0, lw * 1.1, OL());
@@ -748,10 +752,12 @@
       const sw = (o.tail ?? 1), a1 = A.wob(t, 21, 0.35) * 0.35 * sw + Math.sin(t * 1.4) * 0.15 * sw;
       ctx.save(); ctx.translate(CA * 0.72, -40);
       const p1 = [60, -20], p2 = [90 + Math.sin(a1) * 20, -90], p3 = [70 + Math.sin(a1) * 60, -150 - Math.cos(a1) * 10];
-      ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(p1[0], p1[1], p2[0], p2[1], p3[0], p3[1]);
-      stroke(ctx, OL(), 28 + lw * 2); stroke(ctx, CAT.body, 28);
-      ctx.save(); ctx.setLineDash([9, 16]); stroke(ctx, CAT.stripe, 28); ctx.restore();
-      circle(ctx, p3[0], p3[1], 14); fs(ctx, CAT.edge, lw);
+      const bz = (u, i) => { const v = 1 - u; return v * v * v * 0 + 3 * v * v * u * p1[i] + 3 * v * u * u * p2[i] + u * u * u * p3[i]; };
+      const N = 26, rad = u => 15 * (1 - u * 0.35) + (u > 0.85 ? (u - 0.85) * 20 : 0);
+      for (let pass = 0; pass < 2; pass++) for (let q = 0; q <= N; q++) {
+        const u = q / N; circle(ctx, bz(u, 0), bz(u, 1), rad(u) + (pass ? 0 : lw));
+        fill(ctx, pass ? (u > 0.86 ? CAT.stripe : Math.floor(u * 7) % 2 ? CAT.body : A.mixc(CAT.body, CAT.stripe, 0.45)) : OL());
+      }
       ctx.restore();
     }
     // ears (behind body)
@@ -861,10 +867,11 @@
       limb(ctx, CA * 0.86, -86 + bo, 40, -54 + bo, -36, -70 + bo, 30, CAT.body, lw); paw(-40, -71 + bo, 15, 1.2);
     } else if (arms === 'point') {
       limb(ctx, CA * 0.88, -100, CA * 1.02, -70, CA * 0.95, -44, 28, CAT.body, lw); paw(CA * 0.95, -42, 15);
-      const w = Math.sin(t * TAU * 1.2) * 6;
-      limb(ctx, -CA * 0.85, -104, -CA * 1.15, -130, -CA * 1.3, -160 + w, 28, CAT.body, lw);
-      ctx.save(); ctx.translate(-CA * 1.3, -162 + w); ctx.rotate(-0.4);
-      A.rrect(ctx, -6, -30, 11, 26, 5.5); fs(ctx, CAT.light, lw * 0.8); circle(ctx, 0, 0, 14); fs(ctx, CAT.light, lw * 0.9); ctx.restore();
+      const w = Math.sin(t * TAU * 1.2) * 5;
+      limb(ctx, -CA * 0.85, -104, -CA * 1.12, -118, -CA * 1.3, -128 + w, 28, CAT.body, lw);
+      ctx.save(); ctx.translate(-CA * 1.3, -128 + w); ctx.rotate(0.15);
+      A.rrect(ctx, -34, -6, 28, 12, 6); fs(ctx, CAT.light, lw * 0.8); circle(ctx, 0, 0, 15); fs(ctx, CAT.light, lw * 0.9);
+      ctx.beginPath(); ctx.moveTo(4, -8); ctx.lineTo(4, 8); stroke(ctx, OL(), lw * 0.45); ctx.restore();
     } else {
       limb(ctx, -CA * 0.88, -100, -CA * 1.02, -70, -CA * 0.95, -44, 28, CAT.body, lw); paw(-CA * 0.95, -42, 15);
       limb(ctx, CA * 0.88, -100, CA * 1.02, -70, CA * 0.95, -44, 28, CAT.body, lw); paw(CA * 0.95, -42, 15);
@@ -918,7 +925,7 @@
     ctx.save(); ctx.translate(-232, -48 + wave(-232)); blob(ctx, [[14, 6], [-10, -36], [-20, -34], [-22, 8]]); fs(ctx, SH.fin, lw * 0.8); ctx.restore();
     ctx.save(); ctx.translate(-220, 40 + wave(-220)); blob(ctx, [[14, -6], [-12, 30], [-22, 26], [-22, -8]]); fs(ctx, SH.fin, lw * 0.8); ctx.restore();
     // jaw + mouth interior
-    const ja = bite * 0.62, headUp = -bite * 0.1;
+    const ja = bite * 0.7, headUp = -bite * 0.26;
     const jaw = SHARK_JAW.map(p => rotAbout(p, HINGE, ja));
     ctx.beginPath(); ctx.moveTo(HINGE[0] - 8, HINGE[1] - 4);
     const upperLine = [[190, 44], [260, 24], [330, 14], [342, 4]].map(p => rotAbout(p, HINGE, headUp));
@@ -943,10 +950,11 @@
     }
     ctx.restore();
     // body
-    ctx.save(); ctx.translate(HINGE[0], HINGE[1]); ctx.rotate(headUp); ctx.translate(-HINGE[0], -HINGE[1]);
-    blob(ctx, body);
+    const hb = body.map(p => { const w = A.smooth(60, 190, p[0]); return w > 0 ? rotAbout(p, HINGE, headUp * w) : p; });
+    ctx.save();
+    blob(ctx, hb);
     ctx.fillStyle = A.linear(ctx, 0, -120, 0, 80, [[0, SH.back], [0.55, SH.mid], [1, SH.mid]]); ctx.fill();
-    ctx.save(); blob(ctx, body); ctx.clip();
+    ctx.save(); blob(ctx, hb); ctx.clip();
     // countershaded belly with wavy boundary
     ctx.beginPath(); ctx.moveTo(360, -6);
     for (let X = 360; X >= -330; X -= 30) ctx.lineTo(X, 18 + 12 * Math.sin(X * 0.03) + (X > 150 ? (X - 150) * -0.12 : 0) - (X < -150 ? (X + 150) * -0.08 : 0) * -1);
@@ -954,11 +962,12 @@
     // speckles
     for (let i = 0; i < 14; i++) { const X = -220 + A.hash(i * 3.3) * 420, Y = -100 + A.hash(i * 7.7) * 70 + Math.abs(X) * 0.08; circle(ctx, X, Y, 2.5 + A.hash(i) * 3); fill(ctx, 'rgba(40,60,90,0.25)'); }
     ctx.restore();
-    cel(ctx, body, 0, -16, SH.shade, 0.35);
-    cel(ctx, body, 0, 5, SH.rim, 0.55);
-    blob(ctx, body); stroke(ctx, OL(), lw);
+    cel(ctx, hb, 0, -16, SH.shade, 0.35);
+    cel(ctx, hb, 0, 5, SH.rim, 0.55);
+    blob(ctx, hb); stroke(ctx, OL(), lw);
     // gills
     for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(120 - i * 20, -44 + i * 2); ctx.quadraticCurveTo(108 - i * 20, -8, 118 - i * 20, 28); stroke(ctx, 'rgba(26,19,48,0.7)', lw * 0.7); }
+    ctx.translate(HINGE[0], HINGE[1]); ctx.rotate(headUp); ctx.translate(-HINGE[0], -HINGE[1]);
     // nostril + snout highlight
     A.ellipse(ctx, 318, -30, 6, 3, 0.4); fill(ctx, OL());
     ctx.save(); ctx.globalAlpha = 0.5; A.ellipse(ctx, 240, -100, 50, 8, 0.25); fill(ctx, '#e8fbff'); ctx.restore();
