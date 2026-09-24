@@ -23,6 +23,7 @@
   const ROUTER = LR.router;
   const LED = A.routerLED(ROUTER.x, ROUTER.y, ROUTER.s);
   const GOLD = '#ffc93c';
+  const NOA_CAB = 1300, BOX_HOME = [1475, 710];
 
   // ------------------------------------------------------------ helpers
   function gseq(t, seq) {
@@ -359,21 +360,138 @@
   }
 
   // ------------------------------------------------------------ the room with everyone in it (world coords)
+  // ------------------------------------------------------------ the OLD set-top box, its cable spaghetti, the bin
+  // kit cabinet: middle compartments at mx=1386, mw=178; upper cavity y 668..726 holds the box (1408..1542 × 696..724)
+  const CAV = { x: 1386, w: 178, y1: 668, h1: 58, y2: 736, h2: 92 };
+  const BIN = { x: 1160, y: 914 };
+  const BOX_LAND = 26.45;
+  // box centre + rotation (world). Pure function of t.
+  function boxState(t) {
+    const home = BOX_HOME, noaHold = [NOA_CAB + 42 * NOA_S, 905 - 176 * NOA_S];
+    if (t < 25.2) return { x: home[0], y: home[1], rot: 0, ph: 'shelf' };
+    if (t < 25.45) return { x: home[0] - 6 * sm(25.2, 25.45, t) + Math.sin(t * 70) * 3, y: home[1] + Math.sin(t * 55) * 1.5, rot: Math.sin(t * 60) * 0.02, ph: 'stuck' };
+    if (t < 25.7) { const k = E.outBack(inv(25.45, 25.7, t)); return { x: lerp(home[0] - 6, noaHold[0], k), y: lerp(home[1], noaHold[1], k) - Math.sin(Math.PI * inv(25.45, 25.7, t)) * 30, rot: -0.25 * Math.sin(Math.PI * inv(25.45, 25.7, t)), ph: 'yank' }; }
+    if (t < 26.12) { const lift = E.outBack(inv(25.72, 25.95, t)); return { x: noaHold[0] + 6 * lift, y: noaHold[1] - 34 * lift + Math.sin(t * 9) * 2, rot: 0.08 * lift, ph: 'held' }; }
+    const rel = [NOA_CAB - 40 * NOA_S, 905 - 320 * NOA_S];
+    if (t < 26.27) { const k = E.inOut(inv(26.12, 26.27, t)); return { x: lerp(noaHold[0] + 6, rel[0], k), y: lerp(noaHold[1] - 34, rel[1], k), rot: lerp(0.08, -0.6, k), ph: 'swing' }; }
+    if (t < BOX_LAND) { const k = inv(26.27, BOX_LAND, t); const end = [BIN.x + 6, BIN.y - 84]; return { x: lerp(rel[0], end[0], k), y: lerp(rel[1], end[1], k) - Math.sin(Math.PI * k) * 120 + k * k * 30, rot: -0.6 - k * 4.2, ph: 'air' }; }
+    const w = Math.exp(-(t - BOX_LAND) * 7) * Math.sin((t - BOX_LAND) * 30);
+    return { x: BIN.x + 6 + w * 4, y: BIN.y - 84 + Math.abs(w) * 6, rot: -4.8 + 0.1 * w + 0.12 + A.TAU, ph: 'bin' };
+  }
+  function drawOldBox(ctx, x, y, rot, t) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+    ctx.fillStyle = A.linear(ctx, 0, -14, 0, 14, [[0, '#4a4a5a'], [1, '#15151d']]); A.rrect(ctx, -67, -14, 134, 28, 5); ctx.fill();
+    ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(-62, -12, 124, 3);
+    ctx.fillStyle = '#081a22'; ctx.fillRect(-53, -6, 60, 12);
+    A.text(ctx, 'IPTV', -23, 0.5, { font: '700 10px Rubik', fill: '#5fe8ff' });
+    const alive = t < 25.45 ? 1 : (Math.sin(t * 30) > 0.3 && t < 26.3 ? 1 : 0);
+    ctx.fillStyle = t < 25.45 ? '#48ff8a' : '#ff4a3a'; ctx.globalAlpha = 0.3 + 0.7 * alive; A.ellipse(ctx, 42, 0, 3, 3); ctx.fill();
+    ctx.restore();
+  }
+  // one tangled cable from a to b (world), loopy spaghetti with plugs
+  const CABLES = [['#141218', 7, 0], ['#e9e6ee', 5, 1], ['#2d2d38', 6, 2], ['#d9b033', 4, 3], ['#3a64d8', 4, 4]];
+  function drawCable(ctx, a, b, seed, slack, t, lw, col) {
+    const N = 42, pts = [];
+    const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+    const loops = 2 + (seed % 3), ph = seed * 1.7 + t * 0.8;
+    for (let i = 0; i <= N; i++) {
+      const u = i / N, env = Math.sin(Math.PI * u);
+      const r = slack * (16 + 6 * (seed % 2)) * env;
+      const wig = slack * 22 * Math.sin(u * Math.PI * (3 + seed) + ph) * env;
+      pts.push([a[0] + dx * u + nx * wig + r * Math.cos(A.TAU * loops * u + ph), a[1] + dy * u + ny * wig + r * Math.sin(A.TAU * loops * u + ph) + slack * 40 * env]);
+    }
+    const path = () => { ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]); };
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    path(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = lw + 3; ctx.stroke();
+    path(); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.stroke();
+    // plug at the loose end
+    ctx.save(); ctx.translate(a[0], a[1]); ctx.rotate(Math.atan2(pts[1][1] - a[1], pts[1][0] - a[0]));
+    ctx.fillStyle = col; A.rrect(ctx, -12, -5, 14, 10, 2); ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#c9c2a0'; ctx.fillRect(-18, -2.5, 6, 5);
+    ctx.restore();
+  }
+  function drawSpaghetti(ctx, t, b) {
+    if (t < 25.2) return;
+    // where the loose ends are: behind the shelf while attached, then trailing through the air, then hanging out of the bin
+    let src;
+    if (t < 26.27) src = [BOX_HOME[0] + 50, BOX_HOME[1] + 8];
+    else if (t < BOX_LAND + 0.05) { const b2 = boxState(Math.max(26.27, t - 0.12)); src = [b2.x + 40, b2.y + 30]; }
+    else src = [BIN.x + 70, BIN.y - 8];
+    const slack = t < 25.45 ? 0.15 : t < 25.7 ? lerp(0.15, 1, inv(25.45, 25.7, t)) : 1;
+    CABLES.forEach(([col, lw, sd], i) => {
+      const a = [src[0] + (i - 2) * 9, src[1] + (i % 2) * 8];
+      const bb = [b.x + Math.cos(b.rot) * (40 - i * 8), b.y + Math.sin(b.rot) * (40 - i * 8) + 8];
+      drawCable(ctx, a, bb, sd, slack * (t >= BOX_LAND ? 0.6 : 1), t, lw, col);
+    });
+  }
+  function coverShelf(ctx) {
+    const cav = (cy, ch) => { ctx.fillStyle = A.linear(ctx, 0, cy, 0, cy + ch, [[0, '#0e0605'], [0.7, '#23130d'], [1, '#2e1a12']]); ctx.fillRect(CAV.x, cy, CAV.w, ch); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 2.5; ctx.strokeRect(CAV.x, cy, CAV.w, ch); ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(CAV.x, cy, CAV.w, 8); };
+    ctx.save(); cav(CAV.y1, CAV.h1); cav(CAV.y2, CAV.h2);
+    // a dust-free rectangle where the box used to sit
+    ctx.fillStyle = 'rgba(120,80,60,0.18)'; ctx.fillRect(1410, 718, 130, 6);
+    ctx.restore();
+  }
+  function drawBin(ctx, t, layer) {
+    const wob = t > BOX_LAND ? 0.13 * Math.exp(-(t - BOX_LAND) * 6) * Math.sin((t - BOX_LAND) * 26) : 0;
+    ctx.save(); ctx.translate(BIN.x, BIN.y); ctx.rotate(wob);
+    const H = 108, wt = 50, wb = 40;
+    if (layer === 'back') {
+      ctx.fillStyle = A.radial(ctx, 0, 4, 0, 70, [[0, 'rgba(10,3,3,0.5)'], [1, 'rgba(10,3,3,0)']]); ctx.save(); ctx.scale(1, 0.2); ctx.fillRect(-80, -60, 160, 120); ctx.restore();
+      A.ellipse(ctx, 0, -H, wt, 12); ctx.fillStyle = '#1c1a22'; ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 3; ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.moveTo(-wt, -H); ctx.lineTo(-wb, 0); ctx.quadraticCurveTo(0, 8, wb, 0); ctx.lineTo(wt, -H); ctx.quadraticCurveTo(0, -H + 12, -wt, -H); ctx.closePath();
+      ctx.fillStyle = A.linear(ctx, -wt, 0, wt, 0, [[0, '#5d6478'], [0.35, '#a7afc2'], [0.6, '#7b8397'], [1, '#474d5e']]); ctx.fill();
+      ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 3.5; ctx.stroke();
+      ctx.strokeStyle = 'rgba(30,30,45,0.35)'; ctx.lineWidth = 2;
+      for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.moveTo(i * 12, -H + 10); ctx.lineTo(i * 9.6, -6); ctx.stroke(); }
+      ctx.beginPath(); ctx.ellipse(0, -H, wt, 12, 0, 0, Math.PI); ctx.strokeStyle = '#c9cfdc'; ctx.lineWidth = 5; ctx.stroke(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 2; ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function crashFX(ctx, t) {
+    const k = inv(BOX_LAND, BOX_LAND + 0.45, t); if (k <= 0 || k >= 1) return;
+    const cx = BIN.x, cy = BIN.y - 110;
+    ctx.save();
+    // impact star lines
+    ctx.strokeStyle = `rgba(255,240,200,${1 - k})`; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    for (let i = 0; i < 9; i++) { const a = -Math.PI * (0.1 + 0.8 * i / 8), r0 = 50 + 60 * E.out(k), r1 = r0 + 40 * (1 - k); ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0 * 0.8); ctx.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1 * 0.8); ctx.stroke(); }
+    // flying bits (a key, a remote button, a screw)
+    const r = A.rng(9);
+    for (let i = 0; i < 8; i++) {
+      const vx = (r() - 0.5) * 520, vy = -260 - r() * 320, tt = t - BOX_LAND, x = cx + vx * tt, y = cy + vy * tt + 900 * tt * tt;
+      ctx.save(); ctx.translate(x, y); ctx.rotate(tt * (6 + i)); ctx.globalAlpha = 1 - k;
+      ctx.fillStyle = ['#2d2d38', '#5fe8ff', '#c9c2a0', '#48ff8a'][i % 4]; ctx.fillRect(-4, -3, 8, 6); ctx.restore();
+    }
+    // dust puff
+    for (let i = 0; i < 6; i++) { const a = Math.PI * (1 + i / 5), rr = 30 + 50 * E.out(k); ctx.globalAlpha = 0.35 * (1 - k); ctx.fillStyle = A.radial(ctx, cx + Math.cos(a) * rr, cy + 10 + Math.sin(a) * rr * 0.3, 0, 26, [[0, '#d8d0c8'], [1, 'rgba(216,208,200,0)']]); ctx.fillRect(cx + Math.cos(a) * rr - 30, cy + 10 + Math.sin(a) * rr * 0.3 - 30, 60, 60); }
+    ctx.restore();
+  }
+  // Noa's phone in the room (anchor-local hand position → world)
+  function roomPhone(ctx, n, t) {
+    if (!n.o.phone) return;
+    const f = n.o.flip ? -1 : 1, up = E.outBack(inv(27.0, 27.3, t));
+    const lx = lerp(18, 50, up), ly = lerp(-128, -196, up);
+    const x = n.x + f * lx * NOA_S, y = n.y + ly * NOA_S;
+    A.glow(ctx, x, y - 10, 110, '#c9ffd8', 0.35 * up);
+    ctx.save(); ctx.translate(x, y); ctx.rotate(-0.12 * f);
+    A.rrect(ctx, -15, -27, 30, 54, 6); ctx.fillStyle = '#16161c'; ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.fillStyle = '#e9f7ee'; ctx.fillRect(-12, -23, 24, 44); ctx.fillStyle = '#008069'; ctx.fillRect(-12, -23, 24, 8);
+    ctx.fillStyle = '#d9fdd3'; ctx.fillRect(-10, -8, 16, 6); ctx.fillStyle = '#ffffff'; ctx.fillRect(-4, 2, 14, 5);
+    ctx.restore();
+  }
+
+  // ------------------------------------------------------------ the room with everyone in it (world coords)
   function room(ctx, t, opt = {}) {
     const L = tvLight(t);
     A.drawLivingRoom(ctx, t, { tvGlow: { color: L.color, intensity: L.intensity } });
+    if (t >= 25.45) coverShelf(ctx);
     const tv = LR.tv;
     A.drawTV(ctx, tv.x, tv.y, tv.w, tv.h, t, tvState(t));
     tvOverlays(ctx, tv.x, tv.y, tv.w, tv.h, t);
-    // router: cyan & busy while live, lazy orange after the freeze, GOTV gold after the press
+    // router (plain home internet): busy while live, lazy after the freeze, busy again once GOTV runs
     const tR = t < FREEZE ? t : t < PRESS ? FREEZE + (t - FREEZE) * 0.3 : t - PRESS + FREEZE + (PRESS - FREEZE) * 0.3;
-    const on = t >= PRESS;
-    A.drawRouter(ctx, ROUTER.x, ROUTER.y, ROUTER.s, {
-      t: tR, activity: t < FREEZE ? 0.65 : on ? 1 : 0.08,
-      ledColor: t < FREEZE + 0.15 ? '#7ff6ff' : on ? GOLD : '#ffa23a',
-      ledGlow: on ? K(t, [[PRESS, 0.4], [PRESS + 0.1, 0.9, 'out'], [28.2, 1.2], [28.8, 3]]) : 0,
-      shake: on ? 0.8 * Math.exp(-(t - PRESS) * 5) : 0,
-    });
+    A.drawRouter(ctx, ROUTER.x, ROUTER.y, ROUTER.s, { t: tR, activity: t < FREEZE || t >= PRESS ? 0.65 : 0.08, ledColor: t < FREEZE + 0.15 || t >= PRESS ? '#7ff6ff' : '#ffa23a' });
     // Saba (steps forward out of the chair as he rises)
     const so = sabaO(t), out = so.rise > 0.5;
     const sx = SAB.x + 58 * E.inOut(cl(so.rise || 0));
@@ -382,11 +500,22 @@
     A.drawSaba(ctx, sx, SAB.y, SAB.s, so);
     if (!out) A.drawArmchair(ctx, SAB.x, SAB.y, 1, 'front');
     if (opt.reflect) glassesReflection(ctx, so, t, opt.reflect, sx);
+    // the bin (appears as she marches over; it was always there by the cabinet)
+    const bs = boxState(t);
+    if (t > 24.6) {
+      drawBin(ctx, t, 'back');
+      if (bs.ph === 'bin') { drawOldBox(ctx, bs.x, bs.y, bs.rot, t); drawSpaghetti(ctx, t, bs); }
+      drawBin(ctx, t, 'front');
+    }
     // Noa + the backgammon case
     const n = noaState(t);
     if (!n.caseP && t >= 21.5) drawCase(ctx, 1108, 790, 0.46, t);
+    if (bs.ph === 'shelf' || bs.ph === 'stuck') { drawOldBox(ctx, bs.x, bs.y, bs.rot, t); }
     A.drawNoa(ctx, n.x, n.y, NOA_S, n.o);
     if (n.caseP) drawCase(ctx, n.caseP[0], n.caseP[1], n.caseP[2], t);
+    if (bs.ph !== 'bin' && bs.ph !== 'shelf') { drawSpaghetti(ctx, t, bs); if (bs.ph !== 'stuck') drawOldBox(ctx, bs.x, bs.y, bs.rot, t); }
+    crashFX(ctx, t);
+    roomPhone(ctx, n, t);
     A.glow(ctx, tv.x + tv.w * 0.4, tv.y + tv.h * 0.6, 900, L.color, 0.09 * L.intensity);
   }
   function caption(ctx, t) {

@@ -11,19 +11,21 @@ Sound sources
   * numpy synthesis - Karplus-Strong oud (doubled courses + body resonance),
     darbuka (doum / tek / ka), sub booms, risers, reverse swells, cartoon boing.
 
-Structure v2 (81.0 s; global seconds; each section has its own beat grid anchored to its hits):
+Structure v5 (87.0 s; global seconds; each section has its own beat grid anchored to its hits;
+v1/v2 section code is re-placed with SHIFT: S4 +6.0, S5/S6/S7 +18.9, backgammon/tag +6.0, end card +26.5):
   S1   0.00- 6.20  Tel Aviv        116.13 BPM  ney call, shimmer, darbuka pulse, rising horns, stinger @6.2
-  S2   6.20-15.30  Living room     105.49 BPM  pizz + oud comedy, build under "Not now, motek!", TAPE STOP @15.3
-  F   15.30-29.20  Freeze/GOTV     -/90/120    lonely note, buffering-loop gag, hopeful GOTV turn (theme on horn),
-                                               router pizz, "now!" click @27.65, gold rise -> 29.2
-  S4  29.20-43.40  Data world      126.83 BPM  groove, honks, waiting-room queue, EMBY deflate, Cat plod,
-                                               build, BOOST @41.5 (beat 26), full energy @42.7
-  S5  43.40-54.40  Ocean (v1+12.9) 120 BPM     Hijaz ostinato, CHOMP @48.9, boing @49.1, snippet @50.5, arrival @53.4
-  S6  54.40-58.90  Last mile       141.18 BPM  build, silence 57.7-57.8, IMPACT @57.8
-  S7  59.30-67.00  Goal (E)        135 BPM     full tutti Bit theme, 4 bars 59.3 -> 66.41
-  BG  67.00-72.40  Backgammon      111.11 BPM  oud/accordion/darbuka baladi, theme as folk dance, F->E cadence
-  T   72.40-77.80  Tag             rubato      music box, comic sag + panting @73.0, wink @77.4
-  TC  77.80-81.00  End card        E-Hijaz cadence hit @77.8, ring out, master fade 80.2-81.0
+  S2   6.20-15.30  Living room     105.49 BPM  pizz + oud comedy, build, TAPE STOP @15.3
+  F   15.30-25.00  Freeze/GOTV     free/90     lonely note, buffering-loop gag, hopeful GOTV turn @20.6
+  OB  25.00-35.20  Out with old    120 BPM     yank @25.3, bin crash @26.4, WhatsApp pizz/celesta, "received" @30.2,
+                                               "Activated!" swell @31.3, gold light out of the TV 33.0 -> dive @35.2
+  S4  35.20-49.40  Data world      126.83 BPM  groove, honks, queue, EMBY deflate, Cat plod, BOOST @47.5, full @48.683
+  S5  49.40-60.40  Ocean           120 BPM     ostinato, deflating shark gag, CHOMP @54.9, zap @55.1 + Bit's laugh,
+                                               snippet @56.5, arrival @59.4
+  S6  60.40-64.90  Last mile       141.18 BPM  build, silence 63.7-63.8, IMPACT @63.8
+  S7  65.30-73.00  Goal (E)        135 BPM     full tutti Bit theme 65.3 -> 72.41
+  BG  73.00-78.40  Backgammon      111.11 BPM  oud/accordion/darbuka baladi, theme as folk dance
+  T   78.40-83.80  Tag             rubato      music box, sag + panting @79.0, wink @83.4
+  TC  83.80-87.00  End card        E-Hijaz cadence hit @83.8, ring out, master fade 86.7-87.0
 """
 import json
 import os
