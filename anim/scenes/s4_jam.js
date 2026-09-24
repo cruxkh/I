@@ -288,15 +288,14 @@
     // Bit, tiny, looking up
     const recoil = Math.exp(-lt * 5) * Math.sin(lt * 18);
     const bmood = t < 26.7 ? 'panic' : t < 27.35 ? 'neutral' : 'determined';
-    A.drawBit(ctx, 1490 + recoil * 12, 975, 0.7, {
+    A.drawBit(ctx, 1580 + recoil * 12, 975, 0.72, {
       t, mood: bmood, shadow: 1, mouth: 0, glow: 1.3, look: [-0.75, -0.85],
       limbs: 'stand', squash: 0.05 * Math.sin(t * 22) * (t < 26.7 ? 1 : 0) + (t > 27.6 ? 0.1 * smooth(27.6, 27.95, t) : 0),
       sweat: t < 27.2 ? 1 : 0, browL: t > 27.35 ? -4 : 0, browR: t > 27.35 ? -4 : 0,
     });
-    // blurred foreground commuters framing the low angle
-    ctx.save(); ctx.filter = 'blur(7px) brightness(0.45)';
-    A.drawPacket(ctx, 60, 1240, 3.6, { t, seed: 91, kind: 'video', mood: 'bored', look: [0.7, -0.4] });
-    A.drawPacket(ctx, 1930, 1260, 3.3, { t, seed: 92, kind: 'mail', mood: 'sleep', noZ: true });
+    // out-of-focus foreground silhouettes framing the low angle
+    ctx.fillStyle = A.radial(ctx, 40, 1180, 60, 420, [[0, 'rgba(40,20,50,0.95)'], [0.6, 'rgba(60,25,60,0.7)'], [1, 'rgba(40,20,50,0)']]); ctx.fillRect(-400, 700, 900, 800);
+    ctx.fillStyle = A.radial(ctx, 1900, 1200, 60, 380, [[0, 'rgba(20,40,60,0.95)'], [0.6, 'rgba(25,50,70,0.7)'], [1, 'rgba(20,40,60,0)']]); ctx.fillRect(1450, 750, 900, 800);
     ctx.restore();
     ctx.restore();
   }
