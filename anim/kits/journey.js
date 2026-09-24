@@ -81,7 +81,7 @@
     pitch: { x: STAD.x, y: STAD.y },
     mast: { x: MAST.x, y: MAST.yb }, mastTop: { x: MAST.x, y: MAST.top - 14 },
     building: { x: (IPTV.x0 + IPTV.x1) / 2, y: IPTV.yb, top: IPTV.top },
-    sign: { x: 1112, y: 1452 }, iptvSign: { x: 1167, y: 1597 },
+    sign: { x: 1112, y: 1452 }, iptvSign: { x: 1167, y: 1578 },
     seaHorizon: { y: HZ, x0: 2600, x1: 3840 },
     moon: { x: 3230, y: 330 },
     azrieli: { x: 1570, y: 470 },
@@ -91,8 +91,8 @@
     launchPath: [[MAST.x, MAST.top - 14], [1450, 760], [1900, 740], [2450, 830], [2950, 980], [3450, 1150], [4200, 1330]],
     cams: {
       wide: { x: 1920, y: 1080, zoom: 0.5 },
-      stadium: { x: 555, y: 1675, zoom: 2.2 },
-      mast: { x: 1230, y: 1140, zoom: 1.5 },
+      stadium: { x: 550, y: 1665, zoom: 2.0 },
+      mast: { x: 1230, y: 1215, zoom: 1.35 },
       mastTop: { x: 1300, y: 1000, zoom: 2.2 },
       azrieli: { x: 1600, y: 900, zoom: 1.2 },
       sea: { x: 2900, y: 1250, zoom: 1.0 },
@@ -587,7 +587,7 @@
     for (const f of FLOODS) drawPylon(g, f);
   }
   const FLOODS = [0.62, Math.PI - 0.62, Math.PI + 0.62, TAU - 0.62].map(a => {
-    const b = sLoop(a, 1.7, 0); const h = Math.sin(a) > 0 ? 215 : 150;
+    const b = sLoop(a, 1.5, 0); const h = Math.sin(a) > 0 ? 200 : 150;
     return { a, x: b[0], y: b[1], h, top: [b[0], b[1] - h] };
   }).sort((p, q) => p.y - q.y);
   function drawPylon(g, f) {
@@ -994,15 +994,15 @@
   A.drawTelAviv = (ctx, t, o = {}) => {
     const cam = Object.assign({}, CAM0, o.cam || {}); cam.t = t;
     ctx.save();
-    drawSky(ctx, t, cam);
-    tileLayer(ctx, 'tlv-far', lcam(cam, 0.55), [-1100, 850, 2600, 1700], drawFarTile);
-    drawHaze(ctx, cam, 0.75, 80, 'rgba(150,60,120,0.55)');
-    drawSea(ctx, t, cam);
-    tileLayer(ctx, 'tlv-mid', lcam(cam, 0.85), [-1100, 350, 2700, 2250], drawMidTile);
-    drawHaze(ctx, cam, 0.35, -20, 'rgba(120,60,140,0.5)');
-    tileLayer(ctx, 'tlv-near', cam, [-300, 950, 3100, 2400], drawNearTile);
-    drawStadiumLive(ctx, t, cam, o);
-    drawTLVLive(ctx, t, cam, o);
+    { const _t = performance.now(); drawSky(ctx, t, cam); if (A._jp) A._jp[0] = (A._jp[0] || 0) + performance.now() - _t; }
+    { const _t = performance.now(); tileLayer(ctx, 'tlv-far', lcam(cam, 0.55), [-1100, 850, 2600, 1700], drawFarTile); if (A._jp) A._jp[1] = (A._jp[1] || 0) + performance.now() - _t; }
+    { const _t = performance.now(); drawHaze(ctx, cam, 0.75, 80, 'rgba(150,60,120,0.55)'); if (A._jp) A._jp[2] = (A._jp[2] || 0) + performance.now() - _t; }
+    { const _t = performance.now(); drawSea(ctx, t, cam); if (A._jp) A._jp[3] = (A._jp[3] || 0) + performance.now() - _t; }
+    { const _t = performance.now(); tileLayer(ctx, 'tlv-mid', lcam(cam, 0.85), [-1100, 350, 2700, 2250], drawMidTile); if (A._jp) A._jp[4] = (A._jp[4] || 0) + performance.now() - _t; }
+    { const _t = performance.now(); drawHaze(ctx, cam, 0.35, -20, 'rgba(120,60,140,0.5)'); if (A._jp) A._jp[5] = (A._jp[5] || 0) + performance.now() - _t; }
+    { const _t = performance.now(); tileLayer(ctx, 'tlv-near', cam, [-300, 950, 3100, 2400], drawNearTile); if (A._jp) A._jp[6] = (A._jp[6] || 0) + performance.now() - _t; }
+    { const _t = performance.now(); drawStadiumLive(ctx, t, cam, o); if (A._jp) A._jp[7] = (A._jp[7] || 0) + performance.now() - _t; }
+    { const _t = performance.now(); drawTLVLive(ctx, t, cam, o); if (A._jp) A._jp[8] = (A._jp[8] || 0) + performance.now() - _t; }
     ctx.restore();
   };
 

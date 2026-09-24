@@ -777,7 +777,7 @@
   function noaLegs(pose, o) {
     const floor = o.floor ?? 100;
     if (pose === 'sit') {
-      if (o.sitStyle === 'floor') return { P: [0, -24], L: [[-22, -20], [-64, -18], [18, -8]], R: [[22, -20], [66, -16], [-14, -4]], cross: true };
+      if (o.sitStyle === 'floor') return { P: [0, -30], L: [[-30, -12], [-70, -14], [16, -8]], R: [[30, -12], [72, -12], [-12, -4]], cross: true };
       return { P: [0, -floor - 20], L: [[-22, -floor - 16], [-26, -floor + 4], [-28, -14]], R: [[22, -floor - 16], [28, -floor + 2], [32, -14]] };
     }
     if (pose === 'crouch') return { P: [-16, -56], L: [[-28, -50], [30, -84], [4, -14]], R: [[-4, -52], [50, -78], [30, -14]] };
@@ -1045,11 +1045,12 @@
       ctx.restore();
       ctx.beginPath(); ctx.moveTo(L[1][0] - 7, L[1][1] - 3); ctx.quadraticCurveTo(L[1][0], L[1][1] + 3, L[1][0] + 7, L[1][1] - 2); strokeLine(ctx, 1.6, NC.jeansSh);
     } };
-    if (pose !== 'crouch') drawLegs();
+    const legsFront = pose === 'crouch' || !!legs.cross;
+    if (!legsFront) drawLegs();
 
     ctx.save(); torsoFrame();
     noaTorso(ctx, Rt, br, t, Math.sin(lean) + A.wob(t, 51, 0.5) * 0.3, vel);
-    if (pose === 'crouch') { ctx.restore(); drawLegs(); ctx.save(); torsoFrame(); }
+    if (legsFront) { ctx.restore(); drawLegs(); ctx.save(); torsoFrame(); }
     // head
     const turn = clamp((o.turn ?? 0.25) + (o.look ? o.look[0] * 0.12 : 0), -1, 1);
     const tilt = ((o.headTilt ?? 0) + M.tilt + (o.look ? o.look[1] * 5 : 0) + idle * A.wob(t, 57, 0.3) * 2.5 + hug * 10 - (pose === 'crouch' ? 12 : 0)) * D;

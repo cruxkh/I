@@ -21,3 +21,10 @@
 - drawCatPacket (~265 tall, 290 wide; 1–2.2): o.mood bored|grumpy|shock, o.arms crossed|down|point, o.shades 0..1 (slide sunglasses onto eyes), o.lid,o.browRaise,o.rot,o.squash,o.glow,o.tail.
 - drawShark (~720 long at 1, (x,y)=body centre, faces right; 0.5–1.2): o.bite 0..1, o.mood hungry|dazed (o.stars), o.swim, o.look,o.flip,o.rot,o.bandaid. A.sharkNose(x,y,scale,o), A.sharkJaw(...).
 - drawBinaryTrail(ctx,pts tail→head,t,o): color '#ffc93c', width 30, size 20, alpha, speed, spacing, rows, seed, core, digits:false.
+
+## family.js
+- drawSaba (~560 standing at 1). pose sit|rise(o.rise)|stand|jump; mood neutral|eager|tense|horror|joy; gesture none|fists|point|headHands|armsUp|grip; lean, scarfWave, look, mouth, t, flip.
+- drawNoa (~400 to top of hair). pose sit|stand|crouch; mood neutral|amused|focused|joy|proud; gesture none|mug|reach|shrug|cheer; hug 0..1.
+- Facing: screen-right light 3/4; flip faces left. Anchors: Saba sit/rise = seat contact, floor o.floor (150) below; at rise 1 feet at y+150. Saba jump = floor under him (o.air = jump height). Noa sit = seat, feet o.floor (100) below; sitStyle:'floor' cross-legged anchor=floor.
+- Blends: moodFrom+moodK, gestureFrom+gestureK. Arms: armL/armR [shoulderDeg,elbowDeg], handL/handR IK targets (anchor-local), handShapeL/R relax|open|fist|point|grip, wristL/R, armRBehind. Face: headTilt, turn(0.25), browRaise, browAngle, browL/R, lid, happy, smile, jaw. Body: squash, shoulders, breath, idle, tremble. Light: light, rimColor, rimA, lw, shadow, vel (scarf/curls trail). Saba: air, floor, armrestX/Y, glint. Noa: reachTo, sitStyle, floor, bounce, mugTilt, steam.
+- Master scales: Saba 0.95 in chair at A.LR.chair (700,760) -> head top ~395, feet ~903. Noa 0.95 at x≈1100, feet y≈905, usually flip:true to face Saba. A.LR.sofa is a pouf at (1100,790): sit pose there.
