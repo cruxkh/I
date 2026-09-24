@@ -1,9 +1,14 @@
 [
- {"sfx": "crowd_swell_ooh", "t": 3.4, "gain_db": -12, "pan": -0.2},
- {"sfx": "stadium_crowd_bed", "t": 4.2, "gain_db": -10, "pan": -0.3},
- {"sfx": "whip_pan", "t": 8.30, "gain_db": -8, "pan": 0.0},
- {"sfx": "broadcast_launch", "t": 8.98, "gain_db": -6, "pan": 0.0},
- {"sfx": "data_whoosh", "t": 9.0, "gain_db": -12, "pan": 0.3},
- {"sfx": "wink_ding", "t": 9.6, "gain_db": -19, "pan": 0.45},
- {"sfx": "whip_pan", "t": 9.83, "gain_db": -9, "pan": 0.0}
+ {
+  "sfx": "crowd_swell_ooh",
+  "t": 3.4,
+  "gain_db": -12,
+  "pan": -0.2
+ },
+ {
+  "sfx": "wink_ding",
+  "t": 9.6,
+  "gain_db": -19,
+  "pan": 0.45
+ }
 ]
