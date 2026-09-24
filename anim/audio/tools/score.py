@@ -39,12 +39,12 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 MUS = os.path.join(ROOT, 'audio', 'music')
 SF2 = os.path.join(MUS, 'sf', 'GeneralUser-GS.sf2')
 SR = 48000
-DUR = 87.0
+DUR = 96.0
 N = int(SR * DUR)
 RNG = np.random.default_rng(5401)
 
 # segment boundaries: music before 14.5 is tape-stopped, music of 14.5..44.8 is hard-gated at 44.8
-SEG_BOUNDS = [15.3, 63.75]
+SEG_BOUNDS = [19.3, 72.75]
 
 
 def seg_of(t):
@@ -225,14 +225,13 @@ with open(os.path.join(ROOT, 'audio', 'timeline.json')) as f:
 # S1  Tel Aviv 0 - 6.2
 # ============================================================================================
 def s1():
-    g = Grid(0.0, 60 * 12 / 6.2)   # 12 beats -> 6.2 s
+    g = Grid(0.0, 60 / 0.51)        # 20 beats -> 10.2 s ; bars at 0, 2.04, 4.08, 6.12, 8.16, 10.2
     D = 62
-    # night pad (halo) fades in
     pad.cc(0, 11, 0)
-    pad.n(0.0, 6.1, ['D4', 'A4', 'D5'], 70)
+    pad.n(0.0, 8.4, ['D4', 'A4', 'D5'], 70)
     pad.expr(0.0, 2.4, 0, 95, 0.7)
-    pad.expr(4.8, 6.15, 95, 40)
-    # ney call over the city (with scoop)
+    pad.expr(6.0, 8.4, 95, 30)
+    # ney call over the night city
     ney.cc(0, 11, 100)
     ph = [(0.18, 'A4', .5, 70), (0.70, 'Bb4', .14, 74), (0.84, 'A4', .12, 70), (0.96, 'G4', .12, 66),
           (1.08, 'F#4', .14, 64), (1.22, 'G4', .16, 60), (1.38, 'A4', 1.3, 58)]
@@ -242,75 +241,88 @@ def s1():
     for i in range(12):
         ney.bend(0.18 + i * 0.012, -0.8 + 0.8 * (i + 1) / 12)
     ney.expr(1.38, 2.7, 100, 30)
-    # vibrato on the long note
     for i in range(60):
         tt = 1.6 + i * 0.02
         ney.bend(tt, 0.12 * np.sin(2 * np.pi * 5.2 * (tt - 1.6)) * min(1, (tt - 1.6) / 0.3))
     ney.bend(2.9, 0)
-    # celesta sparkle (city lights)
     sp = hijaz_notes(D, 86, 98)
     t = 0.25
-    while t < 4.6:
+    while t < 4.8:
         if RNG.random() < 0.7:
             celesta.n(t + hum(0.01), 0.4, int(RNG.choice(sp)), int(RNG.integers(30, 52)))
         t += g.b / 2
-    # low drone swell (stadium tension)
+    # low drone swell as the drone flies toward the stadium
     slowstr.cc(0, 11, 30)
-    slowstr.n(0.4, 5.75, ['D2', 'A2', 'D3'], 80)
-    slowstr.expr(0.4, 6.1, 30, 118, 1.6)
-    # timp soft roll for crowd swell at 0.5
+    slowstr.n(0.4, 7.9, ['D2', 'A2', 'D3'], 80)
+    slowstr.expr(0.4, 8.3, 30, 118, 1.4)
     for i in range(int(0.9 / 0.06)):
-        tt = 0.1 + i * 0.06
-        timp.n(tt, 0.1, 'D2', int(25 + 40 * np.sin(np.pi * i / 15)))
-    # low pulse eighths (bar 2 on)
-    for k in range(8, 24):
-        b = k / 2
-        lowstr.n(g(b) + hum(0.004), g.b * 0.42, ['D2', 'D3'], int(48 + 50 * (k - 8) / 16) + (8 if k % 2 == 0 else 0))
-    # darbuka pulse growing into maqsum
-    for b in (2, 3):
-        darb.n(g(b), 0.3, 'doum', 50 + 5 * b)
-    maq = [(0, 'doum'), (.5, 'tek'), (1.5, 'tek'), (2, 'doum'), (3, 'tek')]
-    for bar in (1, 2):
-        for off, k in maq:
-            b = bar * 4 + off
-            if b >= 10:
-                break
-            darb.n(g(b) + hum(0.004), 0.3, k, 62 + 14 * bar + (6 if k == 'doum' else 0))
-        for off in (0.75, 2.5, 2.75, 3.5):
-            b = bar * 4 + off
-            if b < 10:
-                darb.n(g(b) + hum(0.004), 0.2, 'ka', 40 + 10 * bar)
-    for i in range(8):                            # 16th fill into the stinger
-        b = 10 + i * 0.25
-        darb.n(g(b), 0.2, 'tek' if i % 2 == 0 else 'ka', 70 + 6 * i)
-    # rising horns: Bit's call in augmentation (A - D - Eb - F# - A)
+        timp.n(0.1 + i * 0.06, 0.1, 'D2', int(25 + 40 * np.sin(np.pi * i / 15)))
+    # heartbeat darbuka + low pulse from bar 2
+    for bt in (4, 5, 6, 7):
+        darb.n(g(bt), 0.3, 'doum', 54 + 3 * bt)
+        darb.n(g(bt + 0.5), 0.2, 'ka', 36)
+    for k in range(8, 20):
+        lowstr.n(g(k / 2 + 4) + hum(0.004), g.b * 0.42, ['D2', 'D3'], 50 + 3 * (k - 8))
+    # rising horns: Bit's call in augmentation (bars 2-3), under the announcer
     horns.cc(0, 11, 70)
-    for b, n_, d in [(4, 'A3', 1), (5, 'D4', 1), (6, 'Eb4', 1), (7, 'F#4', 1), (8, 'A4', 2)]:
-        horns.n(g(b), g.b * d * 1.0, n_, 78 + 4 * (b - 4))
-    horns.n(g(4), g.b * 4, 'D3', 62)
-    horns.expr(g(4), g(10), 70, 115)
-    trombone.n(g(8), g.b * 2, ['D3', 'A3'], 70)
-    # bII tension swell (Eb) under the packet launch 5.0 -> 6.2
+    for bt, n_, d in [(4, 'A3', 1), (5, 'D4', 1), (6, 'Eb4', 1), (7, 'F#4', 1), (8, 'A4', 2)]:
+        horns.n(g(bt), g.b * d, n_, 76 + 3 * (bt - 4))
+    horns.n(g(4), g.b * 6, 'D3', 60)
+    horns.expr(g(4), g(10), 70, 108)
+    # ---- 5.1 - 8.3 the ULTRAS: big drum groove joins the chant (bars 3.5 - 5)
+    maq = [(0, 'doum'), (.5, 'tek'), (1.5, 'tek'), (2, 'doum'), (3, 'tek')]
+    for bar_t in (8, 12):
+        for off, k in maq:
+            darb.n(g(bar_t + off) + hum(0.003), 0.3, k, (100 if k == 'doum' else 88) + (8 if bar_t == 12 else 0))
+        for off in (.75, 1.0, 2.5, 3.25, 3.5, 3.75):
+            darb.n(g(bar_t + off) + hum(0.003), 0.2, 'ka', 58)
+    for bt in range(10, 16):        # stadium bass drum + toms on every beat from beat 10 (5.1)
+        okit.n(g(bt), 0.8, 36, 96 + 3 * (bt - 10))
+        kit.n(g(bt + 0.5), 0.3, 45 if bt % 2 else 47, 70)
+    # chant claps "x . x . x x x ." like the stands
+    for bar_t in (8, 12):
+        for off in (0, 1, 2, 2.5, 3):
+            if bar_t + off >= 10:
+                kit.n(g(bar_t + off), 0.1, 39, 96)
+                kit.n(g(bar_t + off) + 0.014, 0.1, 39, 80)
+    for bt in range(10, 16):         # chant brass stabs on the offbeat
+        trombone.n(g(bt + 0.5), 0.14, ['D3', 'A3'], 88 + 2 * (bt - 10))
+        horns.n(g(bt + 0.5), 0.14, ['F#4', 'A4'], 86)
+    tuba.n(g(10), g(16) - g(10) - 0.05, 'D2', 92)
+    strings.cc(4.0, 11, 90)
+    for i in range(24):              # driving 16th strings under the groove
+        strings.n(g(10 + i / 4), g.b / 4 * 0.9, ['D3', 'Eb3', 'F#3', 'Eb3'][i % 4], 82 + (8 if i % 4 == 0 else 0))
+    for i in range(8):               # fill into the whip
+        darb.n(g(15 + i / 8), 0.15, 'tek' if i % 2 else 'ka', 80 + 5 * i)
+    # ---- 8.5 WHIP up to the mast: swoosh + stab
+    W = 8.5
+    fx.n(8.3, 0.5, 'swoosh', 100)
+    ohit.n(W, 0.25, ['Eb4', 'Bb4'], 100)
+    for tr_, ns in [(horns, ['Eb4', 'G4', 'Bb4']), (trombone, ['Eb3', 'Bb3']), (strings, ['Eb3', 'Bb3', 'Eb4'])]:
+        tr_.n(W, 0.18, ns, 112)
+    timp.n(W, 0.5, 'Eb2', 110)
+    okit.n(W, 1.0, 57, 96)
+    darb.n(W, 0.3, 'doum', 110)
+    # ---- 9.0 packets launch: bII (Eb) swell -> 10.2
+    L = 9.0
     for tr_, ns, v in [(horns, ['Eb4', 'G4', 'Bb4'], 96), (trombone, ['Eb3', 'Bb3'], 92),
                        (trumpet, ['G4', 'Bb4'], 80), (strings, ['Eb4', 'G4', 'Bb4', 'Eb5'], 90),
                        (tuba, ['Eb2'], 90)]:
-        tr_.n(g(10), 6.19 - g(10), ns, v)
-    trumpet.cc(0, 11, 40)
-    trumpet.expr(g(10), 6.18, 40, 120, 1.5)
-    strings.cc(0, 11, 45)
-    strings.expr(g(10), 6.18, 45, 120, 1.5)
-    tuba.cc(0, 11, 60)
-    tuba.expr(g(10), 6.18, 60, 125, 1.5)
-    trombone.expr(g(10), 6.18, 80, 125, 1.5)
-    # harp gliss up the Hijaz scale (packets fly)
+        tr_.cc(L - 0.01, 11, 45)
+        tr_.n(L, 10.19 - L, ns, v)
+        tr_.expr(L, 10.18, 45, 124, 1.5)
     gl = hijaz_notes(D, 62, 98)
     for i, n_ in enumerate(gl):
         u = i / len(gl)
-        harp.n(5.0 + 1.1 * (u ** 0.8), 0.5, n_, int(55 + 50 * u))
-    fx.n(4.75, 1.45, 'riser', 90, lo=300, hi=7000, curve=2.2)
-    fx.n(5.2, 1.0, 'revcym', 85)
-    # ---- STINGER at 6.2: D major tutti stab
-    T = 6.2
+        harp.n(L + 1.1 * (u ** 0.8), 0.5, n_, int(55 + 50 * u))
+    for i, n_ in enumerate(['A5', 'D6', 'Eb6', 'F#6', 'A6']):      # Bit glint
+        glock.n(9.05 + i * 0.06, 0.3, n_, 70)
+    for i in range(int(1.15 / 0.05)):
+        timp.n(L + i * 0.05, 0.06, 'D2', 40 + 3 * i)
+    fx.n(8.9, 1.3, 'riser', 90, lo=300, hi=7000, curve=2.2)
+    fx.n(9.3, 0.9, 'revcym', 85)
+    # ---- STINGER 10.2
+    T = 10.2
     stab = dict(horns=['D4', 'F#4', 'A4', 'D5'], trumpet=['A4', 'D5', 'F#5'], trombone=['D3', 'A3', 'F#4'],
                 tuba=['D2'], strings=['D3', 'A3', 'D4', 'F#4', 'A4', 'D5'], lowstr=['D2'])
     for k, ns in stab.items():
@@ -322,6 +334,75 @@ def s1():
     okit.n(T, 2.0, 57, 95)
     darb.n(T, 0.3, 'doum', 120)
     fx.n(T, 1.2, 'boom', 70, f0=80, f1=38)
+
+
+# ============================================================================================
+# v7  CHASE 39.2 - 47.0: behind Bit, running, pushing through packets (126.83 BPM)
+# ============================================================================================
+def chase():
+    g = Grid(39.2, 60 / (12.3 / 26))
+    b = g.b
+    fx.n(39.2, 1.2, 'boom', 90, f0=80, f1=38)
+    okit.n(39.2, 1.5, 57, 100)
+    timp.n(39.2, 0.6, 'D2', 115)
+    ohit.n(39.2, 0.25, ['D4', 'A4'], 96)
+    # heroic Bit call on horns + trumpet (bar 1)
+    horns.cc(39.1, 11, 118)
+    trumpet.cc(39.1, 11, 112)
+    play_theme(horns, g, 62, beats=(0, 4), vel=106, legato=True)
+    play_theme(trumpet, g, 62, beats=(0, 4), vel=98, legato=True)
+    # ostinato + bass + percussion for the whole run
+    patt = {'D': ['D3', 'Eb3', 'F#3', 'Eb3'], 'Gm': ['G2', 'A2', 'Bb2', 'A2'], 'Eb': ['Eb3', 'F3', 'G3', 'F3'],
+            'Cm': ['C3', 'D3', 'Eb3', 'D3']}
+    harm = [(0, 'D'), (4, 'D'), (8, 'Gm'), (10, 'D'), (12, 'Cm'), (13, 'Eb'), (14, 'D')]
+    lowstr.cc(39.1, 11, 112)
+    for hi, (b0, ch) in enumerate(harm):
+        b1 = harm[hi + 1][0] if hi + 1 < len(harm) else 16
+        k = 0
+        while b0 + k / 4 < b1 - 1e-6:
+            bt = b0 + k / 4
+            if 13.75 <= bt < 16 and bt not in (14, 14.75, 15.5):
+                k += 1
+                continue                   # stuck stop-start
+            n_ = patt[ch][k % 4]
+            quiet = speaking(g(bt))
+            lowstr.n(g(bt) + hum(0.003), b / 4 * 0.95, n_, (88 if k % 4 == 0 else 74) - (8 if quiet else 0))
+            synbass.n(g(bt), b / 4 * 0.85, m(patt[ch][0]) - 12, 92 if k % 4 == 0 else 78)
+            if k % 2 == 0 and not quiet:
+                oud.n(g(bt), 0.2, m(n_) + 12, 72)
+            k += 1
+    # driving darbuka (16ths) + stadium kick on 1 and 3 + hats, until the stuck bars
+    cyc = ['doum', None, 'ka', 'tek', 'doum', 'ka', 'tek', 'ka']
+    for bb in range(0, 14, 2):
+        for i, k in enumerate(cyc):
+            bt = bb + i / 4
+            if k and bt < 13.75:
+                darb.n(g(bt) + hum(0.003), 0.2, k, (98 if k == 'doum' else 82) + (6 if i == 0 else 0))
+        okit.n(g(bb), 0.6, 36, 96)
+        for i in range(8):
+            kit.n(g(bb + i / 4), 0.05, 42, 64 if i % 2 == 0 else 42)
+    for bb in (1, 3, 5, 7, 9, 11, 13):
+        kit.n(g(bb), 0.1, 38, 70)
+    # bar 3 (after Bit's line): horns take theme bar 2 over Gm -> D
+    play_theme(horns, Grid(g(8) - 4 * b, g.bpm), 62, beats=(4, 8), vel=104, legato=True)
+    trombone.n(g(8), 2 * b, ['G2', 'D3', 'Bb3'], 92)
+    trombone.n(g(10), 2 * b, ['D3', 'A3', 'F#4'], 94)
+    tuba.n(g(8), 2 * b, 'G1', 96)
+    tuba.n(g(10), 2 * b, 'D2', 96)
+    # bar 4: pushing through - rising sequence of the call, brass stabs
+    for i, (bt, root) in enumerate([(12, 60), (12.5, 62), (13, 63), (13.5, 65)]):
+        horns.n(g(bt), b * 0.4, [root + 12, root + 16 - (1 if root in (62, 65) else 0)], 100 + 4 * i)
+        trumpet.n(g(bt), b * 0.4, root + 19, 94 + 4 * i)
+    for i in range(8):
+        darb.n(g(13 + i / 8), 0.15, 'tek' if i % 2 else 'ka', 80 + 4 * i)
+    # 45.9 - 47.0 stuck among packets: stop-start stabs
+    for bt in (14, 14.75, 15.5):
+        ohit.n(g(bt), 0.15, ['D4', 'Eb4'], 92)
+        trombone.n(g(bt), 0.14, ['D3', 'Eb3'], 104)
+        darb.n(g(bt), 0.2, 'doum', 104)
+        okit.n(g(bt), 0.4, 36, 100)
+    pizz.n(g(15.1), 0.1, ['A3', 'Bb3'], 80)
+    pizz.n(g(15.25), 0.1, ['A3', 'Bb3'], 74)
 
 
 # ============================================================================================
@@ -539,12 +620,14 @@ def oldbox():
 # ============================================================================================
 # v2  S4 Data world + the queue 29.2 - 43.4   (26 beats -> BOOST 41.5 on the grid)
 # ============================================================================================
-def s4():
+def s4(queue_only=False):
     g = Grid(29.2, 60 / (12.3 / 26))
     b = g.b
-    fx.n(29.2, 1.0, 'boom', 60, f0=70, f1=40)
-    okit.n(29.2, 1.5, 57, 60)
-    call = [(0, 'A4', .12), (.119, 'D5', .2), (.356, 'Eb5', .1), (.475, 'F#5', .2), (.71, 'A5', .35)]
+    intro = not queue_only
+    if intro:
+        fx.n(29.2, 1.0, 'boom', 60, f0=70, f1=40)
+        okit.n(29.2, 1.5, 57, 60)
+    call = [] if queue_only else [(0, 'A4', .12), (.119, 'D5', .2), (.356, 'Eb5', .1), (.475, 'F#5', .2), (.71, 'A5', .35)]
     for dt, n_, d in call:
         glock.n(29.2 + dt, d, n_, 88)
         pizz.n(29.2 + dt, d, n_, 80)
@@ -580,8 +663,9 @@ def s4():
                 if b0 <= bt < b1:
                     pizz.n(g(bt), 0.15, ['F#3', 'A3'], int(58 * vel))
 
-    groove(0, 6, 0.95)
-    for i in range(6):
+    if intro:
+        groove(0, 6, 0.95)
+    for i in range(6 if intro else 0):
         blips.n(g(1 + i * 0.25), 0.08, int(RNG.choice(hijaz_notes(62, 86, 98))), 60)
     # traffic jam: honk honk
     for tt in (g(6), g(6.5)):
@@ -1457,10 +1541,14 @@ def gate_at(x, t0, fade=0.012):
 
 def compose():
     s1()
-    s2()
-    freeze()
-    oldbox()
-    for fn, sh in [(s4, 6.0), (s5, 18.9), (s6, 18.9), (s7, 18.9), (backgammon, 6.0), (tag, 6.0), (title, 26.5)]:
+    for fn, sh in [(s2, 4.0), (freeze, 4.0), (oldbox, 4.0)]:
+        SHIFT[0] = sh
+        fn()
+    SHIFT[0] = 0.0
+    chase()
+    SHIFT[0] = 15.0
+    s4(queue_only=True)
+    for fn, sh in [(s5, 27.9), (s6, 27.9), (s7, 27.9), (backgammon, 15.0), (tag, 15.0), (title, 35.5)]:
         SHIFT[0] = sh
         fn()
     SHIFT[0] = 0.0
@@ -1508,9 +1596,9 @@ def main():
         wet = np.stack([signal.fftconvolve(send[:, c], ir[:, c])[:N] for c in range(2)], 1) * 0.5
         y = dry + wet
         if sg == 0:
-            y = tape_stop(y, 15.3)
+            y = tape_stop(y, 19.3)
         elif sg == 1:
-            y = gate_at(y, 63.7)
+            y = gate_at(y, 72.7)
         final.setdefault(stem, np.zeros((N, 2)))
         final[stem] += y
     # carve 1-4 kHz under dialogue (gentle, ~-3.5 dB) - linear, so applied per stem
@@ -1526,13 +1614,13 @@ def main():
         final[stem] = final[stem] - depth * env[:, None] * band
     # master fade: ring out, fade 58.6 -> 60
     fade = np.ones(N)
-    a = int(86.7 * SR)
+    a = int(95.7 * SR)
     fade[a:] = np.cos(np.linspace(0, np.pi / 2, N - a)) ** 1.2
     for stem in final:
         final[stem] *= fade[:, None]
     # section dynamics (emotional shape): the goal must be the peak, ocean a notch below, tag intimate
-    dyn = [(0, 0), (49.3, 0), (49.5, -2.5), (52.9, -2.5), (53.2, -1), (56.9, -2), (59.2, -1.5), (59.5, 0),
-           (65.2, 0), (65.35, 1.5), (72.4, 1.5), (73.0, 0), (78.3, 0), (78.45, 3), (83.7, 3), (83.79, 0), (87, 0)]
+    dyn = [(0, 0), (58.3, 0), (58.5, -2.5), (61.9, -2.5), (62.2, -1), (65.9, -2), (68.2, -1.5), (68.5, 0),
+           (74.2, 0), (74.35, 1.5), (81.4, 1.5), (82.0, 0), (87.3, 0), (87.45, 3), (92.7, 3), (92.79, 0), (96, 0)]
     dcurve = 10 ** (np.interp(np.arange(N) / SR, [d[0] for d in dyn], [d[1] for d in dyn]) / 20)
     for stem in final:
         final[stem] *= dcurve[:, None]

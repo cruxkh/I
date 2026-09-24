@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""VERSION 5 (87.0 s; the SYNC table below is the v2 list, remapped to v5 at the bottom). Writes audio/cues/base.json from SYNC-point cues below.
+"""VERSION 7 (96.0 s). The SYNC table below is the v2 list; it is remapped to v5 and then v7 at the bottom. Writes audio/cues/base.json from SYNC-point cues below.
 Each entry: (sync_time, sfx, gain_db, pan). Cue t = sync_time - hit offset (audio/sfx/hits.json)."""
 import os, json
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -101,6 +101,62 @@ V5_NEW = [
     (55.25, 'bit_laugh', -8, 0.0),             # Bit laughs at the shark after the zap
 ]
 SYNC = [(ts + 6.0 if ts >= 29.2 else ts, nm, g, p) for (ts, nm, g, p) in SYNC if (ts, nm) not in V5_DROP] + V5_NEW
+
+# ===== VERSION 7 (96.0 s) =====
+# v5 t < 6.2: opening rebuilt (V7_OPEN); v5 6.2..35.2 -> +4.0; v5 jam (35.2..49.4) rebuilt (V7_JAM);
+# v5 >= 49.4 -> +9.0.
+V5 = SYNC
+JAM_KEEP_AT_FLASH = {'dive_whoosh', 'light_shimmer'}   # the 35.2 flash belongs to S2's end -> 39.2
+V7_OPEN = [
+    (0.0, 'city_night_telaviv', -18, 0.0),     # city under the drone, masked as the stand takes over
+    (0.0, 'stadium_chant', -6, 0.0),           # ultras: builds, loudest 5.5-8.3, whips away after 8.5
+    (8.5, 'whip_pan', -8, 0.0),                # tilt/whip up to the IPTV mast
+    (9.0, 'broadcast_launch', -6, 0.0),        # packets launch (Bit glint)
+    (9.6, 'data_whoosh', -13, 0.3),
+    (10.15, 'whip_pan', -9, 0.0),              # flash out 10.0-10.2 -> Toronto
+]
+V7_JAM = [
+    (39.2, 'dataworld_ambience', -12, 0.0),    # 19.6 s bed
+    (39.2, 'traffic_jam_grumble', -12, 0.0),   # 17.6 s, fades after the boost
+    # chase cam 39.2-47.0: Bit running, pushing, getting stuck
+    (39.3, 'bit_run_steps', -12, 0.0),
+    (41.3, 'bit_run_steps', -13, 0.0),
+    (43.3, 'bit_run_steps', -12, 0.0),
+    (45.3, 'bit_run_steps', -12, 0.0),
+    (39.8, 'packet_honk_mid', -13, 0.5),
+    (40.25, 'packet_bump', -11, -0.3),
+    (41.1, 'packet_bump', -12, 0.35),
+    (41.9, 'squeeze_squeak', -15, -0.2),
+    (42.8, 'packet_bump', -10, 0.2),
+    (42.95, 'packet_honk_double', -12, -0.5),
+    (43.7, 'zip_streak', -15, 0.2),            # hop over a packet
+    (44.5, 'packet_bump', -11, -0.35),
+    (44.9, 'packet_honk_hi', -13, 0.6),
+    (45.4, 'squeeze_squeak', -14, 0.2),
+    (45.9, 'packet_bump', -10, 0.1),
+    (46.4, 'packet_honk_lo', -12, -0.4),
+    (46.7, 'packet_bump', -11, -0.1),          # reaches the front ~47.0
+    (47.1, 'packet_honk_mid', -13, 0.4),
+    # dialogue section 47.4-56.4
+    (50.3, 'sleepy_tuba_wah', -18, 0.3),       # under EMBY "Still... buffering..."
+    (51.65, 'packet_honk_lo', -13, 0.6),
+    (54.5, 'packet_honk_hi', -13, 0.3),
+    (56.5, 'bit_charge', -11, 0.0),            # charge peaks on the boost
+    (56.5, 'bit_rocket_launch', -4, 0.0),      # BOOST
+    (57.7, 'sonic_whoosh', -5, 0.0),           # burst into open fibre
+    (58.1, 'zip_streak', -12, 0.3),
+]
+SYNC = []
+for (ts, nm, g, p) in V5:
+    if ts < 6.2:
+        continue
+    if ts < 35.2 or (ts == 35.2 and nm in JAM_KEEP_AT_FLASH):
+        SYNC.append((ts + 4.0, nm, g, p))
+    elif ts < 49.4:
+        continue
+    else:
+        SYNC.append((ts + 9.0, nm, g, p))
+SYNC += V7_OPEN + V7_JAM
 
 cues = []
 for (ts, name, g, p) in SYNC:

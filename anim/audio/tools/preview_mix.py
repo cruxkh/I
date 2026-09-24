@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """SFX preview mixer: places audio/cues/*.json (base.json by default) + dialogue (audio/timeline.json)
-into a timeline-length (87 s in v5) stereo 48 kHz wav at audio/sfx_preview.wav, prints peak/RMS per second and saves QA plots.
+into a timeline-length (96 s in v7) stereo 48 kHz wav at audio/sfx_preview.wav, prints peak/RMS per second and saves QA plots.
 
 usage: python3 audio/tools/preview_mix.py [--cues a.json,b.json] [--dlg-gain -4] [--png DIR] [--no-dlg]
 
@@ -88,8 +88,8 @@ def main():
         ax[1].set_ylim(-60, 0); ax[1].legend(loc='upper right'); ax[1].grid(alpha=0.3)
         ax[2].specgram(m + 1e-9, NFFT=2048, Fs=SR, noverlap=1024, cmap='magma', vmin=-130, vmax=-20)
         ax[2].set_ylim(20, 16000)
-        for s in [0.5, 4.6, 5.0, 6.2, 15.3, 18.0, 25.3, 26.4, 28.4, 30.2, 31.2, 35.2, 47.5, 48.7, 49.4, 54.9, 55.2,
-                  59.4, 60.4, 63.8, 64.9, 65.3, 66.5, 75.0, 76.0, 76.8, 77.4, 78.8, 83.4, 83.8]:
+        for s in [5.5, 8.3, 8.5, 9.0, 10.2, 19.3, 22.0, 29.3, 30.4, 32.4, 34.2, 35.2, 39.2, 47.0, 56.5, 57.7, 58.4,
+                  63.9, 68.4, 69.4, 72.8, 73.9, 74.3, 75.5, 84.0, 85.0, 85.8, 86.4, 87.8, 92.4, 92.8]:
             for x in ax:
                 x.axvline(s, color='g', lw=0.6, alpha=0.6)
         ax[2].set_xticks(range(0, int(DUR) + 1, 2))

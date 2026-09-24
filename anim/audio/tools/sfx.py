@@ -961,7 +961,7 @@ def _wind(dur, r, muffled=False, gust_rate=0.5, fin=0.3, fout=0.6, howl=0.4):
 
 
 @sfx('room_tone_cozy', 'Cosy apartment room tone: warm air + faint fridge/electric hum, radiator hiss with an '
-     'occasional metallic tick, wall clock tick-tock (left), faint muffled wind outside. 29.4 s (S2 v5 6.2-35.2 + '
+     'occasional metallic tick, wall clock tick-tock (left), faint muffled wind outside. 29.4 s (S2 v7 10.2-39.2 + '
      'tail), 0.8 s fade-in/out.', 0.0, 'bed', -30)
 def _(r):
     return _room(29.4, r)
@@ -1175,7 +1175,7 @@ def _(r):
 
 
 @sfx('dive_whoosh', 'Deep dive INTO the router LED: sub rising from 30 Hz, reversed-air suck and a huge sweeping '
-     'whoosh that peaks at 1.0 s (= the 35.2 flash in v5), then roars away into a tunnel tail. 2.4 s.', 1.0)
+     'whoosh that peaks at 1.0 s (= the 39.2 flash in v7), then roars away into a tunnel tail. 2.4 s.', 1.0)
 def _(r):
     dur = 2.4
     n = N(dur)
@@ -1219,9 +1219,9 @@ def _(r):
 # ---------------------------------------------------------------- data world
 
 @sfx('dataworld_ambience', 'Inside the fibre: electric hum with slow beating, flowing data streams (fluttering '
-     'filtered noise), tiny random digital pips flicking past in stereo, low tunnel air. 14.4 s bed (29.2-43.4 + tail).', 0.0, 'bed', -24)
+     'filtered noise), tiny random digital pips flicking past in stereo, low tunnel air. 19.6 s bed (v7 jam 39.2-58.4 + tail).', 0.0, 'bed', -24)
 def _(r):
-    dur = 14.4
+    dur = 19.6
     n = N(dur)
     t = tax(n)
     hum = (np.sin(2 * np.pi * 100 * t) + 0.5 * np.sin(2 * np.pi * 200.7 * t) + 0.25 * np.sin(2 * np.pi * 301.5 * t)
@@ -1236,7 +1236,7 @@ def _(r):
         flow.append(fl)
     flow = np.vstack(flow)
     pips = np.zeros((2, n))
-    for k in range(100):
+    for k in range(140):
         pn = N(0.05)
         f = r.choice([1200, 1600, 2000, 2400, 3000, 3600, 4800]) * r.uniform(0.98, 1.02)
         p = np.sin(2 * np.pi * f * tax(pn)) * np.exp(-tax(pn) / 0.012) * attack(pn, 0.001)
@@ -1248,9 +1248,9 @@ def _(r):
 
 
 @sfx('traffic_jam_grumble', 'Traffic jam of idling packets: low chugging engine rumble (many slow-pulsing sub '
-     'motors), impatient grumbling murmurs. 12.6 s bed (29.2 -> the 41.5 boost), fades out over the last 1 s.', 0.0, 'bed', -24)
+     'motors), impatient grumbling murmurs. 17.6 s bed (v7 39.2 -> the 56.5 boost), fades out over the last 1 s.', 0.0, 'bed', -24)
 def _(r):
-    dur = 12.6
+    dur = 17.6
     n = N(dur)
     t = tax(n)
     y = np.zeros((2, n))
@@ -1592,7 +1592,7 @@ def _(r):
 
 
 @sfx('shore_arrival_swell', 'Cable rising to the shore: a big rolling water swell + magical upward shimmer that '
-     'crests at 1.6 s (= 59.4 in v5), then washes out. 3.2 s.', 1.6)
+     'crests at 1.6 s (= 68.4 in v7), then washes out. 3.2 s.', 1.6)
 def _(r):
     dur = 3.2
     n = N(dur)
@@ -1885,7 +1885,7 @@ def _ticks(dur, r, fout=0.0):
     return fade(y, 0, fout)
 
 
-@sfx('buffering_ticks_long', 'Buffering spinner ticks, 9.8 s non-looping version (15.55 -> 25.35, stops as the old box '
+@sfx('buffering_ticks_long', 'Buffering spinner ticks, 9.8 s non-looping version (v7 19.55 -> 29.35, stops as the old box '
      'is yanked out); same sound as buffering_tick_loop, 0.4 s fade-out.', 0.0, 'bed', -26)
 def _(r):
     return _ticks(9.8, r, 0.3)
@@ -2208,6 +2208,127 @@ def _(r):
     y += formant(white(n, r), 'i', 1.3) * env(n, [(0, 0), (0.92, 0), (1.0, 0.12), (1.12, 0)]) * 0.5
     y = lp(y, 5500)
     return reverb(y, IR_water(), 0.12, tail=False)
+
+
+# ---------------------------------------------------------------- VERSION 7 additions (96 s cut)
+
+def _sing_crowd(dur, r, pattern, cycle, count=40, base=(105, 150), f_share=0.3, shout=0.25):
+    """many voices singing a repeating rhythmic chant. pattern = [(offset, len, pitch_ratio, vowel, k_cons)]"""
+    n = N(dur)
+    out = np.zeros((2, n))
+    for k in range(count):
+        rr = np.random.default_rng(r.integers(1 << 31))
+        female = rr.uniform() < f_share
+        f0 = rr.uniform(*base) * (2.0 if female else 1.0) * 2 ** (rr.normal(0, 0.25) / 12)
+        sh = 1.15 if female else 1.0
+        amp = np.zeros(n)
+        pitch = np.full(n, f0)
+        wv = {v: np.zeros(n) for v in 'aoiue'}
+        cons = np.zeros(n)
+        c = rr.uniform(-0.02, 0.02)
+        while c < dur:
+            for (so, sl, pr, v, kc) in pattern:
+                s0 = c + so + rr.normal(0, 0.022)
+                i0, i1 = N(s0), min(n, N(s0 + sl + rr.normal(0, 0.02)))
+                if i0 < 0 or i1 - i0 < 10:
+                    continue
+                amp[i0:i1] = np.hanning(i1 - i0) ** 0.3
+                wv[v][i0:i1] = 1
+                pitch[i0:i1] = f0 * pr * np.linspace(0.985, 1.0, i1 - i0)
+                if kc:
+                    kb = N(0.028)
+                    if i0 - kb > 0:
+                        cons[i0 - kb:i0] = np.hanning(kb)
+            c += cycle
+        pitch = smooth(pitch, 0.02) * (1 + 0.006 * np.sin(2 * np.pi * rr.uniform(4.5, 6.5) * tax(n)))
+        src = glottal(pitch, n, rr, breath=shout, jitter=0.02, tilt=2600)
+        y = np.zeros(n)
+        for v, w in wv.items():
+            if w.any():
+                y += formant(src, v, sh) * smooth(w, 0.015)
+        y = y * amp + bp(white(n, rr), 1800, 4500) * cons * 0.4
+        out += pan(lp(y, rr.uniform(3500, 7000)), rr.uniform(-1, 1)) * rr.uniform(0.5, 1)
+    return out / np.sqrt(count)
+
+
+@sfx('stadium_chant', 'Maccabi home stand, ultras in full voice (S1 v7 drone approach): thousands singing a rhythmic '
+     '"oh-OH, Ma-cca-BI!" style chant on vowels (no real lyrics, 120 bpm), bass drums + snare on the chant rhythm, '
+     'claps, flare hiss and sputter (right), whistles, crowd roar. Distance-shaped: dark and reverberant at 0 s, '
+     'close, bright and loudest 5.5-8.3 s, whips away/darker after 8.5 s. 10.4 s, fade-out from 9.9.', 0.0)
+def _(r):
+    dur = 10.4
+    n = N(dur)
+    t = tax(n)
+    cyc = 2.0
+    pat = [(0.00, 0.42, 1.0, 'o', 0), (0.50, 0.42, 1.122, 'o', 0),
+           (1.00, 0.18, 1.0, 'a', 0), (1.25, 0.18, 1.0, 'a', 1), (1.50, 0.44, 1.335, 'i', 0)]
+    sing = _sing_crowd(dur, r, pat, cyc, count=48)
+    roar = np.vstack([roar_layer(n, r, np.ones(n), ('a', 'o')), roar_layer(n, r, np.ones(n), ('o', 'e'))]) * 0.45
+    # drums: three bass drums + a snare, on the chant rhythm
+    dr = np.zeros((2, n))
+    c = 0.0
+    while c < dur:
+        for (so, acc) in [(0.0, 1.0), (0.5, 0.85), (1.0, 0.9), (1.25, 0.8), (1.5, 1.0)]:
+            for d, p in enumerate([-0.5, 0.0, 0.45]):
+                add_at(dr, pan(thump(0.5, 125 - 15 * d, 52, 0.16, 0.35, r) + lp(white(N(0.5), r), 1500) *
+                               expdec(N(0.5), 0.03) * 0.3, p), c + so + r.normal(0, 0.008), acc * 0.6)
+        for k in range(8):  # snare 8ths
+            sn = bp(white(N(0.25), r), 1200, 7000) * expdec(N(0.25), 0.05) + \
+                 np.sin(2 * np.pi * 190 * tax(N(0.25))) * expdec(N(0.25), 0.03) * 0.5
+            add_at(dr, pan(sn, 0.25), c + k * 0.25 + r.normal(0, 0.006), 0.18 if k % 2 else 0.28)
+        c += cyc
+    claps = _claps(dur, r, [c0 + o for c0 in np.arange(0, dur, cyc) for o in (0.0, 0.5, 1.0, 1.25, 1.5)], 26, 0.02)
+    # flares: hiss + sputter crackle, right of the stand
+    fl = (bp(white(n, r), 1800, 9000) * (0.6 + 0.4 * slow_noise(n, r, 9)) +
+          hp(pops(dur, r, 180, (2500, 8000), 3, None, (0.05, 0.3)).mean(axis=0), 1500))
+    flares = pan(fl, 0.55) * 0.35 + pan(fl[::-1], -0.4) * 0.15
+    y = sing * 1.25 + roar + dr * 0.8 + claps * 0.7 + flares
+    for k in range(7):
+        w = _whistle(r.uniform(0.5, 1.0), r, f=r.uniform(2300, 3300), slide=r.uniform() < 0.7)
+        add_at(y, pan(w, r.uniform(-0.9, 0.9)), r.uniform(1.0, 9.0), r.uniform(0.05, 0.12))
+    # distance shaping: level, brightness and reverb follow the drone
+    lvl = env(n, [(0, 0.3), (2.0, 0.38), (4.9, 0.6), (5.5, 1.0), (8.3, 1.0), (8.9, 0.55), (10.4, 0.4)])
+    fc = env(n, [(0, 1100), (3.0, 1800), (5.5, 9000), (8.3, 9000), (8.9, 2800), (10.4, 2200)])
+    y = stft_shape(y, lpsweep(lambda tt: np.interp(tt, t, fc), 12))
+    wet = env(n, [(0, 0.9), (5.5, 0.3), (8.3, 0.3), (9.0, 0.7), (10.4, 0.8)])
+    w = reverb(y, IR_stadium(), 1.0, dry=0.0, tail=False)
+    y = y * (1.1 - 0.5 * wet) + w * wet * 0.6
+    y *= lvl
+    y = hp(y, 35)
+    return fade(y, 0.2, 0.5)
+
+
+@sfx('bit_run_steps', 'Bit running (chase cam): quick light cartoon footsteps -- rubbery-plastic little taps with a '
+     'soft tunnel ring, ~9 steps/s, slight L/R alternation. 2.0 s, even and loopable-ish; place back to back.', 0.0,
+     'bed', -24)
+def _(r):
+    dur = 2.0
+    n = N(dur)
+    y = np.zeros((2, n))
+    k = 0
+    tt = 0.0
+    while tt < dur - 0.05:
+        L = N(0.08)
+        f = r.uniform(900, 1200) if k % 2 else r.uniform(750, 1000)
+        s = _wood_hit(r, body=((f * 0.35, 6, 0.8), (f, 7, 0.6)), bright=((f * 2.6, 8, 0.4), (f * 4.1, 9, 0.2)),
+                      dur=0.08, hard=0.6, tau=0.0012)
+        s += np.sin(phase_of(np.interp(tax(L), [0, 0.03], [420, 260]))) * expdec(L, 0.015) * 0.5
+        add_at(y, pan(s, -0.15 if k % 2 else 0.15), tt, r.uniform(0.75, 1.0))
+        tt += 0.111 + r.normal(0, 0.006)
+        k += 1
+    return reverb(y, IR_tunnel(), 0.2, tail=False)
+
+
+@sfx('packet_bump', 'Bit bumps/shoves between packets: squishy rubbery body bump -- soft low "bwomp" + tiny squeak. '
+     'Hit 0.005 s. 0.5 s.', 0.005)
+def _(r):
+    n = N(0.5)
+    t = tax(n)
+    b = np.sin(phase_of(np.interp(t, [0, 0.05, 0.2], [240, 150, 110]))) * env(n, [(0, 0), (0.004, 1), (0.08, 0.5), (0.3, 0)])
+    b += lp(white(n, r), 900) * expdec(n, 0.02) * 0.5
+    sq = np.sin(phase_of(np.interp(t, [0.05, 0.15], [1100, 1500]))) * env(n, [(0, 0), (0.05, 0), (0.07, 0.15), (0.16, 0)])
+    y = sat((b + sq) * 1.2, 1.4)
+    return reverb(y, IR_tunnel(), 0.2, tail=False)
 
 
 # ----------------------------------------------------------------------------------------

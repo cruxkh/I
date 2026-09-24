@@ -71,5 +71,8 @@
  "wa_send": 0.0,
  "wa_typing": 0.0,
  "wa_receive": 0.0,
- "bit_laugh": 0.02
+ "bit_laugh": 0.02,
+ "stadium_chant": 0.0,
+ "bit_run_steps": 0.0,
+ "packet_bump": 0.005
 }
