@@ -59,9 +59,13 @@
     if (!brand && path && r >= 10) { const q = H(seed * 7.7); prop = q < 0.14 ? 'paper' : q < 0.26 ? 'watch' : null; }
     PK.push({ X, Z, seed, r, li, brand, prop, kind: KINDS[Math.floor(H(seed * 2.3) * 6) % 6], mood: prop ? 'bored' : m < 0.22 ? 'sleep' : m < 0.36 ? 'annoyed' : 'bored' });
   }
-  // obstacles inside Bit's gaps: a LOADING+ stuck in the right gap, a snoozer in the left gap (he leaps it)
-  PK.push({ X: 0.915, Z: 11.95, seed: 903, r: 99, li: 9, brand: 'LOADING+', kind: 'meme', mood: 'bored' });
-  PK.push({ X: 0.305, Z: 9.95, seed: 907, r: 98, li: 9, brand: null, kind: 'shop', mood: 'sleep' });
+  // v7 chase set-pieces: the bonk/squeeze pair (row 28), the stuck pair (row 16), the snoozer he vaults (Z 15.8)
+  const setPk = (li, r, o) => { const p = PK.find(q => q.li === li && q.r === r); if (p) Object.assign(p, o); else PK.push(Object.assign({ li, r, seed: r * 7 + li * 3 + 11, kind: 'video', mood: 'bored', prop: null, brand: null }, o)); };
+  setPk(2, 28, { X: 0.08, Z: 23.0, brand: null, kind: 'video', mood: 'bored', prop: null });
+  setPk(3, 28, { X: 0.54, Z: 23.0, brand: 'LAGTV', prop: null });
+  setPk(2, 16, { X: 0.08, Z: 13.4, brand: null, kind: 'shop', prop: 'paper' });
+  setPk(3, 16, { X: 0.54, Z: 13.4, brand: 'LOADING+', prop: null });
+  PK.push({ X: 0.305, Z: 15.8, seed: 907, r: 98, li: 9, brand: null, kind: 'photo', mood: 'sleep', vault: true });
   const pk = (li, r) => PK.find(p => p.li === li && p.r === r);
   // honk pops (synced to the cue sheets)
   const HONKS = [
@@ -175,12 +179,12 @@
 
   // ---------------------------------------------------------------- HUD: live delay counter
   function hud(ctx, t) {
-    const a = smooth(29.55, 29.8, t);
+    const a = smooth(29.4, 29.65, t);
     if (a <= 0) return;
     let v, col = '#ff3b4f';
-    if (t < 42.7) v = 4.2 + Math.max(0, t - 29.8) * 0.92;
-    else { const u = inv(42.7, 43.4, t); v = lerp(4.2 + (42.7 - 29.8) * 0.92, 1.3, ease.out(u)); col = A.mixc('#ff3b4f', '#5dff9a', smooth(0, 0.7, u)); }
-    const shake = t > 41.5 && t < 42.3 ? (1 - inv(41.5, 42.3, t)) * 5 : 0;
+    if (t < 47.7) v = 4.2 + Math.max(0, t - 29.65) * 0.72;
+    else { const u = inv(47.7, 48.4, t); v = lerp(4.2 + (47.7 - 29.65) * 0.72, 1.3, ease.out(u)); col = A.mixc('#ff3b4f', '#5dff9a', smooth(0, 0.7, u)); }
+    const shake = t > 46.5 && t < 47.3 ? (1 - inv(46.5, 47.3, t)) * 5 : 0;
     const x = 64 + A.noise1(t * 30) * shake, y = 58 + A.noise1(t * 30 + 7) * shake;
     const slide = (1 - ease.outBack(a)) * -40;
     ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y + slide);
@@ -191,10 +195,10 @@
     ctx.fillStyle = `rgba(255,59,79,${blink})`; ctx.beginPath(); ctx.arc(30, 30, 8, 0, Math.PI * 2); ctx.fill();
     A.text(ctx, 'LIVE DELAY', 50, 31, { font: '800 22px Rubik', fill: '#ffd5da', align: 'left' });
     A.text(ctx, 'עיכוב בשידור', 312, 31, { font: '600 19px Rubik', fill: 'rgba(255,213,218,0.7)', align: 'right', dir: 'rtl' });
-    const jit = t > 36.5 && t < 42.7 ? A.noise1(t * 40) * 1.2 : 0;
+    const jit = t > 41.5 && t < 47.7 ? A.noise1(t * 40) * 1.2 : 0;
     A.text(ctx, v.toFixed(1) + 's', 22 + jit, 70, { font: '900 40px Rubik', fill: col, align: 'left' });
     // mini buffer bar
-    const bw = 170, fillp = t < 42.7 ? 0.15 + 0.05 * Math.sin(t * 2) : lerp(0.2, 1, smooth(42.7, 43.3, t));
+    const bw = 170, fillp = t < 47.7 ? 0.15 + 0.05 * Math.sin(t * 2) : lerp(0.2, 1, smooth(47.7, 48.3, t));
     ctx.fillStyle = 'rgba(255,255,255,0.12)'; A.rrect(ctx, 140, 62, bw, 12, 6); ctx.fill();
     ctx.fillStyle = col; A.rrect(ctx, 140, 62, bw * fillp, 12, 6); ctx.fill();
     ctx.restore();
@@ -310,7 +314,7 @@
     if (p.brand === 'EMBY' && t > 32.25 && t < 36.4) Object.assign(out, { look: [-0.4, 0.3], bmood: 'sleepy', rot: -0.06 + 0.02 * Math.sin(t * 1.1), spinnerEyes: smooth(35.5, 35.7, t) });
     const bz = bitZ(t), bx = bitX(t);
     // ILVIP and EMBY close ranks as he arrives
-    const close = smooth(32.02, 32.24, t) * (1 - smooth(36.25, 36.45, t));
+    const close = smooth(31.6, 31.85, t) * (1 - smooth(36.25, 36.45, t));
     if (p.brand === 'ILVIP' && p.r === 9) out.dx = 0.07 * close;
     if (p.brand === 'EMBY' && p.r === 9) out.dx = -0.07 * close;
     if (RUN(t) && p.r !== 9) { // the queue reacts as he blasts past
@@ -335,33 +339,6 @@
   }
 
   // ============================================================ SHOTS
-  function shotA(ctx, t) {
-    const k = t - 8.2; // authored against the v1 21.0 start
-    const zc = key(k, [[21.0, -0.6], [21.45, -0.2, 'out'], [21.9, 11.3, 'inOut']]);
-    CAMX = 0.9 * smooth(21.2, 21.85, k);
-    const bz = bitZ(t), bx = bitX(t);
-    const [bxs, bys] = proj(bx, 0, bz, zc);
-    const zk = ease.out(inv(21.5, 21.72, k));
-    const cam = { x: lerp(960, bxs, zk), y: lerp(540, bys - 50, zk), zoom: key(k, [[21.0, 1.35], [21.4, 1.03, 'out'], [21.5, 1.03], [21.72, 2.9, 'out'], [21.9, 3.1, 'lin']]), rot: 0, t };
-    clampCam(cam);
-    ctx.save(); fillBase(ctx); A.camera(ctx, cam);
-    jamWorld(ctx, t, zc, {
-      jam: 0.95, catX: -0.62, sign: false, cat: zc < 4,
-      bit: { X: bx, Y: 0, Z: bz, draw: (c, x, y, sc) => { A.glow(c, x, y - 70 * sc, 260 * sc, '#ffc93c', 0.5 + 0.3 * Math.sin(t * 6)); const hp = Math.max(0, Math.sin((k - 21.3) * Math.PI * 3.2)) * smooth(21.25, 21.4, k); A.drawBit(c, x, y, sc, Object.assign(bitJamOpts(t), { glow: 1.6, hop: hp * 55, limbs: 'arms-up', mood: 'determined', squash: hp < 0.1 ? 0.12 : -0.08 })); } },
-      catO: () => ({ mood: 'bored' }),
-      pkO: p => shoveO(p, t),
-    });
-    ctx.restore();
-    const ping = inv(21.66, 21.9, k);
-    if (ping > 0 && ping < 1) {
-      const [sx, sy] = [960 + (bxs - cam.x) * cam.zoom, 540 + (bys - 25 - cam.y) * cam.zoom];
-      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = `rgba(255,220,120,${0.7 * (1 - ping)})`; ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.arc(sx, sy, 70 + ping * 220, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
-    }
-    speedLines(ctx, t, 960, 470, Math.sin(inv(21.48, 21.75, k) * Math.PI) * 0.9, 40);
-  }
-
-  // B + Q1 + Q2: the squeeze and the competitor queue (one geography, three setups)
   function shotB(ctx, t) {
     const bz = bitZ(t), bx = bitX(t);
     let zc, cam;
@@ -412,54 +389,7 @@
     ctx.restore();
   }
 
-  // --- shot C: low-angle Catpacket (authored at v1 times, k = t - 11.8)
-  function shotC(ctx, t) {
-    const k = t - 11.8, lt = k - 25.0;
-    const cam = {
-      x: key(k, [[25.0, 1330], [25.15, 1310], [25.85, 960, 'inOut'], [27.95, 930]]),
-      y: key(k, [[25.0, 860], [25.15, 850], [25.85, 548, 'inOut'], [27.95, 530]]),
-      zoom: key(k, [[25.0, 1.9], [25.15, 1.85], [25.85, 1.02, 'inOut'], [27.95, 1.1]]),
-      rot: key(k, [[25.0, 0.0], [25.85, -0.05, 'inOut']]), t,
-    };
-    ctx.save(); fillBase(ctx); A.camera(ctx, cam);
-    ctx.save(); ctx.translate(900, 860); ctx.scale(1.95, 1.95); ctx.translate(-960, -470);
-    A.drawDataTunnel(ctx, t, { z: 30 + t * 0.15, speed: 0.1, jam: 0.85 });
-    ctx.restore();
-    // background queue at the horizon (competitors among them)
-    for (let i = 0; i < 9; i++) {
-      const x = 900 + (i - 4) * 150 + (H(i) - 0.5) * 40, y = 905 + H(i * 3) * 14, sc = 0.4 + H(i * 5) * 0.1;
-      if (Math.abs(x - 880) < 260) continue;
-      A.glow(ctx, x, y - 20, 70, 'rgba(255,40,60,1)', 0.18);
-      ctx.save(); ctx.globalAlpha = 0.8;
-      const hk = i === 7 ? smooth(39.36, 39.42, t) : 0;
-      if (i === 1 || i === 6) drawBrand(ctx, x, y, sc, { t, brand: i === 1 ? 'LAGTV' : 'LOADING+', seed: 40 + i, mood: 'sleepy', spinner: i === 6 ? 1 : 0, mouth: 0, look: [0.6 * Math.sign(880 - x), -0.2], glow: 0.5 });
-      else A.drawPacket(ctx, x, y, sc, { t, seed: 40 + i, mood: i % 3 ? 'bored' : 'sleep', honk: hk, look: [0.6 * Math.sign(880 - x), -0.2] });
-      ctx.restore();
-    }
-    const lookK = smooth(25.35, 25.9, k);
-    const catMood = k > 26.62 && k < 27.45 ? 'grumpy' : 'bored';
-    const arms = k > 25.62 && k < 26.3 ? 'point' : 'crossed';
-    const armPop = Math.max(0, 1 - Math.abs(k - 25.62) / 0.12, k > 26.3 && k < 26.45 ? 1 - (k - 26.3) / 0.15 : 0);
-    A.glow(ctx, 880, 560, 700, '#ff3fa4', 0.12);
-    A.drawCatPacket(ctx, 900, 1010, 3.35, {
-      t, mood: catMood, arms,
-      look: [lerp(-0.55, 0.62, lookK), lerp(-0.1, 0.55, lookK)],
-      rot: lerp(-0.02, 0.05, smooth(25.6, 26.2, k)) - 0.02 * smooth(27.2, 27.8, k),
-      lid: k > 27.4 ? 0.12 : 0, browRaise: k > 27.1 && k < 27.6 ? 6 : 0,
-      squash: 0.04 * armPop,
-    });
-    const recoil = Math.exp(-lt * 5) * Math.sin(lt * 18);
-    const bmood = k < 26.7 ? 'panic' : k < 27.35 ? 'neutral' : 'determined';
-    A.drawBit(ctx, 1580 + recoil * 12, 975, 0.72, {
-      t, mood: bmood, shadow: 1, mouth: 0, glow: 1.3, look: [-0.75, -0.85],
-      limbs: 'stand', squash: 0.05 * Math.sin(t * 22) * (k < 26.7 ? 1 : 0) + (k > 27.5 ? 0.1 * smooth(27.5, 27.8, k) : 0),
-      sweat: k < 27.2 ? 1 : 0, browL: k > 27.35 ? -4 : 0, browR: k > 27.35 ? -4 : 0,
-    });
-    ctx.fillStyle = A.radial(ctx, 40, 1180, 60, 420, [[0, 'rgba(40,20,50,0.95)'], [0.6, 'rgba(60,25,60,0.7)'], [1, 'rgba(40,20,50,0)']]); ctx.fillRect(-400, 700, 900, 800);
-    ctx.fillStyle = A.radial(ctx, 1900, 1200, 60, 380, [[0, 'rgba(20,40,60,0.95)'], [0.6, 'rgba(25,50,70,0.7)'], [1, 'rgba(20,40,60,0)']]); ctx.fillRect(1450, 750, 900, 800);
-    ctx.restore();
-  }
-
+  //@@CHASE@@
   // --- shot D: Bit close-up, "Sorry! GOTV doesn't wait in line!"
   function shotD(ctx, t) {
     const u = inv(39.6, 41.45, t);
@@ -597,23 +527,5 @@
     if (fl > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(200,250,255,${0.35 * fl})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
   }
 
-  A.scene({
-    name: 's4_jam', start: 29.2, end: 43.4,
-    draw(ctx, s) {
-      const t = s.t;
-      if (t < 30.1) shotA(ctx, t);
-      else if (t < 36.8) shotB(ctx, t);
-      else if (t < 39.6) shotC(ctx, t);
-      else if (t < 41.45) shotD(ctx, t);
-      else if (t < 42.7) shotE(ctx, t);
-      else shotF(ctx, t);
-      hud(ctx, t);
-      // white-gold flash out of the GOTV LED dive
-      const fa = 1 - ease.out(inv(29.2, 29.6, t));
-      if (fa > 0) {
-        ctx.save(); ctx.fillStyle = `rgba(255,248,222,${fa})`; ctx.fillRect(0, 0, 1920, 1080);
-        ctx.globalCompositeOperation = 'lighter'; A.glow(ctx, 960, 470, 1200, 'rgba(255,201,60,1)', fa * 0.8); ctx.restore();
-      }
-    },
-  });
+  //@@SCENE@@
 })();
