@@ -1435,7 +1435,7 @@
     // distant ridges (hazy silhouettes)
     const r = mul(900);
     for (let layer = 0; layer < 2; layer++) {
-      g.fillStyle = layer ? '#083447' : '#0a3c50';
+      g.fillStyle = layer ? '#062c3c' : '#083446';
       g.beginPath(); g.moveTo(0, h);
       for (let x = 0; x <= w; x += 20) g.lineTo(x, 330 + layer * 90 - 120 * (0.5 + 0.5 * Math.sin(x / w * TAU * 2 + layer)) * (0.6 + 0.4 * Math.sin(x / w * TAU * 5 + 1)) - 30 * A.noise1(x / 60 + layer * 9));
       g.lineTo(w, h); g.closePath(); g.fill();
@@ -1472,16 +1472,29 @@
     // pebbles & shells
     for (let i = 0; i < 90; i++) { const x = r() * w, y = 70 + r() * (h - 80), s = 3 + r() * 8 * (y / h + 0.4); g.fillStyle = pick(r, ['#0d3446', '#145566', '#0b2a3a']); A.ellipse(g, x, y, s, s * 0.6); g.fill(); g.fillStyle = 'rgba(160,240,240,0.15)'; A.ellipse(g, x - s * 0.2, y - s * 0.25, s * 0.5, s * 0.25); g.fill(); }
   });
-  const ocShafts = () => A.layer('oc-shafts', 960, 540, (g, w, h) => {
-    const r = mul(903);
+  const ocShafts = () => A.layer('oc-shafts', 1400, 540, (g, w, h) => {
+    // periodic (400 px at half res = 800 screen px) so it can scroll seamlessly
+    const r = mul(903), shafts = [];
+    for (let i = 0; i < 4; i++) shafts.push([r() * 400, 16 + r() * 50, 110 + r() * 110, 0.07 + r() * 0.09]);
     g.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < 9; i++) {
-      const x = r() * w * 1.2 - w * 0.1, wd = 20 + r() * 70, sk = 120 + r() * 120;
-      g.fillStyle = A.linear(g, 0, 0, 0, h, [[0, `rgba(120,230,230,${0.10 + r() * 0.10})`], [1, 'rgba(120,230,230,0)']]);
+    for (let rep = -1; rep < 4; rep++) for (const [x0, wd, sk, a] of shafts) {
+      const x = x0 + rep * 400;
+      g.fillStyle = A.linear(g, 0, 0, 0, h, [[0, `rgba(130,235,230,${a})`], [0.7, `rgba(130,235,230,${a * 0.3})`], [1, 'rgba(130,235,230,0)']]);
       A.path(g, [[x, 0], [x + wd, 0], [x + wd + sk + wd, h], [x + sk - wd * 0.5, h]]); g.fill();
     }
-    g.filter = 'blur(6px)'; g.drawImage(g.canvas, 0, 0); g.filter = 'none';
+    g.filter = 'blur(5px)'; g.drawImage(g.canvas, 0, 0); g.filter = 'none';
   });
+  function jelly(ctx, x, y, s, t, seed) {
+    const pulse = Math.sin(t * 2.2 + seed), bell = 1 + pulse * 0.08;
+    ctx.save(); ctx.translate(x, y + pulse * 6 * s);
+    ctx.globalCompositeOperation = 'lighter';
+    A.glow(ctx, 0, 0, 90 * s, 'rgba(170,110,255,0.35)');
+    ctx.strokeStyle = 'rgba(200,160,255,0.45)'; ctx.lineWidth = 2 * s;
+    for (let k = 0; k < 6; k++) { const bx = (k - 2.5) * 8 * s; ctx.beginPath(); ctx.moveTo(bx, 6 * s); for (let j = 1; j < 8; j++) ctx.lineTo(bx + Math.sin(t * 2 + j * 0.8 + k) * 6 * s, 6 * s + j * 14 * s); ctx.stroke(); }
+    ctx.fillStyle = 'rgba(190,140,255,0.45)'; ctx.beginPath(); ctx.ellipse(0, 0, 30 * s * bell, 24 * s / bell, 0, Math.PI, 0); ctx.quadraticCurveTo(0, 12 * s, -30 * s * bell, 0); ctx.fill();
+    ctx.fillStyle = 'rgba(255,230,255,0.6)'; ctx.beginPath(); ctx.ellipse(-8 * s, -12 * s, 10 * s, 5 * s, -0.4, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
   function kelp(ctx, x, yb, hgt, t, seed, col, rim, s = 1) {
     const segs = 12, pts = [];
     for (let i = 0; i <= segs; i++) { const u = i / segs; pts.push([x + Math.sin(t * 0.9 + seed + u * 2.5) * 30 * u * s + Math.sin(seed * 3 + u * 4) * 12 * s, yb - u * hgt]); }
@@ -1514,16 +1527,16 @@
     const cw = o.cableW || 56;
     ctx.save();
     // water column
-    ctx.fillStyle = A.linear(ctx, 0, 0, 0, 1080, [[0, '#0e5a6c'], [0.25, '#0b4a5c'], [0.6, '#063247'], [1, '#021421']]); ctx.fillRect(0, 0, 1920, 1080);
+    ctx.fillStyle = A.linear(ctx, 0, 0, 0, 1080, [[0, '#0d5566'], [0.3, '#0a4254'], [0.62, '#052a3b'], [1, '#021421']]); ctx.fillRect(0, 0, 1920, 1080);
     // surface shimmer at the top
     ctx.globalCompositeOperation = 'lighter';
     for (let i = 0; i < 14; i++) { const x = ((H(i) * 2400 - sc * 0.1 + t * 20 * (H(i + 1) - 0.5)) % 2400 + 2400) % 2400 - 240; ctx.fillStyle = `rgba(160,255,250,${0.05 + 0.05 * Math.sin(t * 2 + i)})`; A.ellipse(ctx, x, 20 + H(i + 2) * 30, 90 + H(i) * 120, 10); ctx.fill(); }
     // god rays (swaying)
     const sh = ocShafts();
     for (let k = 0; k < 2; k++) {
-      ctx.globalAlpha = 0.7 + 0.3 * Math.sin(t * 0.7 + k * 2);
-      const ox = ((-sc * 0.15 + k * 900 + Math.sin(t * 0.3 + k) * 40) % 1920 + 1920) % 1920;
-      ctx.drawImage(sh, ox - 1920, 0, 1920, 1080); ctx.drawImage(sh, ox, 0, 1920, 1080);
+      ctx.globalAlpha = 0.55 + 0.35 * Math.sin(t * 0.7 + k * 2);
+      const ox = -(((sc * (0.12 + k * 0.06) + k * 300 + Math.sin(t * 0.3 + k) * 30) % 800 + 800) % 800);
+      ctx.drawImage(sh, ox, 0, 2800, 1080);
     }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     // far ridges + fish schools
@@ -1531,6 +1544,7 @@
     ctx.fillStyle = A.linear(ctx, 0, 250, 0, 700, [[0, 'rgba(11,74,92,0)'], [0.5, 'rgba(11,74,92,0.35)'], [1, 'rgba(11,74,92,0.45)']]); ctx.fillRect(0, 250, 1920, 450);
     fishSchool(ctx, ((1400 - sc * 0.25 - t * 30) % 2600 + 2600) % 2600 - 300, 330, t, 34, 7, 0.9, 'rgba(6,40,58,0.8)');
     fishSchool(ctx, ((400 - sc * 0.3 - t * 22) % 2600 + 2600) % 2600 - 300, 470, t, 26, 19, 0.7, 'rgba(8,48,66,0.7)');
+    for (let i = 0; i < 3; i++) { const x = ((H(i * 3.9) * 2600 - sc * (0.35 + i * 0.1) + t * 12) % 2600 + 2600) % 2600 - 300; jelly(ctx, x, 180 + H(i * 8.1) * 300 + Math.sin(t * 0.4 + i) * 30, 0.6 + H(i) * 0.5, t, i * 2.3); }
     // mid floor + rocks
     drawStrip(ctx, ocMid(), sc * 0.5, 430);
     // mid kelp forest
@@ -1597,11 +1611,16 @@
     }
     ctx.globalCompositeOperation = 'source-over';
     // foreground kelp & rocks (fast parallax), kept to the frame edges
-    for (let i = 0; i < 5; i++) {
-      const x = ((H(i * 13) * 3200 - sc * 1.35) % 3200 + 3200) % 3200 - 400;
-      kelp(ctx, x, 1120, 420 + H(i + 4) * 250, t, i * 2.1 + 5, '#021d2b', 'rgba(41,240,255,0.35)', 1.3);
-      ctx.fillStyle = '#031824'; A.blob(ctx, [[x - 160, 1100], [x - 120, 1010], [x - 20, 975], [x + 90, 1000], [x + 170, 1100]]); A.fillStroke(ctx, '#031824', 5);
-      ctx.strokeStyle = 'rgba(41,240,255,0.3)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 20, 980); ctx.quadraticCurveTo(x + 60, 985, x + 88, 1004); ctx.stroke();
+    for (let i = 0; i < 4; i++) {
+      const x = ((H(i * 13) * 3600 - sc * 1.35) % 3600 + 3600) % 3600 - 400;
+      kelp(ctx, x + 40, 1120, 300 + H(i + 4) * 120, t, i * 2.1 + 5, '#021a26', 'rgba(41,240,255,0.35)', 1.3);
+      kelp(ctx, x - 50, 1120, 220 + H(i + 7) * 100, t, i * 3.7 + 1, '#03202e', 'rgba(41,240,255,0.25)', 1.1);
+      ctx.fillStyle = '#031824'; A.blob(ctx, [[x - 180, 1110], [x - 130, 1010], [x - 20, 972], [x + 100, 995], [x + 190, 1110]]); A.fillStroke(ctx, '#031824', 5);
+      ctx.strokeStyle = 'rgba(41,240,255,0.3)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x - 20, 977); ctx.quadraticCurveTo(x + 60, 982, x + 98, 1000); ctx.stroke();
+      // glowing anemone on the rock
+      const ax = x - 70, ay = 1000; ctx.globalCompositeOperation = 'lighter'; A.glow(ctx, ax, ay, 50, 'rgba(255,63,164,0.35)'); ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = '#ff6fbf'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+      for (let k = 0; k < 7; k++) { const a = -Math.PI / 2 + (k - 3) * 0.28 + Math.sin(t * 1.5 + k) * 0.12; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.quadraticCurveTo(ax + Math.cos(a) * 14, ay + Math.sin(a) * 18, ax + Math.cos(a) * 26, ay + Math.sin(a) * 30); ctx.stroke(); }
     }
     // depth tint & vignette
     if (tint) { ctx.fillStyle = `rgba(2,20,33,${tint})`; ctx.fillRect(0, 0, 1920, 1080); }

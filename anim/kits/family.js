@@ -4,7 +4,8 @@
 //   A.drawSaba(ctx, x, y, scale, o)   standing height ≈ 560 px @ scale 1
 //   A.drawNoa (ctx, x, y, scale, o)   standing height ≈ 400 px @ scale 1 (top of hair puff)
 //   A.SABA_COLORS, A.NOA_COLORS       palettes
-//   A.SABA_GESTURES, A.NOA_GESTURES   arm presets {L:[sh,el], R:[sh,el]} (for custom blends)
+//   A.SABA_GESTURES, A.NOA_GESTURES   arm presets {L:[sh,el], R:[sh,el], tL/tR: torso-frame IK wrist targets (win over L/R),
+//                                     hL/hR hand shapes, wL/wR wrist twist} — readable for custom blends
 //
 // Characters face screen-RIGHT in a gentle 3/4 view by default. `o.flip` mirrors (face left).
 // "L" = the near arm/leg (screen-left when unflipped), "R" = the far one (on the facing side).
@@ -31,6 +32,8 @@
 //                (negative folds the forearm across the body, positive continues outward/up).
 //   handL, handR [x,y] IK target for the wrist (anchor-local units) — overrides armL/armR.
 //   handShapeL/R 'relax'|'open'|'fist'|'point'|'grip'
+//   wristL/R     degrees extra hand rotation (+ = fingers curl in toward the body centre).
+//   armRBehind   force the far arm behind (true) / in front of (false) the torso (default: automatic).
 //   headTilt     degrees (+ = clockwise / toward facing side).   turn  -1..1 face 3/4 turn (default 0.25)
 //   browRaise    -1..1 add to brows (both).    browAngle -1..1 add (+ = inner ends up / worried).
 //   browL, browR extra per-brow raise.        lid 0..1 extra upper-lid closure.  happy 0..1 cheek squint.
@@ -319,7 +322,7 @@
   const SG = (A.SABA_GESTURES = {
     none: { L: [22, -12], R: [18, -8], hL: 'relax', hR: 'relax' },
     noneSit: { L: [18, -62], R: [14, -58], hL: 'relax', hR: 'relax' },
-    fists: { L: [32, -128], R: [28, -125], tL: [-64, -110], tR: [66, -116], hL: 'fist', hR: 'fist' },
+    fists: { L: [32, -128], R: [28, -125], tL: [-64, -110], tR: [66, -116], front: true, hL: 'fist', hR: 'fist' },
     point: { L: [22, -40], R: [100, 6], hL: 'relax', hR: 'point' },
     headHands: { L: [152, 78], R: [150, 80], tL: [-112, -272], tR: [116, -274], wL: 18, wR: 18, front: true, hL: 'open', hR: 'open' },
     armsUp: { L: [160, 12], R: [158, 14], hL: 'open', hR: 'open' },
