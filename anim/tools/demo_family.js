@@ -103,6 +103,14 @@
       } else if (t < 53.5) {
         title(ctx, 'NOA proud lip-sync (noa3)');
         A.drawNoa(ctx, 960, 1350, 2.6, { t, pose: 'stand', mood: 'proud', look: [0.7, 0.3] });
+      } else if (t >= 56.5) {
+        title(ctx, 'master-shot mock: Saba 0.95 in chair @700,760 · Noa 0.95 @1100');
+        ctx.fillStyle = '#20303a'; A.rrect(ctx, 1380, 430, 420, 250, 12); ctx.fill();
+        A.glow(ctx, 1590, 555, 400, '#9ff5d0', 0.25);
+        chair(ctx, 700, 760, 0.95, 'back');
+        A.drawSaba(ctx, 700, 760, 0.95, { t, pose: 'sit', mood: 'eager', gesture: 'grip', look: [0.8, -0.1], lean: 0.25, mouth: 0 });
+        chair(ctx, 700, 760, 0.95, 'front');
+        A.drawNoa(ctx, 1100, 905, 0.95, { t, pose: 'stand', mood: 'amused', gesture: 'mug', flip: true, look: [0.6, -0.2], mouth: 0 });
       } else {
         title(ctx, 'flip / scale / TV-light rim test');
         A.drawSaba(ctx, 500, floorY, 0.8, { t, pose: 'stand', mood: 'neutral', flip: true, rimColor: '#9ff5d0', light: [1, -0.3], rimA: 0.7 });

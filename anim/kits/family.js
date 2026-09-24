@@ -759,7 +759,7 @@
     amused: { brow: 0.1, browAng: -0.15, browAsym: 0.8, close: 0.38, happy: 0.3, smile: 0.5, mOpen: 0, asym: 0.75, pupil: 1, tilt: -6, blush: 0.4, tongue: 0, lean: -0.05 },
     focused: { brow: -0.35, browAng: -0.55, browAsym: 0, close: 0.25, happy: 0, smile: -0.05, mOpen: 0, asym: -0.2, pupil: 0.85, tilt: 5, blush: 0.25, tongue: 1, lean: 0.15 },
     joy: { brow: 0.7, browAng: 0.25, browAsym: 0, close: 0, happy: 0.85, smile: 1, mOpen: 0.55, asym: 0, pupil: 1.1, tilt: -3, blush: 0.8, tongue: 0, lean: -0.05 },
-    proud: { brow: 0.35, browAng: 0.05, browAsym: 0.2, close: 0.55, happy: 0.45, smile: 0.75, mOpen: 0, asym: 0.35, pupil: 1, tilt: -9, blush: 0.6, tongue: 0, lean: -0.12 },
+    proud: { brow: 0.45, browAng: 0.15, browAsym: 0.25, close: 0.42, happy: 0.55, smile: 1, mOpen: 0.08, asym: 0.25, pupil: 1, tilt: -9, blush: 0.6, tongue: 0, lean: -0.12 },
   };
   const NG = (A.NOA_GESTURES = {
     none: { L: [14, -10], R: [12, -6], hL: 'relax', hR: 'relax' },
@@ -801,7 +801,7 @@
       // big puff (behind the head, on top)
       const cx = fx * 0.3 - 4, cy = -96 + bY * 0.8;
       part(ctx, R, c => {
-        for (let i = 0; i < 12; i++) { const a = i / 12 * A.TAU, r = 25 + A.hash(i * 3.3) * 6; C(c, cx + Math.cos(a) * 56 + wob(i), cy + Math.sin(a) * 32 + wob(i + 20) - (Math.sin(a) < 0 ? 4 : 0), r); }
+        for (let i = 0; i < 12; i++) { const a = i / 12 * A.TAU, r = 25 + A.hash(i * 3.3) * 6; const lowK = Math.sin(a) > 0 ? 1 - Math.sin(a) * 0.35 : 1; C(c, cx + Math.cos(a) * 58 * lowK + wob(i), cy + Math.sin(a) * 34 + wob(i + 20) - (Math.sin(a) < 0 ? 6 : 0), r); }
         E(c, cx, cy, 58, 34);
       }, NC.hair, NC.hairSh, { d: 12, r: 4 });
       // curl highlights
@@ -829,11 +829,11 @@
       for (const [x, y] of [[-40, -48], [-14, -56], [12, -58], [36, -48], [fx - 20, -38], [fx + 6, -44]]) { ctx.moveTo(x - 5 + fx * 0.4, y + 3); ctx.arc(x + fx * 0.4, y, 5.5, Math.PI * 0.9, Math.PI * 1.9); }
       strokeLine(ctx, 2.2, NC.hairHi);
       // scrunchie at puff base
-      const sx = fx * 0.3 - 2, sy = -66 + bY * 0.5;
-      const scr = c => { c.moveTo(sx - 36, sy + 2); c.bezierCurveTo(sx - 34, sy - 14, sx + 34, sy - 14, sx + 36, sy + 2); c.bezierCurveTo(sx + 36, sy + 16, sx - 36, sy + 16, sx - 36, sy + 2); c.closePath(); };
+      const sx = fx * 0.3 - 2, sy = -68 + bY * 0.5;
+      const scr = c => { for (const q of [-36, -24, -12, 0, 12, 24, 36]) E(c, sx + q, sy + q * q / 260 - 1, 8.5, 10.5, q * 0.012); };
       part(ctx, R, scr, NC.scrunchie, NC.scrunchieSh, { d: 6, lw: R.lw * 0.85 });
       ctx.beginPath();
-      for (let i = 0; i < 5; i++) { const q = -24 + i * 12, qy = sy + 2; ctx.moveTo(sx + q - 3, qy - 9 + Math.abs(q) * 0.12); ctx.quadraticCurveTo(sx + q + 4, qy, sx + q - 2, qy + 10 - Math.abs(q) * 0.1); }
+      for (let i = 0; i < 6; i++) { const q = -30 + i * 12, qy = sy + q * q / 260; ctx.moveTo(sx + q - 1, qy - 8); ctx.quadraticCurveTo(sx + q + 3, qy, sx + q, qy + 8); }
       strokeLine(ctx, 1.8, NC.scrunchieSh);
       // side ringlets
       for (const sd of [-1, 1]) {

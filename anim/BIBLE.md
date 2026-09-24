@@ -203,3 +203,7 @@ This must look like a festival-grade animated short, not a tech demo. Rich backg
 real acting (anticipation, overshoot, follow-through, eye darts, blinks, breathing); motion that is never linear; lighting that
 tells mood; dense but readable composition; little Israeli details (Hebrew signs, hamsa, Maccabi scarf, sandals with socks,
 Bamba bag on the table!).
+
+## Text rule (client request)
+NO em dash "—" or en dash "–" anywhere in on-screen text (signs, captions, scorebugs, subtitles, logos, labels).
+Use a period, comma, colon, middle dot "·" or a plain hyphen "-" instead (e.g. score `1-1`, not `1–1`).

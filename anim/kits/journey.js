@@ -587,7 +587,7 @@
     for (const f of FLOODS) drawPylon(g, f);
   }
   const FLOODS = [0.62, Math.PI - 0.62, Math.PI + 0.62, TAU - 0.62].map(a => {
-    const b = sLoop(a, 1.95, 0); const h = 250 + (Math.sin(a) > 0 ? 40 : -20);
+    const b = sLoop(a, 1.7, 0); const h = Math.sin(a) > 0 ? 215 : 150;
     return { a, x: b[0], y: b[1], h, top: [b[0], b[1] - h] };
   }).sort((p, q) => p.y - q.y);
   function drawPylon(g, f) {
@@ -1159,6 +1159,7 @@
     ctx.drawImage(scStatic(), 0, 0);
     // far stand crowd: base texture in horizontal bands, each band bouncing with the roar
     const base = crowdTexture('sit'), up = crowdTexture('up'), oy = SC.standTop - 10;
+    ctx.drawImage(base, 0, oy);
     const bands = 10, cols = 8, bw = 1920 / cols;
     for (let b = 0; b < bands; b++) {
       const y0 = (b / bands) * 400, bh = 400 / bands + 1;
@@ -1169,6 +1170,7 @@
         if (ua > 0.02) { ctx.globalAlpha = ua; ctx.drawImage(up, c * bw, y0, bw, bh, c * bw, oy + y0 + jump, bw, bh); ctx.globalAlpha = 1; }
       }
     }
+    ctx.fillStyle = A.linear(ctx, 0, SC.standTop - 4, 0, SC.standTop + 90, [[0, 'rgba(12,8,30,0.75)'], [1, 'rgba(12,8,30,0)']]); ctx.fillRect(0, SC.standTop - 4, 1920, 94);
     // mid-tier LED ribbon (animated chase)
     const by = scRowY(11) + 8;
     for (let x = 0; x < 1920; x += 24) { const on = (Math.floor(x / 24) + Math.floor(t * 10)) % 6 < 3; ctx.fillStyle = on ? '#ffd21f' : '#1f4fbf'; ctx.fillRect(x + 2, by + 4, 20, 8); }
@@ -1290,8 +1292,30 @@
           ctx.fillStyle = hsl(hv < 0.15 ? H2 : H1, 90, 55, pa * fog * (0.7 + 0.3 * Math.sin(t * 2 + i + k))); ctx.fill();
         }
       }
+      // floor tiles
+      if (d < 24 && d > 0.5) {
+        const d2 = d + SP * 0.9;
+        for (let c = -4; c < 4; c++) {
+          const hv = H(i * 7.7 + c * 13.1); if (hv > 0.2) continue;
+          const u0 = c * 0.4 + 0.02, u1 = u0 + 0.36, F = DT.F, fl = DT.floor;
+          quad(ctx, [DT.vx + u0 * F / d, DT.vy + fl * F / d], [DT.vx + u1 * F / d, DT.vy + fl * F / d], [DT.vx + u1 * F / d2, DT.vy + fl * F / d2], [DT.vx + u0 * F / d2, DT.vy + fl * F / d2]);
+          ctx.fillStyle = hsl(hv < 0.05 ? H2 : H1, 90, 55, (hv < 0.05 ? 0.2 : 0.09) * fog); ctx.fill();
+        }
+      }
       // ring arc (above floor) — clipped at the floor line
       ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 1920, fy); ctx.clip();
+      if (alt) {
+        // structural rib: solid dark band with an outline and a glowing inner light strip
+        ctx.globalCompositeOperation = 'source-over';
+        const bw = Math.max(2, sc * 0.16);
+        ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = bw + Math.max(1, sc * 0.02); A.ellipse(ctx, DT.vx, DT.vy, rx + bw / 2, ry + bw / 2); ctx.stroke();
+        ctx.strokeStyle = hsl(236, 42, lerp(9, 27, fog), 1); ctx.lineWidth = bw; ctx.stroke();
+        ctx.strokeStyle = hsl(236, 50, lerp(14, 40, fog), 1); ctx.lineWidth = bw * 0.22; A.ellipse(ctx, DT.vx, DT.vy, rx + bw * 0.25, ry + bw * 0.25); ctx.stroke();
+        ctx.strokeStyle = hsl(hue, 90, 60, 0.35 * fog); ctx.lineWidth = Math.max(1, bw * 0.12); A.ellipse(ctx, DT.vx, DT.vy, rx + bw * 0.8, ry + bw * 0.8); ctx.stroke();
+        // bolts / status lights on the rib
+        for (let k = 0; k < 14; k++) { const th = WALL0 - (k + 0.5) / 14 * WALLS; const bx = DT.vx + Math.cos(th) * (rx + bw / 2), by = DT.vy + Math.sin(th) * (ry + bw / 2); if (by > fy) continue; ctx.fillStyle = hsl(H(i + k) < 0.3 ? H2 : H1, 100, 75, fog); ctx.fillRect(bx - bw * 0.06, by - bw * 0.06, bw * 0.12, bw * 0.12); }
+        ctx.globalCompositeOperation = 'lighter';
+      }
       ctx.strokeStyle = hsl(hue, 100, 62, a * 0.35); ctx.lineWidth = Math.max(1, sc * 0.09);
       A.ellipse(ctx, DT.vx, DT.vy, rx, ry); ctx.stroke();
       ctx.strokeStyle = hsl(hue, 100, 80, a); ctx.lineWidth = Math.max(0.6, sc * 0.018);
