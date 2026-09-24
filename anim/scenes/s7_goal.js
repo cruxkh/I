@@ -932,14 +932,41 @@
     const y = y0 + (1 - clamp(pop)) * 60 - 26 * hop(t, 78.55, 78.9) - 6 * Math.abs(Math.sin((t - 78.9) * 3.2)) * smooth(78.9, 79.1, t) * (1 - smooth(79.5, 79.6, t));
     const sc = bs * lerp(0.3, 1, clamp(pop * 1.05));
     A.glow(ctx, x, y - 60 * bs, 170 * bs, '#ffd21f', 0.3 * clamp(u * 2));
-    const w = smooth(79.55, 79.68, t);
-    A.drawBit(ctx, x, y, sc, { t, mouth: 0, mood: t < 79.5 ? 'joy' : 'cheeky', joyEyes: 'open', limbs: t < 79.5 ? 'arms-up' : 'stand', wink: w, winkEye: 'R', trail: 0, glow: 1.25,
-      look: [0, 0.05], sparkle: w, squash: 0.18 * spring(t, 78.9, 9, 22), shadow: 0,
-      armR: t >= 79.5 ? [58, -86 - 6 * Math.sin((t - 79.5) * 14)] : undefined });
-    if (t > 79.6 && t < 81) { // wink glint next to the winking eye
-      const q = inv(79.6, 79.9, t), s = Math.sin(clamp(q) * Math.PI * 0.5 + (q >= 1 ? 0 : 0)) * (0.8 + 0.2 * Math.sin(t * 9));
-      star(ctx, x + 52 * bs, y - 104 * bs, 26 * s + 0.01, '#fff6c8');
-    }
+    // ~79.5: cheeky "nyah-nyah": eyes scrunched, cheeks puffed, tongue out, hands waggling at his temples
+    const k = smooth(79.45, 79.58, t);
+    const wag = Math.sin(t * 22) * 5 * k, tw = Math.sin(t * 13);
+    const bo = { t, mouth: 0, mood: k > 0.5 ? 'joy' : 'joy', joyEyes: k > 0.5 ? undefined : 'open', limbs: k > 0 ? 'stand' : 'arms-up', trail: 0, glow: 1.25,
+      look: [0, 0], sparkle: 0, squash: 0.18 * spring(t, 78.9, 9, 22) - 0.05 * k * Math.sin(t * 9), shadow: 0 };
+    if (k > 0) { bo.armL = [lerp(-60, -66, k), lerp(-40, -78, k) + wag]; bo.armR = [lerp(60, 66, k), lerp(-40, -78, k) - wag]; bo.rot = 0.05 * k * Math.sin(t * 5); }
+    A.drawBit(ctx, x, y, sc, bo);
+    if (k > 0) teaseFace(ctx, x, y, sc, k, t, bo.rot || 0, tw);
+  }
+  // tongue-out face drawn on top of the kit's Bit (local units like drawBit: origin = feet, mouth at ~(0,-43))
+  function teaseFace(ctx, x, y, s, k, t, rot, tw) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.rotate(rot);
+    const O = A.OUTLINE, my = -43, lw = 3.4;
+    // puffed cheeks
+    ctx.globalAlpha = 0.75 * k; ctx.fillStyle = '#ff8f86';
+    for (const sd of [-1, 1]) { A.ellipse(ctx, sd * 34, -52, 11.5 * k, 8 * k); ctx.fill(); }
+    ctx.globalAlpha = 1;
+    // cheek puff contour
+    ctx.strokeStyle = O; ctx.lineWidth = lw * 0.8; ctx.lineCap = 'round';
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.arc(sd * 30, -48, 11, sd > 0 ? -0.2 : Math.PI - 0.9, sd > 0 ? 0.9 : Math.PI + 0.2); ctx.globalAlpha = 0.35 * k; ctx.stroke(); }
+    ctx.globalAlpha = 1;
+    // mouth: small open scrunched "o" covering the kit's smile
+    ctx.fillStyle = A.radial(ctx, 0, my, 0, 26, [[0, '#ffd548'], [0.7, '#ffd044'], [1, 'rgba(255,205,64,0)']]); A.ellipse(ctx, 0, my + 1, 27, 12); ctx.fill();
+    ctx.fillStyle = '#5b1c26'; A.ellipse(ctx, 0, my + 1, 11 * k, 5.5 * k); ctx.fill(); ctx.lineWidth = lw; ctx.strokeStyle = O; ctx.stroke();
+    // tongue: sticks out and down, wiggling
+    const L = (16 + 3 * tw) * k, wv = 0.18 * tw;
+    ctx.save(); ctx.translate(0, my + 3); ctx.rotate(wv);
+    ctx.beginPath(); ctx.moveTo(-8.5, 0); ctx.lineTo(-8.5, L); ctx.quadraticCurveTo(-8.5, L + 10, 0, L + 10); ctx.quadraticCurveTo(8.5, L + 10, 8.5, L); ctx.lineTo(8.5, 0); ctx.closePath();
+    ctx.fillStyle = '#ff6f8e'; ctx.fill(); ctx.lineWidth = lw; ctx.strokeStyle = O; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, 2); ctx.lineTo(0, L + 2); ctx.lineWidth = 1.8; ctx.strokeStyle = '#c93e62'; ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; A.ellipse(ctx, -4, L * 0.55, 2, 4); ctx.fill();
+    ctx.restore();
+    // upper lip over the tongue root
+    ctx.beginPath(); ctx.moveTo(-12, my - 1); ctx.quadraticCurveTo(0, my - 7, 12, my - 1); ctx.lineWidth = lw; ctx.strokeStyle = O; ctx.stroke();
+    ctx.restore();
   }
 
   function drawTaglines(ctx, t) {
