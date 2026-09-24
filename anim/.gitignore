@@ -4,3 +4,6 @@ previews/
 audio/music/sf/
 *.pyc
 audio/master.wav
+audio/music/stems/
+audio/tools/__pycache__/
+audio/sfx_preview.wav

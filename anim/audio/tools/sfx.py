@@ -603,6 +603,8 @@ def finish(x, kind, level=None):
         if p > db(-1):
             x *= db(-1) / p
     else:
+        # safety tail: never end a one-shot on a non-zero sample
+        x = fade(x, 0, min(0.3, 0.15 * x.shape[-1] / SR))
         x = norm_peak(x, level if level is not None else -1.0)
     return x
 
@@ -623,7 +625,7 @@ def _stadium_bed(dur, r, excite_env=None, count=48):
         a = 1.0 if k % 4 == 0 else 0.6
         add_at(drum, thump(0.3, 140, 60, 0.08, 0.2, r) * a, tt)
     drum = lp(drum, 900)
-    y = v * 1.0 + roar * 0.55 + pan(drum, -0.3) * 0.25
+    y = v * 1.0 + roar * 0.55 + pan(drum, -0.3) * 0.12
     y = reverb(y, IR_stadium(), wet=0.45, tail=False)
     return hp(y, 70)
 
@@ -791,7 +793,7 @@ def _(r):
     roar = np.vstack([roar_layer(n, r, ex, ('a', 'o', 'ae')), roar_layer(n, r, ex, ('a', 'e', 'o'))])
     y = out * 1.1 + roar * 0.8
     # onset punch: low thump + noise burst (the crowd physically jumping)
-    y += st(thump(0.6, 80, 40, 0.18, 0.4, r)) * 0.6
+    add_at(y, st(thump(0.6, 80, 40, 0.18, 0.4, r)), 0.03, 0.6)
     # whistles
     for k in range(9):
         wt = r.uniform(0.2, 5.5)
@@ -1037,7 +1039,7 @@ def _(r):
      'Hit at 0.05 s. 10 s.', 0.05, 'oneshot')
 def _(r):
     src = build('stadium_goal_eruption', write=False)
-    m = tv_speaker(src[:, :N(10.0)], r, 1.8)
+    m = tv_speaker(src[:, :N(10.0)], r, 1.15)
     return fade(m, 0, 1.5)
 
 
@@ -1143,6 +1145,7 @@ def _(r):
     src = saw(f) * 0.7 + saw(f * 1.004) * 0.3
     src = sat(src * 1.5, 1.4)
     wah = smooth(wah, 0.05)
+    a = smooth(a, 0.03)
     y = stft_shape(src * a, lpsweep(lambda tt: 350 + 1300 * np.interp(tt, t, wah), 18), nper=1024)
     y = reson(y, 520, 1.5) * 0.6 + y * 0.6
     y = reverb(y, IR_room(), 0.3, tail=False)
@@ -1340,13 +1343,14 @@ def _(r):
     dur = 1.8
     n = N(dur)
     t = tax(n)
-    y = whoosh(dur, r, peak=0.35, f_lo=400, f_hi=6000, bw=1.2, pan_from=-0.9, pan_to=0.9, sharp=3.5, tone=0.5)
+    y = whoosh(dur, r, peak=0.35, f_lo=400, f_hi=6000, bw=1.2, pan_from=-0.9, pan_to=0.9, sharp=2.0, tone=0.5)
     # N-wave boom
     bn = N(0.5)
     tb = tax(bn)
     nw = np.where(tb < 0.012, 1 - 2 * tb / 0.012, 0) + 0
-    boom = lp(nw, 400) * 30 + thump(0.5, 90, 32, 0.25, 0.3, r) * 1.0
-    add_at(y, st(boom * 0.9), 0.35)
+    boom = lp(nw, 300) * 4 + thump(0.5, 90, 32, 0.25, 0.3, r) * 1.0
+    add_at(y, st(boom * 0.5), 0.35)
+    y = y + whoosh(dur, r, peak=0.36, f_lo=150, f_hi=2500, bw=1.0, pan_from=-0.6, pan_to=0.6, sharp=1.8) * 0.8
     fz = 1400 * np.where(t < 0.35, 1.0, 0.6) * (1 + 0.1 * np.exp(-np.abs(t - 0.35) * 10))
     y += st(np.sin(phase_of(fz)) * np.exp(-np.abs(t - 0.35) / 0.15) * 0.15)
     y = reverb(y, IR_tunnel(), 0.35, tail=False)
@@ -1424,7 +1428,7 @@ def _(r):
 @sfx('sonar_ping', 'Distant sonar ping: pure 1.5 kHz ping with a long, dark underwater echo tail. Hit 0.0 s. 3 s.', 0.0)
 def _(r):
     n = N(3.0)
-    pn = N(0.35)
+    pn = N(0.8)
     p = np.sin(2 * np.pi * 1480 * tax(pn)) * np.exp(-tax(pn) / 0.09) * attack(pn, 0.003)
     y = np.zeros(n)
     add_at(y, p, 0)
@@ -1473,9 +1477,9 @@ def _(r):
     return fade(y, 0, 0.3)
 
 
-@sfx('chomp', 'Cartoon shark CHOMP on the cable: double teeth clack, crunchy bite, low jaw thump. Hit 0.005 s.', 0.005)
+@sfx('chomp', 'Cartoon shark CHOMP on the cable: double teeth clack, crunchy bite, low jaw thump. Hit 0.005 s. 1.1 s.', 0.005)
 def _(r):
-    dur = 0.7
+    dur = 1.1
     n = N(dur)
     y = np.zeros(n)
     for (s, f) in [(0.0, 2200), (0.035, 1700)]:
@@ -1546,10 +1550,10 @@ def _(r):
     return fade(y, 0, 0.4)
 
 
-@sfx('map_ding', 'Map pin "ding": warm glassy bell with sparkle -- one per city pin. Hit 0.0 s. 1.4 s.', 0.0)
+@sfx('map_ding', 'Map pin "ding": warm glassy bell with sparkle -- one per city pin. Hit 0.0 s. 2.0 s.', 0.0)
 def _(r):
-    y = bell(1760, 1.4, r, decay=0.9) + bell(2637, 1.4, r, decay=0.5) * 0.3
-    return reverb(y, IR_hall(), 0.3, tail=False)
+    y = bell(1760, 2.0, r, decay=0.7) + bell(2637, 2.0, r, decay=0.4) * 0.3
+    return fade(reverb(y, IR_hall(), 0.3, tail=False), 0, 0.6)
 
 
 @sfx('map_ding_arrive', 'Arrival pin: two-note rising chime (Toronto reached). Hits at 0.0 and 0.14 s. 1.8 s.', 0.0)
@@ -1574,7 +1578,7 @@ def _(r):
         c = click(L, r, 3400 if int(tt * rate) % 10 else 2400, 8, 0.002)
         add_at(y, c * (0.6 + 0.2 * r.uniform()), tt)
         tt += 1 / rate
-    add_at(y, click(N(0.2), r, 1200, 3, 0.01) * 1.5 + thump(0.2, 200, 90, 0.04), 9.9)
+    add_at(y, click(N(0.2), r, 1200, 3, 0.01) * 0.8 + thump(0.2, 200, 90, 0.04) * 0.5, 9.9)
     return fade(reverb(y, IR_room(), 0.2, tail=False), 0, 0.1)
 
 
@@ -1605,7 +1609,7 @@ def _(r):
     bellx = bell(1180, 1.5, r, decay=0.5) * 0.08
     y = w + city
     add_at(y, pan(lp(bellx, 3000), -0.7), 2.4)
-    y = reverb(y, IR_street(), 0.3, tail=False)
+    y = hp(reverb(y, IR_street(), 0.3, tail=False), 40, 3)
     return fade(y, 0.02, 0.5)
 
 
