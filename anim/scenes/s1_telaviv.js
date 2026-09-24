@@ -22,18 +22,18 @@
     return { x, y, zoom, rot: key(t, [[0, -0.012], [2.6, 0.004]]) };
   };
   // stream head along the launch path (fast burst, then a steady cruise out over the sea)
-  const headAt = t => { const p = inv(5.0, 6.2, t); return 0.8 * (1 - Math.pow(1 - p, 1.8)); };
+  const headAt = t => { const p = inv(5.0, 6.2, t); return 0.62 * (1 - Math.pow(1 - p, 1.6)); };
   // shot C: whip landing on the mast + sign, then follow the packet stream out over the sea
   const camC = t => {
-    const land = ease.out(inv(4.7, 5.05, t));
-    let x = lerp(1120, 1215, land), y = lerp(1950, 1165, land), zoom = lerp(1.45, 1.3, land);
-    const w = ease.inOut(inv(5.12, 5.95, t));
+    const land = ease.out(inv(4.7, 5.02, t));
+    let x = lerp(1150, 1225, land), y = lerp(1900, 1150, land), zoom = lerp(1.1, 0.98, land);
+    const w = ease.inOut(inv(5.1, 6.05, t));
     if (w > 0) {
       const [hx, hy] = pathAt(headAt(t));
-      const z2 = lerp(1.3, 0.92, ease.inOut(inv(5.1, 6.2, t)));
-      x = lerp(x, hx - 330 / z2, w); y = lerp(y, hy + 170 / z2, w); zoom = lerp(zoom, z2, w);
+      const z2 = lerp(0.98, 0.9, w);
+      x = lerp(x, hx - 380 / z2, w); y = lerp(y, Math.max(hy + 150 / z2, 1060), w); zoom = z2;
     }
-    return { x, y, zoom, rot: lerp(0.035, -0.004, land) + 0.012 * ease.inOut(inv(5.2, 6.2, t)) };
+    return { x, y, zoom, rot: lerp(0.035, -0.004, land) + 0.01 * ease.inOut(inv(5.2, 6.2, t)) };
   };
   const toScreen = (c, x, y) => {
     const dx = (x - c.x) * c.zoom, dy = (y - c.y) * c.zoom, r = c.rot || 0;
