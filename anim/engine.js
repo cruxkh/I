@@ -3,7 +3,7 @@
 // Deterministic: every frame is a pure function of time t (seconds). No Date, no Math.random.
 // ============================================================================
 const A = (window.A = {});
-A.W = 1920; A.H = 1080; A.FPS = 30; A.DUR = 87;
+A.W = 1920; A.H = 1080; A.FPS = 30; A.DUR = 96;
 // Time shift: a scene file loaded while A.SHIFT = d is authored in its own time base and plays d seconds later.
 // Inside its draw(), s.t / s.lt are in the scene's own time base, and A.mouth/A.speaking compensate automatically.
 A.SHIFT = 0; A._shift = 0;

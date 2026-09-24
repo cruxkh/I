@@ -15,7 +15,7 @@
   {
    "id": "saba1",
    "who": "SABA",
-   "t": 10.9,
+   "t": 6.9,
    "voice": "bm_george",
    "speed": 0.98,
    "pitch": -1,
@@ -26,7 +26,7 @@
   {
    "id": "noa1",
    "who": "NOA",
-   "t": 14.5,
+   "t": 10.5,
    "voice": "af_bella",
    "speed": 1.05,
    "pitch": 3,
@@ -37,7 +37,7 @@
   {
    "id": "saba2",
    "who": "SABA",
-   "t": 16.5,
+   "t": 12.5,
    "voice": "bm_george",
    "speed": 1.1,
    "pitch": -1,
@@ -48,7 +48,7 @@
   {
    "id": "saba3",
    "who": "SABA",
-   "t": 20.0,
+   "t": 16.0,
    "voice": "bm_george",
    "speed": 0.95,
    "pitch": -1,
@@ -59,7 +59,7 @@
   {
    "id": "saba5",
    "who": "SABA",
-   "t": 21.8,
+   "t": 17.8,
    "voice": "bm_george",
    "speed": 1.05,
    "pitch": -1,
@@ -70,7 +70,7 @@
   {
    "id": "noa4",
    "who": "NOA",
-   "t": 24.6,
+   "t": 20.6,
    "voice": "af_bella",
    "speed": 1.08,
    "pitch": 3,
@@ -82,7 +82,7 @@
   {
    "id": "noa2",
    "who": "NOA",
-   "t": 29.0,
+   "t": 25.0,
    "voice": "af_bella",
    "speed": 1.08,
    "pitch": 3,
@@ -93,7 +93,7 @@
   {
    "id": "noa5",
    "who": "NOA",
-   "t": 31.3,
+   "t": 27.3,
    "voice": "af_bella",
    "speed": 1.05,
    "pitch": 3,
@@ -105,7 +105,7 @@
   {
    "id": "noa6",
    "who": "NOA",
-   "t": 35.3,
+   "t": 31.3,
    "voice": "af_bella",
    "speed": 1.08,
    "pitch": 3,
@@ -116,7 +116,7 @@
   {
    "id": "bit1",
    "who": "BIT",
-   "t": 40.6,
+   "t": 36.1,
    "voice": "am_puck",
    "speed": 1.1,
    "pitch": 5,
@@ -127,7 +127,7 @@
   {
    "id": "ilvip1",
    "who": "ILVIP",
-   "t": 47.4,
+   "t": 38.4,
    "voice": "am_eric",
    "speed": 1.05,
    "pitch": -2,
@@ -138,7 +138,7 @@
   {
    "id": "emby1",
    "who": "EMBY",
-   "t": 50.1,
+   "t": 41.1,
    "voice": "am_liam",
    "speed": 0.9,
    "pitch": -3,
@@ -149,7 +149,7 @@
   {
    "id": "cat1",
    "who": "CATPACKET",
-   "t": 51.9,
+   "t": 42.9,
    "voice": "am_fenrir",
    "speed": 0.92,
    "pitch": -4,
@@ -160,7 +160,7 @@
   {
    "id": "bit2",
    "who": "BIT",
-   "t": 54.7,
+   "t": 45.7,
    "voice": "am_puck",
    "speed": 1.1,
    "pitch": 5,
@@ -172,7 +172,7 @@
   {
    "id": "bit3",
    "who": "BIT",
-   "t": 60.1,
+   "t": 51.1,
    "voice": "am_puck",
    "speed": 1.1,
    "pitch": 5,
@@ -183,7 +183,7 @@
   {
    "id": "bit3b",
    "who": "BIT",
-   "t": 62.2,
+   "t": 53.2,
    "voice": "am_puck",
    "speed": 0.85,
    "pitch": 5,
@@ -194,7 +194,7 @@
   {
    "id": "bit4",
    "who": "BIT",
-   "t": 65.5,
+   "t": 56.5,
    "voice": "am_puck",
    "speed": 1.1,
    "pitch": 5,
@@ -205,7 +205,7 @@
   {
    "id": "bit5",
    "who": "BIT",
-   "t": 69.8,
+   "t": 60.8,
    "voice": "am_puck",
    "speed": 1.0,
    "pitch": 5,
@@ -216,7 +216,7 @@
   {
    "id": "bit6",
    "who": "BIT",
-   "t": 72.5,
+   "t": 63.5,
    "voice": "am_puck",
    "speed": 1.0,
    "pitch": 5,
@@ -227,7 +227,7 @@
   {
    "id": "ann2",
    "who": "ANNOUNCER",
-   "t": 74.5,
+   "t": 65.5,
    "voice": "am_michael",
    "speed": 1.0,
    "pitch": 0,
@@ -238,7 +238,7 @@
   {
    "id": "saba4",
    "who": "SABA",
-   "t": 76.2,
+   "t": 67.2,
    "voice": "bm_george",
    "speed": 1.1,
    "pitch": -1,
@@ -249,7 +249,7 @@
   {
    "id": "noa3",
    "who": "NOA",
-   "t": 79.3,
+   "t": 70.3,
    "voice": "af_bella",
    "speed": 1.05,
    "pitch": 3,
@@ -261,7 +261,7 @@
   {
    "id": "saba6",
    "who": "SABA",
-   "t": 82.0,
+   "t": 73.0,
    "voice": "bm_george",
    "speed": 1.0,
    "pitch": -1,
@@ -272,7 +272,7 @@
   {
    "id": "ilvip2",
    "who": "ILVIP",
-   "t": 88.0,
+   "t": 79.0,
    "voice": "am_eric",
    "speed": 1.0,
    "pitch": -2,
@@ -283,7 +283,7 @@
   {
    "id": "bit7",
    "who": "BIT",
-   "t": 89.8,
+   "t": 80.8,
    "voice": "am_puck",
    "speed": 0.95,
    "pitch": 5,
@@ -293,5 +293,5 @@
    "say": "Sorry, guys... Go T V got here first."
   }
  ],
- "duration": 96.0
+ "duration": 87.0
 }

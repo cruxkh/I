@@ -291,3 +291,17 @@ Shifts: S4 +6.0 (index.html A.SHIFT=6 before s4), S5/S6 +18.9, S7 +6.0. Duration
 | 49.4–60.4 | S5 ocean (+18.9): BIT 51.1–52.4 "Marseille... the Atlantic..."; shark reveal ~52.9; BIT 53.2–54.9 bored, dismissive "Ahh... another attacker..." (half-lidded eye-roll); CHOMP 54.9; zap 55.1 and Bit LAUGHS at the shark; 56.5 "Nice try, fishy!" |
 | 60.4–64.9 | S6 last mile (+18.9): into the apartment, along the cable to the SMART TV; "Delivered!" 63.5; impact INTO THE TV 63.8 |
 | 64.9–87.0 | S7 (+6.0): goal 65.3, ... backgammon 75.6–78.4, tag at the TV stand 78.4–83.8 (ILVIP 79.0 "Did we miss the goal?", BIT 80.8 "Sorry, guys... GOTV got here first."), end card 83.8–87.0 with tongue-out crash zoom |
+
+# ===================== VERSION 7 (96 s) — supersedes where different =====================
+Team: MACCABI TEL AVIV (yellow/blue) everywhere. Duration 96.0 = 2880 frames.
+Scene shifts (index.html): S1 0 (0–10.2, rebuilt), S2 +4.0 (own 6.2–35.2 → 10.2–39.2), S4 +10.0 (own 29.2–48.4 → 39.2–58.4, rebuilt),
+S5/S6 +27.9 (→ 58.4–73.9), S7 +15.0 (own 58.9–81.0 → 73.9–96.0). Cue files are in each scene's own time base (mixer shifts them).
+S1 0–10.2: night drone flies FORWARD (oblique, ~20–35° down tilt, NOT top-down) slowly toward the stadium, over the rim and along/into
+the MACCABI TEL AVIV home stand: ultras going wild, jumping, dancing, scarves twirling, huge yellow/blue flags and tifo, flares/smoke
+(yellow), drums, arms up, chanting. Announcer 1.2–4.9. ~8.5 tilt/whip up to the IPTV mast; packets launch ~9.0 (Bit glint);
+flash out 10.0–10.2.
+S4 own base 29.2–48.4: out of the gold flash straight into a pro chase cam BEHIND Bit (no zoom-in/zoom-out), running, jumping,
+pushing, getting stuck among other providers' packets; BIT 30.6–32.6 "Excuse me! Live goal..."; reaches front ~37.0;
+ILVIP 37.4–39.9; EMBY 40.1–41.55; CATPACKET 41.9–44.4 speaking FROM WITHIN the queue crowd at his normal size (two-shots /
+over-the-shoulder, no giant low-angle close-up with tiny Bit in a corner); BIT 44.7–46.4 "Sorry! GOTV doesn't wait in line!";
+BOOST 46.5; burst into open fibre 47.7; hard cut 48.4.

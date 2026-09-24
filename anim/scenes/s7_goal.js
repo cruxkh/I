@@ -28,7 +28,7 @@
   const logoImg = new Image(); logoImg.src = CARD.logoImage;
   const haveImg = () => logoImg.complete && logoImg.naturalWidth > 0;
 
-  A.noSubs = t => t > 83.7;
+  A.noSubs = t => t > 92.7;
 
   const { clamp, lerp, inv, smooth, ease, hash, key } = A;
   const LR = A.LR;
@@ -1030,7 +1030,7 @@
 
   // ================================================================== register
   A.scene({
-    name: 's7_goal', start: 58.9, end: 81.0, shift: 6.0,
+    name: 's7_goal', start: 58.9, end: 81.0, shift: 15.0,
     draw(ctx, s) {
       const t = s.t;
       if (t < T_CUT_ROOM) shotTV(ctx, t);
