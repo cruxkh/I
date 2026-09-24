@@ -17,7 +17,7 @@
 // ============================================================================
 (() => {
   const LR = A.LR, E = A.ease, K = A.key, cl = A.clamp, lerp = A.lerp, inv = A.inv, sm = A.smooth, D = Math.PI / 180;
-  const FREEZE = 15.3, PRESS = 27.65;
+  const FREEZE = 15.3, PRESS = 30.95; // PRESS = the GOTV app opens on the TV
   const SAB = { x: LR.chair.x, y: LR.chair.y, s: 0.95 };
   const NOA_S = 0.95;
   const ROUTER = LR.router;
@@ -103,7 +103,7 @@
   }
   let OVL = null;
   function switchOverlay(ctx, x, y, w, h, t) {
-    const p = inv(PRESS, PRESS + 0.4, t);
+    const p = inv(PRESS, PRESS + 0.6, t);
     if (p <= 0) return;
     if (A.drawSwitchOverlay) {
       // props.js drawSwitchOverlay leaves an unbalanced save() (with its screen clip) while p < ~1, so draw it on a
@@ -205,12 +205,13 @@
     const o = { t };
     const rise = t < 14.0 ? 0
       : t < 20.35 ? K(t, [[14.0, 0], [14.35, 0.62, 'out'], [14.8, 0.9, 'out'], [16.0, 0.9], [16.25, 1, 'out']])
-        : K(t, [[20.35, 1], [20.5, 1.0, 'out'], [20.95, 0, 'in']]);
+        : t < 32.3 ? K(t, [[20.35, 1], [20.5, 1.0, 'out'], [20.95, 0, 'in']])
+          : K(t, [[32.3, 0], [33.4, 0.85, 'inOut'], [35.2, 0.95]]);
     o.pose = rise > 0.001 ? 'rise' : 'sit'; o.rise = rise;
     o.squash = 0.06 * Math.sin(Math.PI * inv(13.85, 14.05, t)) + (t > 20.95 ? 0.11 * Math.exp(-(t - 20.95) * 9) * Math.cos((t - 20.95) * 24) : 0);
-    Object.assign(o, mseq(t, [[0, 'eager'], [9.3, 'tense', 0.35], [12.3, 'eager', 0.3], [15.95, 'horror', 0.25], [17.65, 'tense', 0.3], [20.9, 'neutral', 0.5], [24.3, 'eager', 0.4]]));
+    Object.assign(o, mseq(t, [[0, 'eager'], [9.3, 'tense', 0.35], [12.3, 'eager', 0.3], [15.95, 'horror', 0.25], [17.65, 'tense', 0.3], [20.9, 'neutral', 0.5], [24.3, 'eager', 0.4], [25.3, 'neutral', 0.5], [PRESS + 0.2, 'eager', 0.3], [32.9, 'joy', 0.4]]));
     Object.assign(o, gseq(t, [[0, 'grip'], [7.12, 'point', 0.32], [8.5, 'fists', 0.25], [9.3, 'grip', 0.3], [12.45, 'point', 0.22], [13.45, 'grip', 0.3], [13.95, 'fists', 0.18],
-      [16.2, 'headHands', 0.3], [17.7, 'fists', 0.2], [18.85, 'point', 0.25], [19.85, 'fists', 0.2], [20.4, 'grip', 0.45]]));
+      [16.2, 'headHands', 0.3], [17.7, 'fists', 0.2], [18.85, 'point', 0.25], [19.85, 'fists', 0.2], [20.4, 'grip', 0.45], [32.45, 'point', 0.3], [33.4, 'armsUp', 0.5]]));
     // "Not now, motek!": a dismissive wave toward Noa without taking his eyes off the TV
     if (t > 12.67 && t < 13.45) {
       const w = sm(12.67, 12.8, t) * (1 - sm(13.2, 13.45, t));
@@ -218,28 +219,33 @@
     }
     // fist shaking at the TV
     if (t > 17.8 && t < 18.85) { const w = sm(17.8, 17.95, t) * (1 - sm(18.6, 18.85, t)); o.shoulders = 10 + 6 * Math.sin((t - 17.8) * 22) * w; }
-    const TV = [0.95, -0.12], NOA = [0.6, 0.55], UP = [0.35, -0.95], POUF = [0.85, 0.35], RT = [0.9, 0.6];
+    const TV = [0.95, -0.12], NOA = [0.6, 0.55], UP = [0.35, -0.95], POUF = [0.85, 0.35], CAB = [0.9, 0.35], BIN = [0.85, 0.5], NOA2 = [0.9, 0.25];
     o.look = K(t, [[6.85, TV], [6.98, NOA, 'out'], [7.55, NOA], [7.75, TV, 'out'], [11.3, TV], [11.4, NOA, 'out'], [11.65, NOA], [11.8, TV, 'out'],
       [12.95, TV], [13.02, NOA], [13.18, NOA], [13.28, TV],
-      [16.85, TV], [17.0, UP, 'out'], [17.35, UP], [17.55, TV, 'out'], [20.6, TV], [20.95, POUF, 'out'], [24.8, POUF], [25.05, RT, 'out']]);
+      [16.85, TV], [17.0, UP, 'out'], [17.35, UP], [17.55, TV, 'out'], [20.6, TV], [20.95, POUF, 'out'], [24.8, POUF], [25.05, CAB, 'out'], [26.2, CAB], [26.35, BIN, 'out'], [26.9, BIN], [27.1, NOA2, 'out'], [PRESS, NOA2], [PRESS + 0.1, TV, 'out']]);
     if (t > 8.9 && t < 9.25) o.look = K(t, [[8.9, TV], [8.97, NOA], [9.18, NOA], [9.25, TV]]);
-    const toNoa = K(t, [[6.85, 0], [7.0, 1, 'out'], [7.55, 1], [7.8, 0], [21.1, 0], [21.5, 0.6], [24.3, 0.6], [24.45, 1, 'out'], [24.9, 1], [25.2, 0.5]]);
+    const toNoa = K(t, [[6.85, 0], [7.0, 1, 'out'], [7.55, 1], [7.8, 0], [21.1, 0], [21.5, 0.6], [24.3, 0.6], [24.45, 1, 'out'], [24.9, 1], [25.2, 0.5], [PRESS, 0.5], [PRESS + 0.15, 0, 'out']]);
     o.headTilt = toNoa * 7;
     o.turn = 0.25 - toNoa * 0.1;
     if (t > 15.98 && t < 16.55) { const k = sm(15.98, 16.06, t) * (1 - sm(16.3, 16.55, t)); o.headTilt += Math.sin((t - 15.98) * 21) * 7 * k; o.turn += Math.sin((t - 15.98) * 21 + 0.6) * 0.2 * k; }
     if (t > 17.34 && t < 17.8) o.headTilt += Math.sin((t - 17.34) * 7) * 2.5 * sm(17.34, 17.5, t);
     if (t > 17.8 && t < 20.3) o.headTilt += Math.sin((t - 17.8) * 9) * 2.2; // ranting bob
     o.lean = K(t, [[6.2, 0.28], [9.3, 0.3], [9.6, 0.48, 'out'], [12.3, 0.44], [12.5, 0.3], [13.9, 0.3], [14.1, 0.25, 'out'], [16.0, 0.25], [16.25, -0.12, 'out'],
-      [17.5, -0.05], [17.85, 0.4, 'outBack'], [19.9, 0.3], [20.3, 0.2], [21.4, -0.25], [24.3, -0.25], [24.6, 0.2, 'outBack'], [25.4, 0.35]]);
-    o.browRaise = K(t, [[24.2, 0], [24.5, 0.65, 'outBack'], [25.2, 0.3], [27.6, 0.2], [27.8, 0.7, 'outBack']]);
+      [17.5, -0.05], [17.85, 0.4, 'outBack'], [19.9, 0.3], [20.3, 0.2], [21.4, -0.25], [24.3, -0.25], [24.6, 0.2, 'outBack'], [25.4, 0.1], [26.45, 0.1], [26.52, -0.25, 'out'], [26.9, 0], [PRESS, -0.05], [PRESS + 0.2, 0.3, 'outBack'], [32.3, 0.3]]);
+    o.browRaise = K(t, [[24.2, 0], [24.5, 0.65, 'outBack'], [25.2, 0.3], [26.4, 0.2], [26.5, 0.9, 'outBack'], [27.0, 0.3], [PRESS, 0.2], [PRESS + 0.2, 0.95, 'outBack'], [33.5, 0.7]]);
+    if (t > 27.1 && t < PRESS) o.browL = 0.45; // one skeptical eyebrow
     o.lid = K(t, [[21.0, 0], [21.5, 0.35], [24.2, 0.35], [24.4, 0]]); // sulking
     o.scarfWave = K(t, [[14.0, 0], [14.3, 0.9], [14.8, 0.6], [15.0, 0], [17.8, 0], [18.0, 0.5], [18.8, 0.3], [19.0, 0]]);
-    o.vel = [0, t > 14.0 && t < 14.8 ? -500 : 0];
+    o.vel = [0, (t > 14.0 && t < 14.8) || (t > 32.3 && t < 33.4) ? -500 : 0];
     // THE FREEZE: he freezes too, mouth open
     if (t >= FREEZE && t < 15.95) { o.idle = 0; o.breath = 0; o.jaw = 0.5; o.mouth = 0; o.tremble = 0; }
     if (t >= 15.95 && t < 16.05) o.jaw = 0.5 * (1 - inv(15.95, 16.05, t));
     if (t >= 17.34 && t < 17.72) { o.tremble = 1; o.jaw = 0.25; }
     if (t > 20.35 && t < 21.2) o.tremble = 0.3;
+    // the crash in the bin makes him jump in his chair
+    if (t > 26.45 && t < 26.9) o.squash = -0.07 * Math.exp(-(t - 26.45) * 8) * Math.cos((t - 26.45) * 20);
+    // wonder: the GOTV app opens; he rises toward the light
+    if (t > PRESS) { o.jaw = 0.35 * sm(PRESS, PRESS + 0.3, t); o.mouth = t > 33.0 ? 0.25 + 0.15 * Math.sin(t * 9) : undefined; }
     const L = tvLight(t);
     o.rimColor = L.color; o.light = [0.95, -0.35]; o.rimA = cl(0.35 + 0.35 * L.intensity, 0, 0.9);
     return o;
