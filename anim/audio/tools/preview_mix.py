@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """SFX preview mixer: places audio/cues/*.json (base.json by default) + dialogue (audio/timeline.json)
-into a 60 s stereo 48 kHz wav at audio/sfx_preview.wav, prints peak/RMS per second and saves QA plots.
+into a timeline-length (81 s in v2) stereo 48 kHz wav at audio/sfx_preview.wav, prints peak/RMS per second and saves QA plots.
 
 usage: python3 audio/tools/preview_mix.py [--cues a.json,b.json] [--dlg-gain -4] [--png DIR] [--no-dlg]
 
@@ -16,7 +16,7 @@ import soundfile as sf
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..'))
-SR, DUR = 48000, 60.0
+SR, DUR = 48000, None
 
 
 def place(mix, x, t, gain_db, p):
@@ -40,6 +40,8 @@ def main():
     ap.add_argument('--png', default=None)
     ap.add_argument('--out', default=os.path.join(ROOT, 'sfx_preview.wav'))
     a = ap.parse_args()
+    tl = json.load(open(os.path.join(ROOT, 'timeline.json')))
+    DUR = float(tl.get('duration', 60.0))
     n = int(DUR * SR)
     mix = np.zeros((n, 2))
     sfxbus = np.zeros((n, 2))
@@ -54,11 +56,11 @@ def main():
     mix += sfxbus
     dlg = np.zeros((n, 2))
     if not a.no_dlg:
-        for l in json.load(open(os.path.join(ROOT, 'timeline.json')))['lines']:
+        for l in tl['lines']:
             x, _ = sf.read(os.path.join(ROOT, 'dialogue', l['id'] + '.wav'))
             place(dlg, x, l['t'], a.dlg_gain, 0.0)
     mix += dlg
-    # engine fade to black 59.2-60
+    # engine fade to black over the last 0.8 s
     k = int(0.8 * SR)
     mix[-k:] *= np.linspace(1, 0, k)[:, None]
     sf.write(a.out, mix.astype(np.float32), SR, subtype='PCM_24')
@@ -86,11 +88,11 @@ def main():
         ax[1].set_ylim(-60, 0); ax[1].legend(loc='upper right'); ax[1].grid(alpha=0.3)
         ax[2].specgram(m + 1e-9, NFFT=2048, Fs=SR, noverlap=1024, cmap='magma', vmin=-130, vmax=-20)
         ax[2].set_ylim(20, 16000)
-        for s in [0.5, 4.6, 5.0, 6.2, 14.5, 20.3, 21.0, 28.6, 29.8, 30.5, 36.0, 36.2, 40.5, 41.5, 44.9, 46.0, 46.4,
-                  47.6, 54.5, 56.9, 57.3]:
+        for s in [0.5, 4.6, 5.0, 6.2, 15.3, 18.0, 27.7, 29.2, 41.5, 42.7, 43.4, 48.9, 53.4, 54.4, 57.8, 58.9, 59.3,
+                  60.5, 69.0, 70.0, 70.8, 71.4, 72.8, 77.4, 77.8]:
             for x in ax:
                 x.axvline(s, color='g', lw=0.6, alpha=0.6)
-        ax[2].set_xticks(range(0, 61, 2))
+        ax[2].set_xticks(range(0, int(DUR) + 1, 2))
         plt.tight_layout(); plt.savefig(os.path.join(a.png, 'mix_overview.png'), dpi=60)
 
 

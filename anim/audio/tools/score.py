@@ -391,65 +391,105 @@ def s2():
 
 
 # ============================================================================================
-# FREEZE 14.5 - 21.0
+# v2  FREEZE / FRUSTRATION / GOTV HOPE / ROUTER  15.3 - 29.2
 # ============================================================================================
 def freeze():
-    # lonely held note under "No, no, no! Not now!"
-    solo.cc(14.6, 11, 20)
-    solo.n(14.95, 2.8, 'A5', 60)
-    solo.expr(14.95, 15.8, 40, 100)
-    solo.expr(16.9, 17.75, 100, 0)
-    for i in range(120):
-        tt = 15.3 + i * 0.02
-        solo.bend(tt, 0.08 * np.sin(2 * np.pi * 5.5 * (tt - 15.3)))
-    slowstr.cc(14.6, 11, 30)
-    slowstr.n(15.0, 2.7, ['D2'], 55)
-    slowstr.expr(15.0, 17.7, 30, 10)
-    # sneaky pizzicato (Noa at the router)
-    g = Grid(17.35, 120)
+    # lonely held note under "No! Not now!" (16.0-17.3)
+    solo.cc(15.4, 11, 30)
+    solo.n(15.75, 1.9, 'A5', 60)
+    solo.expr(15.75, 16.4, 40, 100)
+    solo.expr(16.9, 17.65, 100, 0)
+    for i in range(90):
+        tt = 16.0 + i * 0.02
+        solo.bend(tt, 0.08 * np.sin(2 * np.pi * 5.5 * (tt - 16.0)))
+    slowstr.cc(15.4, 11, 30)
+    slowstr.n(15.8, 1.9, ['D2'], 55)
+    slowstr.expr(15.8, 17.7, 30, 10)
+    # "Again?! Every single game it gets stuck!" - Bit's first two notes caught in a buffering loop,
+    # each repeat later and flatter, finally drooping
+    loop = [17.55, 18.05, 18.6, 19.25, 19.95]
+    for i, tt in enumerate(loop):
+        v = 70 - 4 * i
+        pizzlo.n(tt, 0.2, 'A2', v)
+        pizzlo.n(tt + 0.16, 0.25, 'D3', v)
+        bassoon.n(tt, 0.14, 'A2', v - 12)
+        bassoon.n(tt + 0.16, 0.2 if i < 4 else 0.6, 'D3', v - 12)
+        darb.n(tt + 0.16, 0.15, 'ka', 30)
+    for i in range(12):
+        bassoon.bend(20.15 + i * 0.03, -1.5 * (i + 1) / 12)
+    bassoon.bend(20.7, 0)
+    for i, n_ in enumerate(['A4', 'G#4', 'G4', 'F#4', 'F4']):   # clarinet sigh in the gap
+        clar.n(20.3 + i * 0.055, 0.07, n_, 60 - 3 * i)
+    # 20.6-24.7 the hopeful turn (Noa: "Everyone switched to GOTV!")
+    for i, n_ in enumerate(['D3', 'A3', 'D4', 'F#4', 'A4', 'D5']):
+        harp.n(20.58 + i * 0.07, 0.8, n_, 58 + 2 * i)
+    slowstr.cc(20.5, 11, 40)
+    for t0, t1, ns in [(20.6, 22.3, ['D3', 'F#3', 'A3']), (22.3, 22.97, ['Eb3', 'G3', 'Bb3']),
+                       (22.97, 24.3, ['D3', 'F#3', 'A3', 'D4']), (24.3, 24.6, ['Bb2', 'D3', 'F3', 'Bb3']),
+                       (24.6, 25.0, ['C3', 'E3', 'G3', 'C4'])]:
+        slowstr.n(t0, t1 - t0 + 0.02, ns, 70)
+        pizzlo.n(t0, 0.3, m(ns[0]) - 12, 62)
+    slowstr.expr(20.6, 24.9, 40, 88)
+    # the idea: Bit's theme, first bar, softly on a solo horn
+    horns.cc(20.5, 11, 72)
+    gh = Grid(21.3, 90)
+    play_theme(horns, gh, 62, beats=(-1, 4), vel=70, legato=True)
+    # "GOTV!" sparkle on the word (24.43)
+    for i, n_ in enumerate(['A5', 'D6', 'Eb6', 'F#6', 'A6']):
+        celesta.n(24.43 + i * 0.05, 0.5, n_, 62)
+    glock.n(24.43, 0.4, 'D7', 55)
+    # 25.0 - 27.65 Noa at the router: curious pizzicato + a "progress bar" celesta climb
+    g = Grid(25.0, 120)
     line = [(0, 'D4', 62), (1, 'F#4', 58), (1.5, 'G4', 60), (2, 'A4', 64), (3, 'Bb4', 60), (3.5, 'A4', 56),
-            (4, 'G4', 60), (4.5, 'F#4', 56), (5, 'Eb4', 58), (5.5, 'F#4', 54), (6, 'D4', 60)]
+            (4, 'G4', 60), (4.5, 'F#4', 56), (5, 'Eb4', 58)]
     for bt, n_, v in line:
         pizz.n(g(bt) + hum(0.005), 0.2, n_, v)
-    for bt, n_ in [(0, 'D2'), (1, 'A1'), (2, 'D2'), (3, 'A1'), (4, 'G1'), (5, 'A1'), (6, 'D2')]:
+    for bt, n_ in [(0, 'D2'), (1, 'A1'), (2, 'D2'), (3, 'A1'), (4, 'G1'), (5, 'A1')]:
         pizzlo.n(g(bt), 0.3, n_, 66)
-    bassoon.n(g(0.5), 0.12, 'D3', 50)
-    bassoon.n(g(2.5), 0.12, 'A2', 50)
-    bassoon.n(g(4.5), 0.12, 'G2', 50)
-    for bt in (0, 2, 4):
-        darb.n(g(bt + 0.75), 0.15, 'ka', 26)
-    # 19.8 -> 21.0 magical rising shimmer (dive into the LED)
-    crystal.cc(19.6, 11, 0)
-    crystal.n(19.75, 1.25, ['D5', 'A5', 'D6'], 90)
-    crystal.expr(19.75, 20.98, 0, 120, 1.4)
+    for bt in (0.5, 2.5, 4.5):
+        bassoon.n(g(bt), 0.12, ['D3', 'A2', 'G2'][int(bt // 2)], 50)
+        darb.n(g(bt + 0.25), 0.15, 'ka', 26)
+    prog = hijaz_notes(62, 74, 93)
+    for i in range(12):
+        celesta.n(26.0 + i * 0.135, 0.2, prog[i % len(prog)], 34 + 2 * i)
+    # "...now!" (27.65) - the switch clicks
+    T = 27.65
+    pizz.n(T, 0.2, ['D4', 'A4', 'D5'], 96)
+    glock.n(T, 0.5, ['D6', 'A6'], 80)
+    timp.n(T, 0.5, 'D2', 80)
+    darb.n(T, 0.3, 'doum', 90)
+    # 27.7 -> 29.2 magical GOLD rise into the LED
+    crystal.cc(27.6, 11, 0)
+    crystal.n(27.7, 1.5, ['D5', 'A5', 'D6'], 90)
+    crystal.expr(27.7, 29.18, 0, 120, 1.4)
     gl = hijaz_notes(62, 50, 98)
     for i, n_ in enumerate(gl):
         u = i / (len(gl) - 1)
-        harp.n(19.8 + 1.15 * (u ** 0.7), 0.6, n_, int(48 + 60 * u))
+        harp.n(27.75 + 1.4 * (u ** 0.7), 0.6, n_, int(48 + 60 * u))
     arp = hijaz_notes(62, 74, 98)
-    for i in range(14):
-        celesta.n(19.85 + i * 0.08, 0.4, arp[i % len(arp)], 45 + 3 * i)
-    slowstr.n(19.8, 1.19, ['D4', 'A4', 'D5', 'F#5'], 70)
-    slowstr.expr(19.8, 20.98, 20, 110, 1.6)
-    fx.n(19.7, 1.3, 'riser', 85, lo=900, hi=12000, curve=1.8)
-    fx.n(20.1, 0.9, 'revcym', 90)
+    for i in range(18):
+        celesta.n(27.8 + i * 0.077, 0.4, arp[i % len(arp)], 45 + 3 * i)
+    slowstr.n(27.7, 1.49, ['D4', 'A4', 'D5', 'F#5'], 70)
+    slowstr.expr(27.7, 29.18, 20, 112, 1.6)
+    choir.cc(27.6, 11, 20)
+    choir.n(27.8, 1.39, ['D4', 'A4', 'D5'], 70)
+    choir.expr(27.8, 29.18, 20, 100, 1.5)
+    fx.n(27.8, 1.4, 'riser', 85, lo=900, hi=12000, curve=1.8)
+    fx.n(28.2, 1.0, 'revcym', 90)
 
 
 # ============================================================================================
-# S4  Data world 21.0 - 30.5
+# v2  S4 Data world + the queue 29.2 - 43.4   (26 beats -> BOOST 41.5 on the grid)
 # ============================================================================================
 def s4():
-    g = Grid(21.0, 60 / 0.475)
+    g = Grid(29.2, 60 / (12.3 / 26))
     b = g.b
-    # arrival downbeat
-    fx.n(21.0, 1.0, 'boom', 60, f0=70, f1=40)
-    okit.n(21.0, 1.5, 57, 60)
-    # Bit's call - tiny & plucky
+    fx.n(29.2, 1.0, 'boom', 60, f0=70, f1=40)
+    okit.n(29.2, 1.5, 57, 60)
     call = [(0, 'A4', .12), (.119, 'D5', .2), (.356, 'Eb5', .1), (.475, 'F#5', .2), (.71, 'A5', .35)]
     for dt, n_, d in call:
-        glock.n(21.0 + dt, d, n_, 88)
-        pizz.n(21.0 + dt, d, n_, 80)
-    # groove
+        glock.n(29.2 + dt, d, n_, 88)
+        pizz.n(29.2 + dt, d, n_, 80)
     bassline = [(0, 'D2', .25), (.5, 'D3', .2), (.75, 'D2', .2), (1.5, 'Eb2', .25), (2, 'D2', .4),
                 (2.75, 'F#2', .2), (3, 'G2', .25), (3.5, 'A2', .25)]
     maq = [(0, 'doum'), (.5, 'tek'), (1.5, 'tek'), (2, 'doum'), (3, 'tek')]
@@ -483,78 +523,106 @@ def s4():
                     pizz.n(g(bt), 0.15, ['F#3', 'A3'], int(58 * vel))
 
     groove(0, 6, 0.95)
-    # data "blips" in gaps (8-bit arpeggio chatter)
-    for i in range(8):
+    for i in range(6):
         blips.n(g(1 + i * 0.25), 0.08, int(RNG.choice(hijaz_notes(62, 86, 98))), 60)
-    # --- TRAFFIC JAM stop-start (23.85 - 25.1)
-    stab_t = [g(6), g(6.5), g(7.5)]
-    for i, tt in enumerate(stab_t):
-        mute.n(tt, 0.12, ['D5', 'Eb5'], 100)
-        mute.n(tt, 0.12, ['A4'], 90)
+    # traffic jam: honk honk
+    for tt in (g(6), g(6.5)):
+        mute.n(tt, 0.12, ['D5', 'Eb5', 'A4'], 100)
         synbass.n(tt, 0.1, 'D2', 100)
         pizz.n(tt, 0.1, ['D4', 'Eb4'], 90)
     darb.n(g(6), 0.25, 'doum', 100)
-    darb.n(g(7.5), 0.25, 'tek', 90)
-    groove(8, 8.75, 0.9, hats=False)   # lurch...
-    trombone.n(g(8.75), 0.45, 'A3', 80)   # ...and a sad sag
-    for i in range(12):
-        trombone.bend(g(8.75) + 0.05 + i * 0.025, -1.6 * (i + 1) / 12)
-    trombone.bend(g(9.9), 0)
-    # --- Catpacket: grumpy plodding tuba / bassoon (25.1 - 27.6)
+    # ILVIP 32.4-34.9: the waiting room - tick-tock clock, bored bassoon
+    for k_ in range(7, 12):
+        pizzlo.n(g(k_), 0.2, ['D3', 'A2'][k_ % 2], 62)
+        kit.n(g(k_ + 0.5), 0.05, 76 if k_ % 2 else 77, 50)
+    bassoon.n(g(7), b * 5 * 0.95, 'D2', 52)
+    # whiny "wah-waah" on the tail of "...first half!"
+    mute.cc(34.6, 11, 90)
+    mute.n(34.78, 0.16, 'D5', 78)
+    mute.n(34.96, 0.3, 'C#5', 74)
+    for i in range(8):
+        mute.bend(35.0 + i * 0.03, -0.9 * (i + 1) / 8)
+    mute.bend(35.4, 0)
+    # EMBY 35.1-36.55 "Still... buffering..." - sleepy vibes, then the deflating tuba/bassoon
+    for tt, n_ in [(35.2, 'Eb5'), (35.55, 'D5'), (35.95, 'D5')]:
+        vibes.n(tt, 0.6, n_, 44)
+    tuba.bendrange = 12
+    bassoon.bendrange = 12
+    tuba.cc(35.9, 11, 100)
+    tuba.n(36.0, 0.9, 'A1', 84)
+    bassoon.n(36.0, 0.9, 'A2', 62)
+    for i in range(28):
+        tt = 36.3 + i * 0.02
+        bnd = -7 * ((i + 1) / 28) ** 1.3 + 0.35 * np.sin(2 * np.pi * 9 * (tt - 36.3))
+        tuba.bend(tt, bnd)
+        bassoon.bend(tt, bnd)
+    tuba.bend(36.93, 0)
+    bassoon.bend(36.93, 0)
+    # Catpacket 36.9-39.4: grumpy plod
     for i, n_ in enumerate(['D2', 'C2', 'Bb1', 'A1', 'G1']):
-        tuba.n(g(9 + i), b * 0.55, n_, 96)
-        bassoon.n(g(9 + i), b * 0.45, m(n_) + 12, 58)
-        kit.n(g(9 + i + 0.5), 0.05, 42, 34)
-    tuba.cc(24.0, 11, 105)
-    # --- 27.65 "dun!" then roll into BOOST
-    ohit.n(g(14), 0.2, ['D3', 'D4'], 90)
-    trombone.n(g(14), 0.25, ['D2', 'D3'], 110)
-    tuba.n(g(14), 0.25, 'D1', 110)
-    darb.n(g(14), 0.25, 'doum', 110)
-    for i in range(12):
-        bt = 14.5 + i / 8
-        okit.n(g(bt), 0.05, 38, 40 + 6 * i)
-        darb.n(g(bt), 0.15, 'tek' if i % 2 else 'ka', 50 + 5 * i)
-    run = ['A3', 'Bb3', 'C4', 'D4', 'Eb4', 'F#4']
-    strings.cc(27.0, 11, 100)
+        tuba.n(g(16 + i), b * 0.55, n_, 96)
+        bassoon.n(g(16 + i), b * 0.45, m(n_) + 12, 58)
+        kit.n(g(16 + i + 0.5), 0.05, 42, 34)
+    # 39.5 "dun!" between Cat and Bit
+    T = 39.5
+    ohit.n(T, 0.2, ['D3', 'D4'], 90)
+    trombone.n(T, 0.25, ['D2', 'D3'], 110)
+    tuba.n(T, 0.25, 'D1', 110)
+    darb.n(T, 0.25, 'doum', 110)
+    # Bit 39.7-41.4 "Sorry! GOTV doesn't wait in line!" - the build
+    groove(22, 24, 0.9, hats=True)
+    for i in range(8):
+        synbass.n(g(24 + i / 4), b / 4 * 0.9, 'D2', 96 + 3 * i)
+    for i in range(16):
+        bt = 24 + i / 8
+        okit.n(g(bt), 0.05, 38, 40 + 5 * i)
+        darb.n(g(bt), 0.15, 'tek' if i % 2 else 'ka', 50 + 4 * i)
+    run = ['A3', 'Bb3', 'C4', 'D4', 'Eb4', 'F#4', 'G4']
+    strings.cc(39.0, 11, 100)
     for i, n_ in enumerate(run):
-        strings.n(g(14.5 + i / 4), b / 4 * 1.05, [n_, m(n_) + 12], 80 + 5 * i)
-    fx.n(27.9, 0.7, 'riser', 75, lo=600, hi=9000, curve=2.5)
-    # ---- 28.6 BOOST: Bit's theme bursts out (bar 1 here, bar 2 continues over the cut at 30.5)
-    T = g(16)
+        strings.n(g(24 + i / 4), b / 4 * 1.05, [n_, m(n_) + 12], 78 + 5 * i)
+    for i in range(int((41.48 - 40.5) / 0.05)):
+        timp.n(40.5 + i * 0.05, 0.06, 'D2', 40 + 4 * i)
+    fx.n(40.3, 1.2, 'riser', 80, lo=500, hi=9000, curve=2.5)
+    # ---- 41.5 BOOST: Bit's theme bursts out over the whole queue
+    T = g(26)
+    gt = Grid(T, g.bpm)
     horns.cc(T - 0.3, 11, 120)
     trumpet.cc(T - 0.3, 11, 120)
-    play_theme(trumpet, Grid(T, g.bpm), 62, beats=(-1, 4), vel=108, legato=True)
-    play_theme(horns, Grid(T, g.bpm), 62, beats=(-1, 4), vel=108, legato=True)
-    play_theme(violins, Grid(T, g.bpm), 62, beats=(-1, 4), vel=100, octave=1, legato=True)
+    play_theme(trumpet, gt, 62, beats=(-1, 4), vel=108, legato=True)
+    play_theme(horns, gt, 62, beats=(-1, 4), vel=108, legato=True)
+    play_theme(violins, gt, 62, beats=(-1, 4), vel=100, octave=1, legato=True)
     ohit.n(T, 0.3, ['D4', 'A4'], 105)
     okit.n(T, 1.5, 57, 110)
     okit.n(T, 1.0, 36, 115)
     timp.n(T, 0.6, 'D2', 120)
     fx.n(T, 1.2, 'boom', 90, f0=90, f1=35)
     fx.n(T, 1.2, 'rocket', 80)
-    trombone.n(T, g.b * 4 - 0.02, ['D3', 'A3'], 100)
-    tuba.n(T, g.b * 4 - 0.02, 'D2', 100)
-    strings.n(T, g.b * 4 - 0.02, ['D3', 'A3', 'F#4'], 95)
-    strings.expr(T, 30.49, 90, 122)
+    trombone.n(T, b * 4 - 0.02, ['D3', 'A3'], 100)
+    tuba.n(T, b * 4 - 0.02, 'D2', 100)
+    strings.n(T, b * 4 - 0.02, ['D3', 'A3', 'F#4'], 95)
+    strings.expr(T, 43.39, 90, 122)
     for i in range(16):
-        bt = 16 + i / 4
-        synbass.n(g(bt), b / 4 * 0.9, 'D2' if i % 4 else 'D1', 105 + (10 if i % 4 == 0 else 0))
-    # full energy by 29.8 (beat 18.5 = 29.7875)
-    okit.n(g(18.5), 1.5, 57, 120)
-    kit.n(g(18.5), 1.5, 49, 110)
+        synbass.n(gt(i / 4), b / 4 * 0.9, 'D2' if i % 4 else 'D1', 105 + (10 if i % 4 == 0 else 0))
+    # 42.7 bursts into open fibre - full energy
+    F = 42.7
+    okit.n(F, 1.5, 57, 120)
+    kit.n(F, 1.5, 49, 110)
+    fx.n(F, 0.6, 'swoosh', 70)
     for i in range(16):
-        bt = 16 + i / 4
+        tt = gt(i / 4)
         k = 'doum' if i in (0, 3, 8) else ('tek' if i % 2 == 0 else 'ka')
-        darb.n(g(bt) + hum(0.002), 0.2, k, 92 + (10 if bt >= 18.5 else 0))
-        if bt >= 18.5:
-            kit.n(g(bt), 0.05, 42, 80)
-    for i in range(6):                           # string 16th ostinato from 29.8
-        bt = 18.5 + i / 4
-        strings.n(g(bt), b / 4, ['D4', 'Eb4', 'F#4', 'Eb4', 'D4', 'F#4'][i], 105)
-    choir.cc(28.5, 11, 60)
-    choir.n(g(18.5), 30.5 - g(18.5), ['D4', 'F#4', 'A4'], 90)
-    choir.expr(g(18.5), 30.49, 60, 120)
+        darb.n(tt + hum(0.002), 0.2, k, 92 + (10 if tt >= F else 0))
+    tt = F
+    i = 0
+    while tt < 43.38:
+        kit.n(tt, 0.05, 42, 80)
+        strings.n(tt, b / 4, ['D4', 'Eb4', 'F#4', 'Eb4'][i % 4], 105)
+        i += 1
+        tt = F + i * b / 4
+    choir.cc(41.4, 11, 60)
+    choir.n(F, 43.4 - F, ['D4', 'F#4', 'A4'], 90)
+    choir.expr(F, 43.39, 60, 120)
 
 
 # ============================================================================================
