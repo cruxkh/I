@@ -18,17 +18,22 @@
   // draw(g, x0, y0, x1, y1) paints world coords (the tile rect is given for culling).
   // ---------------------------------------------------------------------------
   const LEVELS = [0.5, 1, 1.6, 2.6];
-  function tileLayer(ctx, key, cam, bounds, draw) {
+  function tileLayer(ctx, key, cam, bounds, draw, clipY) {
     const z = cam.zoom;
+    if (clipY != null && clipY <= 0) return;
     let lv = LEVELS[LEVELS.length - 1];
     for (const l of LEVELS) if (l >= z * 0.97) { lv = l; break; }
     const T = Math.round(1024 / lv), P = Math.ceil(4 / lv);
     const vx0 = Math.max(bounds[0], cam.x - 980 / z), vx1 = Math.min(bounds[2], cam.x + 980 / z);
     const vy0 = Math.max(bounds[1], cam.y - 560 / z), vy1 = Math.min(bounds[3], cam.y + 560 / z);
-    if (vx1 <= vx0 || vy1 <= vy0) return;
-    ctx.save(); A.camera(ctx, cam);
+    let vy1c = vy1;
+    if (clipY != null && clipY < 1080) vy1c = Math.min(vy1, cam.y + (clipY + 20 - 540) / z);
+    if (vx1 <= vx0 || vy1c <= vy0) return;
+    ctx.save();
+    if (clipY != null && clipY < 1080) { ctx.beginPath(); ctx.rect(0, 0, 1920, clipY); ctx.clip(); }
+    A.camera(ctx, cam);
     const e = 0.6 / z;
-    for (let ty = Math.floor(vy0 / T); ty <= Math.floor(vy1 / T); ty++) {
+    for (let ty = Math.floor(vy0 / T); ty <= Math.floor(vy1c / T); ty++) {
       for (let tx = Math.floor(vx0 / T); tx <= Math.floor(vx1 / T); tx++) {
         const wx = tx * T, wy = ty * T, S = Math.ceil((T + 2 * P) * lv);
         const c = A.layer(`${key}@${lv}:${tx},${ty}`, S, S, g => {
@@ -705,6 +710,13 @@
         g.fillStyle = '#c83b4e'; A.path(g, [[x - 44 * k, yy - 100 * k], [x, yy - 126 * k], [x + 44 * k, yy - 100 * k]]); g.fill(); g.stroke();
       });
     }
+    // opaque city ground under the near blocks (streets), so the mid layer can be clipped away below it
+    if (y1 > 1455 && x0 < 2300) {
+      g.fillStyle = '#1b1439'; g.beginPath(); g.moveTo(-400, 1455);
+      for (let y = 1455; y <= 2400; y += 40) g.lineTo(promIn(y) - 390 * kY(y), y);
+      g.lineTo(-400, 2400); g.closePath(); g.fill();
+      g.fillStyle = 'rgba(255,150,80,0.07)'; g.fillRect(-400, 1455, 2400, 945);
+    }
     // Jaffa (far)
     if (hit([2440, 1030, 2980, 1190], x0, y0, x1, y1)) drawJaffa(g);
     // depth-sorted items: hotels, city blocks, palms, lamps, stadium, IPTV
@@ -994,15 +1006,17 @@
   A.drawTelAviv = (ctx, t, o = {}) => {
     const cam = Object.assign({}, CAM0, o.cam || {}); cam.t = t;
     ctx.save();
-    { const _t = performance.now(); drawSky(ctx, t, cam); if (A._jp) A._jp[0] = (A._jp[0] || 0) + performance.now() - _t; }
-    { const _t = performance.now(); tileLayer(ctx, 'tlv-far', lcam(cam, 0.55), [-1100, 850, 2600, 1700], drawFarTile); if (A._jp) A._jp[1] = (A._jp[1] || 0) + performance.now() - _t; }
-    { const _t = performance.now(); drawHaze(ctx, cam, 0.75, 80, 'rgba(150,60,120,0.55)'); if (A._jp) A._jp[2] = (A._jp[2] || 0) + performance.now() - _t; }
-    { const _t = performance.now(); drawSea(ctx, t, cam); if (A._jp) A._jp[3] = (A._jp[3] || 0) + performance.now() - _t; }
-    { const _t = performance.now(); tileLayer(ctx, 'tlv-mid', lcam(cam, 0.85), [-1100, 350, 2700, 2250], drawMidTile); if (A._jp) A._jp[4] = (A._jp[4] || 0) + performance.now() - _t; }
-    { const _t = performance.now(); drawHaze(ctx, cam, 0.35, -20, 'rgba(120,60,140,0.5)'); if (A._jp) A._jp[5] = (A._jp[5] || 0) + performance.now() - _t; }
-    { const _t = performance.now(); tileLayer(ctx, 'tlv-near', cam, [-300, 950, 3100, 2400], drawNearTile); if (A._jp) A._jp[6] = (A._jp[6] || 0) + performance.now() - _t; }
-    { const _t = performance.now(); drawStadiumLive(ctx, t, cam, o); if (A._jp) A._jp[7] = (A._jp[7] || 0) + performance.now() - _t; }
-    { const _t = performance.now(); drawTLVLive(ctx, t, cam, o); if (A._jp) A._jp[8] = (A._jp[8] || 0) + performance.now() - _t; }
+    drawSky(ctx, t, cam);
+    const mc = lcam(cam, 0.85), sy = (c, y) => 540 + (y - c.y) * c.zoom;
+    // each layer only needs to paint above the line where the next nearer layer becomes opaque
+    tileLayer(ctx, 'tlv-far', lcam(cam, 0.55), [-1100, 850, 2600, 1700], drawFarTile, Math.ceil(sy(mc, 1325)));
+    drawHaze(ctx, cam, 0.75, 80, 'rgba(150,60,120,0.55)');
+    drawSea(ctx, t, cam);
+    tileLayer(ctx, 'tlv-mid', mc, [-1100, 350, 2700, 2250], drawMidTile, Math.ceil(sy(cam, 1475)));
+    drawHaze(ctx, cam, 0.35, -20, 'rgba(120,60,140,0.5)');
+    tileLayer(ctx, 'tlv-near', cam, [-300, 950, 3100, 2400], drawNearTile);
+    drawStadiumLive(ctx, t, cam, o);
+    drawTLVLive(ctx, t, cam, o);
     ctx.restore();
   };
 
