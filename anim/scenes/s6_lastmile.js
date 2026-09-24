@@ -545,8 +545,7 @@
         ctx.save(); ctx.translate(fx + blow * 160, fy - blow * 50); ctx.rotate(blow * 0.5); ctx.scale(sz, sz);
         ctx.drawImage(fgDust(sd), -200, -190, 400, 340); ctx.restore();
       }
-      ctx.save(); ctx.strokeStyle = '#0c0810'; ctx.lineWidth = 60; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo(900, 1300); ctx.bezierCurveTo(1000, 900, 1400, 900, 1500, 1300); ctx.stroke(); ctx.restore();
+
     });
     // speed streaks & vignette darkening
     streaks(ctx, t, 0.5 * (b.ph === 'run' || b.ph === 'jump' ? 1 : 0.4));

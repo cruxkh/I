@@ -33,7 +33,9 @@
     if (li === 2 && r === 8) continue; // Catpacket's spot
     if (H(seed * 1.7) < 0.07 && !path && r > 2) continue; // occasional gap
     let X = lane + (path ? 0 : (H(seed * 3.1) - 0.5) * 0.12), Z = ROW(r) + (path ? 0 : (H(seed * 5.3) - 0.5) * 0.3) + (li % 2 ? 0.12 : 0);
-    if (r === 8 && li === 3) X = 0.74;  // squeezed aside by the cat
+    if (path && li === 2) X = 0.03;
+    if (path && li === 3) X = 0.57;
+    if (r === 8 && li === 3) X = 0.86;  // squeezed aside by the cat
     if (r === 8 && li === 1) X = -0.74;
     if (r === 7 && li === 3) X = 0.66;
     const m = H(seed * 9.9);
@@ -49,9 +51,9 @@
 
   // ---------------------------------------------------------------- Bit's path through the jam (shot B)
   const BZ = [[21.0, 9.9], [21.9, 9.78], [22.14, 9.6, 'inOut'], [22.3, 9.12, 'out'], [22.92, 8.84, 'inOut'], [23.24, 8.72, 'inOut'],
-    [23.4, 8.3, 'out'], [23.98, 8.02, 'inOut'], [24.26, 7.92, 'inOut'], [24.42, 7.5, 'out'], [24.82, 7.05, 'in'], [24.9, 7.02, 'out']];
+    [23.4, 8.3, 'out'], [23.98, 8.02, 'inOut'], [24.26, 7.92, 'inOut'], [24.42, 7.5, 'out'], [24.82, 6.95, 'in'], [24.9, 6.92, 'out']];
   const bitZ = t => key(t, BZ);
-  const bitX = t => key(t, [[24.36, 0.305], [24.84, 0.52, 'inOut']]);
+  const bitX = t => key(t, [[24.36, 0.3], [24.84, 0.6, 'inOut']]);
   const POPS = [22.18, 23.28, 24.3];
   const pushing = t => (t > 21.9 && t < 22.18) || (t > 22.95 && t < 23.28) || (t > 24.05 && t < 24.3);
   const popK = t => { let k = 0; for (const p of POPS) k = Math.max(k, smooth(p - 0.02, p + 0.03, t) * (1 - smooth(p + 0.06, p + 0.3, t))); return k; };
@@ -60,6 +62,7 @@
   const proj = (X, Y, Z, zc) => { const d = Z - zc; return [VX + X * F / d, VY + (FL - Y) * F / d, d]; };
 
   // ---------------------------------------------------------------- helpers
+  const clampCam = c => { const hw = 960 / c.zoom, hh = 540 / c.zoom; c.x = clamp(c.x, hw + 8, 1920 - hw - 8); c.y = clamp(c.y, hh + 8, 1080 - hh - 8); return c; };
   const fillBase = ctx => { ctx.fillStyle = '#070a24'; ctx.fillRect(-2000, -2000, 6000, 5000); };
   function drawPk(ctx, p, t, zc, o = {}) {
     const d = p.Z + (o.dz || 0) - zc; if (d < 0.32) return;
@@ -200,7 +203,8 @@
     const bz = bitZ(t), bx = bitX(t);
     const [bxs, bys] = proj(bx, 0, bz, zc);
     const zk = ease.in(inv(21.45, 21.9, t));
-    const cam = { x: lerp(960, bxs, zk * 0.7), y: lerp(540, bys - 60, zk * 0.7), zoom: key(t, [[21.0, 1.35], [21.4, 1.0, 'out'], [21.9, 1.5, 'in']]), rot: lerp(0.02, 0, inv(21, 21.5, t)), t };
+    const cam = { x: lerp(960, bxs, zk * 0.7), y: lerp(540, bys - 60, zk * 0.7), zoom: key(t, [[21.0, 1.35], [21.4, 1.03, 'out'], [21.9, 1.5, 'in']]), rot: 0, t };
+    clampCam(cam);
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     jamWorld(ctx, t, zc, {
       jam: 0.95,
@@ -221,10 +225,11 @@
 
   function shotB(ctx, t) {
     const bz = bitZ(t), bx = bitX(t);
-    const zc = bitZ(t - 0.18) - 1.28 + 0.12 * smooth(24.4, 25, t);
+    const zc = bitZ(t - 0.18) - 1.28 - 0.9 * smooth(24.25, 24.8, t);
     const [bxs, bys] = proj(bx, 0, bz, zc);
     const bump = t > 24.83 ? Math.exp(-(t - 24.83) * 14) : 0;
-    const cam = { x: lerp(960, bxs, 0.75) - 40, y: lerp(540, bys - 80, 0.8), zoom: lerp(1.28, 1.16, smooth(24.3, 24.9, t)), rot: 0.015 * Math.sin(t * 0.8), shake: bump * 1.4, t };
+    const wk = smooth(24.25, 24.8, t);
+    const cam = clampCam({ x: lerp(lerp(960, bxs, 0.75) - 40, lerp(bxs, proj(0, 0, CATZ, zc)[0], 0.45), wk), y: lerp(bys - 190, bys - 200, wk), zoom: lerp(1.3, 1.35, wk), rot: 0, shake: bump * 1.4, t });
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     jamWorld(ctx, t, zc, {
       jam: 0.95,

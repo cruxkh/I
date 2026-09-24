@@ -15,7 +15,7 @@
 (() => {
   // ------------------------------------------------------------------ END CARD CONSTANTS (edit here)
   const CARD = {
-    logoBox: { cx: 960, cy: 440, w: 1120, h: 330 },     // the wordmark / client logo image is fitted into this box
+    logoBox: { cx: 960, cy: 452, w: 1120, h: 330 },     // the wordmark / client logo image is fitted into this box
     logoImage: 'assets/gotv_logo.png',                    // if this file exists it replaces the synthesized wordmark
     wordLeft: 'G', wordRight: 'TV',                        // wordmark = wordLeft + [ring "O"] + wordRight
     tagHe: 'הטלוויזיה מהבית. בכל מקום.',
@@ -406,31 +406,43 @@
 
   // ================================================================== END CARD
   let GL = null; // wordmark geometry, built once fonts are live
+  // Geometric "G" (built from the same stroke language as the ring): big bowl, strong horizontal bar + spur,
+  // so it can never read as a "C" even at thumbnail size.
+  function gPath(g, F, bx, by) {
+    const W = F * 0.2, capH = F * 0.735, r = (capH - W) / 2, cx = bx + r + W / 2, cy = by - capH / 2;
+    g.beginPath();
+    g.arc(cx, cy, r, -0.29 * Math.PI, -2 * Math.PI + 0.02, true); // top-right terminal, round the left, back up to 3 o'clock
+    g.lineTo(cx + r, cy + r * 0.05);
+    g.lineTo(cx + r * 0.02, cy + r * 0.05);                         // the bar
+    return W;
+  }
   function glyph(ch, F) {
     const pad = Math.round(F * 0.35), cw = Math.round(F * 1.1 + pad * 2), chh = Math.round(F * 1.2 + pad * 2);
     const m = document.createElement('canvas').getContext('2d'); m.font = `900 ${F}px Rubik`;
-    const adv = m.measureText(ch).width;
+    const isG = ch === 'G';
+    const adv = isG ? F * 0.735 + F * 0.02 : m.measureText(ch).width;
     const bx = pad, by = pad + F * 0.95; // baseline origin inside the canvas
     const depth = Math.round(F * 0.07), skew = -0.14;
+    // shape ops: fill / outline, for text glyphs or the geometric G
+    const FILL = (g, x, y) => { if (!isG) return g.fillText(ch, x, y); g.save(); const W = gPath(g, F, x, y); g.lineWidth = W; g.lineCap = 'butt'; g.lineJoin = 'miter'; g.strokeStyle = g.fillStyle; g.stroke(); g.restore(); };
+    const LINE = (g, x, y) => { if (!isG) return g.strokeText(ch, x, y); g.save(); const W = gPath(g, F, x, y); g.lineWidth = W + g.lineWidth; g.lineCap = 'butt'; g.lineJoin = 'round'; g.stroke(); g.restore(); };
     const art = A.layer(`s7:g:${ch}:${F}`, cw, chh, g => {
       g.setTransform(1, 0, skew, 1, -skew * by, 0);
       g.font = `900 ${F}px Rubik`; g.textBaseline = 'alphabetic'; g.lineJoin = 'round';
-      // extrusion (3D bevel depth)
       g.lineWidth = F * 0.075; g.strokeStyle = '#060818';
-      for (let d = depth; d >= 1; d -= 1) { g.strokeText(ch, bx + d * 0.45, by + d); }
-      for (let d = depth; d >= 1; d -= 1) { g.fillStyle = A.mixc('#081446', '#1f4fbf', 1 - d / depth); g.fillText(ch, bx + d * 0.45, by + d); }
-      g.lineWidth = F * 0.075; g.strokeStyle = '#060818'; g.strokeText(ch, bx, by);
-      g.lineWidth = F * 0.036; g.strokeStyle = '#2f63e0'; g.strokeText(ch, bx, by);
+      for (let d = depth; d >= 1; d -= 1) LINE(g, bx + d * 0.45, by + d);
+      for (let d = depth; d >= 1; d -= 1) { g.fillStyle = A.mixc('#081446', '#1f4fbf', 1 - d / depth); FILL(g, bx + d * 0.45, by + d); }
+      g.lineWidth = F * 0.075; g.strokeStyle = '#060818'; LINE(g, bx, by);
+      g.lineWidth = F * 0.036; g.strokeStyle = '#2f63e0'; LINE(g, bx, by);
       g.fillStyle = A.linear(g, 0, by - F * 0.75, 0, by, [[0, '#fff7c2'], [0.34, '#ffe04a'], [0.55, '#ffd21f'], [1, '#f39a00']]);
-      g.fillText(ch, bx, by);
-      // bevel: bright top-left lip, warm bottom-right inner shade (masked offsets)
+      FILL(g, bx, by);
       const tmp = document.createElement('canvas'); tmp.width = cw; tmp.height = chh; const q = tmp.getContext('2d');
       q.setTransform(1, 0, skew, 1, -skew * by, 0); q.font = g.font; q.textBaseline = 'alphabetic';
-      q.fillStyle = '#fff'; q.fillText(ch, bx, by); q.globalCompositeOperation = 'destination-out'; q.fillText(ch, bx + F * 0.012, by + F * 0.022);
+      q.fillStyle = '#fff'; FILL(q, bx, by); q.globalCompositeOperation = 'destination-out'; FILL(q, bx + F * 0.012, by + F * 0.022);
       g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 0.9; g.drawImage(tmp, 0, 0);
       q.setTransform(1, 0, 0, 1, 0, 0); q.globalCompositeOperation = 'source-over'; q.clearRect(0, 0, cw, chh);
       q.setTransform(1, 0, skew, 1, -skew * by, 0);
-      q.fillStyle = '#c05a00'; q.fillText(ch, bx, by); q.globalCompositeOperation = 'destination-out'; q.fillText(ch, bx - F * 0.014, by - F * 0.024);
+      q.fillStyle = '#c05a00'; FILL(q, bx, by); q.globalCompositeOperation = 'destination-out'; FILL(q, bx - F * 0.014, by - F * 0.024);
       g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 0.55; g.drawImage(tmp, 0, 0); g.globalAlpha = 1;
     });
     const glow = A.layer(`s7:gg:${ch}:${F}`, cw, chh, g => { g.filter = `blur(${Math.round(F * 0.08)}px)`; g.drawImage(art, 0, 0); });
@@ -440,18 +452,18 @@
     const B = CARD.logoBox;
     let F = 400;
     const m = document.createElement('canvas').getContext('2d');
-    const widthAt = F => { m.font = `900 ${F}px Rubik`; return m.measureText(CARD.wordLeft).width + m.measureText(CARD.wordRight).width + F * 0.86 + F * 0.02; };
+    const widthAt = F => { m.font = `900 ${F}px Rubik`; return [...CARD.wordLeft].reduce((w, c) => w + (c === 'G' ? F * 0.755 : m.measureText(c).width), 0) + m.measureText(CARD.wordRight).width + F * 0.86 + F * 0.16; };
     F = Math.floor(Math.min(B.w / (widthAt(100) / 100), B.h / 0.92));
     const L = [...CARD.wordLeft].map(c => glyph(c, F)), R = [...CARD.wordRight].map(c => glyph(c, F));
-    const ringD = F * 0.8, gap = F * 0.03;
+    const ringD = F * 0.8, gap = F * 0.07, gapL = F * 0.14, gapR = F * 0.0;
     const total = L.reduce((s, g) => s + g.adv, 0) + R.reduce((s, g) => s + g.adv, 0) + ringD + gap * 2;
     const base = B.cy + F * 0.35; // baseline so that cap-height is centred in the box
     let x = B.cx - total / 2;
     const place = [];
     for (const g of L) { place.push({ g, x, side: -1 }); x += g.adv * 0.97; }
-    x += gap;
+    x += gapL;
     const ring = { cx: x + ringD / 2 - F * 0.03, cy: base - F * 0.355, r: ringD / 2 - F * 0.02, w: F * 0.2 };
-    x += ringD + gap;
+    x += ringD + gapR;
     for (const g of R) { place.push({ g, x, side: 1 }); x += g.adv * 0.97; }
     const V = place[place.length - 1];
     return { F, base, place, ring, vNotch: [V.x + V.g.adv * 0.47 - 0.14 * -F * 0.7, base - F * 0.66] };
@@ -629,14 +641,14 @@
     // ring on top (letters emerge from behind it)
     const ringPop = 1 + 0.18 * spring(t, 57.3, 6, 14);
     ctx.save(); ctx.translate(R.cx, R.cy); ctx.scale(ringPop, ringPop); ctx.translate(-R.cx, -R.cy);
-    A.glow(ctx, R.cx, R.cy, R.r * 2.2, '#ffd21f', 0.3 * smooth(57.25, 57.3, t));
+    A.glow(ctx, R.cx, R.cy, R.r * 2.2, '#ffd21f', 0.18 * smooth(57.25, 57.3, t));
     drawRing(ctx, R, prog, t);
     playIcon(ctx, R, ease.outBack(inv(57.32, 57.6, t)), t);
     // orbiting glint (Bit's light living in the ring)
     if (prog >= 1) {
       const a = -Math.PI * 0.62 + (t - 57.3) * 2.2;
       const gx = R.cx + Math.cos(a) * R.r - 0.14 * Math.sin(a) * R.r, gy = R.cy + Math.sin(a) * R.r;
-      A.glow(ctx, gx, gy, R.w * 1.6, '#fff6c8', 0.7); star(ctx, gx, gy, R.w * 0.5, '#ffffff');
+      A.glow(ctx, gx, gy, R.w * 1.1, '#fff6c8', 0.35); star(ctx, gx, gy, R.w * 0.32, '#ffffff');
     }
     ctx.restore();
     streak(ctx, t, R);
@@ -707,10 +719,19 @@
       ctx.restore();
     }
     if (ti > 0) {
-      ctx.save(); ctx.globalAlpha = ti * 0.85;
+      ctx.save(); ctx.globalAlpha = ti * 0.85; ctx.direction = 'ltr';
+      const [enT, heT] = CARD.filmTitle.split(' · ');
+      const y = CARD.filmTitleY - (1 - ti) * 14;
+      ctx.font = '500 28px Rubik'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#c9d3ff';
+      if ('letterSpacing' in ctx) ctx.letterSpacing = '6px';
+      const we = ctx.measureText(enT).width;
+      if ('letterSpacing' in ctx) ctx.letterSpacing = '1px';
+      ctx.font = '500 30px Rubik'; const wh = ctx.measureText(heT || '').width;
+      const gap = 44, x0 = 960 - (we + gap + wh) / 2;
       ctx.font = '500 28px Rubik'; if ('letterSpacing' in ctx) ctx.letterSpacing = '6px';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#c9d3ff';
-      ctx.fillText(CARD.filmTitle, 960, CARD.filmTitleY - (1 - ti) * 14);
+      ctx.textAlign = 'left'; ctx.fillText(enT, x0, y);
+      ctx.fillStyle = '#ffd21f'; A.ellipse(ctx, x0 + we + gap / 2 - 2, y, 4, 4); ctx.fill();
+      if (heT) { ctx.fillStyle = '#c9d3ff'; if ('letterSpacing' in ctx) ctx.letterSpacing = '1px'; ctx.font = '500 30px Rubik'; ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.fillText(heT, x0 + we + gap + wh, y); }
       ctx.restore();
     }
   }

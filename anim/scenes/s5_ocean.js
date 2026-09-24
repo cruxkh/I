@@ -226,16 +226,16 @@
     // --- front glass ---
     ctx.save();
     // clamps / repeater rings passing in front (motion smeared)
-    for (let k = Math.floor(sc / 1150) - 1; k <= Math.floor(sc / 1150) + 2; k++) {
-      const x = k * 1150 - sc + 1500; if (x < -200 || x > 2120) continue;
-      const w2 = 110, big = ((k % 3) + 3) % 3 === 0;
+    (o.clamps || []).forEach((tc, k) => {
+      const x = o.anchorX + (tc - t) * o.clampSpeed; if (x < -400 || x > 2120) return;
+      const w2 = 110, big = k % 2 === 0;
       ctx.fillStyle = A.linear(ctx, x - w2 / 2, 0, x + w2 / 2 + 180, 0, [[0, 'rgba(30,100,120,0.95)'], [0.35, 'rgba(30,100,120,0.9)'], [1, 'rgba(30,100,120,0)']]);
       ctx.fillRect(x - w2 / 2, cy - R * 1.12, w2 + 180, R * 2.24);
       A.rrect(ctx, x - w2 / 2, cy - R * 1.12, w2, R * 2.24, 18); ctx.fillStyle = '#1b5c6e'; ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = A.OUTLINE; ctx.stroke();
       ctx.fillStyle = 'rgba(160,255,255,0.35)'; ctx.fillRect(x - w2 / 2 + 8, cy - R * 1.05, 10, R * 2.1);
       ctx.fillStyle = 'rgba(2,20,33,0.35)'; ctx.fillRect(x + w2 / 2 - 26, cy - R * 1.05, 18, R * 2.1);
       if (big) { const bl = 0.5 + 0.5 * Math.sin(t * 6 + k); A.glow(ctx, x, cy - R * 0.8, 60, `rgba(255,63,164,${0.7 * bl})`); ctx.fillStyle = '#ff9ad6'; A.ellipse(ctx, x, cy - R * 0.8, 8, 8); ctx.fill(); }
-    }
+    });
     // glass sheen
     ctx.fillStyle = A.linear(ctx, 0, cy - R, 0, cy + R, [[0, 'rgba(200,255,255,0.20)'], [0.12, 'rgba(200,255,255,0.06)'], [0.2, 'rgba(200,255,255,0)'], [0.85, 'rgba(0,0,0,0)'], [1, 'rgba(41,240,255,0.14)']]); ctx.fillRect(0, cy - R, 1920, 2 * R);
     ctx.globalCompositeOperation = 'lighter';
@@ -258,7 +258,7 @@
   const XB = 900;                                   // bite point on the cable (screen x)
   const cableAt = x => A.oceanCablePath(x, SH_O);
   const SHK = 0.9;                                  // shark scale
-  const BITE_ROT = -0.42;                           // shark rotation while biting (nose down, facing left)
+  const BITE_ROT = 0.42;                           // shark rotation while biting (nose down, facing left)
   // shark pose over time
   function sharkPose(t) {
     const o = { flip: true, rot: 0, bite: 0.15, mood: 'hungry', t };
@@ -270,18 +270,18 @@
     if (t < 35.15) {
       // glide in from the right, settle, eye the cable
       x = key(t, [[33.95, 1560], [34.9, hx, 'out']]); y = hy + bob;
-      o.rot = key(t, [[33.95, 0.05], [34.9, -0.08]]) + Math.sin(t * 1.7 + 1) * 0.02;
+      o.rot = key(t, [[33.95, -0.05], [34.9, 0.1]]) + Math.sin(t * 1.7 + 1) * 0.02;
       // nom-nom anticipation chomps
       o.bite = 0.15 + 0.35 * Math.max(0, Math.sin(inv(34.6, 35.1, t) * Math.PI * 2)) * (t > 34.6 ? 1 : 0);
     } else if (t < T.lunge) {
       // anticipation: coil back & up, jaw opens
       const u = E.inOut(inv(35.15, T.lunge, t));
       x = hx + 90 * u; y = hy - 70 * u + bob * (1 - u);
-      o.rot = lerp(-0.08, 0.32, u); o.bite = lerp(0.15, 1, u);
+      o.rot = lerp(0.1, -0.3, u); o.bite = lerp(0.15, 1, u);
     } else if (t < T.chomp) {
       const u = E.in(inv(T.lunge, T.chomp, t));
       x = lerp(hx + 90, bx, u); y = lerp(hy - 70, by, u);
-      o.rot = lerp(0.32, BITE_ROT, E.inOut(inv(T.lunge, T.chomp, t)));
+      o.rot = lerp(-0.3, BITE_ROT, E.inOut(inv(T.lunge, T.chomp, t)));
       o.bite = t < 35.9 ? 1 : lerp(1, 0, inv(35.9, T.chomp, t));
     } else if (t < 36.3) {
       // clamped on the cable, shudders
@@ -291,7 +291,7 @@
       // dazed: released, drifts up-right, lolling
       const u = t - 36.3;
       x = bx + 260 * E.out(clamp(u / 1.4)) + 40 * u; y = by - 320 * E.out(clamp(u / 1.6)) - 20 * u;
-      o.rot = BITE_ROT + 0.55 * E.outElastic(clamp(u / 1.2)) + Math.sin(t * 2.2) * 0.08;
+      o.rot = BITE_ROT - 0.85 * E.outElastic(clamp(u / 1.2)) + Math.sin(t * 2.2) * 0.08;
       o.mood = 'dazed'; o.bite = 0.35 + 0.05 * Math.sin(t * 3);
     }
     return { x, y, o };
@@ -413,7 +413,8 @@
   function impactFrame(ctx, t, k, [ix, iy]) {
     ctx.save();
     // posterised inversion
-    ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = k === 0 ? '#ffffff' : '#e8f4ff'; ctx.fillRect(0, 0, 1920, 1080);
+    if (k === 0) { ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 1920, 1080); }
+    else { ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = 'rgba(255,245,220,0.35)'; ctx.fillRect(0, 0, 1920, 1080); }
     ctx.globalCompositeOperation = 'source-over';
     if (k === 0) { ctx.fillStyle = 'rgba(10,8,30,0.25)'; ctx.fillRect(0, 0, 1920, 1080); }
     // burst rays
@@ -444,8 +445,8 @@
     bitInCable(ctx, t, o, bx, 0.44, { vx, wake: 1300, bit: { mood: 'joy', joyEyes: 'open', mouth: 0 } });
     ctx.restore();
     // cut-in flash (continuity from the tunnel streak)
-    const f = 1 - inv(30.5, 30.62, t);
-    if (f > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,230,160,${0.5 * f})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
+    const f = 1 - inv(30.5, 30.6, t);
+    if (f > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,230,160,${0.18 * f})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
   }
 
   // ---------------------------------------------------------------- shot 2 · tracking close ("Marseille... whoa, shark!")
@@ -459,13 +460,14 @@
     ctx.translate(bxS, byS); ctx.scale(punch, punch); ctx.translate(-bxS, -byS);
     const scroll = lt * 2800;
     tubeClose(ctx, t, {
-      cy: 540, R: 190, scroll, bgScroll: 6000 + lt * 900,
+      cy: 540, R: 190, scroll, bgScroll: 6000 + lt * 900, anchorX: bxS, clampSpeed: 2800, clamps: [31.95, 32.62, 33.12, 34.2],
       behind: g => {
         // the shark silhouette ahead in the murk
         if (t > 33.1) {
           const u = inv(33.1, 33.95, t);
-          A.drawShark(g, lerp(1780, 1480, E.out(u)), 250 + Math.sin(t * 1.5) * 8, 0.42, { t, flip: true, mood: 'hungry', bite: 0.2, look: [-1, 0.4] });
-          g.fillStyle = `rgba(3,26,40,${0.35})`; g.fillRect(1100, 60, 820, 420);
+          g.save(); g.globalAlpha = 0.75 * smooth(33.1, 33.4, t);
+          A.drawShark(g, lerp(1500, 1180, E.out(u)), 215 + Math.sin(t * 1.5) * 8, 0.4, { t, flip: true, mood: 'hungry', bite: 0.2 + 0.3 * smooth(33.5, 33.7, t), look: [-1, 0.6], rot: 0.12 });
+          g.restore();
         }
       },
       inside: g => {
@@ -499,7 +501,7 @@
     const lt = t - T.s6;
     const bxS = key(t, [[37.5, 1240], [38.6, 1180]]), byS = 520 + Math.sin(t * 5.2) * 8;
     tubeClose(ctx, t, {
-      cy: 540, R: 190, scroll: 9000 + lt * 2600, bgScroll: 9000 + lt * 700,
+      cy: 540, R: 190, scroll: 9000 + lt * 2600, bgScroll: 9000 + lt * 700, anchorX: bxS, clampSpeed: 2600, clamps: [37.62, 38.75],
       behind: g => {
         // dazed shark tumbling away behind, lit faintly
         const u = lt;
@@ -599,10 +601,11 @@
     ctx.restore();
     // brighter shallows
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    ctx.fillStyle = A.linear(ctx, 0, wl, 0, 1080, [[0, 'rgba(120,230,255,0.35)'], [0.5, 'rgba(60,160,190,0.12)'], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(0, Math.max(0, wl), 1920, 1080);
+    ctx.fillStyle = A.linear(ctx, 0, wl, 0, 1080, [[0, 'rgba(120,230,255,0.22)'], [0.4, 'rgba(60,160,190,0.06)'], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(0, Math.max(0, wl), 1920, 1080);
     ctx.restore();
+    ctx.fillStyle = A.linear(ctx, 0, wl + 200, 0, 1080, [[0, 'rgba(2,20,33,0)'], [1, 'rgba(2,14,26,0.6)']]); ctx.fillRect(0, wl + 200, 1920, 1080);
     // rising lake-bed slope with the cable climbing it
-    const slope = x => lerp(1180, wl + 120, E.inOut(clamp(x / 1920))) ;
+    const slope = x => lerp(1060, wl + 150, E.inOut(clamp(x / 2000)));
     ctx.fillStyle = A.linear(ctx, 0, wl + 100, 0, 1080, [[0, '#1c6a78'], [0.3, '#0f4a5c'], [1, '#04202e']]);
     ctx.beginPath(); ctx.moveTo(0, 1080); for (let x = 0; x <= 1920; x += 20) ctx.lineTo(x, slope(x) + 8 * Math.sin(x / 70)); ctx.lineTo(1920, 1080); ctx.closePath(); ctx.fill();
     ctx.strokeStyle = 'rgba(160,240,240,0.35)'; ctx.lineWidth = 3; ctx.beginPath(); for (let x = 0; x <= 1920; x += 20) ctx.lineTo(x, slope(x) + 8 * Math.sin(x / 70)); ctx.stroke();
@@ -621,14 +624,14 @@
     ctx.strokeStyle = 'rgba(160,255,255,0.7)'; ctx.lineWidth = 3; ctx.stroke();
     ctx.restore();
     // Bit racing up the cable
-    const u = key(t, [[39.75, 0.1], [41.3, 0.93, 'in']]), bx = u * 1920, bcy = cab(bx);
+    const u = key(t, [[39.75, 0.12], [40.5, 0.5, 'lin'], [41.3, 0.9, 'in']]), bx = u * 1920, bcy = cab(bx);
     const ang = Math.atan2(cab(bx + 10) - cab(bx - 10), 20);
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     A.glow(ctx, bx, bcy, 560, 'rgba(255,190,70,0.35)'); A.glow(ctx, bx, bcy, 160, 'rgba(255,240,170,0.9)');
     const W = []; for (let x = bx - 1000; x <= bx; x += 20) W.push([x, cab(x)]);
     ctx.strokeStyle = A.linear(ctx, bx - 1000, 0, bx, 0, [[0, 'rgba(255,190,60,0)'], [1, 'rgba(255,230,140,0.9)']]); ctx.lineWidth = 40; ctx.lineCap = 'round'; A.path(ctx, W, false); ctx.stroke();
     ctx.restore();
-    A.drawBit(ctx, bx, feetY(bcy, 0.46), 0.46, { t, mood: 'joy', joyEyes: 'open', limbs: 'fly', vel: [2600, 2600 * Math.tan(ang)], rot: ang, glow: 2, mouth: 0 });
+    A.drawBit(ctx, bx, feetY(bcy, 0.4), 0.4, { t, mood: 'joy', joyEyes: 'open', limbs: 'fly', vel: [2600, 2600 * Math.tan(ang)], rot: ang, glow: 2, mouth: 0 });
     flarePlankton(ctx, t, bx, bcy, o.scroll, 40, 21);
     // --- surface + above water ---
     if (wl > 0) {
