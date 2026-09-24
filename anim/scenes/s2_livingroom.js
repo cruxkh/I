@@ -306,30 +306,54 @@
       o.turn = K(t, [[24.4, 0.25], [24.55, 0.0]]);
       o.headTilt = K(t, [[21.8, 0], [22.2, -8, 'out'], [23.2, -6], [23.5, -10, 'outBack'], [24.5, -6]]);
       o.browRaise = K(t, [[23.2, 0.1], [23.4, 0.5, 'outBack'], [24.5, 0.3]]);
-    } else if (t < 25.3) {
-      // dash to the router (hop + sock slide)
-      const p = inv(24.75, 25.3, t);
-      x = lerp(1178, 1640, E.out(p)); y = 905 - Math.sin(Math.PI * Math.min(1, p * 2.2)) * 40 * (p < 0.45 ? 1 : 0);
-      o.pose = 'stand'; o.flip = false; o.mood = 'focused'; o.gesture = 'none';
-      o.lean = p < 0.3 ? 0.3 : -0.35 * Math.sin(Math.PI * Math.min(1, p * 1.1));
-      o.squash = p < 0.45 ? -0.12 * Math.sin(Math.PI * p / 0.45) : 0.15 * Math.exp(-(p - 0.45) * 9);
-      o.vel = [900 * (1 - p), 0];
-      o.armL = [80, 12]; o.armR = [72, 18]; o.handShapeL = 'open'; o.handShapeR = 'open';
-      o.look = [-0.9, -0.2]; o.turn = -0.3; // "Hold on, Saba."
+    } else if (t < 25.2) {
+      // marches to the TV cabinet
+      x = K(t, [[24.75, 1178], [25.2, NOA_CAB, 'inOut']]); y = 905 + walkBob(t, 24.75, 25.2);
+      o.pose = 'stand'; o.flip = false; o.mood = 'focused';
+      Object.assign(o, gseq(t, [[0, 'none'], [24.95, 'reach', 0.25]]));
+      o.reachTo = [(BOX_HOME[0] - 40 - x) / NOA_S, (BOX_HOME[1] + 6 - y) / NOA_S];
+      o.look = [0.7, 0.35];
+    } else if (t < 26.5) {
+      // "Bye-bye, old box!": grab, tug (stuck), YANK, hold it up in disgust, fling it over her shoulder
+      x = NOA_CAB; o.pose = 'stand'; o.flip = false;
+      Object.assign(o, mseq(t, [[0, 'focused'], [25.7, 'amused', 0.2], [26.2, 'proud', 0.2]]));
+      const b = boxState(t);
+      if (t < 26.12) {
+        const hx = (b.x - x) / NOA_S, hy = (b.y - y) / NOA_S;
+        o.handL = [hx - 46, hy + 4]; o.handR = [hx + 30, hy + 2]; o.handShapeL = 'grip'; o.handShapeR = 'grip';
+      } else {
+        const k = E.inOut(inv(26.12, 26.3, t));
+        o.handL = [lerp(-10, -62, k), lerp(-230, -318, k)]; o.handR = [lerp(50, -20, k), lerp(-232, -322, k)];
+        o.handShapeL = t > 26.27 ? 'open' : 'grip'; o.handShapeR = o.handShapeL;
+      }
+      o.lean = K(t, [[25.2, 0.25], [25.42, 0.3], [25.55, -0.45, 'out'], [25.8, -0.15], [26.1, -0.1], [26.3, -0.3, 'out'], [26.5, -0.05]]);
+      o.squash = t > 25.45 ? 0.14 * Math.exp(-(t - 25.45) * 9) * Math.cos((t - 25.45) * 22) : 0;
+      if (t > 25.2 && t < 25.45) o.tremble = 1, o.shoulders = 6 + 3 * Math.sin(t * 50);
+      o.look = K(t, [[25.2, [0.7, 0.35]], [25.7, [0.5, 0.0]], [26.1, [0.5, 0.0]], [26.25, [0.9, -0.3]]]);
+      o.headTilt = K(t, [[25.7, 0], [25.85, -8, 'out'], [26.1, -6], [26.3, 6]]);
+      o.lid = K(t, [[25.75, 0], [25.9, 0.3], [26.4, 0.35]]);
+    } else if (t < 27.0) {
+      // dusts off her hands, smug, not even looking back
+      x = NOA_CAB; o.pose = 'stand'; o.flip = false; o.mood = 'proud';
+      const r = Math.sin((t - 26.5) * 34) * sm(26.5, 26.58, t) * (1 - sm(26.85, 27.0, t));
+      o.handL = [18 + r * 10, -150]; o.handR = [40 - r * 10, -156]; o.handShapeL = 'open'; o.handShapeR = 'open';
+      o.look = [0.2, -0.3]; o.lid = 0.35; o.headTilt = -6;
+      o.squash = -0.05 * Math.exp(-(t - 26.5) * 8);
     } else {
-      // crouch at the router, facing left
-      x = 1640;
-      o.pose = 'crouch'; o.flip = true;
-      Object.assign(o, mseq(t, [[0, 'focused'], [PRESS + 0.15, 'joy', 0.3]]));
-      o.squash = 0.16 * Math.exp(-(t - 25.3) * 10) * Math.cos((t - 25.3) * 22);
-      Object.assign(o, gseq(t, [[0, 'none'], [25.4, 'reach', 0.35]]));
-      const lx = (x - 1512) / NOA_S, ly = (796 - y) / NOA_S;
-      const fid = t > 26.0 ? Math.sin((t - 26.0) * 11) * 5 * (1 - sm(27.3, 27.45, t)) : 0;
-      const press = K(t, [[27.4, 0], [PRESS, 1, 'in'], [PRESS + 0.08, 1], [PRESS + 0.25, 0.2]]);
-      o.reachTo = [lx + fid - press * 10, ly + press * 10];
-      o.look = K(t, [[25.3, [0.7, -0.45]], [25.85, [0.7, -0.45]], [26.0, [0.6, 0.55], 'out'], [PRESS, [0.6, 0.55]], [PRESS + 0.15, [0.45, -0.9], 'out']]);
-      o.turn = K(t, [[25.9, 0.1], [26.0, 0.25]]);
-      o.browRaise = K(t, [[PRESS, 0], [PRESS + 0.12, 0.7, 'outBack'], [28.2, 0.5]]);
+      // phone out: "One message to GOTV..." → "Activated! Look, Saba!"
+      x = NOA_CAB; o.pose = 'stand'; o.flip = true;
+      Object.assign(o, mseq(t, [[0, 'proud'], [27.2, 'focused', 0.3], [28.2, 'amused', 0.3], [PRESS + 0.1, 'joy', 0.25]]));
+      const up = E.outBack(inv(27.0, 27.3, t));
+      if (t < 31.25) {
+        o.handL = [lerp(10, 36, up), lerp(-130, -188, up)]; o.handR = [lerp(26, 62, up), lerp(-126, -186, up)]; o.handShapeL = 'grip'; o.handShapeR = 'grip';
+        o.look = t < PRESS ? [0.3, 0.8] : [-0.85, -0.45]; o.turn = t < PRESS ? 0.25 : -0.3;
+        o.headTilt = t < PRESS ? 8 : 0;
+      } else {
+        Object.assign(o, gseq(t, [[0, 'none'], [31.25, 'cheer', 0.15], [31.95, 'shrug', 0.25], [32.85, 'none', 0.4]]));
+        o.look = K(t, [[31.25, [-0.85, -0.45]], [31.95, [-0.85, -0.45]], [32.05, [0.85, -0.2], 'out'], [32.75, [0.85, -0.2]], [32.9, [-0.85, -0.4], 'out']]);
+        o.turn = K(t, [[31.95, -0.3], [32.05, 0.25], [32.75, 0.25], [32.9, -0.3]]);
+      }
+      o.phone = t >= 27.0 && t < 31.25 ? 1 : 0;
     }
     return { x, y, o, caseP };
   }
