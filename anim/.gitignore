@@ -1,0 +1,5 @@
+node_modules/
+out/
+previews/
+audio/music/sf/
+*.pyc

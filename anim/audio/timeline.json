@@ -1,0 +1,633 @@
+{
+ "fps": 30,
+ "duration": 60.0,
+ "lines": [
+  {
+   "id": "ann1",
+   "who": "ANNOUNCER",
+   "t": 1.2,
+   "voice": "am_michael",
+   "speed": 1.12,
+   "pitch": 0,
+   "fx": "pa",
+   "text": "Eighty-nine minutes gone, one all, and Maccabi are on the attack!",
+   "he": "דקה 89, אחת-אחת, ומכבי בהתקפה!",
+   "dur": 3.661,
+   "end": 4.861,
+   "words": [
+    {
+     "w": "Eighty-nine",
+     "t": 1.2
+    },
+    {
+     "w": "minutes",
+     "t": 1.868
+    },
+    {
+     "w": "gone,",
+     "t": 2.322
+    },
+    {
+     "w": "one",
+     "t": 2.616
+    },
+    {
+     "w": "all,",
+     "t": 2.857
+    },
+    {
+     "w": "and",
+     "t": 3.097
+    },
+    {
+     "w": "Maccabi",
+     "t": 3.338
+    },
+    {
+     "w": "are",
+     "t": 3.792
+    },
+    {
+     "w": "on",
+     "t": 4.033
+    },
+    {
+     "w": "the",
+     "t": 4.22
+    },
+    {
+     "w": "attack!",
+     "t": 4.46
+    }
+   ]
+  },
+  {
+   "id": "saba1",
+   "who": "SABA",
+   "t": 6.9,
+   "voice": "bm_george",
+   "speed": 0.98,
+   "pitch": -1,
+   "fx": "room",
+   "text": "Noa! Eighty-nine minutes. One one. This is it.",
+   "he": "נועה! דקה 89. אחת-אחת. זהו זה.",
+   "dur": 3.334,
+   "end": 10.235,
+   "words": [
+    {
+     "w": "Noa!",
+     "t": 6.9
+    },
+    {
+     "w": "Eighty-nine",
+     "t": 7.219
+    },
+    {
+     "w": "minutes.",
+     "t": 8.106
+    },
+    {
+     "w": "One",
+     "t": 8.709
+    },
+    {
+     "w": "one.",
+     "t": 9.028
+    },
+    {
+     "w": "This",
+     "t": 9.348
+    },
+    {
+     "w": "is",
+     "t": 9.738
+    },
+    {
+     "w": "it.",
+     "t": 9.986
+    }
+   ]
+  },
+  {
+   "id": "noa1",
+   "who": "NOA",
+   "t": 10.5,
+   "voice": "af_bella",
+   "speed": 1.05,
+   "pitch": 3,
+   "fx": "room",
+   "text": "Saba, breathe. It's just football.",
+   "he": "סבא, תנשום. זה רק כדורגל.",
+   "dur": 1.908,
+   "end": 12.408,
+   "words": [
+    {
+     "w": "Saba,",
+     "t": 10.5
+    },
+    {
+     "w": "breathe.",
+     "t": 10.804
+    },
+    {
+     "w": "It's",
+     "t": 11.274
+    },
+    {
+     "w": "just",
+     "t": 11.579
+    },
+    {
+     "w": "football.",
+     "t": 11.883
+    }
+   ]
+  },
+  {
+   "id": "saba2",
+   "who": "SABA",
+   "t": 12.6,
+   "voice": "bm_george",
+   "speed": 1.15,
+   "pitch": -1,
+   "fx": "room",
+   "text": "Just football? Go, go, go, go!",
+   "he": "רק כדורגל?! סע, סע, סע!",
+   "dur": 2.301,
+   "end": 14.901,
+   "words": [
+    {
+     "w": "Just",
+     "t": 12.6
+    },
+    {
+     "w": "football?",
+     "t": 13.036
+    },
+    {
+     "w": "Go,",
+     "t": 13.79
+    },
+    {
+     "w": "go,",
+     "t": 14.068
+    },
+    {
+     "w": "go,",
+     "t": 14.346
+    },
+    {
+     "w": "go!",
+     "t": 14.624
+    }
+   ]
+  },
+  {
+   "id": "saba3",
+   "who": "SABA",
+   "t": 15.2,
+   "voice": "bm_george",
+   "speed": 1.0,
+   "pitch": -1,
+   "fx": "room",
+   "text": "No. No, no, no! Not now!",
+   "he": "לא. לא, לא, לא! לא עכשיו!",
+   "dur": 2.103,
+   "end": 17.303,
+   "words": [
+    {
+     "w": "No.",
+     "t": 15.2
+    },
+    {
+     "w": "No,",
+     "t": 15.52
+    },
+    {
+     "w": "no,",
+     "t": 15.84
+    },
+    {
+     "w": "no!",
+     "t": 16.16
+    },
+    {
+     "w": "Not",
+     "t": 16.48
+    },
+    {
+     "w": "now!",
+     "t": 16.891
+    }
+   ]
+  },
+  {
+   "id": "noa2",
+   "who": "NOA",
+   "t": 17.6,
+   "voice": "af_bella",
+   "speed": 1.08,
+   "pitch": 3,
+   "fx": "room",
+   "text": "Hold on, Saba. I'll find where it's stuck.",
+   "he": "רגע, סבא. אני אמצא איפה זה תקוע.",
+   "dur": 2.1,
+   "end": 19.7,
+   "words": [
+    {
+     "w": "Hold",
+     "t": 17.6
+    },
+    {
+     "w": "on,",
+     "t": 17.863
+    },
+    {
+     "w": "Saba.",
+     "t": 18.03
+    },
+    {
+     "w": "I'll",
+     "t": 18.292
+    },
+    {
+     "w": "find",
+     "t": 18.555
+    },
+    {
+     "w": "where",
+     "t": 18.817
+    },
+    {
+     "w": "it's",
+     "t": 19.127
+    },
+    {
+     "w": "stuck.",
+     "t": 19.39
+    }
+   ]
+  },
+  {
+   "id": "bit1",
+   "who": "BIT",
+   "t": 21.9,
+   "voice": "am_puck",
+   "speed": 1.1,
+   "pitch": 5,
+   "fx": "data",
+   "text": "Excuse me! Live goal coming through! Live goal!",
+   "he": "סליחה! גול חי עובר! גול חי!",
+   "dur": 1.981,
+   "end": 23.881,
+   "words": [
+    {
+     "w": "Excuse",
+     "t": 21.9
+    },
+    {
+     "w": "me!",
+     "t": 22.203
+    },
+    {
+     "w": "Live",
+     "t": 22.345
+    },
+    {
+     "w": "goal",
+     "t": 22.567
+    },
+    {
+     "w": "coming",
+     "t": 22.789
+    },
+    {
+     "w": "through!",
+     "t": 23.093
+    },
+    {
+     "w": "Live",
+     "t": 23.436
+    },
+    {
+     "w": "goal!",
+     "t": 23.658
+    }
+   ]
+  },
+  {
+   "id": "cat1",
+   "who": "CATPACKET",
+   "t": 25.1,
+   "voice": "am_fenrir",
+   "speed": 0.92,
+   "pitch": -4,
+   "fx": "data",
+   "text": "Get in line, kid. Cat videos first.",
+   "he": "תעמוד בתור, ילד. סרטוני חתולים קודם.",
+   "dur": 2.502,
+   "end": 27.602,
+   "words": [
+    {
+     "w": "Get",
+     "t": 25.1
+    },
+    {
+     "w": "in",
+     "t": 25.408
+    },
+    {
+     "w": "line,",
+     "t": 25.648
+    },
+    {
+     "w": "kid.",
+     "t": 26.025
+    },
+    {
+     "w": "Cat",
+     "t": 26.334
+    },
+    {
+     "w": "videos",
+     "t": 26.642
+    },
+    {
+     "w": "first.",
+     "t": 27.156
+    }
+   ]
+  },
+  {
+   "id": "bit2",
+   "who": "BIT",
+   "t": 28.0,
+   "voice": "am_puck",
+   "speed": 1.1,
+   "pitch": 5,
+   "fx": "data",
+   "text": "Not today!",
+   "he": "לא היום!",
+   "dur": 0.688,
+   "end": 28.688,
+   "words": [
+    {
+     "w": "Not",
+     "t": 28.0
+    },
+    {
+     "w": "today!",
+     "t": 28.282
+    }
+   ]
+  },
+  {
+   "id": "bit3",
+   "who": "BIT",
+   "t": 32.2,
+   "voice": "am_puck",
+   "speed": 1.15,
+   "pitch": 5,
+   "fx": "under",
+   "text": "Marseille... the Atlantic... whoa, shark!",
+   "he": "מרסיי... האטלנטי... וואו, כריש!",
+   "dur": 1.707,
+   "end": 33.907,
+   "words": [
+    {
+     "w": "Marseille...",
+     "t": 32.2
+    },
+    {
+     "w": "the",
+     "t": 32.691
+    },
+    {
+     "w": "Atlantic...",
+     "t": 32.902
+    },
+    {
+     "w": "whoa,",
+     "t": 33.346
+    },
+    {
+     "w": "shark!",
+     "t": 33.603
+    }
+   ]
+  },
+  {
+   "id": "bit4",
+   "who": "BIT",
+   "t": 37.6,
+   "voice": "am_puck",
+   "speed": 1.1,
+   "pitch": 5,
+   "fx": "under",
+   "text": "Nice try, fishy!",
+   "he": "יפה ניסית, דגיג!",
+   "dur": 0.985,
+   "end": 38.585,
+   "words": [
+    {
+     "w": "Nice",
+     "t": 37.6
+    },
+    {
+     "w": "try,",
+     "t": 37.928
+    },
+    {
+     "w": "fishy!",
+     "t": 38.197
+    }
+   ]
+  },
+  {
+   "id": "bit5",
+   "who": "BIT",
+   "t": 41.9,
+   "voice": "am_puck",
+   "speed": 1.0,
+   "pitch": 5,
+   "fx": "data",
+   "text": "Last mile... last meter...",
+   "he": "הקילומטר האחרון... המטר האחרון...",
+   "dur": 1.497,
+   "end": 43.397,
+   "words": [
+    {
+     "w": "Last",
+     "t": 41.9
+    },
+    {
+     "w": "mile...",
+     "t": 42.258
+    },
+    {
+     "w": "last",
+     "t": 42.616
+    },
+    {
+     "w": "meter...",
+     "t": 42.974
+    }
+   ]
+  },
+  {
+   "id": "bit6",
+   "who": "BIT",
+   "t": 44.6,
+   "voice": "am_puck",
+   "speed": 1.0,
+   "pitch": 5,
+   "fx": "data",
+   "text": "Delivered!",
+   "he": "נמסר!",
+   "dur": 0.691,
+   "end": 45.291,
+   "words": [
+    {
+     "w": "Delivered!",
+     "t": 44.6
+    }
+   ]
+  },
+  {
+   "id": "ann2",
+   "who": "ANNOUNCER",
+   "t": 46.6,
+   "voice": "am_michael",
+   "speed": 1.0,
+   "pitch": 0,
+   "fx": "tv",
+   "text": "Goooal! Maccabi!",
+   "he": "גוווול! מכבי!",
+   "dur": 1.154,
+   "end": 47.754,
+   "words": [
+    {
+     "w": "Goooal!",
+     "t": 46.6
+    },
+    {
+     "w": "Maccabi!",
+     "t": 47.141
+    }
+   ]
+  },
+  {
+   "id": "saba4",
+   "who": "SABA",
+   "t": 48.3,
+   "voice": "bm_george",
+   "speed": 1.1,
+   "pitch": -1,
+   "fx": "room",
+   "text": "Gooool! Noa, you are a genius!",
+   "he": "גוווול! נועה, את גאונה!",
+   "dur": 2.177,
+   "end": 50.477,
+   "words": [
+    {
+     "w": "Gooool!",
+     "t": 48.3
+    },
+    {
+     "w": "Noa,",
+     "t": 48.81
+    },
+    {
+     "w": "you",
+     "t": 49.116
+    },
+    {
+     "w": "are",
+     "t": 49.423
+    },
+    {
+     "w": "a",
+     "t": 49.729
+    },
+    {
+     "w": "genius!",
+     "t": 49.967
+    }
+   ]
+  },
+  {
+   "id": "noa3",
+   "who": "NOA",
+   "t": 51.4,
+   "voice": "af_bella",
+   "speed": 1.05,
+   "pitch": 3,
+   "fx": "room",
+   "text": "Thank the little packet, Saba.",
+   "he": "תודה לחבילה הקטנה, סבא.",
+   "dur": 1.446,
+   "end": 52.846,
+   "words": [
+    {
+     "w": "Thank",
+     "t": 51.4
+    },
+    {
+     "w": "the",
+     "t": 51.698
+    },
+    {
+     "w": "little",
+     "t": 51.905
+    },
+    {
+     "w": "packet,",
+     "t": 52.249
+    },
+    {
+     "w": "Saba.",
+     "t": 52.594
+    }
+   ]
+  },
+  {
+   "id": "bit7",
+   "who": "BIT",
+   "t": 55.0,
+   "voice": "am_puck",
+   "speed": 0.95,
+   "pitch": 5,
+   "fx": "small",
+   "text": "Next time... send the goal earlier.",
+   "he": "בפעם הבאה... תשלחו את הגול מוקדם יותר.",
+   "dur": 1.846,
+   "end": 56.846,
+   "words": [
+    {
+     "w": "Next",
+     "t": 55.0
+    },
+    {
+     "w": "time...",
+     "t": 55.29
+    },
+    {
+     "w": "send",
+     "t": 55.58
+    },
+    {
+     "w": "the",
+     "t": 55.87
+    },
+    {
+     "w": "goal",
+     "t": 56.107
+    },
+    {
+     "w": "earlier.",
+     "t": 56.397
+    }
+   ]
+  }
+ ]
+}

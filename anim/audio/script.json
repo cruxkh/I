@@ -1,0 +1,192 @@
+{
+ "_doc": "Master dialogue. t = target start (seconds, global). pitch = semitones applied after TTS (duration preserved by pre-slowing). fx = mixer treatment.",
+ "lines": [
+  {
+   "id": "ann1",
+   "who": "ANNOUNCER",
+   "t": 1.2,
+   "voice": "am_michael",
+   "speed": 1.12,
+   "pitch": 0,
+   "fx": "pa",
+   "text": "Eighty-nine minutes gone, one all, and Maccabi are on the attack!",
+   "he": "דקה 89, אחת-אחת, ומכבי בהתקפה!"
+  },
+  {
+   "id": "saba1",
+   "who": "SABA",
+   "t": 6.9,
+   "voice": "bm_george",
+   "speed": 0.98,
+   "pitch": -1,
+   "fx": "room",
+   "text": "Noa! Eighty-nine minutes. One one. This is it.",
+   "he": "נועה! דקה 89. אחת-אחת. זהו זה."
+  },
+  {
+   "id": "noa1",
+   "who": "NOA",
+   "t": 10.5,
+   "voice": "af_bella",
+   "speed": 1.05,
+   "pitch": 3,
+   "fx": "room",
+   "text": "Saba, breathe. It's just football.",
+   "he": "סבא, תנשום. זה רק כדורגל."
+  },
+  {
+   "id": "saba2",
+   "who": "SABA",
+   "t": 12.6,
+   "voice": "bm_george",
+   "speed": 1.15,
+   "pitch": -1,
+   "fx": "room",
+   "text": "Just football? Go, go, go, go!",
+   "he": "רק כדורגל?! סע, סע, סע!"
+  },
+  {
+   "id": "saba3",
+   "who": "SABA",
+   "t": 15.2,
+   "voice": "bm_george",
+   "speed": 1.0,
+   "pitch": -1,
+   "fx": "room",
+   "text": "No. No, no, no! Not now!",
+   "he": "לא. לא, לא, לא! לא עכשיו!"
+  },
+  {
+   "id": "noa2",
+   "who": "NOA",
+   "t": 17.6,
+   "voice": "af_bella",
+   "speed": 1.08,
+   "pitch": 3,
+   "fx": "room",
+   "text": "Hold on, Saba. I'll find where it's stuck.",
+   "he": "רגע, סבא. אני אמצא איפה זה תקוע."
+  },
+  {
+   "id": "bit1",
+   "who": "BIT",
+   "t": 21.9,
+   "voice": "am_puck",
+   "speed": 1.1,
+   "pitch": 5,
+   "fx": "data",
+   "text": "Excuse me! Live goal coming through! Live goal!",
+   "he": "סליחה! גול חי עובר! גול חי!"
+  },
+  {
+   "id": "cat1",
+   "who": "CATPACKET",
+   "t": 25.1,
+   "voice": "am_fenrir",
+   "speed": 0.92,
+   "pitch": -4,
+   "fx": "data",
+   "text": "Get in line, kid. Cat videos first.",
+   "he": "תעמוד בתור, ילד. סרטוני חתולים קודם."
+  },
+  {
+   "id": "bit2",
+   "who": "BIT",
+   "t": 28.0,
+   "voice": "am_puck",
+   "speed": 1.1,
+   "pitch": 5,
+   "fx": "data",
+   "text": "Not today!",
+   "he": "לא היום!"
+  },
+  {
+   "id": "bit3",
+   "who": "BIT",
+   "t": 32.2,
+   "voice": "am_puck",
+   "speed": 1.15,
+   "pitch": 5,
+   "fx": "under",
+   "text": "Marseille... the Atlantic... whoa, shark!",
+   "he": "מרסיי... האטלנטי... וואו, כריש!"
+  },
+  {
+   "id": "bit4",
+   "who": "BIT",
+   "t": 37.6,
+   "voice": "am_puck",
+   "speed": 1.1,
+   "pitch": 5,
+   "fx": "under",
+   "text": "Nice try, fishy!",
+   "he": "יפה ניסית, דגיג!"
+  },
+  {
+   "id": "bit5",
+   "who": "BIT",
+   "t": 41.9,
+   "voice": "am_puck",
+   "speed": 1.0,
+   "pitch": 5,
+   "fx": "data",
+   "text": "Last mile... last meter...",
+   "he": "הקילומטר האחרון... המטר האחרון..."
+  },
+  {
+   "id": "bit6",
+   "who": "BIT",
+   "t": 44.6,
+   "voice": "am_puck",
+   "speed": 1.0,
+   "pitch": 5,
+   "fx": "data",
+   "text": "Delivered!",
+   "he": "נמסר!"
+  },
+  {
+   "id": "ann2",
+   "who": "ANNOUNCER",
+   "t": 46.6,
+   "voice": "am_michael",
+   "speed": 1.0,
+   "pitch": 0,
+   "fx": "tv",
+   "text": "Goooal! Maccabi!",
+   "he": "גוווול! מכבי!"
+  },
+  {
+   "id": "saba4",
+   "who": "SABA",
+   "t": 48.3,
+   "voice": "bm_george",
+   "speed": 1.1,
+   "pitch": -1,
+   "fx": "room",
+   "text": "Gooool! Noa, you are a genius!",
+   "he": "גוווול! נועה, את גאונה!"
+  },
+  {
+   "id": "noa3",
+   "who": "NOA",
+   "t": 51.4,
+   "voice": "af_bella",
+   "speed": 1.05,
+   "pitch": 3,
+   "fx": "room",
+   "text": "Thank the little packet, Saba.",
+   "he": "תודה לחבילה הקטנה, סבא."
+  },
+  {
+   "id": "bit7",
+   "who": "BIT",
+   "t": 55.0,
+   "voice": "am_puck",
+   "speed": 0.95,
+   "pitch": 5,
+   "fx": "small",
+   "text": "Next time... send the goal earlier.",
+   "he": "בפעם הבאה... תשלחו את הגול מוקדם יותר."
+  }
+ ]
+}

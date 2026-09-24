@@ -1,0 +1,1 @@
+A.scene({name:'smoke',start:0,end:60,draw(ctx,s){ctx.fillStyle=A.linear(ctx,0,0,0,1080,[[0,'#243'],[1,'#123']]);ctx.fillRect(0,0,1920,1080);A.ellipse(ctx,960+Math.sin(s.t)*300,500,120,120);A.fillStroke(ctx,'#fc3',8);A.glow(ctx,960,500,300,'#0ff',.5);}});
