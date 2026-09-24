@@ -1,7 +1,32 @@
 [
- {"sfx": "whip_pan", "t": 13.58, "gain_db": -16, "pan": 0.1},
- {"sfx": "zip_streak", "t": 15.9, "gain_db": -18, "pan": 0.0},
- {"sfx": "squeeze_squeak", "t": 25.18, "gain_db": -17, "pan": 0.45},
- {"sfx": "router_beeps", "t": 27.65, "gain_db": -12, "pan": 0.25},
- {"sfx": "map_ding", "t": 27.89, "gain_db": -13, "pan": 0.3}
+ {
+  "sfx": "whip_pan",
+  "t": 13.58,
+  "gain_db": -16,
+  "pan": 0.1
+ },
+ {
+  "sfx": "zip_streak",
+  "t": 15.9,
+  "gain_db": -18,
+  "pan": 0.0
+ },
+ {
+  "sfx": "boing",
+  "t": 25.46,
+  "gain_db": -15,
+  "pan": 0.3
+ },
+ {
+  "sfx": "tv_unfreeze_pop",
+  "t": 30.946,
+  "gain_db": -9,
+  "pan": 0.3
+ },
+ {
+  "sfx": "wink_ding",
+  "t": 31.43,
+  "gain_db": -12,
+  "pan": 0.3
+ }
 ]

@@ -1,5 +1,5 @@
 // ============================================================================
-// S2 v2 · "Buffering" · global 6.2–29.2 · Toronto living room (shift 0).
+// S2 v5 · "Buffering" · global 6.2–35.2 · Toronto living room (shift 0).
 // Shots (global t):
 //   A  6.20–7.00  out of S1's flash: inside the room, close on the window (snow falling outside, warm lamp),
 //                 caption טורונטו · 15:47, then an eased pan onto Saba for "Noa!"
@@ -11,8 +11,13 @@
 //   G 15.75–17.72 Saba frozen mid-rise, 16.0 snap zoom to his face ("No! Not now!"), spinner in his glasses
 //   G2 17.72–20.35 Saba vs. the TV (error toast): "Again?! Every single game it gets stuck!"
 //   H 20.35–24.80 Saba slumps; Noa sets the case on the pouf, knowing smile: "...Everyone switched to GOTV!"
-//   I 24.80–29.20 Noa dashes to the router: "Switching you to GOTV... now!" → TV switch overlay, LED turns gold,
-//                 push into the gold LED, whoosh, white-gold flash (S4 opens at 29.2)
+//   J 24.80–26.95 Noa marches to the cabinet: "Bye-bye, old box!" tug, YANK (cable spaghetti), over-the-shoulder
+//                 toss into the bin (crash ~26.45), dusts off her hands; the shelf stays empty from then on
+//   K 26.95–27.70 Noa MCU, phone out: "One message to GOTV..."
+//   W 27.70–30.90 WhatsApp close-up: typing, send 28.33, bubble 28.4, read 29.1, typing... 29.4, reply 30.2
+//   L 30.90–33.00 room: the GOTV app opens on the smart TV (switch overlay → splash), "Activated! Look, Saba!",
+//                 Saba rises in wonder and points
+//   M 33.00–35.20 light pours out of the TV, push INTO the screen, white-gold flash 34.7–35.2 (S4 opens out of it)
 // Everything is a pure function of t. Props from kits/props.js are guarded (placeholders if missing).
 // ============================================================================
 (() => {
@@ -376,6 +381,8 @@
       } else {
         Object.assign(o, gseq(t, [[0, 'none'], [31.25, 'cheer', 0.15], [31.95, 'shrug', 0.25], [32.85, 'none', 0.4]]));
         o.look = K(t, [[31.25, [-0.85, -0.45]], [31.95, [-0.85, -0.45]], [32.05, [0.85, -0.2], 'out'], [32.75, [0.85, -0.2]], [32.9, [-0.85, -0.4], 'out']]);
+        // steps aside (out of the light) to watch
+        x = K(t, [[32.8, NOA_CAB], [33.25, 1150, 'inOut']]); y = 905 + walkBob(t, 32.8, 33.25);
         o.turn = K(t, [[31.95, -0.3], [32.05, 0.25], [32.75, 0.25], [32.9, -0.3]]);
       }
       o.phone = t >= 27.0 && t < 31.25 ? 1 : 0;
@@ -614,7 +621,7 @@
   }
 
   // ------------------------------------------------------------ WhatsApp close-up (screen space), 27.7–30.9
-  const WA = { x0: 650, x1: 1270, top: 36, head: 176, input: 800, kb: 888 };
+  const WA = { x0: 650, x1: 1270, top: 36, head: 176, input: 700, kb: 788 };
   const MSG = 'אני רוצה להתחבר לשירותי הצפייה שלכם באפליקציה על מסך הטלוויזיה';
   const REPLY = 'בכיף! המנוי מופעל';
   const T_SEND = 28.33, T_BUBBLE = 28.4, T_READ = 29.1, T_TYPING = 29.4, T_REPLY = 30.2;
@@ -657,8 +664,8 @@
     for (let i = 0; i < 16; i++) { const bx = r() * 1920, by = r() * 1080, br = 40 + r() * 90; A.glow(ctx, bx + Math.sin(t * 0.3 + i) * 10, by, br, i % 3 ? '#ffb45e' : '#9ff5d0', 0.18 + 0.1 * r()); }
     ctx.save();
     // handheld: slow push + tiny drift
-    const z = 1 + 0.035 * E.inOut(cl(lt / 3.2)) + 0.05 * (1 - E.out(cl(lt / 0.35)));
-    ctx.translate(960 + A.noise1(t * 1.3) * 5, 560 + A.noise1(t * 1.1 + 5) * 4); ctx.rotate(-0.012 + A.noise1(t * 0.7 + 2) * 0.006); ctx.scale(z, z); ctx.translate(-960, -560);
+    const z = 1.2 + 0.04 * E.inOut(cl(lt / 3.2)) + 0.06 * (1 - E.out(cl(lt / 0.35)));
+    ctx.translate(960 + A.noise1(t * 1.3) * 5, 60 + A.noise1(t * 1.1 + 5) * 4); ctx.rotate(-0.012 + A.noise1(t * 0.7 + 2) * 0.006); ctx.scale(z, z); ctx.translate(-960, -60);
     // phone body
     ctx.fillStyle = 'rgba(0,0,0,0.45)'; A.rrect(ctx, WA.x0 - 4, WA.top + 14, WA.x1 - WA.x0 + 36, 1200, 78); ctx.fill();
     ctx.fillStyle = '#121216'; A.rrect(ctx, WA.x0 - 22, WA.top - 22, WA.x1 - WA.x0 + 44, 1240, 78); ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 5; ctx.stroke();
@@ -786,40 +793,47 @@
     ctx.restore();
   }
 
-  // ------------------------------------------------------------ dive into the gold LED (screen space)
-  function diveFX(ctx, t) {
-    if (t < PRESS) return;
-    const q = inv(28.6, 29.2, t);
-    const c = [960, 540];
-    const bl = sm(28.1, 28.95, t);
-    A.glow(ctx, c[0], c[1], 120 + 700 * bl * bl, '#ffd36a', 0.2 + 0.6 * bl);
-    if (q > 0) {
-      const R = 120 + 1600 * E.in(q);
-      ctx.save(); ctx.globalAlpha = sm(28.6, 28.75, t);
-      ctx.fillStyle = A.radial(ctx, c[0], c[1], 0, R, [[0, '#ffffff'], [0.35, 'rgba(255,250,228,0.97)'], [0.7, 'rgba(255,214,110,0.55)'], [1, 'rgba(255,201,60,0)']]);
-      ctx.fillRect(0, 0, 1920, 1080); ctx.restore();
+  // ------------------------------------------------------------ light pours OUT of the TV (world, after the room)
+  function tvBeams(ctx, t) {
+    const k = sm(32.9, 34.3, t); if (k <= 0) return;
+    const tv = LR.tv, cx = tv.x + tv.w / 2, cy = tv.y + tv.h / 2;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    // god rays fanning out of the screen edges into the room
+    const r = A.rng(12);
+    for (let i = 0; i < 26; i++) {
+      const a = r() * A.TAU + t * 0.08 * (r() < 0.5 ? 1 : -1), wA = 0.05 + r() * 0.08, len = 900 + r() * 900;
+      const ex = cx + Math.cos(a) * tv.w * 0.45, ey = cy + Math.sin(a) * tv.h * 0.45;
+      ctx.globalAlpha = k * (0.08 + 0.1 * r()) * (0.8 + 0.2 * Math.sin(t * 3 + i));
+      ctx.fillStyle = A.radial(ctx, ex, ey, 0, len, [[0, '#fff1c0'], [0.4, 'rgba(255,201,60,0.5)'], [1, 'rgba(255,201,60,0)']]);
+      ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex + Math.cos(a - wA) * len, ey + Math.sin(a - wA) * len); ctx.lineTo(ex + Math.cos(a + wA) * len, ey + Math.sin(a + wA) * len); ctx.closePath(); ctx.fill();
     }
-    const sl = sm(28.4, 28.75, t) * (1 - sm(29.05, 29.2, t));
-    if (sl > 0) {
-      ctx.save();
-      const r = A.rng(5);
-      for (let i = 0; i < 90; i++) {
-        const a = r() * A.TAU, sp = 0.6 + r() * 1.4, ph = (r() + (t - 28.35) * sp * 2.4) % 1;
-        const r0 = 80 + ph * ph * 1300, len = 60 + ph * 420 * (0.5 + q);
-        const warm = r() < 0.7;
-        ctx.globalCompositeOperation = q > 0.3 ? 'source-over' : 'lighter';
-        ctx.strokeStyle = warm ? `rgba(${q > 0.3 ? '235,170,40' : '255,214,120'},${0.6 * sl})` : `rgba(${q > 0.3 ? '41,190,230' : '160,250,255'},${0.45 * sl})`;
-        ctx.lineWidth = 1.5 + ph * 5 * r();
-        ctx.beginPath(); ctx.moveTo(c[0] + Math.cos(a) * r0, c[1] + Math.sin(a) * r0); ctx.lineTo(c[0] + Math.cos(a) * (r0 + len), c[1] + Math.sin(a) * (r0 + len)); ctx.stroke();
-      }
-      for (let k = 0; k < 6; k++) {
-        const ph = ((t - 28.45) * 2.2 + k / 6) % 1; if (ph < 0) continue;
-        ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = `rgba(255,190,50,${0.4 * sl * (1 - ph)})`; ctx.lineWidth = 3 + ph * 20;
-        A.ellipse(ctx, c[0], c[1], 40 + ph * ph * 1400, 40 + ph * ph * 1400); ctx.stroke();
+    ctx.globalAlpha = 1;
+    A.glow(ctx, cx, cy, 300 + 500 * k, '#ffd36a', 0.5 * k);
+    A.glow(ctx, cx, cy, 160 + 200 * k, '#fff6d8', 0.6 * k);
+    // sparkles drifting out toward the camera
+    for (let i = 0; i < 40; i++) {
+      const ph = (r() + t * (0.3 + 0.4 * r())) % 1, a = r() * A.TAU, d = ph * ph * 700;
+      const x = cx + Math.cos(a) * (tv.w * 0.3 + d), y = cy + Math.sin(a) * (tv.h * 0.3 + d * 0.7);
+      ctx.globalAlpha = k * Math.sin(Math.PI * ph) * 0.9; ctx.fillStyle = i % 3 ? '#ffe7a0' : '#bfe6ff';
+      A.ellipse(ctx, x, y, 2 + ph * 5, 2 + ph * 5); ctx.fill();
+    }
+    ctx.restore();
+  }
+  // screen-space finish: warm bloom, speed streaks as we enter the screen, white-gold flash 34.7–35.2
+  function intoTV(ctx, t) {
+    const q = inv(34.1, 35.0, t);
+    if (q > 0) {
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      const r = A.rng(5), sl = sm(34.2, 34.5, t);
+      for (let i = 0; i < 80; i++) {
+        const a = r() * A.TAU, sp = 0.6 + r() * 1.4, ph = (r() + (t - 34.1) * sp * 2.2) % 1;
+        const r0 = 80 + ph * ph * 1300, len = 60 + ph * 380 * (0.5 + q);
+        ctx.strokeStyle = r() < 0.75 ? `rgba(255,214,120,${0.55 * sl})` : `rgba(160,220,255,${0.4 * sl})`; ctx.lineWidth = 1.5 + ph * 5 * r();
+        ctx.beginPath(); ctx.moveTo(960 + Math.cos(a) * r0, 540 + Math.sin(a) * r0); ctx.lineTo(960 + Math.cos(a) * (r0 + len), 540 + Math.sin(a) * (r0 + len)); ctx.stroke();
       }
       ctx.restore();
     }
-    const f = sm(28.85, 29.1, t);
+    const f = sm(34.7, 34.98, t);
     if (f > 0) {
       ctx.save(); ctx.globalAlpha = f;
       ctx.fillStyle = A.radial(ctx, 960, 540, 0, 1200, [[0, '#ffffff'], [0.5, '#fffbe8'], [1, '#ffe7a6']]); ctx.fillRect(0, 0, 1920, 1080);
@@ -830,19 +844,21 @@
   // ------------------------------------------------------------ scene
   const INSERT = [14.9, 15.75];
   A.scene({
-    name: 's2_livingroom', start: 6.2, end: 29.2,
+    name: 's2_livingroom', start: 6.2, end: 35.2,
     draw(ctx, s) {
       const t = s.t;
       const inside = 1;
-      const inInsert = t >= INSERT[0] && t < INSERT[1];
-      if (!inInsert && inside > 0) {
+      const inInsert = t >= INSERT[0] && t < INSERT[1], inWA = t >= 27.7 && t < 30.9;
+      if (!inInsert && !inWA && inside > 0) {
         ctx.save(); ctx.globalAlpha = inside;
         ctx.save(); A.camera(ctx, interiorCam(t));
         room(ctx, t, { reflect: t > 15.8 && t < 17.72 ? sm(15.85, 16.2, t) : 0 });
+        tvBeams(ctx, t);
         ctx.restore();
         ctx.restore();
-        grade(ctx, t, gradeAmt(t) * (1 - 0.4 * sm(28.0, 28.5, t)));
+        grade(ctx, t, gradeAmt(t));
       }
+      if (inWA) waInsert(ctx, t);
       if (inInsert) { tvInsert(ctx, t); grade(ctx, t, 0.35 * sm(FREEZE, FREEZE + 0.3, t)); }
       const f0 = 1 - sm(6.2, 6.5, t);
       if (f0 > 0) {
@@ -852,7 +868,7 @@
         ctx.restore();
       }
       caption(ctx, t);
-      diveFX(ctx, t);
+      intoTV(ctx, t);
     },
   });
 })();
