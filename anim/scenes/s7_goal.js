@@ -338,7 +338,7 @@
       ctx.fillStyle = '#d61f2a'; A.rrect(ctx, -W, -30, W, 60, 30); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 2.5; ctx.stroke();
       ctx.fillStyle = `rgba(255,255,255,${0.6 + 0.4 * Math.sin(t * 5)})`; A.ellipse(ctx, -W + 30, 0, 10, 10); ctx.fill();
       A.text(ctx, 'LIVE · 4K ·', -W + 52, 1, { font: '900 30px Rubik', fill: '#fff', align: 'left' });
-      A.text(ctx, 'ללא תקיעות', -22, 1, { font: '700 30px Rubik', fill: '#ffe066', align: 'right', dir: 'rtl' });
+      A.text(ctx, 'ללא תקיעות', -W + 52 + w1 + 12, 1, { font: '700 30px Rubik', fill: '#ffe066', align: 'left' });
       ctx.restore();
     }
     ctx.restore();
