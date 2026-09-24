@@ -104,7 +104,7 @@
     if (A.drawBrandPacket) { A.drawBrandPacket(ctx, x, y, sc * 0.9, Object.assign({ who: o.brand }, o)); return; }
     const mm = { grumpy: 'annoyed', sleepy: 'sleep', shock: 'shock', panting: 'bored' };
     A.drawPacket(ctx, x, y, sc, { t: o.t, seed: o.seed, kind: 'video', mood: mm[o.mood] || 'bored', mouth: o.mouth, look: o.look, rot: o.rot, squash: o.squash, noZ: true, glow: o.glow });
-    ctx.save(); ctx.translate(x, y - 128 * sc); ctx.scale(sc, sc);
+    ctx.save(); ctx.translate(x, y - 122 * sc); ctx.scale(sc * 0.62, sc * 0.62);
     ctx.font = '900 24px Rubik'; const w = ctx.measureText(o.brand).width + 26;
     A.rrect(ctx, -w / 2, -17, w, 34, 10); A.fillStroke(ctx, BRAND_COL[o.brand], 4);
     A.text(ctx, o.brand, 0, 1, { font: '900 24px Rubik', fill: '#fff' });
@@ -211,7 +211,7 @@
       if (it.bit) { const b = opt.bit, [x, y, d] = proj(b.X, b.Y, b.Z, zc); if (d > 0.3) b.draw(ctx, x, y, BTS / d, d); continue; }
       if (it.sign) { const [x, y, d] = proj(SIGN.X, SIGN.Y, SIGN.Z, zc); if (d > 0.4) drawSign(ctx, x, y, 1.1 / d * (opt.signK || 1), t); continue; }
       if (it.cat) {
-        const [x, y, d] = proj(opt.catX ?? CATX, 0, CATZ, zc); if (d < 0.35) continue;
+        const [x, y, d] = proj(opt.catX ?? CATX, 0, CATZ, zc); if (d < Math.max(0.35, opt.near || 0)) continue;
         A.glow(ctx, x, y - 40 * CTS / d, 260 * CTS / d, 'rgba(255,36,60,1)', 0.12);
         A.drawCatPacket(ctx, x, y, CTS / d, Object.assign({ t }, opt.catO ? opt.catO(x, y, d) : {}));
         continue;
@@ -322,7 +322,7 @@
     clampCam(cam);
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     jamWorld(ctx, t, zc, {
-      jam: 0.95,
+      jam: 0.95, near: t > 32.3 && t < 36.3 ? 0.95 : undefined,
       bit: { X: bx, Y: 0, Z: bz, draw: (c, x, y, sc) => A.drawBit(c, x, y, sc, bitJamOpts(t)) },
       catO: () => ({ mood: 'bored', look: [0.6, 0.3], squash: -0.03 * bump }),
       pkO: p => shoveO(p, t),

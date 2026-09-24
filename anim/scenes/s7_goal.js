@@ -109,7 +109,7 @@
       }
     }
     // rain from the ceiling (starts as the burst peaks, thins out after the hug)
-    const rainA = smooth(60.65, 61.1, t) * (1 - smooth(64.9, 53.6, t));
+    const rainA = smooth(60.65, 61.1, t) * (1 - smooth(66.0, 67.4, t));
     if (rainA > 0) {
       for (let i = 0; i < 120; i++) {
         const h = k => hash(i * 3.71 + 900 + k);
@@ -248,7 +248,7 @@
       const rock = Math.sin((t - 63.35) * 4.2) * smooth(63.3, 63.6, t) * (1 - smooth(64, 64.4, t));
       Object.assign(o, { gesture: 'none', mood: 'joy', happy: 1, lean: lerp(0.35, 0.05, smooth(63.05, 63.4, t)) + rock * 0.1, headTilt: -5 * k + rock * 4,
         handL: [lerp(40, 150, k), lerp(-250, -270, k)], handR: [lerp(90, 190, k), lerp(-300, -330, k)], handShapeL: 'open', handShapeR: 'open', armRBehind: true,
-        look: [1, 0.1], scarfWave: 0.4 * (1 - smooth(51, 52, t)), mouth: t < 63.4 ? 0.3 : undefined });
+        look: [1, 0.1], scarfWave: 0.4 * (1 - smooth(63.9, 64.9, t)), mouth: t < 63.4 ? 0.3 : undefined });
       if (t > 64.1) { // listens to Noa (glances at the TV on "GOTV"), then: "And now... backgammon! Come, let's play!"
         const gl = env(t, 64.6, 64.85, 65.4, 65.7), nod = Math.sin((t - 65.9) * 9) * env(t, 65.9, 66.0, 66.4, 66.6);
         Object.assign(o, { mood: 'joy', happy: 0.5, look: [lerp(0.8, 0.6, gl), lerp(0.05, -0.35, gl)], browRaise: 0.4 * gl, headTilt: -3 + nod * 4, lean: 0.05 + nod * 0.04, smile: 0.7 });
