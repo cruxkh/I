@@ -35,12 +35,15 @@
   const PK = [];
   for (let r = 0; r < 34; r++) for (let li = 0; li < 5; li++) {
     const lane = LANES[li], seed = r * 7 + li * 3 + 11;
-    const path = (li === 3 || li === 4) && r >= 7 && r <= 13; // rows beside Bit's path: aligned, no jitter
+    const path = (li >= 2 && li <= 4) && r >= 7 && r <= 21; // lanes around Bit's run: aligned, no jitter
     if (li === 2 && r === 8) continue; // Catpacket's spot
     if (H(seed * 1.7) < 0.07 && !path && r > 2) continue; // occasional gap
     let X = lane + (path ? 0 : (H(seed * 3.1) - 0.5) * 0.12), Z = ROW(r) + (path ? 0 : (H(seed * 5.3) - 0.5) * 0.3) + (li % 2 ? 0.12 : 0);
-    if (path && li === 3) X = 0.64;
-    if (path && li === 4) X = 1.19;
+    if (path && li === 2) X = 0.0;
+    if (path && li === 3) X = 0.61;
+    if (path && li === 4) X = 1.22;
+    if (r === 9 && li === 3) X = 0.64;
+    if (r === 9 && li === 4) X = 1.19;
     if (r === 7 && li === 3) continue; // gap: sightline to the wedge
     if (r === 8 && li === 3) X = 0.98;
     if (r === 8 && li === 4) X = 1.3;  // squeezed aside by the cat
@@ -48,25 +51,34 @@
     const m = H(seed * 9.9);
     let brand = null;
     if (li === 3 && r === 9) brand = 'ILVIP'; else if (li === 4 && r === 9) brand = 'EMBY';
-    else if (li === 4 && r === 10) brand = 'LOADING+'; else if (li === 3 && r === 8) brand = 'LAGTV';
-    else if (r >= 1 && r <= 22 && !path && H(seed * 4.4) < 0.4) brand = BRANDS[Math.floor(H(seed * 6.6) * 4) % 4];
-    PK.push({ X, Z, seed, r, li, brand, kind: KINDS[Math.floor(H(seed * 2.3) * 6) % 6], mood: m < 0.18 ? 'sleep' : m < 0.36 ? 'annoyed' : 'bored' });
+    else if (li === 3 && r === 8) brand = 'LAGTV';
+    else if (li === 4 && r === 14) brand = 'LAGTV'; else if (li === 2 && r === 17) brand = 'LAGTV';
+    else if (li === 3 && r === 16) brand = 'LOADING+'; else if (li === 2 && r === 12) brand = 'EMBY';
+    else if (r >= 1 && r <= 22 && !(path && r <= 10) && H(seed * 4.4) < 0.33) brand = BRANDS[1 + Math.floor(H(seed * 6.6) * 3) % 3];
+    let prop = null;
+    if (!brand && path && r >= 10) { const q = H(seed * 7.7); prop = q < 0.3 ? 'paper' : q < 0.5 ? 'watch' : null; }
+    PK.push({ X, Z, seed, r, li, brand, prop, kind: KINDS[Math.floor(H(seed * 2.3) * 6) % 6], mood: prop ? 'bored' : m < 0.22 ? 'sleep' : m < 0.36 ? 'annoyed' : 'bored' });
   }
+  // obstacles inside Bit's gaps: a LOADING+ stuck in the right gap, a snoozer in the left gap (he leaps it)
+  PK.push({ X: 0.915, Z: 11.95, seed: 903, r: 99, li: 9, brand: 'LOADING+', kind: 'meme', mood: 'bored' });
+  PK.push({ X: 0.305, Z: 9.95, seed: 907, r: 98, li: 9, brand: null, kind: 'shop', mood: 'sleep' });
   const pk = (li, r) => PK.find(p => p.li === li && p.r === r);
   // honk pops (synced to the cue sheets)
   const HONKS = [
-    [pk(4, 2), 29.59], [pk(0, 3), 29.95], [pk(4, 11), 30.15], [pk(3, 10), 30.82], [pk(3, 11), 31.9],
+    [pk(4, 2), 29.59], [pk(0, 3), 29.95], [pk(4, 17), 30.36], [pk(2, 15), 30.86], [pk(4, 13), 31.2], [pk(4, 11), 31.72],
     [pk(2, 9), 36.6], [pk(2, 10), 36.3],
   ];
   const honkAmt = (p, t) => { let h = 0; for (const [q, t0] of HONKS) if (q === p) h = Math.max(h, smooth(t0 - 0.04, t0 + 0.05, t) * (1 - smooth(t0 + 0.24, t0 + 0.42, t))); return h; };
 
-  // ---------------------------------------------------------------- Bit's path through the jam (shot B)
-  const BZ = [[29.2, 9.9], [30.1, 9.78], [30.42, 9.6, 'inOut'], [30.56, 9.12, 'out'], [31.28, 8.84, 'inOut'], [31.58, 8.72, 'inOut'],
-    [31.72, 8.3, 'out'], [32.25, 7.84, 'inOut'], [36.2, 7.8], [36.44, 7.72, 'inOut'], [36.56, 7.4, 'out'], [36.78, 6.95, 'in'], [36.85, 6.92, 'out']];
+  // ---------------------------------------------------------------- Bit's run through the queue (shot B)
+  const BZ = [[29.2, 15.0], [30.1, 15.0], [30.75, 12.75, 'in'], [31.0, 11.95, 'lin'], [31.3, 10.6, 'lin'], [31.6, 9.3, 'lin'], [31.95, 8.3, 'out'],
+    [32.22, 7.84, 'out'], [36.2, 7.8], [36.44, 7.72, 'inOut'], [36.56, 7.4, 'out'], [36.78, 6.95, 'in'], [36.85, 6.92, 'out']];
   const bitZ = t => key(t, BZ);
-  const bitX = t => key(t, [[36.45, 0.915], [36.78, 0.72, 'inOut']]);
-  const POPS = [30.47, 31.64, 36.5];
-  const pushing = t => (t > 30.1 && t < 30.47) || (t > 31.3 && t < 31.64) || (t > 36.2 && t < 36.5);
+  const bitX = t => key(t, [[30.72, 0.915], [31.0, 0.305, 'inOut'], [31.8, 0.305], [32.08, 0.915, 'inOut'], [36.45, 0.915], [36.78, 0.72, 'inOut']]);
+  const bitY = t => key(t, [[31.28, 0], [31.45, 0.46, 'out'], [31.62, 0, 'in']]);
+  const RUN = t => t >= 30.1 && t < 32.25;
+  const POPS = [36.5];
+  const pushing = t => (t > 36.2 && t < 36.5);
   const popK = t => { let k = 0; for (const p of POPS) k = Math.max(k, smooth(p - 0.02, p + 0.03, t) * (1 - smooth(p + 0.06, p + 0.3, t))); return k; };
   const QUEUE = t => t > 32.25 && t < 36.2; // Bit stuck in the competitor queue
 
