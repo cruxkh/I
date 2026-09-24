@@ -1049,7 +1049,7 @@
       const c = P(0, 0, 0);
       if (c) { const k = FOC / c[2]; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, c[0], c[1], 0, 70 * k, [[0, 'rgba(255,255,210,0.08)'], [1, 'rgba(255,255,210,0)']]); ctx.fillRect(c[0] - 70 * k, c[1] - 70 * k, 140 * k, 140 * k); ctx.restore(); }
       // lines
-      const line = pts => { ctx.beginPath(); let ok = false; for (const [x, y] of pts) { const p = P(x, y, 0); if (!p || p[2] < 2) { ok = false; continue; } ok ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); ok = true; } ctx.stroke(); };
+      const line = pts => { let prev = null; for (const [x, y] of pts) { const p = P(x, y, 0); if (!p || p[2] < 2) { prev = null; continue; } if (prev) { ctx.lineWidth = Math.max(1, 0.13 * FOC * 2 / (p[2] + prev[2])); ctx.beginPath(); ctx.moveTo(prev[0], prev[1]); ctx.lineTo(p[0], p[1]); ctx.stroke(); } prev = p; } };
       const arc = (cx, cy, r, a0, a1, n = 40) => { const a = []; for (let i = 0; i <= n; i++) { const th = lerp(a0, a1, i / n); a.push([cx + Math.cos(th) * r, cy + Math.sin(th) * r]); } return a; };
       const kc = c ? FOC / c[2] : 1;
       ctx.strokeStyle = 'rgba(250,255,245,0.92)'; ctx.lineWidth = Math.max(1, 0.14 * kc); ctx.lineJoin = 'round';
@@ -1075,7 +1075,7 @@
     // match state: Maccabi (yellow) attack toward the WEST goal (x = -52.5)
     function matchState(t) {
       const lt = t - 1.5;
-      const ax = -22 + lt * 8.6, ay = -15 + 2.2 * Math.sin(lt * 0.9);
+      const ax = Math.min(-10 + lt * 7.5, 44), ay = -19 + 1.5 * Math.sin(lt * 0.9);
       const pl = [];
       pl.push({ x: ax, y: ay, team: 0, dir: [1, 0.15 * Math.cos(lt * 0.9)], run: 1, num: 10, star: 1 });
       const r = mul(21);
@@ -1091,7 +1091,7 @@
       pl.push({ x: 50.5, y: -1 + 0.8 * Math.sin(t), team: 2, dir: [-1, 0], run: 0.15, num: 1 }); // opposing keeper (east goal)
       // the duel: three red defenders closing on the ball carrier, one yellow runner making the run ahead
       const cl = clamp((lt - 1.2) / 2.2);
-      [[6, 3.5, 30], [8, -4, 31], [12, 0.5, 32]].forEach(([ox, oy, n], m) => { const k2 = 1 - cl * (0.35 + m * 0.1); pl.push({ x: ax + ox * k2 + 1.5 * Math.sin(t * 1.3 + m), y: ay + oy * k2, team: 1, dir: [-1, -oy * 0.05], run: 0.8, num: n }); });
+      [[5, 3.5, 30], [6.5, -3, 31], [9, 1.5, 32]].forEach(([ox, oy, n], m) => { const k2 = 1 - cl * (0.35 + m * 0.1); pl.push({ x: ax + ox * k2 + 1.5 * Math.sin(t * 1.3 + m), y: ay + oy * k2, team: 1, dir: [-1, -oy * 0.05], run: 0.8, num: n }); });
       pl.push({ x: ax + 5 + lt * 1.2, y: ay - 11 + Math.sin(t) * 0.8, team: 0, dir: [1, 0.1], run: 1, num: 33 });
       const touch = (lt * 2.1) % 1, ahead = 0.7 + 1.5 * Math.sin(touch * Math.PI);
       const ball = { x: ax + ahead, y: ay + 0.2, z: 0.11 + 0.12 * Math.abs(Math.sin(touch * Math.PI * 2)) };
@@ -1099,8 +1099,8 @@
     }
     function drawPlayers(ctx, t) {
       const { pl, ball } = matchState(t);
-      const c = P(0, 0, 0); if (!c) return;
-      const kc = FOC / c[2];
+      const c = P(ball.x, ball.y, 0) || P(0, 0, 0);
+      const kc = c ? FOC / c[2] : 99;
       if (kc < 1.2) { // too far: coloured dots
         for (const p of pl) { const q = P(p.x, p.y, 1); if (!q) continue; ctx.fillStyle = p.team === 0 ? '#ffd21f' : p.team === 1 ? '#e0322c' : '#35e07a'; ctx.fillRect(q[0] - 1, q[1] - 1, 2, 2); }
         return;
@@ -1228,7 +1228,7 @@
   // round the north-east corner and drops to a low oblique angle gliding along the Maccabi home (ultras) stand.
   //        t     x      y      z     yaw    tilt(deg down)
   const CK = [[0, 117, 938, 760, -0.30, 55], [1.2, 32, 574, 540, -0.19, 60], [2.35, -4, 155, 235, -0.05, 70],
-    [3.4, 24, 98, 104, 0.22, 60], [4.5, 44, 64, 46, 0.5, 40], [5.6, 53, 38, 15, 0.34, 17], [7.0, 55, 18, 10.5, 0.2, 12], [8.4, 55.5, -1, 9.5, 0.13, 11]];
+    [3.4, 24, 98, 104, 0.22, 60], [4.5, 44, 64, 46, 0.5, 40], [5.6, 53, 38, 15, 0.34, 17], [7.0, 55, 18, 10.5, 0.2, 12], [8.4, 55.5, -1, 9.5, 0.12, 11]];
   // Hermite spline, Catmull-Rom interior tangents, zero tangent at the first key (slow ease-in) and the last
   const spl = (t, K, j) => {
     const n = K.length; if (t <= K[0][0]) return K[0][j]; if (t >= K[n - 1][0]) return K[n - 1][j];
