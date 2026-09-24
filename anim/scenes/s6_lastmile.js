@@ -109,19 +109,19 @@
   function streetPos(t) {
     if (t < T_CL1) {
       const p = A.inv(41.5, T_CL1, t), e = 1 - Math.pow(1 - p, 2.1);
-      return { x: 492 + Math.sin(p * 11) * 2, y: L(1260, 250, e), rot: 0, sc: 0.5, ph: 'climb' };
+      return { x: 492 + Math.sin(p * 11) * 2, y: L(1260, 250, e), rot: 0, sc: 0.62, ph: 'climb' };
     }
     if (t < T_HOP) {
       const p = A.inv(T_CL1, T_HOP, t);
-      return { x: L(492, 612, A.ease.inOut(p)), y: L(250, 212, p) - Math.sin(p * PI) * 95, rot: 0.3 * Math.sin(p * PI), sc: 0.5, ph: 'hop' };
+      return { x: L(492, 612, A.ease.inOut(p)), y: L(250, 212, p) - Math.sin(p * PI) * 95, rot: 0.3 * Math.sin(p * PI), sc: 0.62, ph: 'hop' };
     }
-    if (t < T_LAUNCH) return { x: 612, y: 212, rot: 0, sc: 0.5, ph: 'crouch' };
+    if (t < T_LAUNCH) return { x: 612, y: 212, rot: 0, sc: 0.62, ph: 'crouch' };
     if (t < T_WIRE1) {
       const u = uWire(t), w = wireAt(u);
-      return { x: w[0], y: w[1] - 2, rot: w[2] * 0.8, sc: L(0.5, 0.38, u), ph: 'wire', u };
+      return { x: w[0], y: w[1] - 2, rot: w[2] * 0.8, sc: L(0.6, 0.46, u), ph: 'wire', u };
     }
     const p = A.inv(T_WIRE1, T_WIN, t), e = A.ease.in(p);
-    return { x: L(ATT[0], WPT[0], e), y: L(ATT[1], WPT[1] + 20, e) - Math.sin(p * PI) * 26, rot: 0.2, sc: L(0.38, 0.22, p), ph: 'window' };
+    return { x: L(ATT[0], WPT[0], e), y: L(ATT[1], WPT[1] + 20, e) - Math.sin(p * PI) * 26, rot: 0.2, sc: L(0.46, 0.24, p), ph: 'window' };
   }
   const streetCam = t => spline(t, [
     [41.50, [530, 930, 2.25, -0.085]],
@@ -223,12 +223,19 @@
     else if (b.ph === 'hop') { o.limbs = 'arms-up'; o.vel = [vel[0] * 0.5, vel[1] * 0.5]; o.rot = b.rot; o.mood = 'joy'; o.look = [1, 0.3]; }
     else if (b.ph === 'crouch') {
       const p = A.inv(T_HOP, T_LAUNCH, t);
-      o.limbs = 'crouch'; o.squash = 0.12 + 0.3 * A.ease.out(p); o.rot = -0.18 * p; o.look = [1, 0.25]; o.browRaise = -4;
+      o.limbs = 'crouch'; o.squash = 0.08 + 0.16 * A.ease.out(p); o.rot = -0.08 * p; o.look = [1, 0.25]; o.browRaise = -4;
       o.boost = 0.3 * p;
     } else if (b.ph === 'wire') {
-      o.limbs = 'run'; o.runRate = 7; o.vel = vel; o.rot = b.rot; o.look = [1, 0.1];
+      o.limbs = 'crouch'; o.vel = [vel[0] * 0.8, vel[1] * 0.8]; o.rot = b.rot - 0.12; o.look = [1, 0.15]; o.tagSwing = 2;
+      o.armL = [-62, -95]; o.armR = [58, -110];
       if (t > 42.9) o.mood = 'joy';
     } else { o.limbs = 'fly'; o.vel = vel; o.rot = 0.3; o.mood = 'joy'; }
+    // grinding sparks off the wire under his feet
+    if (t > T_LAUNCH) for (let j = 0; j < 42; j++) {
+      const tj = T_LAUNCH + j * 0.02; if (tj > Math.min(t, T_WIRE1)) break; if (t - tj > 0.4) continue;
+      const q = streetPos(tj);
+      burst(ctx, q.x - 6, q.y + 2, tj, t, { n: 4, speed: 520, dir: -PI + 0.45 + q.rot, spread: 1.1, size: 5, life: 0.35, g: 1400, seed: 200 + j, add: true, streak: 0.022, color: '#ffe08a', drag: 2 });
+    }
     A.drawBit(ctx, b.x, b.y, b.sc, o);
     // launch flash
     if (t > T_LAUNCH && t < T_LAUNCH + 0.25) A.glow(ctx, 612, 190, 160, '#fff4c8', 0.9 * (1 - (t - T_LAUNCH) / 0.25));
@@ -261,22 +268,22 @@
   // ======================================================================================================
   const M0 = T_WIN, M1 = 44.42;
   const WALLF = 0.62, FGF = 1.55;       // parallax factors (floor/cable = 1)
-  const JACK = [900, 470];              // wall-jack (wall layer world coords)
+  const JACK = [900, 540];              // wall-jack (wall layer world coords)
   const cableY = x => 846 + 14 * Math.sin(x * 0.0042) + 8 * Math.sin(x * 0.011 + 1.3);
   const CAB_R = 28;                     // cable radius
   const BAMBA_X = 2080;
   // Bit on the macro set (floor-layer world). returns feet, rot, phase
   function macroPos(t) {
     if (t < 43.60) { const p = A.inv(M0, 43.60, t); return { ph: 'eject', p }; }
-    if (t < 43.88) { const p = A.inv(43.60, 43.88, t), x = L(1180, 1900, p); return { ph: 'run', x, y: cableY(x) - CAB_R + 2, p }; }
-    if (t < 44.02) { const p = A.inv(43.88, 44.02, t), x = L(1900, 2290, p); return { ph: 'jump', x, y: L(cableY(1900), cableY(2290), p) - CAB_R - Math.sin(p * PI) * 230, p }; }
-    if (t < 44.30) { const p = A.inv(44.02, 44.30, t), x = L(2290, 3120, p); return { ph: 'run', x, y: cableY(x) - CAB_R + 2, p }; }
+    if (t < 43.84) { const p = A.inv(43.60, 43.84, t), x = L(1180, 1720, p); return { ph: 'run', x, y: cableY(x) - CAB_R + 2, p }; }
+    if (t < 44.03) { const p = A.inv(43.84, 44.03, t), x = L(1720, 2460, p); return { ph: 'jump', x, y: L(cableY(1720), cableY(2460), p) - CAB_R - Math.sin(p * PI) * 300, p }; }
+    if (t < 44.30) { const p = A.inv(44.03, 44.30, t), x = L(2460, 3120, p); return { ph: 'run', x, y: cableY(x) - CAB_R + 2, p }; }
     const p = A.inv(44.30, M1, t), x = L(3120, 3520, p); return { ph: 'leap', x, y: cableY(3120) - CAB_R - p * 560 + p * p * 60, p };
   }
-  const macroCam = t => spline(t, [[M0, [1000, 560, 1.12]], [43.62, [1300, 590, 1.0]], [43.95, [2180, 560, 0.98]], [44.3, [3120, 600, 1.0]], [M1, [3420, 470, 1.08]]]);
-  const TIME_AT = x => (x < 1900 ? L(43.60, 43.88, A.inv(1180, 1900, x)) : x < 2290 ? L(43.88, 44.02, A.inv(1900, 2290, x)) : L(44.02, 44.30, A.inv(2290, 3120, x)));
+  const macroCam = t => spline(t, [[M0, [1020, 640, 1.5]], [43.62, [1330, 700, 1.36]], [43.95, [2200, 660, 1.3]], [44.3, [3150, 700, 1.36]], [M1, [3450, 560, 1.45]]]);
+  const TIME_AT = x => (x < 1720 ? L(43.60, 43.84, A.inv(1180, 1720, x)) : x < 2460 ? L(43.84, 44.03, A.inv(1720, 2460, x)) : L(44.03, 44.30, A.inv(2460, 3120, x)));
 
-  const wallLayer = () => A.layer('s6:wall', 3000, 1100, (g, w, h) => {
+  const wallLayer = () => A.layer('s6:wall', 3400, 1100, (g, w, h) => {
     g.fillStyle = A.linear(g, 0, 0, 0, h, [[0, '#2a1624'], [0.55, '#3a2030'], [1, '#26141e']]); g.fillRect(0, 0, w, h);
     // subtle wallpaper stripes
     for (let x = 0; x < w; x += 46) { g.fillStyle = 'rgba(255,200,220,0.035)'; g.fillRect(x, 0, 18, h); }
@@ -297,7 +304,7 @@
     A.text(g, 'LAN', -5, 40, { font: '700 20px Rubik', fill: '#8a7e74' });
     g.restore();
     // power outlet with a fat plug + cord
-    g.save(); g.translate(2300, 470);
+    g.save(); g.translate(2300, 540);
     g.fillStyle = A.linear(g, -80, 0, 80, 0, [[0, '#efe6da'], [1, '#b8ada0']]); A.rrect(g, -75, -120, 150, 230, 14); g.fill(); g.strokeStyle = A.OUTLINE; g.lineWidth = 4; g.stroke();
     for (const oy of [-55, 45]) { g.fillStyle = '#d8cfc2'; A.rrect(g, -42, oy - 34, 84, 68, 20); g.fill(); g.fillStyle = '#1a1820'; g.fillRect(-20, oy - 16, 7, 24); g.fillRect(13, oy - 16, 7, 24); A.ellipse(g, 0, oy + 18, 7, 8); g.fill(); }
     g.fillStyle = '#23222a'; A.rrect(g, -48, 8, 96, 84, 14); g.fill(); g.strokeStyle = A.OUTLINE; g.lineWidth = 3; g.stroke();
@@ -313,19 +320,22 @@
     g.scale(2, 2); g.translate(160, 80);
     const N = 26, top = [], bot = [];
     for (let i = 0; i <= N; i++) {
-      const u = i / N * 2 - 1, cx = u * 125, cy = -22 * (1 - u * u);
-      const nx = 44 * u / 125, ny = -1, nl = Math.hypot(nx, ny);
-      const r = 40 * (1 - 0.3 * u * u) + (H(i * 3.1) - 0.5) * 7;
+      const u = i / N * 2 - 1, cx = u * 112, cy = -16 * (1 - u * u);
+      const nx = 32 * u / 112, ny = -1, nl = Math.hypot(nx, ny);
+      const r = 36 * Math.sqrt(Math.max(0.03, 1 - Math.pow(Math.abs(u), 5))) * (1 + 0.08 * Math.sin(u * 9)) + (H(i * 3.1) - 0.5) * 3;
       top.push([cx + nx / nl * r, cy + ny / nl * r]); bot.unshift([cx - nx / nl * r * 0.9, cy - ny / nl * r * 0.9]);
     }
     const P = () => A.blob(g, top.concat(bot));
     g.fillStyle = 'rgba(20,10,5,0.35)'; A.ellipse(g, 6, 44, 130, 14); g.fill();
-    P(); g.fillStyle = A.linear(g, 0, -60, 0, 40, [[0, '#ffe08a'], [0.4, '#f4bb4e'], [1, '#c8822a']]); g.fill();
+    P(); g.fillStyle = A.linear(g, 0, -56, 0, 34, [[0, '#ffe9a8'], [0.3, '#f8c65e'], [0.7, '#e59c3c'], [1, '#a8662a']]); g.fill();
     g.save(); P(); g.clip();
     const r = A.rng(31);
-    for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(170,90,20,${0.15 + r() * 0.3})`; A.ellipse(g, (r() - 0.5) * 250, (r() - 0.6) * 70, 4 + r() * 12, 3 + r() * 7, r() * 3); g.fill(); }
-    for (let i = 0; i < 70; i++) { g.fillStyle = `rgba(110,60,15,${0.3 + r() * 0.3})`; A.ellipse(g, (r() - 0.5) * 250, (r() - 0.6) * 70, 1.2 + r() * 2, 1 + r() * 1.6); g.fill(); }
-    g.fillStyle = 'rgba(255,250,210,0.55)'; A.ellipse(g, -30, -44, 70, 9, -0.1); g.fill();
+    // soft toasted patches + tiny puffed bumps (curved ridges across the puff)
+    for (let i = 0; i < 16; i++) { g.fillStyle = `rgba(200,120,40,${0.08 + r() * 0.12})`; A.ellipse(g, (r() - 0.5) * 230, (r() - 0.7) * 60, 10 + r() * 20, 6 + r() * 10, r() * 3); g.fill(); }
+    g.strokeStyle = 'rgba(170,100,30,0.35)'; g.lineWidth = 2; g.lineCap = 'round';
+    for (let i = 0; i < 20; i++) { const u = (i + 0.5 + (r() - 0.5) * 0.4) / 20 * 2 - 1, x = u * 112, y = -16 * (1 - u * u); g.beginPath(); g.ellipse(x, y, 5 + r() * 3, 34, u * 0.3, -PI * 0.5, PI * 0.5); g.stroke(); }
+    for (let i = 0; i < 26; i++) { g.fillStyle = `rgba(255,245,200,${0.25 + r() * 0.3})`; A.ellipse(g, (r() - 0.5) * 220, (r() - 0.8) * 50, 2 + r() * 3, 1.5 + r() * 2); g.fill(); }
+    g.fillStyle = 'rgba(255,252,225,0.6)'; g.beginPath(); g.moveTo(-92, -30); g.quadraticCurveTo(0, -60, 92, -30); g.quadraticCurveTo(0, -46, -92, -30); g.fill();
     g.restore();
     P(); g.strokeStyle = A.OUTLINE; g.lineWidth = 4; g.lineJoin = 'round'; g.stroke();
   });
@@ -340,8 +350,9 @@
       g.beginPath(); g.moveTo(x0, y0); g.quadraticCurveTo(x0 + Math.cos(a + 0.6) * len * 0.6, y0 + Math.sin(a + 0.6) * len * 0.6, x0 + Math.cos(a + (r() - 0.5)) * len, y0 + Math.sin(a + (r() - 0.5)) * len); g.stroke();
     }
     // a stray curly hair
-    g.strokeStyle = 'rgba(40,20,20,0.8)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(-60, 20); for (let i = 0; i < 40; i++) g.lineTo(-60 + i * 4, 20 + Math.sin(i * 0.7) * 14 - i); g.stroke();
+    g.strokeStyle = 'rgba(40,20,20,0.6)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(-40, 10); for (let i = 0; i < 30; i++) g.lineTo(-40 + i * 3 + Math.cos(i * 0.9) * 8, 10 + Math.sin(i * 0.9) * 8 - i * 1.5); g.stroke();
   });
+  const fgDust = seed => A.layer('s6:fgdust' + seed, 400, 340, g => { g.filter = 'blur(5px) brightness(0.28)'; g.drawImage(dustSprite(seed), 20, 20); });
   const coinSprite = () => A.layer('s6:coin', 300, 140, g => {
     g.translate(150, 70);
     g.fillStyle = '#7a5410'; A.ellipse(g, 0, 8, 120, 44); g.fill();
@@ -372,7 +383,7 @@
     }
     // ---- wall
     lay(WALLF, () => {
-      ctx.drawImage(wallLayer(), -200, -10);
+      ctx.drawImage(wallLayer(), 0, 0);
       // jack flash
       const jf = Math.exp(-Math.max(0, t - M0) * 8);
       A.glow(ctx, JACK[0] - 5, JACK[1] - 15, 260, GOLD, 0.9 * jf); A.glow(ctx, JACK[0] - 5, JACK[1] - 15, 90, '#ffffff', jf);
@@ -422,9 +433,9 @@
       additive(ctx, () => { A.glow(ctx, 2620, 890, 160, '#ffe08a', 0.6 * ga); });
       if (ga > 0.05) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(2600, 880); ctx.rotate(t * 2); ctx.fillStyle = `rgba(255,250,220,${ga})`; for (let k = 0; k < 4; k++) { ctx.rotate(PI / 2); ctx.beginPath(); ctx.moveTo(0, -4); ctx.lineTo(70 * ga, 0); ctx.lineTo(0, 4); ctx.fill(); } ctx.restore(); }
       // cabinet leg (turned wood foot)
-      for (const lx of [1950, 3700]) {
+      for (const lx of [1560, 3700]) {
         ctx.fillStyle = A.linear(ctx, lx - 50, 0, lx + 50, 0, [[0, '#2a160e'], [0.4, '#6a4028'], [1, '#1e0e08']]);
-        A.blob(ctx, [[lx - 40, 150], [lx + 40, 150], [lx + 46, 420], [lx + 30, 640], [lx + 52, 760], [lx + 30, 800], [lx - 30, 800], [lx - 52, 760], [lx - 30, 640], [lx - 46, 420]]);
+        A.blob(ctx, [[lx - 40, 250], [lx + 40, 250], [lx + 46, 460], [lx + 30, 640], [lx + 52, 760], [lx + 30, 800], [lx - 30, 800], [lx - 52, 760], [lx - 30, 640], [lx - 46, 420]]);
         A.fillStroke(ctx, null, 0); ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 4; ctx.stroke();
       }
     });
@@ -466,13 +477,13 @@
     }
     // ---- Bamba puff on the cable (hurdled; kicked into a tumble)
     lay(1, () => {
-      const tp = 43.95, age = Math.max(0, t - tp);
+      const tp = 43.93, age = Math.max(0, t - tp);
       const hop = t > tp ? 150 * Math.exp(-age * 3) * Math.abs(Math.sin(age * 9)) : 0;
       const rot = t > tp ? -0.9 * (1 - Math.exp(-age * 5)) + 0.12 * Math.exp(-age * 4) * Math.sin(age * 20) : 0;
       const bxx = BAMBA_X + (t > tp ? 140 * (1 - Math.exp(-age * 3)) : 0);
       const wob = 1 + 0.06 * Math.exp(-age * 6) * Math.sin(age * 40) * (t > tp ? 1 : 0);
       ctx.save(); ctx.translate(bxx, cableY(BAMBA_X) - CAB_R - 30 - hop); ctx.rotate(rot); ctx.scale(wob, 2 - wob);
-      ctx.drawImage(bambaSprite(), -160, -80, 320, 150); ctx.restore();
+      ctx.scale(1.3, 1.3); ctx.drawImage(bambaSprite(), -160, -80, 320, 150); ctx.restore();
       // crumbs knocked off
       burst(ctx, BAMBA_X, cableY(BAMBA_X) - 70, tp, t, { n: 16, speed: 420, spread: 2.4, size: 5, life: 1.1, g: 1500, seed: 33, drag: 1.5, alpha: 0.9 });
     });
@@ -523,17 +534,17 @@
     // ---- cabinet underside (ceiling) + foreground silhouettes
     lay(1.12, () => {
       const x0 = c[0] - 1400, x1 = c[0] + 1400;
-      ctx.fillStyle = A.linear(ctx, 0, -200, 0, 150, [[0, '#120a0c'], [0.85, '#24140f'], [1, '#3a2418']]); ctx.fillRect(x0, -400, x1 - x0, 550);
-      ctx.fillStyle = 'rgba(255,190,120,0.25)'; ctx.fillRect(x0, 146, x1 - x0, 4);
+      ctx.fillStyle = A.linear(ctx, 0, 0, 0, 350, [[0, '#120a0c'], [0.85, '#24140f'], [1, '#3a2418']]); ctx.fillRect(x0, -400, x1 - x0, 750);
+      ctx.fillStyle = 'rgba(255,190,120,0.3)'; ctx.fillRect(x0, 346, x1 - x0, 4);
+      for (let k = 0; k < 30; k++) { const x = Math.floor(x0 / 260) * 260 + k * 260; ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(x, 200, 3, 146); }
     });
     lay(FGF, () => {
       // big out-of-focus dust bunny + cable loop in front
-      ctx.save(); ctx.globalAlpha = 0.92; ctx.filter = 'none';
-      const fx = 2350;
-      const tp = TIME_AT(fx - 150), age = Math.max(0, t - tp), blow = t > tp ? 1 - Math.exp(-age * 3) : 0;
-      ctx.translate(fx + blow * 140, 1080 - blow * 60); ctx.rotate(blow * 0.6); ctx.scale(2.1, 2.1);
-      ctx.drawImage(dustSprite(2), -180, -170, 360, 300);
-      ctx.restore();
+      for (const [fx, fy, sz, sd] of [[2900, 1140, 2.4, 2], [1250, 1180, 1.8, 3]]) {
+        const tp = TIME_AT(fx - 250), age = Math.max(0, t - tp), blow = t > tp ? 1 - Math.exp(-age * 3) : 0;
+        ctx.save(); ctx.translate(fx + blow * 160, fy - blow * 50); ctx.rotate(blow * 0.5); ctx.scale(sz, sz);
+        ctx.drawImage(fgDust(sd), -200, -190, 400, 340); ctx.restore();
+      }
       ctx.save(); ctx.strokeStyle = '#0c0810'; ctx.lineWidth = 60; ctx.lineCap = 'round';
       ctx.beginPath(); ctx.moveTo(900, 1300); ctx.bezierCurveTo(1000, 900, 1400, 900, 1500, 1300); ctx.stroke(); ctx.restore();
     });
@@ -555,9 +566,10 @@
     if (t < T_LAND) { const p = A.inv(R0, T_LAND, t); return { ph: 'up', x: L(230, 470, p), y: L(1250, 900, p) - Math.sin(p * PI * 0.9) * 180, p }; }
     if (t < T_JUMP) { const p = A.inv(T_LAND, T_JUMP, t); return { ph: 'crouch', x: 470, y: 900, p }; }
     const p = A.inv(T_JUMP, T_IMP, t), e = p;
-    // arc to the LED (feet target = LED minus core offset)
-    const tx = LED[0], ty = LED[1] + 62 * 1.25;
-    return { ph: 'dive', x: L(470, tx, e), y: L(900, ty, e) - Math.sin(p * PI) * 300 * (1 - p * 0.3), p };
+    // arc to the LED (feet target so that his core lands on the LED); shrinks as he's sucked in
+    const sc = p > 0.7 ? 1.25 * L(1, 0.3, A.ease.in((p - 0.7) / 0.3)) : 1.25;
+    const tx = LED[0], ty = LED[1] + 62 * sc;
+    return { ph: 'dive', x: L(470, tx, e), y: L(900, ty, e) - Math.sin(p * PI) * 560 * (1 - p), p, sc };
   }
   const shelfLayer = () => A.layer('s6:shelf', 2400, 1400, (g, w, h) => {
     g.translate(240, 160);
@@ -644,7 +656,7 @@
         const p = b.p;
         o.limbs = 'fly'; o.mood = 'joy'; o.look = [1, 0.4]; o.stretch = 1.2;
         o.rot = L(-0.5, 0.9, p);
-        if (p > 0.8) S2 = sc * L(1, 0.45, A.ease.in((p - 0.8) / 0.2)); // sucked into the LED
+        S2 = b.sc;
       }
       A.drawBit(ctx, b.x, b.y, S2, o);
       // anticipation energy gather

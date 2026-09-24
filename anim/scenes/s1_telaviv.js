@@ -23,17 +23,24 @@
   };
   // stream head along the launch path (fast burst, then a steady cruise out over the sea)
   const headAt = t => { const p = inv(5.0, 6.2, t); return 0.62 * (1 - Math.pow(1 - p, 1.6)); };
-  // shot C: whip landing on the mast + sign, then follow the packet stream out over the sea
+  // shots B2 + C share one world camera: aerial over the stadium -> WHIP up to the IPTV mast -> follow the packets
+  const whipE = p => (p < 0.5 ? 8 * p * p * p * p : 1 - 8 * Math.pow(1 - p, 4));
+  const MASTCAM = { x: 1225, y: 1230, zoom: 0.98 };
   const camC = t => {
-    const land = ease.out(inv(4.7, 5.02, t));
-    let x = lerp(1150, 1225, land), y = lerp(1900, 1150, land), zoom = lerp(1.1, 0.98, land);
-    const w = ease.inOut(inv(5.1, 6.05, t));
-    if (w > 0) {
+    const d = ease.inOut(inv(3.75, 4.5, t));
+    let x = lerp(470, 590, d), y = lerp(1735, 1675, d), lz = Math.log(lerp(2.45, 2.12, d)), rot = lerp(0.03, 0.004, d);
+    y += Math.sin(Math.PI * inv(4.3, 4.5, t)) * 14; // tiny anticipation dip before the whip
+    const w = whipE(inv(4.47, 4.98, t));
+    x = lerp(x, MASTCAM.x, w); y = lerp(y, MASTCAM.y, w); lz = lerp(lz, Math.log(MASTCAM.zoom), w);
+    rot = lerp(rot, -0.004, w) + Math.sin(Math.PI * w) * 0.05;
+    let zoom = Math.exp(lz);
+    const f = ease.inOut(inv(4.98, 5.9, t));
+    if (f > 0) {
       const [hx, hy] = pathAt(headAt(t));
-      const z2 = lerp(0.98, 0.9, w);
-      x = lerp(x, hx - 380 / z2, w); y = lerp(y, Math.max(hy + 150 / z2, 1060), w); zoom = z2;
+      const z2 = lerp(0.98, 0.9, f);
+      x = lerp(x, hx - 380 / z2, f); y = lerp(y, Math.max(hy + 190 / z2, 1000), f); zoom = z2;
     }
-    return { x, y, zoom, rot: lerp(0.035, -0.004, land) + 0.01 * ease.inOut(inv(5.2, 6.2, t)) };
+    return { x, y, zoom, rot: rot + 0.01 * ease.inOut(inv(5.2, 6.2, t)) };
   };
   const toScreen = (c, x, y) => {
     const dx = (x - c.x) * c.zoom, dy = (y - c.y) * c.zoom, r = c.rot || 0;
@@ -154,6 +161,28 @@
     ctx.fillStyle = '#fff'; A.ellipse(ctx, bx, by - 5 * bs, 6 * bs, 6 * bs); A.fillStroke(ctx, '#fff', 2);
   }
 
+  // anamorphic floodlight flares + floating light dust in the stadium close-up
+  function stadiumFlares(ctx, t, roar) {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (const [lx, ly, ph] of [[150, 40, 0], [1770, 40, 1.7]]) {
+      const fl = 0.85 + 0.15 * Math.sin(t * 23 + ph);
+      ctx.fillStyle = A.linear(ctx, lx - 900, 0, lx + 900, 0, [[0, 'rgba(90,150,255,0)'], [0.5, `rgba(170,210,255,${0.55 * fl})`], [1, 'rgba(90,150,255,0)']]);
+      ctx.fillRect(lx - 900, ly - 3, 1800, 6);
+      ctx.fillStyle = A.linear(ctx, lx - 500, 0, lx + 500, 0, [[0, 'rgba(255,240,200,0)'], [0.5, `rgba(255,250,235,${0.8 * fl})`], [1, 'rgba(255,240,200,0)']]);
+      ctx.fillRect(lx - 500, ly - 1.2, 1000, 2.4);
+      // ghost orbs along the flare axis toward frame centre
+      for (let i = 1; i <= 3; i++) { const gx = lerp(lx, 960, 0.35 * i + 0.1), gy = lerp(ly, 700, 0.35 * i + 0.1); A.glow(ctx, gx, gy, 30 + i * 16, `rgba(140,190,255,${0.10 - i * 0.02})`); }
+    }
+    // dust / moths drifting in the floodlight beams
+    for (let i = 0; i < 60; i++) {
+      const bx = H(i * 3.3) * 1920, by = 120 + H(i * 7.1) * 520, sp = 10 + H(i) * 25;
+      const x = bx + Math.sin(t * 0.8 + i) * 30 + t * sp * (H(i + 2) - 0.5), y = by + Math.sin(t * 1.3 + i * 2) * 14 - t * 6;
+      const a = (0.25 + 0.5 * H(i + 9)) * (0.6 + 0.4 * Math.sin(t * 5 + i));
+      A.glow(ctx, x, y, 5 + H(i + 4) * 7, `rgba(255,245,215,${a})`);
+    }
+    ctx.restore();
+  }
+
   function packetBurst(ctx, t, c) {
     const [mx, my] = toScreen(c, T.mastTop.x, T.mastTop.y);
     const k = inv(5.0, 5.45, t);
@@ -182,6 +211,16 @@
       A.drawPacketStream(ctx, LP, t + 0.37, { head, count: 30, speed: 0.8, size: 10, spread: 90, seed: 9, alpha: 0.7 });
       ctx.restore();
     }
+    // a few recognisable commuter packets riding the stream (mail, video, meme, photo)
+    if (head > 0.1) {
+      [[0.06, 'mail', 1], [0.11, 'video', 2], [0.17, 'meme', 3], [0.24, 'photo', 4], [0.3, 'update', 5]].forEach(([back, kind, seed]) => {
+        const u = head - back - 0.01 * Math.sin(t * 2 + seed); if (u < 0.03) return;
+        const [wx, wy, tx, ty] = pathAt(u), off = (H(seed) - 0.5) * 50;
+        const [sx, sy] = toScreen(c, wx - ty * off, wy + tx * off);
+        ctx.save(); ctx.globalCompositeOperation = 'lighter'; A.glow(ctx, sx, sy - 10, 34, 'rgba(120,230,255,0.35)'); ctx.restore();
+        A.drawPacket(ctx, sx, sy, 0.3 * c.zoom, { t, kind, seed, mood: 'shock', rot: Math.atan2(ty, tx) * 0.6, glow: 1.2 });
+      });
+    }
     // BIT: the one gold packet near the front of the stream, catching the light for a moment
     const bu = head - 0.018 - 0.006 * Math.sin(t * 3);
     if (head > 0.08) {
@@ -191,7 +230,7 @@
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       A.glow(ctx, sx, sy, 60 + glint * 120, `rgba(255,200,60,${0.55 + glint * 0.45})`);
       ctx.restore();
-      A.drawBit(ctx, sx, sy + 16, 0.26 * c.zoom / 1.4, { t, mood: 'determined', limbs: 'fly', vel: [tx * 1400, ty * 1400], glow: 1.4 + glint * 0.6, trail: 0.6, mouth: 0 });
+      A.drawBit(ctx, sx, sy + 16, 0.36 * c.zoom, { t, mood: 'determined', limbs: 'fly', vel: [tx * 1400, ty * 1400], glow: 1.4 + glint * 0.6, trail: 0.6, mouth: 0 });
       if (glint > 0.02) {
         ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(sx + 6, sy - 6); ctx.rotate(t * 2);
         const L = 90 * glint;
@@ -252,34 +291,37 @@
           A.glow(ctx, sx, sy, 900, `rgba(255,240,200,${0.35 * pk * pk})`);
         }
         caption(ctx, t);
-      } else if (t < 4.7) {
-        // ---- SHOT B: in the stadium, crowd "ooh", announcer over it; then the whip begins
+      } else if (t < 3.75) {
+        // ---- SHOT B: in the stadium, crowd "ooh", announcer over it
         const lt = t - 2.6;
-        const wk = ease.in(inv(4.45, 4.7, t)); // whip-out progress
-        const zs = lerp(1.04, 1.13, ease.inOut(clamp(lt / 1.9)));
-        const oy = wk * 1500;
+        const k = ease.inOut(clamp(lt / 1.15));
+        const zs = lerp(1.05, 1.14, k);
         ctx.save();
-        ctx.translate(960, 540 + oy); ctx.scale(zs, zs); ctx.rotate(-0.012 + lt * 0.006); ctx.translate(-960, -540 + lt * 6);
-        const roar = clamp(0.25 + 0.95 * ease.out(inv(2.55, 3.4, t)) - 0.25 * smooth(3.9, 4.6, t));
+        ctx.translate(960, 540); ctx.scale(zs, zs); ctx.rotate(lerp(-0.014, 0.004, k)); ctx.translate(-960 - lerp(-40, 45, k), -540 + lerp(-10, 12, k));
+        const roar = clamp(0.25 + 0.95 * ease.out(inv(2.55, 3.35, t)));
         A.drawStadiumClose(ctx, t, { roar });
         pitchAction(ctx, t);
+        stadiumFlares(ctx, t, roar);
         ctx.restore();
         // cut-in pop: brief warm flash on the cut
         const cf = 1 - inv(2.6, 2.8, t);
         if (cf > 0) { ctx.fillStyle = `rgba(255,245,220,${cf * 0.55})`; ctx.fillRect(0, 0, 1920, 1080); }
-        if (wk > 0) {
-          smear(ctx, 0, 260 * wk, 8);
-          streaks(ctx, t, 0, 1, wk, 1);
-        }
       } else {
-        // ---- SHOT C: whip lands on the IPTV mast, packets launch, follow them over the sea
+        // ---- SHOT B2 + C: aerial over the stadium, WHIP up to the IPTV mast, packets launch, follow them over the sea
         const c = camC(t);
         const bc = lerp(0.6, 1.6, smooth(4.9, 5.1, t));
-        A.drawTelAviv(ctx, t, { cam: c, roar: 0.8, broadcast: bc });
-        packetBurst(ctx, t, c);
-        // whip-in smear (vertical, decaying)
-        const wi = 1 - ease.out(inv(4.7, 5.02, t));
-        if (wi > 0) { smear(ctx, 0, 300 * wi, 8); streaks(ctx, t, 0, 1, wi, 2); }
+        A.drawTelAviv(ctx, t, { cam: c, roar: lerp(1, 0.75, smooth(3.9, 4.6, t)), broadcast: bc });
+        if (t >= 4.9) packetBurst(ctx, t, c);
+        // whip smear from the camera's actual velocity (exaggerated shutter)
+        if (t > 4.45 && t < 5.05) {
+          const c1 = camC(t - 1 / 15);
+          const vx = -(c.x - c1.x) * c.zoom, vy = -(c.y - c1.y) * c.zoom, sp = Math.hypot(vx, vy);
+          if (sp > 6) {
+            const k = Math.min(1, 700 / sp);
+            smear(ctx, vx * k, vy * k, 9);
+            streaks(ctx, t, vx, vy, clamp(sp / 500), 2);
+          }
+        }
         // follow-the-stream horizontal smear + exit streaks + flash
         const ex = ease.in(inv(5.75, 6.2, t));
         if (ex > 0) {

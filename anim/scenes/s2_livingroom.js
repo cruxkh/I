@@ -70,18 +70,18 @@
     const o = { t };
     // pose / rise
     const rise = t < 13.84 ? 0
-      : t < 17.55 ? K(t, [[13.84, 0], [14.2, 0.62, 'out'], [14.45, 0.9, 'out'], [15.2, 0.9], [15.45, 0.97, 'out']])
-        : K(t, [[17.55, 0.97], [17.72, 1.0, 'out'], [18.2, 0, 'in']]);
+      : t < 17.45 ? K(t, [[13.84, 0], [14.2, 0.62, 'out'], [14.45, 0.9, 'out'], [15.2, 0.9], [15.45, 1, 'out']])
+        : K(t, [[17.45, 1], [17.6, 1.0, 'out'], [18.1, 0, 'in']]);
     o.pose = rise > 0.001 ? 'rise' : 'sit'; o.rise = rise;
     // squash accents: anticipation before the rise, landing back in the chair
-    o.squash = 0.06 * Math.sin(Math.PI * inv(13.7, 13.9, t)) + 0.1 * Math.exp(-(t - 18.2) * 9) * (t > 18.2 ? Math.cos((t - 18.2) * 24) : 0);
+    o.squash = 0.06 * Math.sin(Math.PI * inv(13.7, 13.9, t)) + 0.1 * Math.exp(-(t - 18.1) * 9) * (t > 18.1 ? Math.cos((t - 18.1) * 24) : 0);
     Object.assign(o, mseq(t, [[0, 'eager'], [9.3, 'tense', 0.35], [12.2, 'eager', 0.4], [15.08, 'horror', 0.3]]));
-    Object.assign(o, gseq(t, [[0, 'grip'], [7.12, 'point', 0.32], [8.5, 'fists', 0.25], [9.3, 'grip', 0.3], [12.72, 'point', 0.3], [13.72, 'fists', 0.18], [15.62, 'headHands', 0.34], [18.9, 'none', 0.5]]));
+    Object.assign(o, gseq(t, [[0, 'grip'], [7.12, 'point', 0.32], [8.5, 'fists', 0.25], [9.3, 'grip', 0.3], [12.72, 'point', 0.3], [13.72, 'fists', 0.18], [15.36, 'headHands', 0.3], [18.9, 'none', 0.5]]));
     // eye-lines: TV at right & level, Noa right & below
     const TV = [0.95, -0.12], NOA = [0.55, 0.62], UP = [0.35, -0.95], RT = [0.9, 0.55];
     const lk = (a) => a;
     let look = K(t, [[6.85, TV], [6.98, NOA, 'out'], [7.55, NOA], [7.75, TV, 'out'], [11.85, TV], [12.05, NOA, 'out'], [13.7, NOA], [13.8, TV, 'out'],
-      [16.75, TV], [16.95, UP, 'out'], [17.4, UP], [17.6, RT, 'out'], [18.4, RT], [18.6, [0.9, 0.7]]]);
+      [15.95, TV], [16.1, UP, 'out'], [16.6, UP], [16.8, TV, 'out'], [17.45, TV], [17.6, RT, 'out'], [18.4, RT], [18.6, [0.9, 0.7]]]);
     // quick eye dart during "one one" (to Noa and back: sharing the moment)
     if (t > 8.9 && t < 9.25) look = K(t, [[8.9, TV], [8.97, NOA], [9.18, NOA], [9.25, TV]]);
     o.look = lk(look);
@@ -90,22 +90,26 @@
     o.headTilt = toNoa * 7 + (t > 12.9 && t < 13.5 ? Math.sin((t - 12.9) * 16) * 3 * (1 - inv(12.9, 13.5, t)) : 0);
     o.turn = 0.25 - toNoa * 0.1;
     // "no, no, no" head shakes
-    if (t > 15.45 && t < 17.2) {
-      const k = sm(15.45, 15.6, t) * (1 - sm(16.95, 17.2, t));
-      o.headTilt += Math.sin((t - 15.45) * 19) * 7 * k;
-      o.turn += Math.sin((t - 15.45) * 19 + 0.6) * 0.18 * k;
+    if (t > 15.18 && t < 15.75) {
+      const k = sm(15.18, 15.26, t) * (1 - sm(15.5, 15.75, t));
+      o.headTilt += Math.sin((t - 15.18) * 21) * 7 * k;
+      o.turn += Math.sin((t - 15.18) * 21 + 0.6) * 0.2 * k;
     }
+    // after "Not now!": a slow, stunned whimper-shake while staring at the frozen screen
+    if (t > 16.6 && t < 17.5) o.headTilt += Math.sin((t - 16.6) * 7) * 2.5 * sm(16.6, 16.8, t);
     // lean
-    o.lean = K(t, [[6.2, 0.28], [9.3, 0.3], [9.6, 0.48, 'out'], [12.2, 0.44], [12.55, -0.08, 'outBack'], [13.7, -0.05], [13.9, 0.25, 'out'], [15.2, 0.25], [15.5, -0.12, 'out'], [17.3, -0.05]]);
+    o.lean = K(t, [[6.2, 0.28], [9.3, 0.3], [9.6, 0.48, 'out'], [12.2, 0.44], [12.55, -0.08, 'outBack'], [13.7, -0.05], [13.9, 0.25, 'out'], [15.2, 0.25], [15.45, -0.12, 'out'], [16.0, -0.02], [16.3, -0.15, 'out'], [17.3, -0.08]]);
     // brows: indignation on "Just football?", disbelief
     o.browRaise = K(t, [[12.1, 0], [12.45, 0.55, 'outBack'], [13.6, 0.45], [13.8, 0]]);
     o.scarfWave = K(t, [[13.8, 0], [14.1, 0.9], [14.5, 0.7], [14.6, 0]]);
     o.vel = [0, t > 13.84 && t < 14.45 ? -500 : 0];
     // THE FREEZE: he freezes too, mouth still open on "go!"
-    if (t >= 14.9 && t < 15.12) { o.idle = 0; o.breath = 0; o.jaw = 0.5; o.mouth = 0; o.tremble = 0; }
-    if (t >= 15.08 && t < 15.3) o.jaw = 0.5 * (1 - inv(15.08, 15.3, t));
+    if (t >= 14.75 && t < 15.12) { o.idle = 0; o.breath = 0; o.jaw = 0.5; o.mouth = 0; o.tremble = 0; }
+    if (t >= 15.12 && t < 15.25) o.jaw = 0.5 * (1 - inv(15.12, 15.25, t));
+    // hold the horror (tremble) after the line ends
+    if (t >= 16.54 && t < 17.45) { o.tremble = 1; o.jaw = 0.25; }
     // collapse back into the chair
-    if (t > 17.55) { o.tremble = K(t, [[17.55, 1], [18.2, 0.3]]); }
+    if (t > 17.45) { o.tremble = K(t, [[17.45, 1], [18.1, 0.3]]); }
     // TV rim light (right side)
     const L = tvLight(t);
     o.rimColor = L.color; o.light = [0.95, -0.35]; o.rimA = cl(0.35 + 0.35 * L.intensity, 0, 0.9);
@@ -146,7 +150,7 @@
       // sock slide
       const p = inv(17.8, 18.2, t);
       o.pose = 'stand'; o.flip = false; o.mood = 'focused'; o.gesture = 'none';
-      x = lerp(1270, 1580, E.out(p)); y = 905;
+      x = lerp(1270, 1640, E.out(p)); y = 905;
       o.squash = 0.2 * Math.exp(-p * 9) * Math.cos(p * 18);
       o.lean = -0.35 * Math.sin(Math.PI * Math.min(1, p * 1.2));
       o.vel = [700 * (1 - p), 0];
@@ -154,12 +158,12 @@
       o.look = t < 18.1 ? [-0.9, -0.2] : [0.6, 0.3]; o.turn = t < 18.1 ? -0.3 : 0.25;
     } else {
       // crouch at the router, facing left
-      x = 1580; y = 905;
+      x = 1640; y = 905;
       o.pose = 'crouch'; o.flip = true; o.mood = 'focused';
       o.squash = 0.16 * Math.exp(-(t - 18.2) * 10) * Math.cos((t - 18.2) * 22);
       Object.assign(o, gseq(t, [[0, 'none'], [18.3, 'reach', 0.35]]));
       // hands to the top/back of the router (not covering the LED)
-      const lx = (x - 1508) / NOA_S, ly = (792 - y) / NOA_S;
+      const lx = (x - 1512) / NOA_S, ly = (796 - y) / NOA_S;
       const fid = t > 19.0 ? Math.sin((t - 19.0) * 11) * 5 * (1 - sm(19.6, 19.72, t)) : 0;
       const press = K(t, [[19.5, 0], [19.66, 1, 'in'], [19.74, 1], [19.9, 0.3]]);
       o.reachTo = [lx + fid, ly + press * 8];
@@ -189,7 +193,7 @@
   }
 
   // spinner reflection in Saba's glasses: replicate the rig's head transform (see kits/family.js drawSaba)
-  function glassesReflection(ctx, o, t, amt) {
+  function glassesReflection(ctx, o, t, amt, sx) {
     if (amt <= 0) return;
     const idle = o.idle ?? 1, breath = o.breath ?? 1;
     const MOOD = { eager: [0.15, 4, 0], tense: [0.05, 10, 0.25], horror: [-0.1, 14, 1] }; // [lean, shoulders, tremble]
@@ -205,22 +209,22 @@
     const headP = [8 + turn * 6 + tr(14) * 1.2, -266 - br * 1.6 - shoulders * 0.4];
     const sq = o.squash ?? 0;
     ctx.save();
-    ctx.translate(SAB.x, SAB.y); ctx.scale(SAB.s, SAB.s); ctx.scale(1 + sq * 0.5, 1 - sq); ctx.translate(0, 150);
+    ctx.translate(sx, SAB.y); ctx.scale(SAB.s, SAB.s); ctx.scale(1 + sq * 0.5, 1 - sq); ctx.translate(0, 150);
     ctx.translate(tr(1) * 1.5, Py - br * 1.2); ctx.rotate(leanDeg * D);
     ctx.translate(headP[0], headP[1] + 70); ctx.rotate(tilt); ctx.scale(1.08, 1.08); ctx.translate(0, -70);
     const fx = turn * 26, farK = 1 - Math.max(0, turn) * 0.25, nearK = 1 - Math.max(0, -turn) * 0.25;
     const lens = [[fx - 30, nearK], [fx + 29, farK]];
     ctx.beginPath(); for (const [ex, k] of lens) ctx.roundRect(ex - 28 * k + 2, -2 - 22 + 2, 56 * k - 4, 40, 10); ctx.clip();
-    ctx.globalCompositeOperation = 'lighter';
     for (const [ex, k] of lens) {
-      ctx.save(); ctx.translate(ex + 3 * k, -3); ctx.scale(k, 1); ctx.transform(1, 0, -0.18, 1, 0, 0);
-      ctx.globalAlpha = 0.55 * amt; ctx.fillStyle = '#5d6c96'; ctx.fillRect(-19, -12, 38, 23);
-      ctx.globalAlpha = 0.9 * amt;
+      // the TV (at his right) mirrored in the upper-outer part of each lens: dark screen + white buffering wheel
+      ctx.save(); ctx.translate(ex + 8 * k, -11); ctx.scale(k * 1.3, 1.3); ctx.transform(1, 0, -0.2, 1, 0, 0);
+      ctx.globalAlpha = 0.5 * amt; ctx.fillStyle = '#1c2340'; A.rrect(ctx, -14, -9, 28, 18, 3); ctx.fill();
+      ctx.globalAlpha = 0.35 * amt; ctx.fillStyle = '#7d8fbf'; ctx.fillRect(-14, 3, 28, 6);
       const n = 12, rot = Math.floor(t * 12) / 12 * A.TAU;
       for (let i = 0; i < n; i++) {
         const a = rot + i / n * A.TAU, f = i / n;
-        ctx.fillStyle = `rgba(255,255,255,${(0.1 + 0.9 * f) * amt})`;
-        ctx.save(); ctx.rotate(a); ctx.fillRect(3.2, -0.9, 3.6, 1.8); ctx.restore();
+        ctx.globalAlpha = (0.12 + 0.88 * f) * amt; ctx.fillStyle = '#ffffff';
+        ctx.save(); ctx.rotate(a); ctx.fillRect(2.6, -0.85, 3.4, 1.7); ctx.restore();
       }
       ctx.restore();
     }
@@ -239,15 +243,17 @@
     A.drawRouter(ctx, ROUTER.x, ROUTER.y, ROUTER.s, {
       t: tR, activity: t < FREEZE ? 0.65 : on ? 1 : 0.08,
       ledColor: t < FREEZE + 0.15 ? '#7ff6ff' : on ? '#7ff6ff' : '#ffa23a',
-      ledGlow: on ? K(t, [[19.72, 0.6], [19.8, 0.9, 'out'], [20.3, 2.0], [20.8, 3]]) : 0,
+      ledGlow: on ? K(t, [[19.72, 0.4], [19.8, 0.7, 'out'], [20.15, 1.1], [20.6, 3]]) : 0,
       shake: on ? 0.8 * Math.exp(-(t - 19.72) * 5) : 0,
     });
     // Saba in the armchair
-    const so = sabaO(t);
+    const so = sabaO(t), out = so.rise > 0.5;
+    const sx = SAB.x + 58 * E.inOut(cl(so.rise || 0));
     A.drawArmchair(ctx, SAB.x, SAB.y, 1, 'back');
-    A.drawSaba(ctx, SAB.x, SAB.y, SAB.s, so);
-    A.drawArmchair(ctx, SAB.x, SAB.y, 1, 'front');
-    if (opt.reflect) glassesReflection(ctx, so, t, opt.reflect);
+    if (out) A.drawArmchair(ctx, SAB.x, SAB.y, 1, 'front');
+    A.drawSaba(ctx, sx, SAB.y, SAB.s, so);
+    if (!out) A.drawArmchair(ctx, SAB.x, SAB.y, 1, 'front');
+    if (opt.reflect) glassesReflection(ctx, so, t, opt.reflect, sx);
     // Noa
     const n = noaState(t);
     if (t >= 17.47) mugSprite(ctx, 1072, 792, 0.72, t);
@@ -267,7 +273,7 @@
     }
     g.putImageData(id, 0, 0);
     // fern crystals
-    const r = A.rng(7); g.strokeStyle = 'rgba(255,255,255,0.55)'; g.lineCap = 'round';
+    const r = A.rng(7); g.strokeStyle = 'rgba(255,255,255,0.28)'; g.lineCap = 'round';
     for (let k = 0; k < 26; k++) {
       const edge = r() * 4 | 0; let x = edge === 0 ? 0 : edge === 1 ? w : r() * w, y = edge === 2 ? 0 : edge === 3 ? h : r() * h;
       let a = Math.atan2(h / 2 - y, w / 2 - x) + (r() - 0.5) * 0.9, len = 40 + r() * 90;
@@ -318,7 +324,7 @@
     if (t < 14.2) return { x: K(t, [[13.75, 860], [14.2, 850]]), y: K(t, [[13.75, 575], [14.2, 520]], 'out'), zoom: K(t, [[13.75, 1.35], [14.2, 1.5]], 'out') };
     if (t < 17.3) return {
       x: K(t, [[14.95, 760], [15.2, 760], [15.42, 722, 'out'], [17.3, 716]]),
-      y: K(t, [[14.95, 560], [15.2, 560], [15.42, 438, 'out'], [17.3, 430]]),
+      y: K(t, [[14.95, 540], [15.2, 540], [15.42, 468, 'out'], [17.3, 462]]),
       zoom: zkey(t, [[14.95, 1.42], [15.2, 1.45], [15.42, 2.55, 'out'], [17.3, 2.85, 'lin']]),
     };
     // H
@@ -331,7 +337,7 @@
       const p = inv(19.8, 20.3, t), q = inv(20.3, 21.0, t);
       base.x = lerp(base.x, LED[0], E.inOut(Math.min(1, p * 1.4)));
       base.y = lerp(base.y, LED[1], E.inOut(Math.min(1, p * 1.4)));
-      base.zoom = 2.1 * Math.pow(7 / 2.1, E.in(p)) * Math.pow(60 / 7, E.in(q));
+      base.zoom = 2.1 * Math.pow(7 / 2.1, E.in(p)) * Math.pow(18 / 7, E.out(q));
     }
     return base;
   }
@@ -361,10 +367,15 @@
     if (t < 19.72) return;
     const p = inv(19.8, 20.3, t), q = inv(20.3, 21.0, t);
     const c = [960, 540];
-    // bloom
-    const bl = sm(19.72, 20.9, t);
-    A.glow(ctx, c[0], c[1], 120 + 900 * bl * bl, '#7ff6ff', 0.25 + 0.6 * bl);
-    A.glow(ctx, c[0], c[1], 40 + 500 * q, '#ffffff', 0.3 + 0.7 * q);
+    // bloom: the LED light swallows the frame
+    const bl = sm(19.72, 20.6, t);
+    A.glow(ctx, c[0], c[1], 120 + 700 * bl * bl, '#7ff6ff', 0.25 + 0.55 * bl);
+    if (q > 0) {
+      const R = 120 + 1600 * E.in(q);
+      ctx.save(); ctx.globalAlpha = sm(20.3, 20.45, t);
+      ctx.fillStyle = A.radial(ctx, c[0], c[1], 0, R, [[0, '#ffffff'], [0.35, 'rgba(225,255,255,0.97)'], [0.7, 'rgba(110,240,255,0.55)'], [1, 'rgba(41,240,255,0)']]);
+      ctx.fillRect(0, 0, 1920, 1080); ctx.restore();
+    }
     // radial speed lines (whoosh)
     const sl = sm(20.1, 20.45, t) * (1 - sm(20.85, 21.0, t));
     if (sl > 0) {
@@ -373,20 +384,20 @@
       for (let i = 0; i < 90; i++) {
         const a = r() * A.TAU, sp = 0.6 + r() * 1.4, ph = (r() + (t - 20.1) * sp * 2.4) % 1;
         const r0 = 80 + ph * ph * 1300, len = 60 + ph * 420 * (0.5 + q);
-        ctx.strokeStyle = r() < 0.3 ? `rgba(255,230,160,${0.5 * sl})` : `rgba(160,250,255,${0.55 * sl})`;
+        ctx.globalCompositeOperation = q > 0.3 ? 'source-over' : 'lighter'; ctx.strokeStyle = r() < 0.3 ? `rgba(255,214,120,${0.6 * sl})` : `rgba(${q > 0.3 ? '41,210,240' : '160,250,255'},${0.6 * sl})`;
         ctx.lineWidth = 1.5 + ph * 5 * r();
         ctx.beginPath(); ctx.moveTo(c[0] + Math.cos(a) * r0, c[1] + Math.sin(a) * r0); ctx.lineTo(c[0] + Math.cos(a) * (r0 + len), c[1] + Math.sin(a) * (r0 + len)); ctx.stroke();
       }
       // concentric light rings rushing outward (foreshadow the fibre tunnel)
       for (let k = 0; k < 6; k++) {
         const ph = ((t - 20.2) * 2.2 + k / 6) % 1; if (ph < 0) continue;
-        ctx.strokeStyle = `rgba(120,245,255,${0.35 * sl * (1 - ph)})`; ctx.lineWidth = 3 + ph * 20;
+        ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = `rgba(41,220,255,${0.4 * sl * (1 - ph)})`; ctx.lineWidth = 3 + ph * 20;
         A.ellipse(ctx, c[0], c[1], 40 + ph * ph * 1400, 40 + ph * ph * 1400); ctx.stroke();
       }
       ctx.restore();
     }
     // white-cyan flash
-    const f = sm(20.62, 20.95, t);
+    const f = sm(20.55, 20.84, t);
     if (f > 0) {
       ctx.save(); ctx.globalAlpha = f;
       ctx.fillStyle = A.radial(ctx, 960, 540, 0, 1200, [[0, '#ffffff'], [0.5, '#e6ffff'], [1, '#aef8ff']]); ctx.fillRect(0, 0, 1920, 1080);

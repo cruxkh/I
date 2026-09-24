@@ -1,0 +1,5 @@
+[
+ {"sfx": "whip_pan", "t": 13.43, "gain_db": -16, "pan": 0.1},
+ {"sfx": "zip_streak", "t": 15.1, "gain_db": -18, "pan": 0.0},
+ {"sfx": "squeeze_squeak", "t": 18.1, "gain_db": -17, "pan": 0.45}
+]
