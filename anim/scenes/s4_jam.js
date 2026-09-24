@@ -35,7 +35,7 @@
     let X = lane + (path ? 0 : (H(seed * 3.1) - 0.5) * 0.12), Z = ROW(r) + (path ? 0 : (H(seed * 5.3) - 0.5) * 0.3) + (li % 2 ? 0.12 : 0);
     if (path && li === 2) X = 0.03;
     if (path && li === 3) X = 0.57;
-    if (r === 8 && li === 3) X = 0.86;  // squeezed aside by the cat
+    if (r === 8 && li === 3) X = 1.0;  // squeezed aside by the cat
     if (r === 8 && li === 1) X = -0.74;
     if (r === 7 && li === 3) X = 0.66;
     const m = H(seed * 9.9);
@@ -53,7 +53,7 @@
   const BZ = [[21.0, 9.9], [21.9, 9.78], [22.14, 9.6, 'inOut'], [22.3, 9.12, 'out'], [22.92, 8.84, 'inOut'], [23.24, 8.72, 'inOut'],
     [23.4, 8.3, 'out'], [23.98, 8.02, 'inOut'], [24.26, 7.92, 'inOut'], [24.42, 7.5, 'out'], [24.82, 6.95, 'in'], [24.9, 6.92, 'out']];
   const bitZ = t => key(t, BZ);
-  const bitX = t => key(t, [[24.36, 0.3], [24.84, 0.6, 'inOut']]);
+  const bitX = t => key(t, [[24.0, 0.3], [24.5, 0.78, 'inOut'], [24.84, 0.7, 'inOut']]);
   const POPS = [22.18, 23.28, 24.3];
   const pushing = t => (t > 21.9 && t < 22.18) || (t > 22.95 && t < 23.28) || (t > 24.05 && t < 24.3);
   const popK = t => { let k = 0; for (const p of POPS) k = Math.max(k, smooth(p - 0.02, p + 0.03, t) * (1 - smooth(p + 0.06, p + 0.3, t))); return k; };
@@ -194,7 +194,7 @@
     const k = (1 - dz / 0.45) * (pushing(t) || t > 24.8 ? 1 : 0.5);
     const side = Math.sign(p.X - bx) || 1;
     const wob = popK(t) * Math.sin(t * 40) * 0.4;
-    return { dx: side * 0.05 * k, squash: 0.10 * k + wob * 0.1, mood: k > 0.3 ? 'annoyed' : undefined, look: [-side * 0.8, 0.2], rot: side * 0.06 * k };
+    return { dx: side * 0.1 * k, squash: 0.18 * k + wob * 0.12, mood: k > 0.3 ? 'annoyed' : undefined, look: [-side * 0.8, 0.2], rot: side * 0.06 * k };
   }
 
   // ============================================================ SHOTS
@@ -225,11 +225,11 @@
 
   function shotB(ctx, t) {
     const bz = bitZ(t), bx = bitX(t);
-    const zc = bitZ(t - 0.18) - 1.28 - 0.9 * smooth(24.25, 24.8, t);
+    const zc = bitZ(t - 0.18) - 1.28 - 0.1 * smooth(24.25, 24.8, t);
     const [bxs, bys] = proj(bx, 0, bz, zc);
     const bump = t > 24.83 ? Math.exp(-(t - 24.83) * 14) : 0;
     const wk = smooth(24.25, 24.8, t);
-    const cam = clampCam({ x: lerp(lerp(960, bxs, 0.75) - 40, lerp(bxs, proj(0, 0, CATZ, zc)[0], 0.45), wk), y: lerp(bys - 190, bys - 200, wk), zoom: lerp(1.3, 1.35, wk), rot: 0, shake: bump * 1.4, t });
+    const cam = clampCam({ x: lerp(lerp(960, bxs, 0.75) - 40, lerp(bxs, proj(0, 0, CATZ, zc)[0], 0.35), wk), y: lerp(bys - 190, bys - 200, wk), zoom: lerp(1.3, 1.55, wk), rot: 0, shake: bump * 1.4, t });
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     jamWorld(ctx, t, zc, {
       jam: 0.95,
@@ -239,8 +239,8 @@
     });
     // bonk impact star
     if (t > 24.82 && t < 25.0) {
-      const [x, y] = proj(0.43, 0.14, CATZ - 0.02, zc), u = inv(24.82, 25.0, t);
-      ctx.save(); ctx.translate(x, y); ctx.scale(1 + u, 1 + u); ctx.globalAlpha = 1 - u;
+      const [x, y] = proj(0.58, 0.2, CATZ - 0.1, zc), u = inv(24.82, 25.0, t);
+      ctx.save(); ctx.translate(x, y); ctx.scale(0.6 + 0.6 * u, 0.6 + 0.6 * u); ctx.globalAlpha = 1 - u;
       ctx.beginPath(); for (let i = 0; i < 16; i++) { const r = i % 2 ? 22 : 58, a = i / 16 * Math.PI * 2; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath();
       A.fillStroke(ctx, '#fff3a0', 4); A.text(ctx, 'BONK', 0, 2, { font: '400 30px Bangers', fill: '#e8344e', stroke: A.OUTLINE, lw: 4 });
       ctx.restore();
@@ -338,15 +338,15 @@
   // --- shot E: BOOST over the jam
   const E0 = 28.6, E1 = 29.85;
   function bitE(t) { // world position of Bit during the boost
-    if (t < E0) return { X: 0.6, Y: 0, Z: 6.92 };
+    if (t < E0) return { X: 0.7, Y: 0, Z: 6.92 };
     const u = inv(E0, E1, t);
-    const Z = lerp(6.92, 0.55, Math.pow(u, 1.25));
-    const Y = 1.15 * Math.sin(Math.min(1, u * 1.6) * Math.PI * 0.5) - 0.5 * smooth(0.55, 1, u);
-    const X = lerp(0.6, 0.12, ease.inOut(u));
+    const Z = lerp(6.92, 0.1, Math.pow(u, 1.2));
+    const Y = 1.0 * Math.sin(Math.min(1, u * 2.1) * Math.PI * 0.5) - 0.42 * smooth(0.45, 0.9, u);
+    const X = lerp(0.7, 0.1, ease.inOut(u));
     return { X, Y: Math.max(0, Y), Z };
   }
   function shotE(ctx, t) {
-    const zc = key(t, [[28.5, 5.05], [28.62, 5.1], [29.3, 3.0, 'inOut'], [29.85, 1.2, 'in']]);
+    const zc = key(t, [[28.5, 5.05], [28.62, 5.1], [29.3, 1.7, 'inOut'], [29.85, 0.0, 'lin']]);
     const launch = t >= E0;
     const b = bitE(t);
     const sh = launch ? Math.exp(-(t - E0) * 3) * 1.6 + 0.3 : 0;
@@ -402,15 +402,15 @@
   function shotF(ctx, t) {
     const u = inv(29.85, 30.5, t);
     const zc = 60 + ease.in(u) * 14 + u * 10;
-    A.drawDataTunnel(ctx, t, { z: zc, speed: lerp(4, 9, u), jam: lerp(0.5, 0, smooth(0, 0.35, u)) });
+    A.drawDataTunnel(ctx, t, { z: zc, speed: lerp(4, 9, u), jam: 0.3 * (1 - smooth(0, 0.25, u)) });
     speedLines(ctx, t, 960, 470, 1, 90);
     // Bit: from over the camera into the distance
     const dOf = uu => 0.6 * Math.exp(Math.pow(uu, 1.6) * Math.log(28));
     const d = dOf(u);
-    const X = lerp(0.18, 0, u), Y = lerp(1.05, 0.62, ease.out(u));
+    const X = lerp(0.16, 0, u), Y = lerp(0.85, 0.62, ease.out(u));
     const x = VX + X * F / d, y = VY + (FL - Y) * F / d, sc = BTS / d;
     const trail = [];
-    for (let i = 24; i >= 0; i--) { const uu = Math.max(0, u - i * 0.02), dd = dOf(uu), XX = lerp(0.18, 0, uu), YY = lerp(1.05, 0.62, ease.out(uu)); trail.push([VX + XX * F / dd, VY + (FL - YY) * F / dd + 60 * BTS / dd]); }
+    for (let i = 24; i >= 0; i--) { const uu = Math.max(0, u - i * 0.02), dd = dOf(uu), XX = lerp(0.16, 0, uu), YY = lerp(0.85, 0.62, ease.out(uu)); trail.push([VX + XX * F / dd, VY + (FL - YY) * F / dd + 60 * BTS / dd]); }
     trail.unshift([trail[0][0] + 80, 1180]);
     A.drawBinaryTrail(ctx, trail, t, { width: 40, size: 22 });
     const [x2, y2] = [VX, VY];
@@ -427,8 +427,8 @@
       ctx.restore();
     }
     // open-fibre release: first frames still flashed from the pass
-    const fl = 1 - smooth(29.85, 30.0, t);
-    if (fl > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,214,110,${0.7 * fl})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
+    const fl = 1 - smooth(29.85, 29.95, t);
+    if (fl > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(200,250,255,${0.35 * fl})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
   }
 
   A.scene({

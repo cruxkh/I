@@ -31,7 +31,7 @@
 
   const { clamp, lerp, inv, smooth, ease, hash, key } = A;
   const LR = A.LR;
-  const T_CUT_ROOM = 46.93, T_CARD = 57.2;
+  const T_CUT_ROOM = 46.93, T_CARD = 57.12;
 
   // ================================================================== small helpers
   const env = (t, a, b, c, d) => Math.min(smooth(a, b, t), 1 - smooth(c, d, t)); // attack a..b, release c..d
@@ -276,7 +276,7 @@
       if (t > 49.6) Object.assign(o, { gesture: 'none', gestureFrom: 'cheer', gestureK: smooth(49.6, 49.95, t), mood: 'joy', squash: 0.06 * spring(t, 49.6, 8, 18) });
     } else { // scooped up into the hug
       const k = ease.inOut(inv(50.05, 50.5, t));
-      x = lerp(1175, 1112, k); y = lerp(900, 790, k) + 12 * Math.sin((t - 50.45) * 4.2) * smooth(50.4, 50.7, t) * (1 - smooth(51.1, 51.5, t));
+      x = lerp(1175, 1125, k); y = lerp(900, 790, k) + 12 * Math.sin((t - 50.45) * 4.2) * smooth(50.4, 50.7, t) * (1 - smooth(51.1, 51.5, t));
       Object.assign(o, { hug: k, gesture: 'none', mood: 'joy', look: [0.9, 0], bounce: 0.6 });
       if (t > 51.2) { // talks: pulls back a little, then glances at the router
         const q = smooth(51.25, 51.6, t), r = smooth(52.2, 52.6, t);
@@ -395,7 +395,7 @@
       }
     }
     // Bit's burst whiteout -> end card
-    const w = smooth(57.02, 57.2, t);
+    const w = smooth(56.99, 57.12, t);
     if (w > 0) {
       const b = A.bitCore ? A.bitCore(0, 0, 1) : [0, 0]; void b;
       const g = ctx.createRadialGradient(960, 720, 0, 960, 720, 200 + w * 1600);
@@ -455,7 +455,7 @@
     const widthAt = F => { m.font = `900 ${F}px Rubik`; return [...CARD.wordLeft].reduce((w, c) => w + (c === 'G' ? F * 0.755 : m.measureText(c).width), 0) + m.measureText(CARD.wordRight).width + F * 0.86 + F * 0.16; };
     F = Math.floor(Math.min(B.w / (widthAt(100) / 100), B.h / 0.92));
     const L = [...CARD.wordLeft].map(c => glyph(c, F)), R = [...CARD.wordRight].map(c => glyph(c, F));
-    const ringD = F * 0.8, gap = F * 0.07, gapL = F * 0.14, gapR = F * 0.0;
+    const ringD = F * 0.8, gap = F * 0.07, gapL = F * 0.14, gapR = F * 0.035;
     const total = L.reduce((s, g) => s + g.adv, 0) + R.reduce((s, g) => s + g.adv, 0) + ringD + gap * 2;
     const base = B.cy + F * 0.35; // baseline so that cap-height is centred in the box
     let x = B.cx - total / 2;
@@ -466,7 +466,7 @@
     x += ringD + gapR;
     for (const g of R) { place.push({ g, x, side: 1 }); x += g.adv * 0.97; }
     const V = place[place.length - 1];
-    return { F, base, place, ring, vNotch: [V.x + V.g.adv * 0.47 - 0.14 * -F * 0.7, base - F * 0.66] };
+    return { F, base, place, ring, vNotch: [V.x + V.g.adv * 0.5 + F * 0.12, base - F * 0.64] };
   }
 
   const cardBG = () => A.layer('s7:cardbg', 1920, 1080, g => {
@@ -528,13 +528,13 @@
 
   // light streak from Bit (bottom centre) sweeping up into the ring start point
   function streak(ctx, t, R) {
-    const u = inv(57.12, 57.3, t);
+    const u = inv(57.1, 57.3, t);
     if (u <= 0 || u >= 1.2) return;
     const a0 = -Math.PI * 0.62;
     const start = [R.cx + Math.cos(a0) * R.r, R.cy + Math.sin(a0) * R.r];
     const P = s => { // bezier from Bit's spot to the ring start, then the ring arc
       if (s < 0.45) {
-        const q = s / 0.45, p0 = [960, 1150], p1 = [300, 700], p2 = [start[0] - 260, start[1] - 260], p3 = start;
+        const q = s / 0.45, p0 = [880, 1000], p1 = [260, 820], p2 = [start[0] - 260, start[1] - 260], p3 = start;
         const mt = 1 - q; return [mt * mt * mt * p0[0] + 3 * mt * mt * q * p1[0] + 3 * mt * q * q * p2[0] + q * q * q * p3[0], mt * mt * mt * p0[1] + 3 * mt * mt * q * p1[1] + 3 * mt * q * q * p2[1] + q * q * q * p3[1]];
       }
       const a = a0 + ((s - 0.45) / 0.55) * A.TAU;
@@ -611,14 +611,14 @@
     }
     drawTaglines(ctx, t);
     // white-out from Bit's burst settles into the card; slam flash
-    const wf = Math.max(1 - smooth(57.2, 57.36, t), slam ? 0.55 * decay(t, 57.3, 9) : 0);
+    const wf = Math.max(0.9 * (1 - smooth(57.12, 57.2, t)), slam ? 0.55 * decay(t, 57.3, 9) : 0);
     if (wf > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,244,210,${wf})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
   }
 
   const logoBuf = () => A.layer('s7:logobuf', 1920, 1080, () => {});
   function drawWordmark(ctx, t) {
     const R = GL.ring;
-    const prog = inv(57.2, 57.3, t) >= 1 ? 1 : clamp((ease.inOut(inv(57.12, 57.3, t)) - 0.45) / 0.55);
+    const prog = inv(57.2, 57.3, t) >= 1 ? 1 : clamp((ease.inOut(inv(57.1, 57.3, t)) - 0.45) / 0.55);
     // glow halo (bloom) under the letters
     const out = smooth(57.3, 57.3001, t);
     const letterK = g => { // letters burst out of the ring sideways, overshoot, settle

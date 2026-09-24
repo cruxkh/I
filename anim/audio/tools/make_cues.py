@@ -48,7 +48,7 @@ SYNC = [
     (30.8, 'map_ding', -14, 0.5),              # TLV pin
     (31.0, 'sonar_ping', -16, -0.5),
     (32.3, 'map_ding', -14, 0.5),              # Marseille
-    (33.5, 'map_ding', -14, 0.5),              # Gibraltar
+#    (33.5, 'map_ding', -14, 0.5),              # Gibraltar  (moved to cues/s5_ocean.json at 32.95)
     (36.0, 'shark_lunge', -8, -0.3),           # lunge 35.6, peak on the bite
     (36.0, 'chomp', -5, -0.1),
     (36.0, 'spark_zap', -10, 0.0),

@@ -291,7 +291,7 @@
       // dazed: released, drifts up-right, lolling
       const u = t - 36.3;
       x = bx + 260 * E.out(clamp(u / 1.4)) + 40 * u; y = by - 320 * E.out(clamp(u / 1.6)) - 20 * u;
-      o.rot = BITE_ROT - 0.85 * E.outElastic(clamp(u / 1.2)) + Math.sin(t * 2.2) * 0.08;
+      o.rot = BITE_ROT - 0.55 * E.out(clamp(u / 0.9)) + Math.sin(t * 2.2) * 0.1;
       o.mood = 'dazed'; o.bite = 0.35 + 0.05 * Math.sin(t * 3);
     }
     return { x, y, o };
@@ -306,9 +306,9 @@
   function shotShark(ctx, t) {
     const lt = t - T.s3;
     // camera: slow push on the shark, then a reframe for the chomp, shake on impact
-    let cz = key(t, [[33.95, 1.0], [35.5, 1.1, 'inOut'], [35.62, 1.02, 'out'], [36.0, 1.08, 'in'], [37.5, 1.02]]);
-    let cx = key(t, [[33.95, 1080], [35.5, 1170, 'inOut'], [35.62, 1000, 'out'], [36.0, 930, 'in'], [37.5, 1000]]);
-    let cyc = key(t, [[33.95, 560], [35.5, 520], [35.62, 590, 'out'], [36.0, 640, 'in'], [37.5, 560]]);
+    let cz = key(t, [[33.95, 1.0], [35.5, 1.1, 'inOut'], [35.62, 1.02, 'out'], [35.98, 1.02], [36.02, 1.24, 'out'], [36.6, 1.2], [37.5, 1.04, 'inOut']]);
+    let cx = key(t, [[33.95, 1080], [35.5, 1170, 'inOut'], [35.62, 1000, 'out'], [35.98, 980], [36.02, 930, 'out'], [36.6, 960], [37.5, 1060, 'inOut']]);
+    let cyc = key(t, [[33.95, 560], [35.5, 520], [35.62, 590, 'out'], [35.98, 600], [36.02, 630, 'out'], [36.6, 600], [37.5, 540, 'inOut']]);
     const shake = Math.max(0, 1 - (t - T.chomp) / 0.45) * (t >= T.chomp ? 2.2 : 0) + Math.max(0, 1 - (t - T.bounce) / 0.4) * (t >= T.bounce ? 1.6 : 0);
     ctx.save();
     A.camera(ctx, { x: cx, y: cyc, zoom: cz, shake, t });
@@ -323,6 +323,18 @@
     // --- shark behind cable while hovering; over the cable while biting (jaws around it) ---
     const drawSharkNow = () => {
       // lunge smear ghosts
+      if (t >= T.lunge && t < T.chomp + 0.05) {
+        const A0 = sharkPose(T.lunge - 0.001), A1 = sharkPose(T.chomp - 0.001), dx = A1.x - A0.x, dy = A1.y - A0.y, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+        ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+        const k = 1 - inv(T.chomp - 0.1, T.chomp + 0.05, t);
+        for (let i = 0; i < 16; i++) {
+          const off = (H(i * 3.7) - 0.5) * 420, back = 120 + H(i * 1.9) * 380, len = 160 + H(i * 5.1) * 320;
+          const cx0 = P.x - ux * back - uy * off, cy0 = P.y - uy * back + ux * off;
+          ctx.strokeStyle = `rgba(200,250,255,${0.35 * k})`; ctx.lineWidth = 2 + H(i) * 4;
+          ctx.beginPath(); ctx.moveTo(cx0, cy0); ctx.lineTo(cx0 - ux * len, cy0 - uy * len); ctx.stroke();
+        }
+        ctx.restore();
+      }
       if (t >= T.lunge && t < T.chomp) {
         for (let g = 3; g >= 1; g--) {
           const P2 = sharkPose(t - g * 0.035);
@@ -358,7 +370,7 @@
     sparks(ctx, XB - 10, cableAt(XB) - 10, t - T.chomp, 34, 11, { speed: 1100, flash: 260 });
     sparks(ctx, XB - 50, cableAt(XB) - 20, t - T.bounce, 26, 29, { speed: 800, flash: 180, grav: 400 });
     // ZAP on the nose
-    if (t >= T.bounce && t < 36.62) {
+    if (t >= T.bounce && t < 36.42) {
       const nose = sharkPt(P.x, P.y, SHK, P.o, 345, -2), fr = Math.floor(t * 30);
       const from = [XB - 60, cableAt(XB) - 20];
       for (let k = 0; k < 3; k++) bolt(ctx, from[0], from[1], nose[0] + (H(fr + k) - 0.5) * 60, nose[1] + (H(fr + k + 4) - 0.5) * 60, fr * 13 + k * 5, 5 - k);
@@ -370,7 +382,7 @@
     ctx.restore();
     // X-RAY flicker frames on the zap (alternating), drawn in screen space via buffer
     const zf = Math.floor((t - T.bounce) * 30);
-    if (t >= T.bounce && zf < 9 && zf % 2 === 0) xray(ctx, t, P, { x: cx, y: cyc, zoom: cz, shake, t });
+    if (t >= T.bounce && zf < 7 && zf % 2 === 0) xray(ctx, t, P, { x: cx, y: cyc, zoom: cz, shake, t });
     // IMPACT FRAME on the chomp (2 frames)
     const cf = Math.round((t - T.chomp) * 30);
     if (cf === 0 || cf === 1) impactFrame(ctx, t, cf, [960 + (XB - cx) * cz, 540 + (cableAt(XB) - cyc) * cz]);
@@ -466,7 +478,7 @@
         if (t > 33.1) {
           const u = inv(33.1, 33.95, t);
           g.save(); g.globalAlpha = 0.75 * smooth(33.1, 33.4, t);
-          A.drawShark(g, lerp(1500, 1180, E.out(u)), 215 + Math.sin(t * 1.5) * 8, 0.4, { t, flip: true, mood: 'hungry', bite: 0.2 + 0.3 * smooth(33.5, 33.7, t), look: [-1, 0.6], rot: 0.12 });
+          A.drawShark(g, lerp(1400, 1080, E.out(u)), 215 + Math.sin(t * 1.5) * 8, 0.4, { t, flip: true, mood: 'hungry', bite: 0.2 + 0.3 * smooth(33.5, 33.7, t), look: [-1, 0.6], rot: 0.12 });
           g.restore();
         }
       },

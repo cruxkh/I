@@ -1,0 +1,8 @@
+[
+ {"sfx": "zip_streak", "t": 32.02, "gain_db": -13, "pan": 0.0},
+ {"sfx": "map_ding", "t": 32.95, "gain_db": -14, "pan": 0.5},
+ {"sfx": "spark_zap", "t": 36.2, "gain_db": -9, "pan": -0.05},
+ {"sfx": "zip_streak", "t": 36.74, "gain_db": -14, "pan": 0.4},
+ {"sfx": "wink_ding", "t": 38.17, "gain_db": -12, "pan": 0.2},
+ {"sfx": "zip_streak", "t": 38.6, "gain_db": -15, "pan": 0.3}
+]
