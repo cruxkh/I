@@ -389,7 +389,358 @@
     ctx.restore();
   }
 
-  //@@CHASE@@
+  // ======================================================================================
+  // v7 BACK VIEWS (everything faces the front of the queue; the chase cam sees their backs)
+  // ======================================================================================
+  const squircle = (a, b, n, N, taper, cx, cy) => {
+    const pts = [];
+    for (let i = 0; i < N; i++) {
+      const th = (i / N) * Math.PI * 2, c = Math.cos(th), s = Math.sin(th);
+      const X = Math.sign(c) * Math.pow(Math.abs(c), 2 / n) * a, Y = Math.sign(s) * Math.pow(Math.abs(s), 2 / n) * b;
+      pts.push([cx + X * (1 + taper * (Y / b)), cy + Y]);
+    }
+    return pts;
+  };
+  const limbLine = (ctx, x0, y0, x1, y1, w, col) => {
+    ctx.lineCap = 'round'; ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = w + 7; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke();
+  };
+  // BIT from behind: the back of a golden envelope (flap + wax seal), pumping arms, kicking soles
+  function drawBitBack(ctx, x, y, sc, o = {}) {
+    const t = o.t || 0, ph = o.phase ?? t * Math.PI * 2 * 3.6, run = o.run ?? 1, hop = o.hop || 0;
+    ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
+    if (!hop) { A.ellipse(ctx, 0, -2, 54, 10); ctx.fillStyle = 'rgba(5,5,25,0.4)'; ctx.fill(); }
+    A.glow(ctx, 0, -70 - hop, 150, '#ffbe3a', 0.32 * (o.glow ?? 1));
+    ctx.translate(0, -hop); ctx.rotate(o.rot || 0);
+    const bob = -Math.abs(Math.sin(ph)) * 6 * run;
+    const sq = o.squash || 0; ctx.scale(1 + sq * 0.7, 1 - sq);
+    // legs (behind body): a kicked-back foot rises and shows its sole
+    for (let i = 0; i < 2; i++) {
+      const p = ph + i * Math.PI, s = i ? 1 : -1, lift = Math.max(0, -Math.cos(p)) * run;
+      const fx = s * (15 + (o.stuck ? 10 : 0)), fy = -6 - lift * 26 + (o.legsUp ? -30 : 0);
+      limbLine(ctx, s * 14, -26 + bob, fx, fy, 11, '#f5b030');
+      ctx.save(); ctx.translate(fx, fy);
+      if (lift > 0.25) { A.ellipse(ctx, 0, 2, 9, 12); A.fillStroke(ctx, '#f4f6ff', 3.5); A.ellipse(ctx, 0, -2, 4.5, 4); ctx.fillStyle = '#c9d2f0'; ctx.fill(); }
+      else { A.ellipse(ctx, 0, 0, 13, 8.5); A.fillStroke(ctx, '#1f4fbf', 3.5); }
+      ctx.restore();
+    }
+    // body
+    const CY = -70 + bob, pts = squircle(56, 52, 3.1, 40, 0.07, 0, CY);
+    A.blob(ctx, pts);
+    ctx.fillStyle = A.radial(ctx, 10, CY - 10, 0, 80, [[0, '#ffe68c'], [0.55, '#ffc93c'], [1, '#e0801e']]); ctx.fill();
+    ctx.save(); A.blob(ctx, pts); ctx.clip();
+    ctx.fillStyle = 'rgba(200,110,20,0.35)'; A.ellipse(ctx, -30, CY + 30, 70, 50); ctx.fill();
+    ctx.strokeStyle = 'rgba(168,247,255,0.8)'; ctx.lineWidth = 6; A.blob(ctx, pts); ctx.stroke();
+    // envelope back: side seams + top flap with a wax seal
+    ctx.strokeStyle = 'rgba(150,70,10,0.75)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(-56, CY + 50); ctx.lineTo(0, CY + 6); ctx.lineTo(56, CY + 50); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-58, CY - 48); ctx.quadraticCurveTo(-20, CY - 6, 0, CY + 2); ctx.quadraticCurveTo(20, CY - 6, 58, CY - 48); ctx.closePath();
+    ctx.fillStyle = 'rgba(255,245,200,0.35)'; ctx.fill(); ctx.stroke();
+    ctx.restore();
+    A.blob(ctx, pts); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 4.5; ctx.stroke();
+    A.ellipse(ctx, 0, CY + 2, 11, 11); A.fillStroke(ctx, '#1f4fbf', 3);
+    ctx.fillStyle = '#ffd21f'; ctx.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 2.6 : 6, a = -Math.PI / 2 + i * Math.PI / 5; ctx.lineTo(Math.cos(a) * r, CY + 2 + Math.sin(a) * r); } ctx.closePath(); ctx.fill();
+    // arms pumping (in front of the body edge)
+    for (let i = 0; i < 2; i++) {
+      const s = i ? 1 : -1, p = ph + i * Math.PI;
+      const hx = o.stuck ? s * 84 : s * (58 + Math.sin(p) * 6), hy = o.stuck ? CY - 18 + A.noise1(t * 26 + i) * 3 : CY + 22 - Math.sin(p) * 22 * run;
+      limbLine(ctx, s * 46, CY - 2, hx, hy, 10.5, '#ffc338');
+      A.ellipse(ctx, hx, hy, 9.5, 9); A.fillStroke(ctx, '#fffaf0', 3.5);
+    }
+    // luggage tag flapping off his back-right
+    const ta = 0.5 + Math.sin(t * 9) * 0.25 * run + (o.tagLift || 0);
+    ctx.save(); ctx.translate(38, CY - 44); ctx.rotate(ta);
+    ctx.strokeStyle = '#e0314f'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 16); ctx.stroke();
+    A.rrect(ctx, -17, 16, 34, 22, 4); A.fillStroke(ctx, '#fff3d6', 3); ctx.fillStyle = '#1f4fbf'; ctx.fillRect(-17, 16, 34, 5);
+    A.text(ctx, '#5401', 0, 29, { font: '800 9px Rubik', fill: '#1a1330' });
+    ctx.restore();
+    ctx.restore();
+  }
+  // generic / competitor packet from behind: tail lights, rear plate, brand accessory
+  const pkGeom = seed => {
+    const h1 = A.hash(seed * 3.17 + 0.5); const sw = [1, 1.14, 0.9][Math.floor(h1 * 3)], sh = [1, 0.9, 1.1][Math.floor(h1 * 3)];
+    return { a: 44 * sw, b: 36 * sh, cy: -(36 * sh + 9) };
+  };
+  function drawPkBack(ctx, p, x, y, sc, t, o = {}) {
+    const g = pkGeom(p.seed), a = p.brand ? 46 : g.a, b = p.brand ? 40 : g.b, cy = p.brand ? -49 : g.cy;
+    const col = p.brand ? (A.BRAND_COLORS && A.BRAND_COLORS[p.brand]) || { c: BRAND_COL[p.brand], d: '#333' } : (A.PACKET_COLORS || {})[p.kind] || { c: '#999', d: '#555' };
+    ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
+    const br = Math.sin(t * 3 + p.seed);
+    ctx.rotate(o.rot || 0); const sq = (o.squash || 0); ctx.scale(1 + sq * 0.7, (1 - sq) * (1 + 0.015 * br));
+    A.ellipse(ctx, 0, -1, a * 0.95, 8); ctx.fillStyle = 'rgba(5,5,25,0.35)'; ctx.fill();
+    [-1, 1].forEach(s => { A.ellipse(ctx, s * a * 0.45, -5, 13, 7); A.fillStroke(ctx, col.d, 3.2); });
+    // accessories behind the body
+    if (p.brand === 'LAGTV') { ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-6, cy - b); ctx.lineTo(-26, cy - b - 38); ctx.moveTo(6, cy - b); ctx.lineTo(28, cy - b - 34); ctx.stroke(); A.ellipse(ctx, -26, cy - b - 38, 5, 5); A.fillStroke(ctx, '#cfd3e6', 2.5); A.ellipse(ctx, 28, cy - b - 34, 5, 5); A.fillStroke(ctx, '#cfd3e6', 2.5); }
+    const pts = squircle(a, b, 3, 36, 0.08, 0, cy);
+    A.blob(ctx, pts); ctx.fillStyle = A.linear(ctx, 0, cy - b, 0, cy + b, [[0, col.c], [1, col.d]]); ctx.fill();
+    ctx.save(); A.blob(ctx, pts); ctx.clip(); ctx.fillStyle = 'rgba(20,10,40,0.22)'; A.ellipse(ctx, a * 0.4, cy + b * 0.5, a, b * 0.8); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.28)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-a * 0.7, cy - b * 0.65); ctx.quadraticCurveTo(0, cy - b * 0.95, a * 0.5, cy - b * 0.7); ctx.stroke(); ctx.restore();
+    A.blob(ctx, pts); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 3.6; ctx.stroke();
+    // tail lights + plate
+    const bl = 0.75 + 0.25 * Math.sin(t * 4 + p.seed);
+    [-1, 1].forEach(s => { A.rrect(ctx, s * a * 0.62 - 7, cy + b * 0.3, 14, 9, 3); A.fillStroke(ctx, '#ff2a44', 2.2); A.glow(ctx, s * a * 0.62, cy + b * 0.35, 26, 'rgba(255,40,60,1)', 0.55 * bl); });
+    const plate = p.brand || ('PKT ' + (100 + (p.seed * 37) % 900));
+    ctx.font = '800 11px Rubik'; const pw = ctx.measureText(plate).width + 12;
+    A.rrect(ctx, -pw / 2, cy + b * 0.28, pw, 14, 3); A.fillStroke(ctx, '#f3f1e6', 2);
+    A.text(ctx, plate, 0, cy + b * 0.28 + 7.5, { font: '800 11px Rubik', fill: '#1a1330' });
+    // top accessories
+    if (p.brand === 'ILVIP') { ctx.beginPath(); ctx.moveTo(-18, cy - b + 4); ctx.lineTo(-20, cy - b - 16); ctx.lineTo(-9, cy - b - 6); ctx.lineTo(0, cy - b - 20); ctx.lineTo(9, cy - b - 6); ctx.lineTo(20, cy - b - 16); ctx.lineTo(18, cy - b + 4); ctx.closePath(); A.fillStroke(ctx, '#d8b34a', 3); }
+    if (p.brand === 'EMBY') { ctx.beginPath(); ctx.moveTo(-a * 0.8, cy - b * 0.7); ctx.quadraticCurveTo(0, cy - b * 1.6, a * 0.9, cy - b * 0.9 + 14); ctx.quadraticCurveTo(a * 0.3, cy - b * 0.95, -a * 0.8, cy - b * 0.7); A.fillStroke(ctx, '#aeb4bf', 3); A.ellipse(ctx, a * 0.95, cy - b * 0.9 + 18, 8, 8); A.fillStroke(ctx, '#eef0f4', 2.5); }
+    if (p.brand === 'LOADING+') { ctx.save(); ctx.translate(0, cy - b - 18); ctx.rotate(Math.floor(t * 1.5) * Math.PI * 0.5 + smooth(0.8, 1, (t * 1.5) % 1) * Math.PI * 0.5); ctx.beginPath(); ctx.moveTo(-9, -12); ctx.lineTo(9, -12); ctx.lineTo(-9, 12); ctx.lineTo(9, 12); ctx.closePath(); A.fillStroke(ctx, '#f0e2b8', 2.5); ctx.restore(); }
+    if (p.prop === 'paper') { ctx.save(); ctx.rotate(-0.05); [-1, 1].forEach(s => { ctx.beginPath(); ctx.moveTo(s * a * 0.92, cy - b * 0.55); ctx.lineTo(s * (a + 16), cy - b * 0.65); ctx.lineTo(s * (a + 14), cy + b * 0.05); ctx.lineTo(s * a * 0.92, cy); ctx.closePath(); A.fillStroke(ctx, '#f1ecdc', 2.5); }); ctx.restore(); }
+    if (p.mood === 'sleep' && !p.brand) for (let i = 0; i < 2; i++) { const u = ((t * 0.35 + i * 0.5 + H(p.seed)) % 1); ctx.globalAlpha = Math.sin(u * Math.PI); A.text(ctx, 'z', a * 0.6 + u * 16, cy - b - u * 28, { font: '700 14px Fredoka', fill: '#e8f6ff', stroke: A.OUTLINE, lw: 3 }); ctx.globalAlpha = 1; }
+    ctx.restore();
+  }
+  // Catpacket from behind (far ahead in the chase)
+  function drawCatBack(ctx, x, y, sc, t) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
+    const CY = -118, pts = squircle(136, 100, 2.7, 44, 0.12, 0, CY);
+    [-1, 1].forEach(s => { ctx.save(); ctx.translate(s * 76, CY - 90); ctx.rotate(s * 0.05); ctx.beginPath(); ctx.moveTo(-40, 14); ctx.quadraticCurveTo(-18, -50, s * 6, -64); ctx.quadraticCurveTo(26, -36, 40, 10); ctx.closePath(); A.fillStroke(ctx, '#9b8cb3', 5); ctx.restore(); });
+    A.blob(ctx, pts); ctx.fillStyle = A.linear(ctx, 0, CY - 100, 0, CY + 100, [[0, '#b7a9cb'], [1, '#7e6f99']]); ctx.fill();
+    ctx.save(); A.blob(ctx, pts); ctx.clip(); ctx.strokeStyle = 'rgba(80,65,110,0.55)'; ctx.lineWidth = 12;
+    for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(i * 44 - 16, CY - 104); ctx.quadraticCurveTo(i * 44, CY - 60, i * 44 + 10, CY - 40); ctx.stroke(); } ctx.restore();
+    A.blob(ctx, pts); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 5; ctx.stroke();
+    const a1 = Math.sin(t * 1.4) * 0.3;
+    ctx.save(); ctx.translate(0, -40); ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(40 + a1 * 60, -40, 20 + a1 * 90, -150);
+    ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 34; ctx.stroke(); ctx.strokeStyle = '#ab9cc0'; ctx.lineWidth = 26; ctx.stroke(); ctx.restore();
+    ctx.restore();
+  }
+  // 2D turn: back (k<0.5) squashes to a sliver, the front pops out (k>0.5)
+  function turnDraw(ctx, x, k, back, front) {
+    const s = k < 0.5 ? 1 - 2 * k : 2 * k - 1;
+    ctx.save(); ctx.translate(x, 0); ctx.scale(Math.max(0.04, s), 1); ctx.translate(-x, 0);
+    if (k < 0.5) back(); else front();
+    ctx.restore();
+  }
+
+  // ======================================================================================
+  // v7 CHASE: Bit's run through the queue (own time base 29.2 to 36.95), reverse camera
+  // ======================================================================================
+  const RZ = t => key(t, [[29.2, 25.2], [30.15, 23.38, 'lin'], [30.32, 23.8, 'out'], [30.55, 23.62], [30.8, 23.14, 'inOut'], [31.26, 23.02],
+    [31.34, 22.5, 'out'], [31.4, 22.3, 'lin'], [33.2, 16.75, 'lin'], [33.9, 14.95, 'out'], [34.3, 13.8, 'lin'], [35.02, 13.56, 'inOut'],
+    [35.1, 13.02, 'out'], [36.5, 9.35, 'lin'], [36.95, 8.45, 'out']]);
+  const RX = t => key(t, [[29.2, 0.305], [35.95, 0.305], [36.55, 0.915, 'inOut']]) + (t < 35.95 ? Math.sin(t * 5.3) * 0.03 : 0);
+  const RY = t => key(t, [[33.3, 0], [33.58, 0.6, 'out'], [33.86, 0, 'in']]);
+  const STUCK = t => (t > 30.72 && t < 31.3) || (t > 34.3 && t < 35.08);
+  const RPOPS = [31.3, 35.08], BONK = 30.15;
+  const rpop = t => { let k = 0; for (const p of RPOPS) k = Math.max(k, smooth(p - 0.02, p + 0.03, t) * (1 - smooth(p + 0.06, p + 0.3, t))); return k; };
+  const CH_HONKS = [[3, 28, 30.2], [2, 28, 30.95], [2, 16, 34.62], [3, 16, 34.95], [4, 15, 35.45], [1, 13, 35.8], [4, 11, 36.3]];
+  const projR = (X, Y, Z, zc) => { const d = zc - Z; return [VX - (X - CAMX) * F / d, VY + (FL - Y) * F / d, d]; };
+
+  function chaseWorld(ctx, t, zc, opt) {
+    A.drawDataTunnel(ctx, t, { z: -zc * 1.0 + 40, speed: 0.4, jam: 0.9 });
+    const bz = RZ(t), bx = RX(t), items = [];
+    for (const p of PK) { const d = zc - p.Z; if (d > 0.35 && d < 20) items.push({ d, p }); }
+    items.push({ d: zc - CATZ, cat: true });
+    items.push({ d: zc - bz - 0.01, bit: true });
+    items.sort((a, b) => b.d - a.d);
+    const close = smooth(36.55, 36.85, t);
+    for (const it of items) {
+      if (it.bit) { const [x, y, d] = projR(bx, RY(t), bz, zc); opt.bit(x, y, BTS / d, d); continue; }
+      if (it.cat) { const [x, y, d] = projR(CATX, 0, CATZ, zc); if (d > 0.5) drawCatBack(ctx, x, y, CTS / d, t); continue; }
+      const p = it.p;
+      let dx = 0, sq = 0, rot = 0;
+      if (p.brand === 'ILVIP' && p.r === 9) dx = 0.07 * close;
+      if (p.brand === 'EMBY' && p.r === 9) dx = -0.07 * close;
+      // shoves around Bit when he pushes / bonks
+      const dz = Math.abs(p.Z - bz), side = Math.sign(p.X - bx) || 1;
+      if (dz < 0.5 && Math.abs(p.X - bx) < 0.5) { const k = (1 - dz / 0.5) * (STUCK(t) ? 1 : 0.4); dx += side * 0.07 * k; sq += 0.16 * k + rpop(t) * Math.sin(t * 40) * 0.05; rot = side * 0.08 * k; }
+      if (t > BONK && t < BONK + 0.5 && p.r === 28 && p.li <= 3) { const u = t - BONK; sq += Math.exp(-u * 10) * Math.sin(u * 40) * 0.12; }
+      const d = zc - p.Z, [x, y] = projR(p.X + dx, 0, p.Z, zc), sc = PKS / d;
+      const fog = clamp(1 - (d - 6) / 13) * clamp((d - 0.35) / 0.3);
+      if (fog <= 0.02) continue;
+      // turn around to see who's coming, turn back once he's past
+      const ahead = bz - p.Z, near = Math.abs(p.X - bx) < 0.95;
+      let k = near ? smooth(2.1, 1.1, ahead) * (1 - smooth(0.1, -0.5, ahead)) : 0;
+      if (p.vault) k = smooth(16.9, 16.5, bz) * (1 - smooth(15.3, 15.0, bz));
+      if (p.brand === 'ILVIP' || p.brand === 'EMBY') k = 0;
+      let honk = 0; for (const [li, r, t0] of CH_HONKS) if (p.li === li && p.r === r) honk = Math.max(honk, smooth(t0 - 0.04, t0 + 0.05, t) * (1 - smooth(t0 + 0.26, t0 + 0.45, t)));
+      if (honk > 0) k = Math.max(k, 1);
+      ctx.save(); ctx.globalAlpha = fog;
+      if (d > 1.2) A.glow(ctx, x, y - sc * 30, sc * 80, 'rgba(255,36,60,1)', 0.12 * fog);
+      if (k <= 0.001) drawPkBack(ctx, p, x, y, sc, t, { squash: sq, rot });
+      else turnDraw(ctx, x, k, () => drawPkBack(ctx, p, x, y, sc, t, { squash: sq, rot }), () => {
+        const shock = ahead < 0.9 && ahead > -0.4, look = [(bx - p.X) * -0.8, 0.35];
+        if (p.brand) drawBrand(ctx, x, y, sc, { t, brand: p.brand, seed: p.seed, mood: shock ? 'shock' : 'grumpy', spinner: 0, mouth: honk * 0.8, look, rot, squash: sq, glow: 0.5 });
+        else A.drawPacket(ctx, x, y, sc, { t, seed: p.seed, kind: p.kind, mood: shock ? 'shock' : 'annoyed', honk, look, rot, squash: sq, glow: 0.5 });
+      });
+      ctx.restore();
+    }
+  }
+  function bitRunBack(ctx, x, y, sc, t) {
+    const stuck = STUCK(t), pk = rpop(t), bonk = t > BONK ? Math.exp(-(t - BONK) * 7) : 0;
+    const vx = (RX(t + 0.03) - RX(t - 0.03)) / 0.06;
+    drawBitBack(ctx, x, y, sc, {
+      t, run: stuck ? 0.25 : 1, stuck, phase: t * Math.PI * 2 * (stuck ? 7 : 3.8),
+      squash: (stuck ? -0.22 + 0.04 * Math.sin(t * 30) : 0) - 0.25 * pk + 0.25 * bonk * Math.sin((t - BONK) * 30),
+      rot: clamp(-vx * 0.25, -0.25, 0.25) + (bonk > 0.05 ? -0.15 * bonk : 0), hop: 16 * pk + (RY(t) > 0 ? RY(t) * 0 : 0), glow: 1.3,
+      legsUp: RY(t) > 0.05,
+    });
+    if (pk > 0.05 || (bonk > 0.2 && t < BONK + 0.3)) { // pop / bonk sparkle
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, r = (1 - Math.max(pk, bonk)) * 90 * sc + 40 * sc; A.glow(ctx, x + Math.cos(a) * r, y - 80 * sc + Math.sin(a) * r * 0.7, 18 * sc, '#fff1b0', 0.8 * Math.max(pk, bonk)); }
+      ctx.restore();
+    }
+  }
+  function chaseShot(ctx, t, style) {
+    const bz = RZ(t), bx = RX(t);
+    const lag = style === 'low' ? 0.12 : 0.16;
+    const zc = RZ(t - lag) + (style === 'low' ? 1.15 : 1.5);
+    CAMX = RX(t - lag - 0.05) + (style === 'low' ? 0.26 : 0.1);
+    const [bxs, bys] = projR(bx, 0, bz, zc);
+    const bob = Math.sin(t * Math.PI * 2 * 3.8) * 5, lat = (RX(t - 0.1) - RX(t - 0.2)) / 0.1;
+    const bonk = t > BONK ? Math.exp(-(t - BONK) * 9) : 0, pop = rpop(t);
+    const end = smooth(36.55, 36.95, t);
+    const cam = clampCam({ x: lerp(960, bxs, 0.7) + (style === 'low' ? 90 : 0), y: bys - (style === 'low' ? 110 : 170) + bob - end * 40,
+      zoom: (style === 'low' ? 1.28 : 1.12) + end * 0.25, rot: lat * 0.08 + Math.sin(t * 3.8 * Math.PI) * 0.004, shake: bonk * 1.6 + pop * 0.8 + (STUCK(t) ? 0.25 : 0), t });
+    ctx.save(); fillBase(ctx); A.camera(ctx, cam);
+    chaseWorld(ctx, t, zc, { bit: (x, y, sc) => bitRunBack(ctx, x, y, sc, t) });
+    if (t > BONK && t < BONK + 0.22) { // BONK star on the LAGTV's back
+      const [x, y] = projR(0.4, 0.2, 23.05, zc), u = inv(BONK, BONK + 0.22, t);
+      ctx.save(); ctx.translate(x, y); ctx.scale(0.7 + 0.6 * u, 0.7 + 0.6 * u); ctx.globalAlpha = 1 - u;
+      ctx.beginPath(); for (let i = 0; i < 16; i++) { const r = i % 2 ? 22 : 56, a = i / 16 * Math.PI * 2; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath();
+      A.fillStroke(ctx, '#fff3a0', 4); A.text(ctx, 'BONK', 0, 2, { font: '400 30px Bangers', fill: '#e8344e', stroke: A.OUTLINE, lw: 4 }); ctx.restore();
+    }
+    ctx.restore();
+    speedLines(ctx, t, 960, 470, STUCK(t) ? 0 : 0.35 + 0.25 * smooth(35.2, 36.3, t), 40);
+  }
+
+  // --- side tracking shot 31.4 to 33.2: parallax past the queue, hop over a LOADING+ that backs into his path
+  const sideBg = () => A.layer('s4-side-bg', 1920, 1080, (g, w, h) => {
+    g.fillStyle = A.linear(g, 0, 0, 0, h, [[0, '#070a26'], [0.55, '#141046'], [0.8, '#2a0c30'], [1, '#12061a']]); g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 9; i++) { const y = 120 + i * 70; g.strokeStyle = i % 3 ? 'rgba(41,240,255,0.10)' : 'rgba(255,63,164,0.14)'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+    g.fillStyle = A.linear(g, 0, 700, 0, 1080, [[0, 'rgba(255,40,70,0)'], [1, 'rgba(255,40,70,0.18)']]); g.fillRect(0, 700, w, 380);
+  });
+  const SBX = t => key(t, [[31.4, 0], [32.25, 1150, 'lin'], [32.65, 1650, 'lin'], [33.2, 2500, 'lin']]);
+  const SBY = t => key(t, [[32.22, 0], [32.44, 150, 'out'], [32.66, 0, 'in']]);
+  function sideShot(ctx, t) {
+    const bx = SBX(t), camx = SBX(t - 0.12) + 120, G = 905;
+    ctx.drawImage(sideBg(), 0, 0);
+    const scr = (wx, par) => 960 + (wx - camx) * par;
+    // tunnel ribs (vertical light bands) at two depths
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (const [par, sp, col, wdt] of [[0.45, 380, '41,240,255', 10], [0.8, 560, '255,63,164', 18]]) {
+      const off = ((camx * par) % sp + sp) % sp;
+      for (let x = -off; x < 1920 + sp; x += sp) { ctx.fillStyle = A.linear(ctx, 0, 60, 0, 900, [[0, `rgba(${col},0)`], [0.5, `rgba(${col},0.22)`], [1, `rgba(${col},0.05)`]]); ctx.fillRect(x, 60, wdt, 840); A.glow(ctx, x + wdt / 2, 150 + (par * 100), 40, `rgba(${col},1)`, 0.3); }
+    }
+    ctx.restore();
+    // floor strip + lane dashes
+    ctx.fillStyle = '#1a0f35'; ctx.fillRect(0, G - 6, 1920, 200);
+    ctx.fillStyle = 'rgba(41,240,255,0.5)'; const doff = ((camx) % 160 + 160) % 160; for (let x = -doff; x < 1920; x += 160) ctx.fillRect(x, G + 40, 80, 5);
+    ctx.fillStyle = 'rgba(255,63,164,0.6)'; ctx.fillRect(0, G - 6, 1920, 3);
+    // far lane (small, parallax 0.6)
+    for (let i = 0; i < 22; i++) {
+      const wx = i * 190 + H(i) * 60, x = scr(wx, 0.6); if (x < -100 || x > 2020) continue;
+      ctx.save(); ctx.globalAlpha = 0.75; A.glow(ctx, x - 30, G - 110, 40, 'rgba(255,40,60,1)', 0.25);
+      if (H(i * 3) < 0.35) drawBrand(ctx, x, G - 70, 0.75, { t, brand: BRANDS[1 + (i % 3)], seed: 60 + i, mood: 'sleepy', mouth: 0, look: [0.8, 0], glow: 0.3 });
+      else A.drawPacket(ctx, x, G - 70, 0.8, { t, seed: 60 + i, mood: H(i * 7) < 0.4 ? 'sleep' : 'bored', look: [0.8, 0], noZ: false });
+      ctx.restore();
+    }
+    // main lane (the queue Bit runs along)
+    for (let i = 0; i < 14; i++) {
+      const wx = 150 + i * 230 + H(i + 40) * 50, x = scr(wx, 1); if (x < -200 || x > 2120) continue;
+      const rel = bx - wx; // >0 once he's past
+      const react = smooth(-260, -80, rel) * (1 - smooth(300, 700, rel));
+      const spike = Math.exp(-Math.abs(rel) / 120);
+      const brand = i === 6 ? 'LOADING+' : i % 4 === 1 ? 'LAGTV' : i % 5 === 3 ? 'EMBY' : null;
+      const look = react > 0.1 ? [rel < 0 ? -1 : 1, -0.2] : [0.9, 0.05];
+      const hk = (i === 3 || i === 8 || i === 11) ? smooth(150, 200, rel) * (1 - smooth(420, 520, rel)) : 0;
+      let dx = 0, hop = 0;
+      if (i === 6) dx = -40 * smooth(31.9, 32.1, t); // LOADING+ backs into his path
+      const y = G - 20, sc = 1.35;
+      A.glow(ctx, x - 50, y - 60, 70, 'rgba(255,40,60,1)', 0.25);
+      ctx.save(); ctx.translate(dx, 0);
+      if (brand) drawBrand(ctx, x, y, sc, { t, brand, seed: 80 + i, mood: spike > 0.5 && react > 0.2 ? 'shock' : brand === 'LOADING+' ? 'grumpy' : 'sleepy', spinner: brand === 'LOADING+' ? 1 : 0, mouth: hk * 0.8, look, rot: -0.12 * spike * react });
+      else {
+        A.drawPacket(ctx, x, y, sc, { t, seed: 80 + i, kind: KINDS[i % 6], mood: spike > 0.5 && react > 0.2 ? 'shock' : react > 0.2 ? 'annoyed' : (i % 3 ? 'bored' : 'sleep'), honk: hk, look, rot: -0.12 * spike * react });
+        if (i % 3 === 2) drawProp(ctx, { prop: 'paper', seed: 80 + i }, x, y, sc, t, spike * react);
+        if (i === 4 || i === 10) drawProp(ctx, { prop: 'watch', seed: 80 + i }, x, y, sc, t, 0);
+      }
+      ctx.restore();
+    }
+    // Bit (in the plane in front of the queue)
+    const bxS = scr(bx, 1), hop = SBY(t);
+    const pts = []; for (let i = 16; i >= 0; i--) { const tt = t - i * 0.02; pts.push([scr(SBX(tt), 1) - 30, G - 60 - SBY(tt)]); }
+    A.drawBinaryTrail(ctx, pts, t, { width: 26, size: 16, alpha: 0.6 });
+    const air = hop > 2;
+    A.drawBit(ctx, bxS, G + 10 - hop, 1.45, { t, mood: 'determined', limbs: air ? 'fly' : 'run', runRate: 4.6, phase: t * Math.PI * 2 * 4.6, vel: air ? [1300, (SBY(t - 0.02) - SBY(t + 0.02)) * 25] : [1300, 0], shadow: air ? 0 : 1, glow: 1.4,
+      armR: !air && t > 31.6 && t < 32.15 ? [84, -150 + Math.sin(t * 20) * 8] : undefined, squash: t > 32.64 && t < 32.76 ? 0.2 : 0 });
+    // foreground blurred commuters whipping past (parallax 1.7)
+    ctx.save(); ctx.filter = 'blur(6px) brightness(0.5)';
+    for (let i = 0; i < 8; i++) { const wx = i * 420 + H(i + 9) * 100, x = scr(wx, 1.7); if (x < -300 || x > 2220) continue; A.drawPacket(ctx, x, 1250, 3.4, { t, seed: 120 + i, mood: 'bored', noZ: true, look: [0.9, 0] }); }
+    ctx.restore();
+    // horizontal speed streaks
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 26; i++) { const y = 100 + H(i) * 900, len = 200 + H(i + 2) * 300, x = 1920 - ((t * (1800 + H(i + 5) * 1200) + H(i + 7) * 3000) % 2600);
+      ctx.fillStyle = A.linear(ctx, x, 0, x + len, 0, [[0, 'rgba(255,230,170,0)'], [1, 'rgba(255,230,170,0.35)']]); ctx.fillRect(x, y, len, 2); }
+    ctx.restore();
+  }
+
+  // --- front low-angle vault 33.2 to 33.9: over a snoozer, toward camera
+  function vaultShot(ctx, t) {
+    const zc = 13.3, bz = RZ(t), bx = RX(t), by = RY(t);
+    CAMX = 0.18;
+    const [x0, y0] = proj(bx, by, bz, zc);
+    const u = inv(33.2, 33.9, t);
+    const cam = clampCam({ x: lerp(1010, x0, 0.4), y: lerp(610, y0 - 100, 0.35), zoom: lerp(1.35, 1.5, u), rot: -0.06 + 0.04 * u, shake: t > 33.86 ? Math.exp(-(t - 33.86) * 12) * 1.5 : 0, t });
+    ctx.save(); fillBase(ctx); A.camera(ctx, cam);
+    jamWorld(ctx, t, zc, {
+      jam: 0.9, cat: false, sign: false, near: 0.8,
+      bit: { X: bx, Y: by, Z: bz, draw: (c, x, y, sc) => {
+        const air = by > 0.02;
+        const pts = []; for (let i = 14; i >= 0; i--) { const tt = t - i * 0.025; const [px, py, d] = proj(RX(tt), RY(tt) + 0.14, RZ(tt), zc); if (d > 0.3) pts.push([px, py]); }
+        A.drawBinaryTrail(c, pts, t, { width: 30 * sc, size: Math.max(12, 16 * sc), alpha: 0.8 });
+        A.drawBit(c, x, y, sc, { t, mood: air ? 'joy' : 'determined', joyEyes: 'open', limbs: air ? 'arms-up' : 'run', runRate: 4.4, phase: t * Math.PI * 2 * 4.4, glow: 1.6, shadow: air ? 0 : 1, squash: t > 33.84 ? 0.22 : air ? -0.12 : 0, vel: air ? [0, (RY(t - 0.02) - RY(t + 0.02)) * 1500] : [0, 0] });
+      } },
+      pkO: p => {
+        if (p.vault) { const k = smooth(33.3, 33.45, t); return { mood: k > 0.3 ? 'shock' : 'sleep', look: [0.1, -1], squash: -0.2 * k * (1 - smooth(33.7, 33.9, t)) }; }
+        const dz = Math.abs(p.Z - bz); if (dz < 1.6 && Math.abs(p.X - bx) < 1.0) return { mood: 'shock', look: [(bx - p.X) * 0.8, -0.6] };
+        return {};
+      },
+    });
+    ctx.restore();
+    speedLines(ctx, t, 960, 470, 0.5, 40);
+  }
+
+  // --- v7 CAT: talks from inside the queue. C1 over-Bit's-shoulder (old 36.96-38.3), C2 two-shot (old 38.3-39.6)
+  function shotC(ctx, t) {
+    const catO = () => {
+      const lookK = smooth(36.95, 37.3, t);
+      return { mood: t > 38.35 && t < 39.3 ? 'grumpy' : 'bored', arms: t > 37.4 && t < 38.1 ? 'point' : 'crossed', look: [lerp(-0.4, 0.55, lookK), lerp(0, 0.55, lookK)],
+        rot: 0.03 * Math.sin(t * 1.2), lid: t > 39.3 ? 0.12 : 0, browRaise: t > 38.95 && t < 39.35 ? 6 : 0 };
+    };
+    const around = p => { // neighbours rubberneck at the confrontation
+      if (Math.abs(p.Z - CATZ) < 2.2) return { look: [clamp((0.3 - p.X) * 0.9, -1, 1), 0.1], mood: H(p.seed) < 0.5 ? 'bored' : 'annoyed' };
+      return {};
+    };
+    if (t < 38.3) { // C1: over Bit's shoulder, cat at normal size in the crowd
+      const u = inv(36.96, 38.3, t), zc = lerp(5.5, 5.62, ease.inOut(u));
+      CAMX = 0.36;
+      const BZC = 6.3, BXC = 0.5;
+      const [cx, cy] = proj(CATX, 0, CATZ, zc);
+      const cam = clampCam({ x: cx + 120, y: cy - 200, zoom: lerp(1.05, 1.12, ease.inOut(u)), rot: 0.01, t });
+      ctx.save(); fillBase(ctx); A.camera(ctx, cam);
+      jamWorld(ctx, t, zc, {
+        jam: 0.9, near: 0.75, sign: true,
+        bit: { X: BXC, Y: 0, Z: BZC, draw: (c, x, y, sc) => drawBitBack(c, x, y, sc, { t, run: 0, phase: 0, squash: 0.03 * Math.sin(t * 3), rot: -0.05 + (t > 37.4 && t < 38.1 ? -0.05 : 0), glow: 1.2, tagLift: -0.3 }) },
+        catO, pkO: around,
+      });
+      ctx.restore();
+    } else { // C2: two-shot, Bit looks up at the big guy
+      const u = inv(38.3, 39.6, t), zc = lerp(5.05, 5.2, ease.inOut(u));
+      CAMX = 0.3;
+      const [cx, cy] = proj(0.36, 0, CATZ, zc);
+      const cam = clampCam({ x: cx, y: cy - 250, zoom: lerp(1.3, 1.38, ease.inOut(u)), rot: -0.01, t });
+      ctx.save(); fillBase(ctx); A.camera(ctx, cam);
+      jamWorld(ctx, t, zc, {
+        jam: 0.9, near: 0.75, sign: true,
+        bit: { X: 0.72, Y: 0, Z: 6.92, draw: (c, x, y, sc) => A.drawBit(c, x, y, sc, { t, mood: t < 39.15 ? 'panic' : 'determined', look: [-0.75, -0.8], shadow: 1, mouth: 0, glow: 1.3, sweat: t < 39.1 ? 1 : 0, limbs: 'stand', squash: t > 39.3 ? 0.1 * smooth(39.3, 39.6, t) : 0.03 * Math.sin(t * 20), browL: t > 39.15 ? -4 : 0, browR: t > 39.15 ? -4 : 0 }) },
+        catO, pkO: p => Object.assign(around(p), p.li === 4 && p.r === 8 ? { honk: smooth(39.34, 39.4, t) * (1 - smooth(39.55, 39.6, t)) } : {}),
+      });
+      ctx.restore();
+    }
+  }
   // --- shot D: Bit close-up, "Sorry! GOTV doesn't wait in line!"
   function shotD(ctx, t) {
     const u = inv(39.6, 41.45, t);
@@ -527,5 +878,30 @@
     if (fl > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(200,250,255,${0.35 * fl})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
   }
 
-  //@@SCENE@@
+  // old-base shots (written for the v2 timing) played 5.0 s later: lipsync follows via A._shift
+  function oldDraw(ctx, tt) {
+    if (tt < 36.96) shotB(ctx, tt);
+    else if (tt < 39.6) shotC(ctx, tt);
+    else if (tt < 41.45) shotD(ctx, tt);
+    else if (tt < 42.7) shotE(ctx, tt);
+    else shotF(ctx, tt);
+  }
+  A.scene({
+    name: 's4_jam', start: 29.2, end: 48.4,
+    draw(ctx, s) {
+      const t = s.t;
+      if (t < 31.4) chaseShot(ctx, t, 'low');
+      else if (t < 33.2) sideShot(ctx, t);
+      else if (t < 33.9) vaultShot(ctx, t);
+      else if (t < 36.95) chaseShot(ctx, t, 'wide');
+      else { const sh = A._shift; A._shift = sh + 5; try { oldDraw(ctx, t - 5); } finally { A._shift = sh; } }
+      hud(ctx, t);
+      // white-gold flash out of the GOTV LED dive
+      const fa = 1 - ease.out(inv(29.2, 29.5, t));
+      if (fa > 0) {
+        ctx.save(); ctx.fillStyle = `rgba(255,248,222,${fa})`; ctx.fillRect(0, 0, 1920, 1080);
+        ctx.globalCompositeOperation = 'lighter'; A.glow(ctx, 960, 470, 1200, 'rgba(255,201,60,1)', fa * 0.8); ctx.restore();
+      }
+    },
+  });
 })();

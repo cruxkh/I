@@ -188,6 +188,19 @@
       return [C.px + dx * k, C.py + dy * k];
     };
 
+    // 3D polygon -> clipped (near plane) screen path; returns false if nothing is in front
+    function polyPath(ctx, pts, near = 1) {
+      const cp = pts.map(([x, y, z]) => { const dx = x - C.px, dy = y - C.py, dz = z - C.pz; return [dx * C.Rx + dy * C.Ry, dx * C.Ux + dy * C.Uy + dz * C.Uz, dx * C.Fx + dy * C.Fy + dz * C.Fz]; });
+      const out = [], n = cp.length;
+      for (let i = 0; i < n; i++) {
+        const a = cp[i], b = cp[(i + 1) % n], ia = a[2] >= near, ib = b[2] >= near;
+        if (ia) out.push(a);
+        if (ia !== ib) { const k = (near - a[2]) / (b[2] - a[2]); out.push([lerp(a[0], b[0], k), lerp(a[1], b[1], k), near]); }
+      }
+      if (out.length < 3) return false;
+      ctx.beginPath(); out.forEach(([x, y, d], i) => { const sx = 960 + x * FOC / d, sy = 540 - y * FOC / d; i ? ctx.lineTo(sx, sy) : ctx.moveTo(sx, sy); }); ctx.closePath();
+      return true;
+    }
     // ------------------------------------------------------------------ geography
     const coastX = y => -520 - 0.12 * y + 18 * Math.sin(y / 180);
     const STAD = { hx: 150, hy: 126 };                      // stadium precinct half extents
@@ -276,7 +289,8 @@
       g.fillStyle = 'rgba(200,220,255,0.18)'; for (let yy = 0; yy < h; yy += 32) g.fillRect(0, yy, w, 2);
     });
     // crowd tiles: 128 x 64 px = 16 m (around the ring) x 8 m (up the slope), 8 px/m
-    const crowdTile = (away, up) => A.layer(`s1a-crowd-${away ? 1 : 0}${up ? 1 : 0}`, 128, 64, (g, w, h) => {
+    const crowdTile = (away, up) => A.layer(`s1a-crowd-${away ? 1 : 0}${up ? 1 : 0}`, 256, 128, (g, w, h) => {
+      g.scale(2, 2); w /= 2; h /= 2;
       const r = mul(away * 10 + 3), r2 = mul(up * 7 + away + 11);
       g.fillStyle = '#231d4a'; g.fillRect(0, 0, w, h);
       for (let row = 0; row < 10; row++) {
@@ -603,7 +617,7 @@
       const fr = Math.floor(t * 7);
       for (const { i } of segs) {
         const a0 = (i / SEG) * A.TAU, a1 = ((i + 1) / SEG) * A.TAU;
-        const away = i >= 4 && i <= 12;
+        const away = i >= 42 && i <= 49;
         // outer facade
         const o0 = ring(STD.out[0], STD.out[1], a0), o1 = ring(STD.out[0], STD.out[1], a1);
         const ex = o1[0] - o0[0], ey = o1[1] - o0[1];
@@ -616,8 +630,8 @@
           }
         }
         // slope bands
-        for (let r = 0; r < 3; r++) {
-          const f0 = r / 3, f1 = (r + 1) / 3;
+        for (let r = 0; r < 6; r++) {
+          const f0 = r / 6, f1 = (r + 1) / 6;
           const A0 = lerp(STD.in[0], STD.out[0], f0), B0 = lerp(STD.in[1], STD.out[1], f0), Z0 = lerp(STD.in[2], STD.out[2], f0);
           const A1 = lerp(STD.in[0], STD.out[0], f1), B1 = lerp(STD.in[1], STD.out[1], f1), Z1 = lerp(STD.in[2], STD.out[2], f1);
           const i0 = ring(A0, B0, a0), i1 = ring(A0, B0, a1), j0 = ring(A1, B1, a0), j1 = ring(A1, B1, a1);
@@ -625,10 +639,10 @@
           if (!O || !U || !W || !V) continue;
           const up = H(i * 7.3 + r * 3.1 + fr * 0.37) < roar * 0.85;
           const pt = away ? (up ? pat.c11 : pat.c10) : (up ? pat.c01 : pat.c00);
-          const lu = Math.hypot(i1[0] - i0[0], i1[1] - i0[1]) * 8, lv = Math.hypot(j0[0] - i0[0], j0[1] - i0[1], Z1 - Z0) * 8;
+          const lu = Math.hypot(i1[0] - i0[0], i1[1] - i0[1]) * 16, lv = Math.hypot(j0[0] - i0[0], j0[1] - i0[1], Z1 - Z0) * 16;
           const bounce = up ? (Math.sin(t * 14 + i) * 0.5 + 0.5) * 3 : 0;
           patQuad(ctx, pt, O, U, W, V, lu, lv, i * 37 + r * 91 + bounce);
-          if (r === 1) { // concourse walkway line
+          if (r === 3) { // concourse walkway line
             ctx.strokeStyle = 'rgba(15,10,35,0.8)'; ctx.lineWidth = Math.max(1, 1.2 * FOC / O[2]); ctx.beginPath(); ctx.moveTo(O[0], O[1]); ctx.lineTo(U[0], U[1]); ctx.stroke();
           }
         }
@@ -701,25 +715,22 @@
     const PL = []; // x in [-52.5,52.5] (goals east/west), y in [-34,34]
     function drawPitch(ctx, t) {
       // surround
-      const sur = []; for (let i = 0; i < 48; i++) { const p = ring(STD.in[0], STD.in[1], (i / 48) * A.TAU); const q = P(p[0], p[1], 0); if (!q) return; sur.push(q); }
-      ctx.fillStyle = '#176a33'; ctx.beginPath(); sur.forEach((v, m) => m ? ctx.lineTo(v[0], v[1]) : ctx.moveTo(v[0], v[1])); ctx.closePath(); ctx.fill();
+      const sur3 = []; for (let i = 0; i < 64; i++) { const p = ring(STD.in[0], STD.in[1], (i / 64) * A.TAU); sur3.push([p[0], p[1], 0]); }
+      ctx.fillStyle = '#176a33'; if (polyPath(ctx, sur3)) ctx.fill();
       // stripes
       for (let s = 0; s < 14; s++) {
-        const x0 = -52.5 + s * 7.5, x1 = x0 + 7.5, q = [P(x0, -34, 0), P(x1, -34, 0), P(x1, 34, 0), P(x0, 34, 0)];
-        if (q.some(v => !v)) continue;
-        ctx.fillStyle = s % 2 ? '#26a049' : '#33b457'; ctx.beginPath(); q.forEach((v, m) => m ? ctx.lineTo(v[0], v[1]) : ctx.moveTo(v[0], v[1])); ctx.closePath(); ctx.fill();
+        const x0 = -52.5 + s * 7.5, x1 = x0 + 7.5;
+        ctx.fillStyle = s % 2 ? '#26a049' : '#33b457'; if (polyPath(ctx, [[x0, -34, 0], [x1, -34, 0], [x1, 34, 0], [x0, 34, 0]])) ctx.fill();
       }
       // mowing checker (subtle cross stripes)
-      for (let s = 0; s < 9; s++) {
-        if (s % 2) continue; const y0 = -34 + s * 68 / 9, y1 = y0 + 68 / 9, q = [P(-52.5, y0, 0), P(52.5, y0, 0), P(52.5, y1, 0), P(-52.5, y1, 0)];
-        if (q.some(v => !v)) continue; ctx.fillStyle = 'rgba(255,255,220,0.05)'; ctx.beginPath(); q.forEach((v, m) => m ? ctx.lineTo(v[0], v[1]) : ctx.moveTo(v[0], v[1])); ctx.closePath(); ctx.fill();
-      }
+      ctx.fillStyle = 'rgba(255,255,220,0.05)';
+      for (let q = 0; q < 9; q += 2) { const y0 = -34 + q * 68 / 9, y1 = y0 + 68 / 9; if (polyPath(ctx, [[-52.5, y0, 0], [52.5, y0, 0], [52.5, y1, 0], [-52.5, y1, 0]])) ctx.fill(); }
       // pitch shading: darker toward the edges, warm hot-spots under each floodlight bank
       {
         const c0 = P(0, 0, 0);
         if (c0) {
           const k = FOC / c0[2];
-          ctx.save(); ctx.beginPath(); sur.forEach((v, m) => m ? ctx.lineTo(v[0], v[1]) : ctx.moveTo(v[0], v[1])); ctx.closePath(); ctx.clip();
+          ctx.save(); polyPath(ctx, sur3); ctx.clip();
           ctx.fillStyle = A.radial(ctx, c0[0], c0[1], 18 * k, 80 * k, [[0, 'rgba(0,0,0,0)'], [1, 'rgba(3,18,12,0.32)']]); ctx.fillRect(-200, -200, 2320, 1480);
           ctx.globalCompositeOperation = 'lighter';
           for (const T4 of TOWERS) { const h = P(T4.x * 0.33, T4.y * 0.33, 0); if (!h) continue; const kk = FOC / h[2]; ctx.fillStyle = A.radial(ctx, h[0], h[1], 0, 34 * kk, [[0, 'rgba(255,250,215,0.10)'], [1, 'rgba(255,250,215,0)']]); ctx.fillRect(h[0] - 34 * kk, h[1] - 34 * kk, 68 * kk, 68 * kk); }
@@ -730,7 +741,7 @@
       const c = P(0, 0, 0);
       if (c) { const k = FOC / c[2]; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, c[0], c[1], 0, 70 * k, [[0, 'rgba(255,255,210,0.08)'], [1, 'rgba(255,255,210,0)']]); ctx.fillRect(c[0] - 70 * k, c[1] - 70 * k, 140 * k, 140 * k); ctx.restore(); }
       // lines
-      const line = pts => { ctx.beginPath(); let ok = false; for (const [x, y] of pts) { const p = P(x, y, 0); if (!p) continue; ok ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); ok = true; } ctx.stroke(); };
+      const line = pts => { ctx.beginPath(); let ok = false; for (const [x, y] of pts) { const p = P(x, y, 0); if (!p || p[2] < 2) { ok = false; continue; } ok ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); ok = true; } ctx.stroke(); };
       const arc = (cx, cy, r, a0, a1, n = 40) => { const a = []; for (let i = 0; i <= n; i++) { const th = lerp(a0, a1, i / n); a.push([cx + Math.cos(th) * r, cy + Math.sin(th) * r]); } return a; };
       const kc = c ? FOC / c[2] : 1;
       ctx.strokeStyle = 'rgba(250,255,245,0.92)'; ctx.lineWidth = Math.max(1, 0.14 * kc); ctx.lineJoin = 'round';
@@ -895,73 +906,77 @@
 
   // ---------------------------------------------------------------- drone camera (metres)
   const DEG = Math.PI / 180;
-  // Hermite spline through keys with zero tangents at both ends (slow ease-in, long gentle ease-out)
-  const spline = (t, K, j) => {
+  // ---------------------------------------------------------------- drone path (camera POSITION keys, metres)
+  // 0 - 2.35: the original high descent (same positions as v6); then the gimbal tilts up while the drone swings
+  // round the north-east corner and drops to a low oblique angle gliding along the Maccabi home (ultras) stand.
+  //        t     x      y      z     yaw    tilt(deg down)
+  const CK = [[0, 117, 938, 760, -0.30, 55], [1.2, 32, 574, 540, -0.19, 60], [2.35, -4, 155, 235, -0.05, 70],
+    [3.4, 24, 98, 104, 0.22, 60], [4.5, 44, 64, 46, 0.5, 40], [5.6, 51, 37, 19, 0.44, 23], [7.0, 50.5, 17, 14.5, 0.47, 19], [8.4, 49.5, -5, 12.5, 0.52, 18]];
+  // Hermite spline, Catmull-Rom interior tangents, zero tangent at the first key (slow ease-in) and the last
+  const spl = (t, K, j) => {
     const n = K.length; if (t <= K[0][0]) return K[0][j]; if (t >= K[n - 1][0]) return K[n - 1][j];
-    const tan = i => (i === n - 1 || i === 0) ? 0 : (K[i + 1][j] - K[i - 1][j]) / (K[i + 1][0] - K[i - 1][0]);
+    const tan = i => (i === 0 || i === n - 1) ? 0 : (K[i + 1][j] - K[i - 1][j]) / (K[i + 1][0] - K[i - 1][0]);
     let i = 0; while (K[i + 1][0] < t) i++;
     const h = K[i + 1][0] - K[i][0], u = (t - K[i][0]) / h, u2 = u * u, u3 = u2 * u;
     return (2 * u3 - 3 * u2 + 1) * K[i][j] + (u3 - 2 * u2 + u) * h * tan(i) + (-2 * u3 + 3 * u2) * K[i + 1][j] + (u3 - u2) * h * tan(i + 1);
   };
-  // one continuous gimbal-stabilised glide.   t     ln(altitude)     look-at y  gimbal tilt (deg below horizon)
-  const DK = [[0, Math.log(760), 430, 55], [1.2, Math.log(540), 268, 60], [2.35, Math.log(235), 70, 70], [3.4, Math.log(72), 8, 83], [4.5, Math.log(22), 0, 90]];
-  const settle = t => { const u = inv(3.75, 4.5, t); return Math.sin(A.TAU * u) * (1 - u) * (1 - u); }; // tiny overshoot + settle
-  const yawAt = t => { const fr = 1 - (spline(Math.min(t, 4.5), DK, 2)) / 430; return lerp(-0.3, 0.0, fr); };      // ~17 deg slow rotation
+  const yawAt = t => spl(t, CK, 4);
   const droneCam = t => {
-    const tt = Math.min(t, 4.5);
-    const z0 = Math.exp(spline(tt, DK, 1) - 0.035 * settle(t));
-    const Ly0 = spline(tt, DK, 2), fr = 1 - Ly0 / 430;
-    const Lx = lerp(-40, -2, fr), Ly = Ly0 - 0.9 * settle(t);
-    const pitch0 = Math.min(90, spline(tt, DK, 3) + 0.25 * A.wob(t, 6, 0.45)) * DEG;
+    const tt = Math.min(t, 8.4);
+    // altitude interpolated in log space for the high part (steady perceived descent rate)
+    const zl = Math.exp(spl(tt, CK.map(k => [k[0], 0, 0, Math.log(k[3])]), 3));
+    const hov = clamp(1 - zl / 300) ; // float grows as we get lower
+    const x = spl(tt, CK, 1) + 0.35 * A.noise1(t * 0.43 + 7) * hov, y = spl(tt, CK, 2) + 0.35 * A.noise1(t * 0.51 + 19) * hov;
+    const z = zl + 0.25 * A.noise1(t * 0.38 + 3) * hov;
     const yaw = yawAt(t) + 0.004 * A.wob(t, 4, 0.35);
     const yawRate = (yawAt(t + 0.05) - yawAt(t - 0.05)) / 0.1;
-    const roll = -yawRate * 0.22 + 0.006 * A.wob(t, 5, 0.3);          // bank into the turn
-    const base = z0 / Math.tan(pitch0), hx = Math.sin(yaw), hy = -Math.cos(yaw);
-    // 4.5 -> 4.74: tilt up hard toward the horizon (the whip), rising a little; drone position kept
-    const w = ease.in(inv(4.5, 4.74, t));
-    return { x: Lx - hx * base, y: Ly - hy * base, z: lerp(z0, 40, w), yaw, pitch: lerp(pitch0, 34 * DEG, w), roll };
+    const roll = -yawRate * 0.12 + 0.006 * A.wob(t, 5, 0.3);            // bank into the turn
+    const tilt = spl(tt, CK, 5) + 0.25 * A.wob(t, 6, 0.45);
+    // 8.45 -> 8.72: tilt up hard toward the sky (the whip); drone position kept
+    const w = ease.in(inv(8.45, 8.72, t));
+    return { x, y, z, yaw, pitch: lerp(tilt, -28, w) * DEG, roll };
   };
   // hover float (two low-frequency channels, a few px) + faint wind micro-jitter, in screen px
   const hover = t => [3.2 * A.noise1(t * 0.42 + 11) + 1.6 * A.noise1(t * 0.61 + 37) + 0.35 * A.noise1(t * 7.3 + 5), 2.6 * A.noise1(t * 0.37 + 71) + 1.4 * A.noise1(t * 0.55 + 3) + 0.3 * A.noise1(t * 8.1 + 9)];
 
   // ---------------------------------------------------------------- scene
-  const CUT = 4.72;
+  const CUT = 8.72, SH = 4.0; // shot C (mast + packets) = the v6 shot shifted by +4.0 s
   A.scene({
-    name: 's1_telaviv', start: 0, end: 6.2,
+    name: 's1_telaviv', start: 0, end: 10.2,
     draw(ctx, s) {
       const t = s.t;
       if (t < CUT) {
         // ---- SHOT A: the drone
         const cam = droneCam(t);
-        const roar = clamp(0.3 + 0.7 * smooth(2.9, 3.6, t));
+        const roar = clamp(0.35 + 0.65 * smooth(2.9, 4.2, t));
         const [hx, hy] = hover(t);
         ctx.save(); ctx.translate(960 + hx, 540 + hy); ctx.scale(1.012, 1.012); ctx.translate(-960, -540);
         AER.render(ctx, t, cam, roar);
         ctx.restore();
         // motion softness on the fast part of the descent: a light radial (zoom) blur from the altitude rate
         const c1 = droneCam(t - 1 / 30), zr = Math.log(c1.z / cam.z);
-        if (zr > 0.02 && t < 4.5) zoomBlur(ctx, Math.min(0.018, (zr - 0.02) * 0.6));
+        if (zr > 0.02 && t < 5) zoomBlur(ctx, Math.min(0.018, (zr - 0.02) * 0.6));
         lens(ctx);
         caption(ctx, t);
-        // tilt-up smear
-        if (t > 4.5) {
-          const c1 = droneCam(t - 1 / 15), dp = (c1.pitch - cam.pitch) * 1304;
+        if (t > 8.45) {
+          const dp = (cam.pitch - droneCam(t - 1 / 15).pitch) * -1304;
           if (dp > 4) { smear(ctx, 0, Math.min(700, dp), 9); streaks(ctx, t, 0, 1, clamp(dp / 500), 2); }
         }
       } else {
         // ---- SHOT C: whip lands on the IPTV mast, packets launch, follow them over the sea
-        const c = camC(t);
-        const bc = lerp(0.6, 1.6, smooth(4.9, 5.1, t));
-        A.drawTelAviv(ctx, t, { cam: c, roar: 0.8, broadcast: bc });
-        if (t >= 4.9) packetBurst(ctx, t, c);
-        if (t < 5.05) {
-          const c1 = camC(t - 1 / 15);
+        const tc = t - SH;
+        const c = camC(tc);
+        const bc = lerp(0.6, 1.6, smooth(4.9, 5.1, tc));
+        A.drawTelAviv(ctx, t, { cam: c, roar: 0.9, broadcast: bc });
+        if (tc >= 4.9) packetBurst(ctx, tc, c);
+        if (tc < 5.05) {
+          const c1 = camC(tc - 1 / 15);
           const vx = -(c.x - c1.x) * c.zoom, vy = -(c.y - c1.y) * c.zoom, sp = Math.hypot(vx, vy);
           if (sp > 6) { const k = Math.min(1, 700 / sp); smear(ctx, vx * k, vy * k, 9); streaks(ctx, t, vx, vy, clamp(sp / 500), 2); }
         }
-        const ex = ease.in(inv(5.75, 6.2, t));
+        const ex = ease.in(inv(5.75, 6.2, tc));
         if (ex > 0) { smear(ctx, -220 * ex, 0, 7); streaks(ctx, t, 1, 0, ex, 7, '190,250,255'); }
-        const fl = ease.in(inv(5.95, 6.2, t));
+        const fl = ease.in(inv(5.95, 6.2, tc));
         if (fl > 0) {
           ctx.save(); ctx.globalCompositeOperation = 'lighter';
           ctx.fillStyle = A.linear(ctx, 0, 0, 1920, 0, [[0, `rgba(160,220,255,${fl * 0.4})`], [0.7, `rgba(230,250,255,${fl * 0.95})`], [1, `rgba(255,255,255,${fl})`]]);
