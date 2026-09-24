@@ -315,8 +315,8 @@
     if (o.badge) { ctx.fillStyle = '#1a2a6e'; ctx.globalAlpha = clamp(o.badge); A.rrect(ctx, 1552, 112, 264, 58, 26); ctx.fill(); ctx.globalAlpha = 1; } // hide the kit's small LIVE pill
     ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 2; ctx.stroke();
     const pop = o.bugPop ?? 1, k = 0.6 + 0.4 * ease.outBack(clamp(pop));
-    ctx.save(); ctx.translate(1684, 84); ctx.scale(k, k); ctx.globalAlpha = clamp(pop * 3);
-    if (A.drawGOTVBug) A.drawGOTVBug(ctx, 0, 0, 1.7, { alpha: 1, t });
+    ctx.save(); ctx.translate(1686, 90); ctx.scale(k, k); ctx.globalAlpha = clamp(pop * 3);
+    if (A.drawGOTVBug) A.drawGOTVBug(ctx, 0, 0, 1.55, { alpha: 1, t });
     else { // fallback mini wordmark
       A.text(ctx, 'G', -86, 2, { font: '900 60px Rubik', fill: '#ffd21f', stroke: '#1f4fbf', lw: 8 });
       ctx.lineWidth = 11; ctx.strokeStyle = '#1f4fbf'; A.ellipse(ctx, -34, 2, 22, 22); ctx.stroke(); ctx.lineWidth = 8; ctx.strokeStyle = '#ffd21f'; ctx.stroke();

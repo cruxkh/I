@@ -209,7 +209,7 @@
     items.sort((a, b) => b.d - a.d);
     for (const it of items) {
       if (it.bit) { const b = opt.bit, [x, y, d] = proj(b.X, b.Y, b.Z, zc); if (d > 0.3) b.draw(ctx, x, y, BTS / d, d); continue; }
-      if (it.sign) { const [x, y, d] = proj(SIGN.X, SIGN.Y, SIGN.Z, zc); if (d > 0.4) drawSign(ctx, x, y, 1.1 / d * (opt.signK || 1), t); continue; }
+      if (it.sign) { const [x, y, d] = proj(SIGN.X, SIGN.Y, SIGN.Z, zc); if (d > 0.4) drawSign(ctx, x, y, 0.95 / d * (opt.signK || 1), t); continue; }
       if (it.cat) {
         const [x, y, d] = proj(opt.catX ?? CATX, 0, CATZ, zc); if (d < Math.max(0.35, opt.near || 0)) continue;
         A.glow(ctx, x, y - 40 * CTS / d, 260 * CTS / d, 'rgba(255,36,60,1)', 0.12);
