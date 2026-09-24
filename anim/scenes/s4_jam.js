@@ -373,11 +373,11 @@
       const land = t > 31.6 ? Math.exp(-(t - 31.6) * 10) : 0;
       cam = { x: lerp(960, bxs, 0.8), y: bys - 175 - bitY(t) * 120, zoom: lerp(1.25, 1.34, smooth(31.8, 32.25, t)), rot: -lat * 0.05, shake: land * 1.2 + (t > 32.05 ? Math.exp(-(t - 32.05) * 8) * 0.6 : 0), t };
     } else if (t < 35.0) { // Q1: push in on ILVIP's crown as he turns, then settle on the two-shot
-      const pin = ease.inOut(inv(32.3, 32.8, t)), out = ease.inOut(inv(33.75, 34.55, t)), k = pin * (1 - out);
+      const pin = ease.inOut(inv(32.36, 32.8, t)), out = ease.inOut(inv(33.75, 34.55, t)), k = pin * (1 - out);
       zc = 6.9 + 0.05 * out; CAMX = 0.8;
       const [ix, iy] = proj(0.71, 0, ROW(9), zc), [bxs] = proj(bx, 0, bz, zc), [hx, hy] = proj(0.71, 0.26, ROW(9) + 0.12, zc);
       const two = { x: (ix + bxs) / 2 + 10, y: iy - 230, zoom: lerp(1.12, 1.18, out) };
-      const tight = { x: hx + 25, y: hy + 10, zoom: 2.6 };
+      const tight = { x: hx + 25, y: hy + 110, zoom: 2.4 };
       cam = { x: lerp(two.x, tight.x, k), y: lerp(two.y, tight.y, k), zoom: lerp(two.zoom, tight.zoom, k), rot: -0.012 - 0.02 * k, t };
     } else { // Q2: EMBY, then Bit pops out and tracks to the cat
       const u = inv(35.0, 36.2, t), w = smooth(36.2, 36.75, t);
@@ -389,9 +389,9 @@
     clampCam(cam);
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     jamWorld(ctx, t, zc, {
-      jam: 0.95, near: t > 32.3 && t < 36.3 ? 0.5 : t > 31.9 && t < 32.3 ? 0.75 : undefined, sign: t >= 32.3, cat: t > 36.2,
-      signDrop: (1 - ease.outBack(inv(32.4, 32.9, t))) * 1.5, signSwing: Math.exp(-Math.max(0, t - 32.8) * 3) * Math.sin(Math.max(0, t - 32.8) * 9) * 0.12,
-      signFlicker: t > 32.7 && t < 33.1 ? 1 : 0.5,
+      jam: 0.95, near: t > 32.3 && t < 36.3 ? 0.5 : t > 31.9 && t < 32.3 ? 0.75 : undefined, sign: t >= 32.06, cat: t > 36.2, signK: 1.5,
+      signDrop: (1 - ease.outBack(inv(32.06, 32.42, t))) * 1.6, signSwing: Math.exp(-Math.max(0, t - 32.35) * 2.5) * Math.sin(Math.max(0, t - 32.35) * 9) * 0.14,
+      signFlicker: t > 32.3 && t < 32.75 ? 1 : 0.5,
       bit: { X: bx, Y: bitY(t), Z: bz, draw: (c, x, y, sc) => A.drawBit(c, x, y, sc, bitJamOpts(t)) },
       catO: () => ({ mood: 'bored', look: [0.6, 0.3], squash: -0.03 * bump }),
       pkO: p => shoveO(p, t),
