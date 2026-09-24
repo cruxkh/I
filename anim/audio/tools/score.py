@@ -11,16 +11,19 @@ Sound sources
   * numpy synthesis - Karplus-Strong oud (doubled courses + body resonance),
     darbuka (doum / tek / ka), sub booms, risers, reverse swells, cartoon boing.
 
-Structure (global seconds; every section has its own beat grid anchored to its hit):
-  S1  0.00- 6.20  Tel Aviv       116.13 BPM  ney call, shimmer, darbuka pulse, rising horns, stinger @6.2
-  S2  6.20-14.50  Living room    115.66 BPM  pizz + oud comedy, build under "go go go", TAPE STOP @14.5
-  F  14.50-21.00  Freeze         120 BPM     lonely held note, sneaky pizz, magic shimmer to 21.0
-  S4 21.00-30.50  Data world     126.32 BPM  synth bass + darbuka groove, traffic-jam stabs, BOOST @28.6
-  S5 30.50-41.50  Ocean          120 BPM     Hijaz ostinato, shark menace, CHOMP @36.0, boing @36.2
-  S6 41.50-46.00  Last mile      141.18 BPM  accelerating build, silence 44.8, IMPACT @44.9
-  S7 46.40-54.50  Goal (E)       135 BPM     full tutti Bit theme, 4 bars exactly 46.4 -> 53.51
-  T  54.50-57.30  Tag            ~90 BPM     music-box theme, wink @56.9
-  TC 57.30-60.00  Title          final E-Hijaz cadence hit @57.3, ring & fade
+Structure v2 (81.0 s; global seconds; each section has its own beat grid anchored to its hits):
+  S1   0.00- 6.20  Tel Aviv        116.13 BPM  ney call, shimmer, darbuka pulse, rising horns, stinger @6.2
+  S2   6.20-15.30  Living room     105.49 BPM  pizz + oud comedy, build under "Not now, motek!", TAPE STOP @15.3
+  F   15.30-29.20  Freeze/GOTV     -/90/120    lonely note, buffering-loop gag, hopeful GOTV turn (theme on horn),
+                                               router pizz, "now!" click @27.65, gold rise -> 29.2
+  S4  29.20-43.40  Data world      126.83 BPM  groove, honks, waiting-room queue, EMBY deflate, Cat plod,
+                                               build, BOOST @41.5 (beat 26), full energy @42.7
+  S5  43.40-54.40  Ocean (v1+12.9) 120 BPM     Hijaz ostinato, CHOMP @48.9, boing @49.1, snippet @50.5, arrival @53.4
+  S6  54.40-58.90  Last mile       141.18 BPM  build, silence 57.7-57.8, IMPACT @57.8
+  S7  59.30-67.00  Goal (E)        135 BPM     full tutti Bit theme, 4 bars 59.3 -> 66.41
+  BG  67.00-72.40  Backgammon      111.11 BPM  oud/accordion/darbuka baladi, theme as folk dance, F->E cadence
+  T   72.40-77.80  Tag             rubato      music box, comic sag + panting @73.0, wink @77.4
+  TC  77.80-81.00  End card        E-Hijaz cadence hit @77.8, ring out, master fade 80.2-81.0
 """
 import json
 import os
@@ -428,13 +431,13 @@ def freeze():
     for t0, t1, ns in [(20.6, 22.3, ['D3', 'F#3', 'A3']), (22.3, 22.97, ['Eb3', 'G3', 'Bb3']),
                        (22.97, 24.3, ['D3', 'F#3', 'A3', 'D4']), (24.3, 24.6, ['Bb2', 'D3', 'F3', 'Bb3']),
                        (24.6, 25.0, ['C3', 'E3', 'G3', 'C4'])]:
-        slowstr.n(t0, t1 - t0 + 0.02, ns, 70)
-        pizzlo.n(t0, 0.3, m(ns[0]) - 12, 62)
-    slowstr.expr(20.6, 24.9, 40, 88)
+        slowstr.n(t0, t1 - t0 + 0.02, ns, 90)
+        pizzlo.n(t0, 0.3, m(ns[0]) - 12, 74)
+    slowstr.expr(20.6, 24.9, 70, 112)
     # the idea: Bit's theme, first bar, softly on a solo horn
-    horns.cc(20.5, 11, 72)
+    horns.cc(20.5, 11, 96)
     gh = Grid(21.3, 90)
-    play_theme(horns, gh, 62, beats=(-1, 4), vel=70, legato=True)
+    play_theme(horns, gh, 62, beats=(-1, 4), vel=86, legato=True)
     # "GOTV!" sparkle on the word (24.43)
     for i, n_ in enumerate(['A5', 'D6', 'Eb6', 'F#6', 'A6']):
         celesta.n(24.43 + i * 0.05, 0.5, n_, 62)
@@ -550,8 +553,8 @@ def s4():
     tuba.bendrange = 12
     bassoon.bendrange = 12
     tuba.cc(35.9, 11, 100)
-    tuba.n(36.0, 0.9, 'A1', 84)
-    bassoon.n(36.0, 0.9, 'A2', 62)
+    tuba.n(36.0, 0.9, 'A1', 100)
+    bassoon.n(36.0, 0.9, 'A2', 76)
     for i in range(28):
         tt = 36.3 + i * 0.02
         bnd = -7 * ((i + 1) / 28) ** 1.3 + 0.35 * np.sin(2 * np.pi * 9 * (tt - 36.3))
@@ -561,8 +564,8 @@ def s4():
     bassoon.bend(36.93, 0)
     # Catpacket 36.9-39.4: grumpy plod
     for i, n_ in enumerate(['D2', 'C2', 'Bb1', 'A1', 'G1']):
-        tuba.n(g(16 + i), b * 0.55, n_, 96)
-        bassoon.n(g(16 + i), b * 0.45, m(n_) + 12, 58)
+        tuba.n(g(16 + i), b * 0.55, n_, 108)
+        bassoon.n(g(16 + i), b * 0.45, m(n_) + 12, 72)
         kit.n(g(16 + i + 0.5), 0.05, 42, 34)
     # 39.5 "dun!" between Cat and Bit
     T = 39.5
@@ -606,7 +609,7 @@ def s4():
     for i in range(16):
         synbass.n(gt(i / 4), b / 4 * 0.9, 'D2' if i % 4 else 'D1', 105 + (10 if i % 4 == 0 else 0))
     # 42.7 bursts into open fibre - full energy
-    F = 42.7
+    F = gt(2.5)   # 42.683 - on the 16th grid so the crash and the darbuka land together (-17 ms of 42.7)
     okit.n(F, 1.5, 57, 120)
     kit.n(F, 1.5, 49, 110)
     fx.n(F, 0.6, 'swoosh', 70)

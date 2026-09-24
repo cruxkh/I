@@ -49,7 +49,7 @@
     let brand = null;
     if (li === 3 && r === 9) brand = 'ILVIP'; else if (li === 4 && r === 9) brand = 'EMBY';
     else if (li === 4 && r === 10) brand = 'LOADING+'; else if (li === 3 && r === 8) brand = 'LAGTV';
-    else if (r >= 6 && r <= 22 && !path && H(seed * 4.4) < 0.3) brand = BRANDS[Math.floor(H(seed * 6.6) * 4) % 4];
+    else if (r >= 1 && r <= 22 && !path && H(seed * 4.4) < 0.4) brand = BRANDS[Math.floor(H(seed * 6.6) * 4) % 4];
     PK.push({ X, Z, seed, r, li, brand, kind: KINDS[Math.floor(H(seed * 2.3) * 6) % 6], mood: m < 0.18 ? 'sleep' : m < 0.36 ? 'annoyed' : 'bored' });
   }
   const pk = (li, r) => PK.find(p => p.li === li && p.r === r);
@@ -103,8 +103,8 @@
   function drawBrand(ctx, x, y, sc, o) {
     if (A.drawBrandPacket) { A.drawBrandPacket(ctx, x, y, sc * 0.9, Object.assign({ who: o.brand }, o)); return; }
     const mm = { grumpy: 'annoyed', sleepy: 'sleep', shock: 'shock', panting: 'bored' };
-    A.drawPacket(ctx, x, y, sc, { t: o.t, seed: o.seed, kind: 'video', mood: mm[o.mood] || 'bored', mouth: o.mouth, look: o.look, rot: o.rot, squash: o.squash, noZ: true, glow: o.glow });
-    ctx.save(); ctx.translate(x, y - 122 * sc); ctx.scale(sc * 0.62, sc * 0.62);
+    A.drawPacket(ctx, x, y, sc, { t: o.t, seed: o.seed, kind: { ILVIP: 'video', EMBY: 'photo', LAGTV: 'update', 'LOADING+': 'meme' }[o.brand], mood: mm[o.mood] || 'bored', mouth: o.mouth, look: o.look, rot: o.rot, squash: o.squash, noZ: true, glow: o.glow });
+    ctx.save(); ctx.translate(x, y - 104 * sc); ctx.scale(sc * 0.55, sc * 0.55);
     ctx.font = '900 24px Rubik'; const w = ctx.measureText(o.brand).width + 26;
     A.rrect(ctx, -w / 2, -17, w, 34, 10); A.fillStroke(ctx, BRAND_COL[o.brand], 4);
     A.text(ctx, o.brand, 0, 1, { font: '900 24px Rubik', fill: '#fff' });
@@ -309,20 +309,20 @@
       cam = { x: lerp(960, bxs, 0.75) - 40, y: bys - 190, zoom: 1.3, t };
     } else if (t < 35.0) { // Q1: ILVIP two-shot, slow push
       const u = inv(32.3, 35.0, t);
-      zc = lerp(6.42, 6.58, ease.inOut(u)); CAMX = 0.8;
+      zc = lerp(6.84, 6.96, ease.inOut(u)); CAMX = 0.8;
       const [ix, iy] = proj(0.64, 0, ROW(9), zc), [bxs] = proj(bx, 0, bz, zc);
-      cam = { x: (ix + bxs) / 2 + 10, y: iy - 170, zoom: lerp(1.42, 1.52, ease.inOut(u)), rot: -0.012, t };
+      cam = { x: (ix + bxs) / 2 + 10, y: iy - 230, zoom: lerp(1.12, 1.18, ease.inOut(u)), rot: -0.012, t };
     } else { // Q2: EMBY, then Bit pops out and tracks to the cat
       const u = inv(35.0, 36.2, t), w = smooth(36.2, 36.75, t);
-      zc = lerp(6.52, bitZ(t - 0.18) - 1.28, smooth(36.2, 36.4, t)) - 0.1 * w;
+      zc = lerp(lerp(6.92, 6.99, u), bitZ(t - 0.18) - 1.28, smooth(36.2, 36.45, t)) - 0.1 * w;
       CAMX = lerp(1.08, 0.55, w);
       const [ex, ey] = proj(1.19, 0, ROW(9), zc), [bxs, bys] = proj(bx, 0, bz, zc), cx = proj(0, 0, CATZ, zc)[0];
-      cam = { x: lerp((ex + bxs) / 2 - 10, lerp(bxs, cx, 0.35), w), y: lerp(ey - 170, bys - 200, w), zoom: lerp(lerp(1.5, 1.58, u), 1.55, w), rot: 0.012 * (1 - w), shake: bump * 1.4, t };
+      cam = { x: lerp((ex + bxs) / 2 - 10, lerp(bxs, cx, 0.35), w), y: lerp(ey - 230, bys - 200, w), zoom: lerp(lerp(1.15, 1.2, u), 1.55, w), rot: 0.012 * (1 - w), shake: bump * 1.4, t };
     }
     clampCam(cam);
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     jamWorld(ctx, t, zc, {
-      jam: 0.95, near: t > 32.3 && t < 36.3 ? 0.95 : undefined,
+      jam: 0.95, near: t > 32.3 && t < 36.3 ? 0.5 : undefined,
       bit: { X: bx, Y: 0, Z: bz, draw: (c, x, y, sc) => A.drawBit(c, x, y, sc, bitJamOpts(t)) },
       catO: () => ({ mood: 'bored', look: [0.6, 0.3], squash: -0.03 * bump }),
       pkO: p => shoveO(p, t),

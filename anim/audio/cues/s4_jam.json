@@ -1,9 +1,16 @@
 [
- {"sfx": "zip_streak", "t": 21.5, "gain_db": -13, "pan": 0.1},
- {"sfx": "packet_honk_lo", "t": 21.74, "gain_db": -14, "pan": -0.5},
- {"sfx": "packet_honk_hi", "t": 21.94, "gain_db": -15, "pan": 0.45},
- {"sfx": "packet_honk_hi", "t": 22.61, "gain_db": -14, "pan": -0.35},
- {"sfx": "packet_honk_mid", "t": 23.61, "gain_db": -15, "pan": 0.45},
- {"sfx": "squeeze_squeak", "t": 24.28, "gain_db": -14, "pan": 0.15},
- {"sfx": "boing", "t": 24.83, "gain_db": -13, "pan": 0.1}
+ {"sfx": "packet_honk_mid", "t": 29.58, "gain_db": -13, "pan": 0.5},
+ {"sfx": "zip_streak", "t": 29.6, "gain_db": -13, "pan": 0.1},
+ {"sfx": "packet_honk_lo", "t": 29.94, "gain_db": -14, "pan": -0.5},
+ {"sfx": "packet_honk_hi", "t": 30.14, "gain_db": -15, "pan": 0.45},
+ {"sfx": "squeeze_squeak", "t": 30.45, "gain_db": -14, "pan": 0.1},
+ {"sfx": "packet_honk_hi", "t": 30.81, "gain_db": -14, "pan": -0.35},
+ {"sfx": "squeeze_squeak", "t": 31.62, "gain_db": -14, "pan": 0.15},
+ {"sfx": "packet_honk_mid", "t": 31.89, "gain_db": -15, "pan": 0.4},
+ {"sfx": "packet_honk_lo", "t": 36.29, "gain_db": -14, "pan": -0.3},
+ {"sfx": "squeeze_squeak", "t": 36.48, "gain_db": -13, "pan": 0.1},
+ {"sfx": "packet_honk_hi", "t": 36.59, "gain_db": -15, "pan": -0.2},
+ {"sfx": "boing", "t": 36.78, "gain_db": -12, "pan": 0.1},
+ {"sfx": "packet_honk_hi", "t": 39.35, "gain_db": -14, "pan": 0.35},
+ {"sfx": "wink_ding", "t": 39.99, "gain_db": -14, "pan": 0.3}
 ]

@@ -31,7 +31,7 @@
 
   const { clamp, lerp, inv, smooth, ease, hash, key } = A;
   const LR = A.LR;
-  const T_CUT_ROOM = 59.83, T_PAYOFF = 69.6, T_MACRO = 72.4, T_CARD = 77.8;
+  const T_CUT_ROOM = 59.83, T_PAYOFF = 69.6, T_MACRO = 72.4, T_CARD = 77.62;
 
   // ================================================================== small helpers
   const env = (t, a, b, c, d) => Math.min(smooth(a, b, t), 1 - smooth(c, d, t)); // attack a..b, release c..d
@@ -312,9 +312,10 @@
     ctx.beginPath(); ctx.rect(tv.x, tv.y, tv.w, tv.h); ctx.clip();
     ctx.translate(tv.x + (tv.w - 1920 * sc) / 2, tv.y + (tv.h - 1080 * sc) / 2); ctx.scale(sc, sc);
     ctx.fillStyle = A.linear(ctx, 0, 36, 0, 120, [[0, '#1b2466'], [1, '#0b1034']]); A.rrect(ctx, 1534, 34, 312, 88, 18); ctx.fill();
+    if (o.badge) { ctx.fillStyle = '#1a2a6e'; ctx.globalAlpha = clamp(o.badge); A.rrect(ctx, 1552, 112, 264, 58, 26); ctx.fill(); ctx.globalAlpha = 1; } // hide the kit's small LIVE pill
     ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 2; ctx.stroke();
     const pop = o.bugPop ?? 1, k = 0.6 + 0.4 * ease.outBack(clamp(pop));
-    ctx.save(); ctx.translate(1690, 78); ctx.scale(k, k); ctx.globalAlpha = clamp(pop * 3);
+    ctx.save(); ctx.translate(1684, 84); ctx.scale(k, k); ctx.globalAlpha = clamp(pop * 3);
     if (A.drawGOTVBug) A.drawGOTVBug(ctx, 0, 0, 1.7, { alpha: 1, t });
     else { // fallback mini wordmark
       A.text(ctx, 'G', -86, 2, { font: '900 60px Rubik', fill: '#ffd21f', stroke: '#1f4fbf', lw: 8 });
@@ -325,7 +326,7 @@
     ctx.restore();
     if (o.badge) { // payoff: LIVE · 4K · ללא תקיעות (replaces the kit's LIVE pill)
       const a = clamp(o.badge);
-      ctx.save(); ctx.globalAlpha = a; ctx.translate(1846, 146);
+      ctx.save(); ctx.globalAlpha = a; ctx.translate(1846, 190); ctx.scale(1.6, 1.6); ctx.translate(0, 0);
       ctx.font = '900 30px Rubik'; const w1 = ctx.measureText('LIVE · 4K ·').width; ctx.font = '700 30px Rubik'; const w2 = ctx.measureText('ללא תקיעות').width;
       const W = w1 + w2 + 84;
       ctx.fillStyle = '#d61f2a'; A.rrect(ctx, -W, -30, W, 60, 30); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 2.5; ctx.stroke();
@@ -403,7 +404,7 @@
   }
 
   // ================================================================== SHOT 3: PAYOFF, backgammon at the side table
-  const BOARD = { x: 935, y: 712, s: 0.4 };
+  const BOARD = { x: 935, y: 712, s: 0.56 };
   function fallbackBoard(ctx, x, y, s, o) {
     ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
     const W = 420, H = 150;
@@ -426,7 +427,7 @@
   }
   function shotPayoff(ctx, t) {
     const lt = t - 69.6;
-    const cam = { x: 985 - 8 * lt, y: 560, zoom: 1.34 + 0.035 * lt };
+    const cam = { x: 1080 - 6 * lt, y: 575, zoom: 1.5 + 0.03 * lt };
     ctx.save();
     A.camera(ctx, { ...cam, t, shake: 0.25 * decay(t, 70.62, 8) });
     roomBase(ctx, t, { tvGlow: 1.2 });
@@ -441,11 +442,11 @@
     const sO = { t, pose: 'sit', mood: 'joy', gesture: 'none', look: laugh > 0.3 ? [0.8, -0.3] : [0.9, 0.35], lean: 0.25 - 0.3 * laugh, headTilt: -10 * laugh,
       handR: [lerp(150, 235, throwK) + 6 * Math.sin(t * 40) * shakeDice, lerp(-240, -150, throwK) + 10 * Math.sin(t * 37) * shakeDice], handShapeR: throwK > 0.5 ? 'open' : 'fist',
       mouth: laugh > 0.05 ? lm * laugh : 0.12, happy: 0.4 + 0.6 * laugh, browRaise: 0.3 * laugh, scarfWave: 0.3 * laugh };
-    if (t > 71.25) Object.assign(sO, { gesture: 'point', handR: undefined, look: [0.9, 0.2] }); // "hey!" teasing finger at her move
+    if (t > 71.45) Object.assign(sO, { gesture: 'point', handR: undefined, look: [0.9, 0.2] }); // "hey!" teasing finger at her move
     A.drawSaba(ctx, LR.chair.x, LR.chair.y, 0.95, sO);
     A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'front');
     // board + dice
-    const bo = { t, mode: 'board', dice: inv(70.0, 70.6, t), diceVals: [6, 6], move: inv(71.3, 71.75, t) };
+    const bo = { t, mode: 'board', dice: inv(70.0, 70.6, t), diceVals: [6, 6], move: inv(71.05, 71.42, t) };
     if (A.drawBackgammon) A.drawBackgammon(ctx, BOARD.x, BOARD.y, BOARD.s, bo); else fallbackBoard(ctx, BOARD.x, BOARD.y, BOARD.s, bo);
     // "double six!" pop
     if (t > 70.6 && t < 71.4) {
@@ -457,7 +458,7 @@
       for (let i = 0; i < 8; i++) { const a = i / 8 * A.TAU, r = 60 + 90 * ease.out(u); star(ctx, BOARD.x + Math.cos(a) * r, BOARD.y - 40 + Math.sin(a) * r * 0.5, 14 * (1 - u) + 0.01, '#ffe680'); }
     }
     // Noa on the pouf, cross-table, laughing, then moves a checker
-    const reach = env(t, 71.2, 71.35, 71.75, 71.95);
+    const reach = env(t, 70.9, 71.05, 71.5, 71.7);
     A.drawNoa(ctx, LR.sofa.x, LR.sofa.y, 0.95, { t, pose: 'sit', flip: true, mood: 'joy', gesture: reach > 0 ? 'reach' : laugh > 0.4 ? 'cheer' : 'none', gestureFrom: 'none', gestureK: Math.max(reach, laugh > 0.4 ? smooth(70.6, 70.8, t) * (1 - smooth(71.0, 71.2, t)) : 0),
       reachTo: [165, -40], look: reach > 0 ? [0.8, 0.8] : laugh > 0.3 ? [0.8, -0.1] : [0.7, 0.5], mouth: laugh > 0.05 ? (0.3 + 0.4 * Math.abs(Math.sin(t * 11 + 1))) * laugh : 0.1, bounce: laugh, happy: laugh });
     ctx.restore();
@@ -494,7 +495,7 @@
     const s = 0.3;
     // ILVIP: stumbles in along the cable, stops, pants; "Did... did we miss the goal?"; deflates on "GOTV got here first."
     if (t > 72.55) {
-      const u = ease.out(inv(72.55, 73.05, t)), p = cablePt(1 - u * 0.62);
+      const u = ease.out(inv(72.55, 73.05, t)), p = cablePt(u * 0.85);
       const bob = Math.abs(Math.sin(t * 16)) * 4 * (1 - smooth(72.95, 73.1, t));
       const x = p[0] - 18 * u, y = Math.max(p[1], 826) + 2 - bob;
       const deflate = smooth(75.7, 76.1, t);
@@ -504,9 +505,9 @@
     }
     // EMBY: arrives later, spinner still turning, flops over
     if (t > 73.5) {
-      const u = ease.out(inv(73.5, 74.25, t)), p = cablePt(1 - u * 0.36);
+      const u = ease.out(inv(73.5, 74.25, t)), p = cablePt(u * 0.52);
       const flop = ease.outBounce(inv(74.25, 74.6, t));
-      brandPacket(ctx, p[0] + 6, Math.max(p[1], 828) + 4, s * 0.95, { t, brand: 'EMBY', who: 'EMBY', mood: t < 74.25 ? 'panting' : 'sleepy', spinner: 1, flip: true,
+      brandPacket(ctx, p[0] + 14, Math.max(p[1], 828) + 4, s * 0.95, { t, brand: 'EMBY', who: 'EMBY', mood: t < 74.25 ? 'panting' : 'sleepy', spinner: 1, flip: true,
         rot: 0.35 * flop, look: [-0.8, 0.3], vel: [t < 74.25 ? -200 : 0, 0], mouth: 0.25 * Math.abs(Math.sin(t * 8)) * (1 - flop) });
     }
   }
@@ -514,7 +515,8 @@
     const bs = 0.27, x = LED[0] - 10, y = LR.router.y + 3;
     const o = { t, mood: 'exhausted', limbs: 'flop', shadow: 0.6, glow: 0.85, trail: 0, light: [-0.4, -0.8], rim: '#ffe7a0' };
     const pant = Math.sin(t * 9) * 0.03;
-    o.squash = pant;
+    o.squash = pant + 0.22 * spring(t, 72.48, 8, 20);
+    o.hop = 10 * hop(t, 72.4, 72.48);
     // notices the late arrivals, lifts his head
     const turn = smooth(72.7, 73.0, t);
     o.look = [lerp(0, 0.9, turn), lerp(0.5, 0.1, turn)];
@@ -523,11 +525,11 @@
       Object.assign(o, { mood: pr > 0.5 ? 'cheeky' : 'exhausted', rot: -0.1 * pr - 0.05 * Math.sin((t - 74.7) * 2), look: [0.9, 0], browRaise: 3 * (1 - pr), squash: pant * (1 - pr) });
     }
     if (t >= 77.3) { // wink, sparkle ... happy conk-out -> glow burst
-      const w = smooth(77.35, 77.43, t) * (1 - smooth(77.58, 77.64, t));
-      Object.assign(o, { mood: t < 77.58 ? 'cheeky' : 'joy', wink: w, sparkle: 1, mouth: t < 77.58 ? 0.1 : 0, glow: lerp(0.9, 2, smooth(77.55, 77.75, t)), lid: t > 77.58 ? 1 : 0, look: [0.3, 0] });
+      const w = smooth(77.34, 77.4, t) * (1 - smooth(77.5, 77.54, t));
+      Object.assign(o, { mood: t < 77.5 ? 'cheeky' : 'joy', wink: w, sparkle: 1, mouth: t < 77.5 ? 0.1 : 0, glow: lerp(0.9, 2, smooth(77.45, 77.6, t)), lid: t > 77.5 ? 1 : 0, look: [0.3, 0] });
     }
     A.drawBit(ctx, x, y, bs, o);
-    if (t >= 77.35 && t < 77.7) { const s = Math.sin(inv(77.35, 77.65, t) * Math.PI); star(ctx, x + 44 * bs, y - 118 * bs, 34 * s * bs + 0.01, '#ffffff'); }
+    if (t >= 77.34 && t < 77.6) { const s = Math.sin(inv(77.34, 77.58, t) * Math.PI); star(ctx, x + 44 * bs, y - 118 * bs, 34 * s * bs + 0.01, '#ffffff'); }
   }
   function shotMacro(ctx, t) {
     const d = inv(72.4, 77.8, t);
@@ -536,7 +538,7 @@
     A.camera(ctx, { ...cam, t });
     A.drawLivingRoom(ctx, t, { tvGlow: 1.2, lamp: 1, snow: false });
     drawCable(ctx);
-    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.3, ledColor: GOLD_LED, ledGlow: key(t, [[77.3, 0.15], [77.45, 0.8], [77.7, 0]]) });
+    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.3, ledColor: GOLD_LED, ledGlow: key(t, [[77.3, 0.15], [77.42, 0.8], [77.6, 0]]) });
     drawRouterBit(ctx, t);
     drawPackets(ctx, t);
     ctx.restore();
@@ -559,7 +561,7 @@
       A.glow(ctx, x + Math.sin(t * 0.3 + i) * 12, y, r, i % 3 ? '#ffb45e' : '#9ff5d0', 0.12);
     }
     // Bit's burst whiteout -> end card
-    const w = smooth(77.66, 77.8, t);
+    const w = smooth(77.5, 77.62, t);
     if (w > 0) {
       const g = ctx.createRadialGradient(840, 700, 0, 840, 700, 200 + w * 1600);
       g.addColorStop(0, `rgba(255,255,245,${w})`); g.addColorStop(0.5, `rgba(255,236,170,${w * 0.9})`); g.addColorStop(1, `rgba(255,220,120,${w * w})`);
@@ -691,7 +693,7 @@
 
   // light streak from Bit (bottom centre) sweeping up into the ring start point
   function streak(ctx, t, R) {
-    const u = inv(77.78, 77.98, t);
+    const u = inv(77.6, 77.8, t);
     if (u <= 0 || u >= 1.2) return;
     const a0 = -Math.PI * 0.62;
     const start = [R.cx + Math.cos(a0) * R.r, R.cy + Math.sin(a0) * R.r];
@@ -705,7 +707,7 @@
     };
     const head = ease.inOut(clamp(u)), tail = Math.max(0, head - 0.3);
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
-    for (const [w, c, a] of [[80.68, '#ffb020', 0.25], [26, '#ffe070', 0.6], [9, '#ffffff', 1]]) {
+    for (const [w, c, a] of [[80.5, '#ffb020', 0.25], [26, '#ffe070', 0.6], [9, '#ffffff', 1]]) {
       ctx.beginPath();
       for (let i = 0; i <= 40; i++) { const s = lerp(tail, head, i / 40), p = P(s); i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
       ctx.strokeStyle = c; ctx.globalAlpha = a; ctx.lineWidth = w; ctx.stroke();
@@ -722,14 +724,14 @@
     for (let i = 0; i < 38; i++) {
       const h = k => hash(i * 9.7 + 300 + k);
       const vy = 40 + h(1) * 50, H = 1200;
-      const y = ((h(2) * H + (t - 57) * vy) % H) - 60;
+      const y = ((h(2) * H + (t - 77.5) * vy) % H) - 60;
       const x = h(3) * 1920 + Math.sin(t * (0.8 + h(4)) + h(5) * 6) * 30;
       ctx.globalAlpha = 0.55 * (0.5 + h(6) * 0.5);
       confettiPiece(ctx, x, y, 3.5 + h(7) * 4, t * (1 + h(8) * 3), Math.cos(t * (2 + h(9) * 4) + h(10) * 6), CONF_COLS[i % CONF_COLS.length]);
     }
     ctx.globalAlpha = 1;
     // slam burst sparks
-    const tau = t - 77.98;
+    const tau = t - 77.8;
     if (tau > 0 && tau < 1.6) {
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       for (let i = 0; i < 60; i++) {
@@ -747,17 +749,17 @@
   function endCard(ctx, t) {
     if (!GL) GL = buildLogo();
     const R = GL.ring, B = CARD.logoBox, img = haveImg();
-    const slam = t >= 77.98;
-    const shake = decay(t, 77.98, 7) * 1.2;
+    const slam = t >= 77.8;
+    const shake = decay(t, 77.8, 7) * 1.2;
     ctx.drawImage(cardBG(), 0, 0);
     // breathing light behind the logo
-    const pulse = 1 + 0.06 * Math.sin((t - 77.98) * 2.4);
-    A.glow(ctx, B.cx, B.cy, 820 * pulse, '#2a5bff', 0.28 * smooth(77.88, 78.18, t));
-    A.glow(ctx, B.cx, B.cy + 20, 560, '#ffd21f', (0.16 + 0.5 * decay(t, 77.98, 3)) * smooth(77.93, 78, t));
+    const pulse = 1 + 0.06 * Math.sin((t - 77.8) * 2.4);
+    A.glow(ctx, B.cx, B.cy, 820 * pulse, '#2a5bff', 0.28 * smooth(77.7, 78, t));
+    A.glow(ctx, B.cx, B.cy + 20, 560, '#ffd21f', (0.16 + 0.5 * decay(t, 77.8, 3)) * smooth(77.75, 77.82, t));
     cardParticles(ctx, t, img ? { cx: B.cx, cy: B.cy, r: B.h * 0.4 } : R);
 
     ctx.save();
-    A.camera(ctx, { x: 960, y: 540, zoom: 1 + 0.035 * decay(t, 77.98, 4) + 0.012 * inv(77.98, 80.68, t), shake, t });
+    A.camera(ctx, { x: 960, y: 540, zoom: 1 + 0.035 * decay(t, 77.8, 4) + 0.012 * inv(77.8, 80.5, t), shake, t });
     // Bit peeks from behind the logo (drawn first = behind)
     drawPeekBit(ctx, t, img);
     if (img) drawImageLogo(ctx, t);
@@ -765,8 +767,8 @@
     ctx.restore();
 
     // shockwave ring on the slam
-    if (t > 77.98 && t < 78.58) {
-      const u = inv(77.98, 78.58, t), cx = img ? B.cx : R.cx, cy = img ? B.cy : R.cy;
+    if (t > 77.8 && t < 78.4) {
+      const u = inv(77.8, 78.4, t), cx = img ? B.cx : R.cx, cy = img ? B.cy : R.cy;
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       ctx.strokeStyle = `rgba(255,230,140,${0.7 * (1 - u)})`; ctx.lineWidth = 26 * (1 - u) + 1;
       A.ellipse(ctx, cx, cy, 120 + ease.out(u) * 1100, 120 + ease.out(u) * 1100); ctx.stroke();
@@ -774,42 +776,42 @@
     }
     drawTaglines(ctx, t);
     // white-out from Bit's burst settles into the card; slam flash
-    const wf = Math.max(0.9 * (1 - smooth(77.8, 77.88, t)), slam ? 0.55 * decay(t, 77.98, 9) : 0);
+    const wf = Math.max(0.9 * (1 - smooth(77.62, 77.7, t)), slam ? 0.55 * decay(t, 77.8, 9) : 0);
     if (wf > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,244,210,${wf})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
   }
 
   const logoBuf = () => A.layer('s7:logobuf', 1920, 1080, () => {});
   function drawWordmark(ctx, t) {
     const R = GL.ring;
-    const prog = inv(77.88, 77.98, t) >= 1 ? 1 : clamp((ease.inOut(inv(77.78, 77.98, t)) - 0.45) / 0.55);
+    const prog = inv(77.7, 77.8, t) >= 1 ? 1 : clamp((ease.inOut(inv(77.6, 77.8, t)) - 0.45) / 0.55);
     // glow halo (bloom) under the letters
-    const out = smooth(77.98, 77.98, t);
+    const out = smooth(77.8, 77.8, t);
     const letterK = g => { // letters burst out of the ring sideways, overshoot, settle
-      const u = inv(77.98, 78.26, t); const e = ease.outBack(u);
+      const u = inv(77.8, 78.08, t); const e = ease.outBack(u);
       return { dx: (1 - e) * (R.cx - (g.x + g.g.adv / 2)), s: lerp(0.4, 1, clamp(e * 1.0)) };
     };
-    const float = Math.sin((t - 77.98) * 1.8) * 4 * smooth(78.28, 58, t);
+    const float = Math.sin((t - 77.8) * 1.8) * 4 * smooth(78.1, 78.5, t);
     ctx.save(); ctx.translate(0, float);
     if (out > 0) {
       // bloom
-      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.55 + 0.6 * decay(t, 77.98, 2.5);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.55 + 0.6 * decay(t, 77.8, 2.5);
       for (const p of GL.place) { const k = letterK(p); ctx.save(); ctx.translate(p.x + k.dx + p.g.adv / 2, GL.base); ctx.scale(k.s, k.s); ctx.drawImage(p.g.glow, -p.g.adv / 2 - p.g.bx, -p.g.by); ctx.restore(); }
       ctx.restore();
       for (const p of GL.place) {
         const k = letterK(p);
-        ctx.save(); ctx.translate(p.x + k.dx + p.g.adv / 2, GL.base); ctx.scale(k.s, k.s); ctx.globalAlpha = clamp(inv(77.98, 78.04, t));
+        ctx.save(); ctx.translate(p.x + k.dx + p.g.adv / 2, GL.base); ctx.scale(k.s, k.s); ctx.globalAlpha = clamp(inv(77.8, 77.86, t));
         ctx.drawImage(p.g.art, -p.g.adv / 2 - p.g.bx, -p.g.by); ctx.restore();
       }
     }
     // ring on top (letters emerge from behind it)
-    const ringPop = 1 + 0.18 * spring(t, 77.98, 6, 14);
+    const ringPop = 1 + 0.18 * spring(t, 77.8, 6, 14);
     ctx.save(); ctx.translate(R.cx, R.cy); ctx.scale(ringPop, ringPop); ctx.translate(-R.cx, -R.cy);
-    A.glow(ctx, R.cx, R.cy, R.r * 2.2, '#ffd21f', 0.18 * smooth(77.93, 77.98, t));
+    A.glow(ctx, R.cx, R.cy, R.r * 2.2, '#ffd21f', 0.18 * smooth(77.75, 77.8, t));
     drawRing(ctx, R, prog, t);
-    playIcon(ctx, R, ease.outBack(inv(78, 78.28, t)), t);
+    playIcon(ctx, R, ease.outBack(inv(77.82, 78.1, t)), t);
     // orbiting glint (Bit's light living in the ring)
     if (prog >= 1) {
-      const a = -Math.PI * 0.62 + (t - 77.98) * 2.2;
+      const a = -Math.PI * 0.62 + (t - 77.8) * 2.2;
       const gx = R.cx + Math.cos(a) * R.r - 0.14 * Math.sin(a) * R.r, gy = R.cy + Math.sin(a) * R.r;
       A.glow(ctx, gx, gy, R.w * 1.1, '#fff6c8', 0.35); star(ctx, gx, gy, R.w * 0.32, '#ffffff');
     }
@@ -817,7 +819,7 @@
     streak(ctx, t, R);
     ctx.restore();
     // shine sweep across the whole wordmark (masked to letters via buffer)
-    const su = inv(78.73, 79.38, t);
+    const su = inv(78.55, 79.2, t);
     if (su > 0 && su < 1) {
       const buf = logoBuf(), g = buf.getContext('2d');
       g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, 1920, 1080);
@@ -836,32 +838,32 @@
   function drawImageLogo(ctx, t) {
     const B = CARD.logoBox, iw = logoImg.naturalWidth, ih = logoImg.naturalHeight;
     const s = Math.min(B.w / iw, B.h / ih), w = iw * s, h = ih * s;
-    const u = inv(77.98, 78.28, t), e = ease.outBack(u);
-    const sc = t < 77.98 ? 0 : lerp(0.6, 1, e) * (1 + 0.012 * Math.sin((t - 77.98) * 1.8) * smooth(78.28, 58, t));
+    const u = inv(77.8, 78.1, t), e = ease.outBack(u);
+    const sc = t < 77.8 ? 0 : lerp(0.6, 1, e) * (1 + 0.012 * Math.sin((t - 77.8) * 1.8) * smooth(78.1, 78.5, t));
     const R = { cx: B.cx, cy: B.cy, r: Math.min(w, h) * 0.4, w: 20 };
     streak(ctx, t, R);
     if (sc <= 0) return;
     ctx.save(); ctx.translate(B.cx, B.cy); ctx.scale(sc, sc);
-    A.glow(ctx, 0, 0, Math.max(w, h) * 0.7, '#ffd21f', 0.25 + 0.5 * decay(t, 77.98, 3));
+    A.glow(ctx, 0, 0, Math.max(w, h) * 0.7, '#ffd21f', 0.25 + 0.5 * decay(t, 77.8, 3));
     ctx.drawImage(logoImg, -w / 2, -h / 2, w, h);
     ctx.restore();
   }
 
   function drawPeekBit(ctx, t, img) {
-    if (t < 78.83) return;
+    if (t < 78.65) return;
     const B = CARD.logoBox;
     const at = img ? [B.cx + B.w * 0.36, B.cy - B.h * 0.32] : GL.vNotch;
-    const u = ease.outBack(inv(78.83, 79.13, t));
+    const u = ease.outBack(inv(78.65, 78.95, t));
     const lift = lerp(0, 1, u);
     const bs = 0.95;
     const y = at[1] + (1 - lift) * 120 * bs + 40 * bs;
-    const w = smooth(79.13, 79.23, t) * (1 - smooth(79.63, 79.76, t));
-    A.drawBit(ctx, at[0], y, bs, { t, mouth: 0, mood: 'cheeky', limbs: 'stand', wink: w, trail: 0, glow: 1.2, look: [-0.3, 0.2], armR: [58, -72], sparkle: w, rot: 0.06 * Math.sin((t - 78.98) * 3) });
-    if (t > 79.13 && t < 79.53) { const s = Math.sin(inv(79.13, 79.53, t) * Math.PI); star(ctx, at[0] + 80.68, y - 120, 30 * s + 0.01, '#fff6c8'); }
+    const w = smooth(78.95, 79.05, t) * (1 - smooth(79.45, 79.58, t));
+    A.drawBit(ctx, at[0], y, bs, { t, mouth: 0, mood: 'cheeky', limbs: 'stand', wink: w, trail: 0, glow: 1.2, look: [-0.3, 0.2], armR: [78.5, -72], sparkle: w, rot: 0.06 * Math.sin((t - 78.8) * 3) });
+    if (t > 78.95 && t < 79.35) { const s = Math.sin(inv(78.95, 79.35, t) * Math.PI); star(ctx, at[0] + 60, y - 120, 30 * s + 0.01, '#fff6c8'); }
   }
 
   function drawTaglines(ctx, t) {
-    const he = ease.out(inv(78.22, 78.45, t)), en = ease.out(inv(78.3, 78.52, t)), ti = ease.out(inv(78.36, 78.58, t));
+    const he = ease.out(inv(78.02, 78.25, t)), en = ease.out(inv(78.1, 78.32, t)), ti = ease.out(inv(78.16, 78.38, t));
     if (he > 0) {
       ctx.save(); ctx.globalAlpha = he;
       const y = CARD.tagHeY + (1 - he) * 26;
