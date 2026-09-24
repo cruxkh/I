@@ -56,7 +56,7 @@
     else if (li === 3 && r === 16) brand = 'LOADING+'; else if (li === 2 && r === 12) brand = 'EMBY';
     else if (r >= 1 && r <= 22 && !(path && r <= 10) && H(seed * 4.4) < 0.33) brand = BRANDS[1 + Math.floor(H(seed * 6.6) * 3) % 3];
     let prop = null;
-    if (!brand && path && r >= 10) { const q = H(seed * 7.7); prop = q < 0.3 ? 'paper' : q < 0.5 ? 'watch' : null; }
+    if (!brand && path && r >= 10) { const q = H(seed * 7.7); prop = q < 0.14 ? 'paper' : q < 0.26 ? 'watch' : null; }
     PK.push({ X, Z, seed, r, li, brand, prop, kind: KINDS[Math.floor(H(seed * 2.3) * 6) % 6], mood: prop ? 'bored' : m < 0.22 ? 'sleep' : m < 0.36 ? 'annoyed' : 'bored' });
   }
   // obstacles inside Bit's gaps: a LOADING+ stuck in the right gap, a snoozer in the left gap (he leaps it)
@@ -104,13 +104,38 @@
       ctx.restore(); return;
     }
     const honk = o.honk != null ? o.honk : honkAmt(p, t);
-    A.drawPacket(ctx, x, y, sc, { t, seed: p.seed, kind: p.kind, mood: o.mood || p.mood, honk, look: o.look, squash: o.squash || 0, rot: o.rot || 0, glow: 0.45 + 0.3 * fog });
+    const pm = p.prop === 'paper' && !(o.spike > 0.35) ? 'bored' : p.prop === 'watch' ? 'annoyed' : null;
+    A.drawPacket(ctx, x, y, sc, { t, seed: p.seed, kind: p.kind, mood: o.mood || pm || p.mood, honk, look: o.look || (p.prop === 'paper' ? [0, 0.6] : p.prop === 'watch' ? [0.3, -0.7] : undefined), squash: o.squash || 0, rot: o.rot || 0, glow: 0.45 + 0.3 * fog });
+    if (p.prop && d > 0.5) drawProp(ctx, p, x, y, sc, t, o.spike || 0);
     ctx.restore();
-    if (d > 6) { // atmospheric haze veil
-      ctx.save(); ctx.globalCompositeOperation = 'source-atop'; ctx.restore();
-    }
   }
 
+  // commuter props: a newspaper (flies up when Bit blasts past) or an impatient wristwatch check
+  function drawProp(ctx, p, x, y, sc, t, spike) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
+    if (p.prop === 'paper') {
+      const up = spike, ph = H(p.seed) * 6;
+      ctx.translate(0 + up * 30, -34 - up * 70); ctx.rotate(-0.08 + Math.sin(t * 1.3 + ph) * 0.03 + up * 0.9);
+      ctx.beginPath(); ctx.moveTo(-42, -26); ctx.lineTo(42, -30); ctx.lineTo(44, 24); ctx.lineTo(-40, 28); ctx.closePath(); A.fillStroke(ctx, '#f1ecdc', 3);
+      ctx.strokeStyle = 'rgba(40,30,60,0.35)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(1, -28); ctx.lineTo(2, 26); ctx.stroke();
+      A.text(ctx, 'חדשות', -20, -16, { font: '800 12px Rubik', fill: '#1a1330', dir: 'rtl' });
+      A.text(ctx, '1-1', 22, -16, { font: '900 12px Rubik', fill: '#c02a3a' });
+      ctx.fillStyle = 'rgba(40,30,60,0.35)';
+      for (let i = 0; i < 4; i++) { ctx.fillRect(-36, -4 + i * 7, 30, 2.5); ctx.fillRect(8, -4 + i * 7, 30, 2.5); }
+    } else if (p.prop === 'watch') {
+      // raised stubby arm with a watch + a floating clock bubble "tick tick"
+      const tap = Math.max(0, Math.sin(t * 9 + p.seed)) * 4;
+      ctx.lineCap = 'round'; ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 13; ctx.beginPath(); ctx.moveTo(34, -40); ctx.quadraticCurveTo(58, -58, 44, -80 - tap); ctx.stroke();
+      ctx.strokeStyle = '#e9e2ff'; ctx.lineWidth = 8; ctx.stroke();
+      A.ellipse(ctx, 47, -72 - tap, 9, 9); A.fillStroke(ctx, '#ffd84a', 3);
+      ctx.save(); ctx.translate(-8, -150); A.ellipse(ctx, 0, 0, 20, 20); A.fillStroke(ctx, '#ffffff', 3);
+      ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 2.5; const a1 = t * 6 + p.seed, a2 = t * 0.5;
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a1) * 14, Math.sin(a1) * 14); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a2) * 9, Math.sin(a2) * 9); ctx.stroke();
+      A.text(ctx, 'tik', 30, -6, { font: '400 14px Bangers', fill: '#ffd84a', stroke: A.OUTLINE, lw: 3 });
+      ctx.restore();
+    }
+    ctx.restore();
+  }
   // competitor packet: props kit when it exists, otherwise a generic packet + brand tag
   function drawBrand(ctx, x, y, sc, o) {
     if (A.drawBrandPacket) { A.drawBrandPacket(ctx, x, y, sc * 0.9, Object.assign({ who: o.brand }, o)); return; }
@@ -127,13 +152,13 @@
     ctx.restore();
   }
   // hanging queue sign (world item)
-  const SIGN = { X: 0.915, Y: 0.8, Z: 7.55 };
-  function drawSign(ctx, x, y, s, t) {
-    const sw = Math.sin(t * 1.3) * 0.03;
+  const SIGN = { X: 0.9, Y: 0.74, Z: 8.45 };
+  function drawSign(ctx, x, y, s, t, swing = 0, flicker = 0.5) {
+    const sw = Math.sin(t * 1.3) * 0.03 + swing;
     ctx.save(); ctx.translate(x, y); ctx.rotate(sw);
     ctx.strokeStyle = 'rgba(200,210,255,0.6)'; ctx.lineWidth = Math.max(1, 3 * s);
     ctx.beginPath(); ctx.moveTo(-110 * s, -44 * s); ctx.lineTo(-90 * s, -900 * s); ctx.moveTo(110 * s, -44 * s); ctx.lineTo(90 * s, -900 * s); ctx.stroke();
-    if (A.drawQueueSign) A.drawQueueSign(ctx, 0, 0, s, { t, ticket: 412, flicker: 0.5 });
+    if (A.drawQueueSign) A.drawQueueSign(ctx, 0, 0, s, { t, ticket: 412, flicker });
     else {
       ctx.scale(s, s);
       A.rrect(ctx, -150, -46, 300, 92, 14); A.fillStroke(ctx, '#1b1540', 5);
@@ -221,7 +246,7 @@
     items.sort((a, b) => b.d - a.d);
     for (const it of items) {
       if (it.bit) { const b = opt.bit, [x, y, d] = proj(b.X, b.Y, b.Z, zc); if (d > 0.3) b.draw(ctx, x, y, BTS / d, d); continue; }
-      if (it.sign) { const [x, y, d] = proj(SIGN.X, SIGN.Y, SIGN.Z, zc); if (d > 0.4) drawSign(ctx, x, y, 0.95 / d * (opt.signK || 1), t); continue; }
+      if (it.sign) { const [x, y, d] = proj(SIGN.X, SIGN.Y + (opt.signDrop || 0), SIGN.Z, zc); if (d > 0.4) drawSign(ctx, x, y, 0.95 / d * (opt.signK || 1), t, opt.signSwing || 0, opt.signFlicker ?? 0.5); continue; }
       if (it.cat) {
         const [x, y, d] = proj(opt.catX ?? CATX, 0, CATZ, zc); if (d < Math.max(0.35, opt.near || 0)) continue;
         A.glow(ctx, x, y - 40 * CTS / d, 260 * CTS / d, 'rgba(255,36,60,1)', 0.12);
@@ -245,8 +270,17 @@
     else if (Math.abs(vz) > 0.25) { o.limbs = 'run'; o.vel = [0, 0]; o.runRate = 3.4; o.phase = t * Math.PI * 2 * 3.4; }
     else o.limbs = 'stand';
     if (pk > 0) { o.squash = -0.28 * pk; o.hop = 14 * pk; o.sparkle = pk; }
-    if (!push && !(pk > 0) && t > 30.55 && t < 31.25) { o.limbs = 'run'; o.armR = [80, -150]; } // "Live goal!" arm up
-    if (t > 31.72 && t < 32.3) { o.armR = [78, -160 + Math.sin(t * 20) * 8]; o.armL = [-66, -100]; }
+    if (RUN(t)) { // the dash through the queue
+      const vx = (bitX(t + 0.03) - bitX(t - 0.03)) / 0.06, vy = (bitY(t + 0.03) - bitY(t - 0.03)) / 0.06;
+      o.limbs = 'run'; o.runRate = 4.4; o.phase = t * Math.PI * 2 * 4.4; o.vel = [vx * 700, 0]; o.rot = clamp(vx * 0.12, -0.3, 0.3);
+      o.mood = 'determined'; o.glow = 1.5;
+      if (t > 30.5 && t < 31.2) o.armR = [80, -150 + Math.sin(t * 18) * 6]; // "Live goal!" arm up
+      if (bitY(t) > 0.01 || (t > 31.26 && t < 31.64)) { o.limbs = 'fly'; o.vel = [260, -vy * 900]; o.rot = -0.2 + (t - 31.28) * 0.9; o.squash = -0.12; }
+      if (t > 31.6 && t < 31.72) { o.limbs = 'crouch'; o.squash = 0.25 * (1 - inv(31.6, 31.72, t)); } // landing
+      if (t > 31.75 && t < 32.05) { o.armR = [78, -160 + Math.sin(t * 20) * 8]; o.armL = [-66, -100]; }
+      if (t > 32.02) { const k = inv(32.02, 32.25, t); o.limbs = 'stand'; o.rot = -0.22 * Math.sin(k * Math.PI); o.squash = 0.18 * Math.sin(k * Math.PI); o.legL = [-34, -5]; o.legR = [30, -5]; } // skid
+    }
+    if (t > 32.15 && t < 32.35) { o.mood = 'panic'; o.look = [0, -0.2]; }
     if (QUEUE(t)) { // sandwiched between ILVIP and EMBY
       const sq = -0.2 + 0.03 * Math.sin(t * 3);
       o.limbs = 'stand'; o.squash = sq; o.armL = [-50, -70]; o.armR = [50, -70];
@@ -270,10 +304,27 @@
     const out = {};
     if (p.brand === 'ILVIP' && t > 32.25 && t < 36.4) {
       const talk = t > 32.35 && t < 35.0;
-      Object.assign(out, { look: talk ? [0.9, -0.05] : [0.3, 0.1], bmood: 'grumpy', rot: talk ? 0.05 * Math.sin(t * 2.2) + 0.04 : 0, squash: talk ? -0.04 * Math.abs(Math.sin(t * 7)) : 0 });
+      const turned = t > 32.42, snap = t > 32.42 ? Math.exp(-(t - 32.42) * 9) * Math.sin((t - 32.42) * 30) : 0;
+      Object.assign(out, { look: !turned ? [-0.9, -0.3] : talk ? [0.9, -0.05] : [0.3, 0.1], bmood: 'grumpy', rot: (talk ? 0.05 * Math.sin(t * 2.2) + 0.04 : 0) + snap * 0.12, squash: (talk ? -0.04 * Math.abs(Math.sin(t * 7)) : 0) - 0.08 * Math.abs(snap) });
     }
     if (p.brand === 'EMBY' && t > 32.25 && t < 36.4) Object.assign(out, { look: [-0.4, 0.3], bmood: 'sleepy', rot: -0.06 + 0.02 * Math.sin(t * 1.1), spinnerEyes: smooth(35.5, 35.7, t) });
     const bz = bitZ(t), bx = bitX(t);
+    // ILVIP and EMBY close ranks as he arrives
+    const close = smooth(32.02, 32.24, t) * (1 - smooth(36.25, 36.45, t));
+    if (p.brand === 'ILVIP' && p.r === 9) out.dx = 0.07 * close;
+    if (p.brand === 'EMBY' && p.r === 9) out.dx = -0.07 * close;
+    if (RUN(t) && p.r !== 9) { // the queue reacts as he blasts past
+      const dzp = p.Z - bz, side = Math.sign(bx - p.X) || 1;
+      if (Math.abs(p.X - bx) < 0.95 && dzp > -0.6 && dzp < 3.2) {
+        const pre = smooth(-0.6, -0.1, dzp), after = 1 - smooth(1.8, 3.2, dzp), k = pre * after;
+        const spike = Math.exp(-Math.max(0, dzp) * 3) * pre;
+        return Object.assign(out, {
+          look: [side * 0.85, dzp > 0 ? 0.45 : -0.1], mood: spike > 0.35 ? 'shock' : 'annoyed', bmood: spike > 0.35 ? 'shock' : undefined,
+          rot: -side * 0.22 * spike, y: 0.05 * spike, squash: -0.12 * spike, react: k, spike, dx: -side * 0.05 * spike,
+        });
+      }
+      return out;
+    }
     if (!(p.li === 3 || p.li === 4)) return out;
     const dz = Math.abs(p.Z - bz); if (dz > 0.45) return out;
     const k = (1 - dz / 0.45) * (pushing(t) || t > 36.78 ? 1 : QUEUE(t) ? 0.35 : 0.5);
@@ -286,7 +337,7 @@
   // ============================================================ SHOTS
   function shotA(ctx, t) {
     const k = t - 8.2; // authored against the v1 21.0 start
-    const zc = key(k, [[21.0, -0.6], [21.45, -0.2, 'out'], [21.9, 6.3, 'inOut']]);
+    const zc = key(k, [[21.0, -0.6], [21.45, -0.2, 'out'], [21.9, 8.6, 'inOut']]);
     CAMX = 0.9 * smooth(21.2, 21.85, k);
     const bz = bitZ(t), bx = bitX(t);
     const [bxs, bys] = proj(bx, 0, bz, zc);
@@ -295,7 +346,7 @@
     clampCam(cam);
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     jamWorld(ctx, t, zc, {
-      jam: 0.95, catX: -0.62,
+      jam: 0.95, catX: -0.62, sign: false, cat: zc < 4,
       bit: { X: bx, Y: 0, Z: bz, draw: (c, x, y, sc) => { A.glow(c, x, y - 70 * sc, 260 * sc, '#ffc93c', 0.5 + 0.3 * Math.sin(t * 6)); const hp = Math.max(0, Math.sin((k - 21.3) * Math.PI * 3.2)) * smooth(21.25, 21.4, k); A.drawBit(c, x, y, sc, Object.assign(bitJamOpts(t), { glow: 1.6, hop: hp * 55, limbs: 'arms-up', mood: 'determined', squash: hp < 0.1 ? 0.12 : -0.08 })); } },
       catO: () => ({ mood: 'bored' }),
       pkO: p => shoveO(p, t),
@@ -315,15 +366,19 @@
     const bz = bitZ(t), bx = bitX(t);
     let zc, cam;
     const bump = t > 36.8 ? Math.exp(-(t - 36.8) * 14) : 0;
-    if (t < 32.3) { // B: tracking behind the squeeze
-      zc = bitZ(t - 0.18) - 1.28; CAMX = 0.9;
+    if (t < 32.3) { // B: fast tracking run through the queue
+      zc = bitZ(t - 0.09) - 1.4; CAMX = bitX(t - 0.1);
       const [bxs, bys] = proj(bx, 0, bz, zc);
-      cam = { x: lerp(960, bxs, 0.75) - 40, y: bys - 190, zoom: 1.3, t };
-    } else if (t < 35.0) { // Q1: ILVIP two-shot, slow push
-      const u = inv(32.3, 35.0, t);
-      zc = lerp(6.84, 6.96, ease.inOut(u)); CAMX = 0.8;
-      const [ix, iy] = proj(0.64, 0, ROW(9), zc), [bxs] = proj(bx, 0, bz, zc);
-      cam = { x: (ix + bxs) / 2 + 10, y: iy - 230, zoom: lerp(1.12, 1.18, ease.inOut(u)), rot: -0.012, t };
+      const lat = (bitX(t - 0.07) - bitX(t - 0.13)) / 0.06;
+      const land = t > 31.6 ? Math.exp(-(t - 31.6) * 10) : 0;
+      cam = { x: lerp(960, bxs, 0.8), y: bys - 175 - bitY(t) * 120, zoom: lerp(1.25, 1.34, smooth(31.8, 32.25, t)), rot: -lat * 0.05, shake: land * 1.2 + (t > 32.05 ? Math.exp(-(t - 32.05) * 8) * 0.6 : 0), t };
+    } else if (t < 35.0) { // Q1: push in on ILVIP's crown as he turns, then settle on the two-shot
+      const pin = ease.inOut(inv(32.3, 32.8, t)), out = ease.inOut(inv(33.75, 34.55, t)), k = pin * (1 - out);
+      zc = 6.9 + 0.05 * out; CAMX = 0.8;
+      const [ix, iy] = proj(0.71, 0, ROW(9), zc), [bxs] = proj(bx, 0, bz, zc), [hx, hy] = proj(0.71, 0.26, ROW(9) + 0.12, zc);
+      const two = { x: (ix + bxs) / 2 + 10, y: iy - 230, zoom: lerp(1.12, 1.18, out) };
+      const tight = { x: hx + 25, y: hy + 10, zoom: 2.6 };
+      cam = { x: lerp(two.x, tight.x, k), y: lerp(two.y, tight.y, k), zoom: lerp(two.zoom, tight.zoom, k), rot: -0.012 - 0.02 * k, t };
     } else { // Q2: EMBY, then Bit pops out and tracks to the cat
       const u = inv(35.0, 36.2, t), w = smooth(36.2, 36.75, t);
       zc = lerp(lerp(6.92, 6.99, u), bitZ(t - 0.18) - 1.28, smooth(36.2, 36.45, t)) - 0.1 * w;
@@ -334,8 +389,10 @@
     clampCam(cam);
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     jamWorld(ctx, t, zc, {
-      jam: 0.95, near: t > 32.3 && t < 36.3 ? 0.5 : undefined,
-      bit: { X: bx, Y: 0, Z: bz, draw: (c, x, y, sc) => A.drawBit(c, x, y, sc, bitJamOpts(t)) },
+      jam: 0.95, near: t > 32.3 && t < 36.3 ? 0.5 : t > 31.9 && t < 32.3 ? 0.75 : undefined, sign: t >= 32.3, cat: t > 36.2,
+      signDrop: (1 - ease.outBack(inv(32.4, 32.9, t))) * 1.5, signSwing: Math.exp(-Math.max(0, t - 32.8) * 3) * Math.sin(Math.max(0, t - 32.8) * 9) * 0.12,
+      signFlicker: t > 32.7 && t < 33.1 ? 1 : 0.5,
+      bit: { X: bx, Y: bitY(t), Z: bz, draw: (c, x, y, sc) => A.drawBit(c, x, y, sc, bitJamOpts(t)) },
       catO: () => ({ mood: 'bored', look: [0.6, 0.3], squash: -0.03 * bump }),
       pkO: p => shoveO(p, t),
     });
