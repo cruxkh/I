@@ -70,6 +70,11 @@
 4. 50.5–53.5 Noa, pleased: "Thank the little packet, Saba." (looks toward the router; Saba looks puzzled at the router).
 5. 54.5–57.0 Close-up on the router on the shelf (macro): tiny Bit flops out of the LED port (exhausted, limbs 'flop'),
    "Next time… send the goal earlier." 56.9 wink, sparkle, he conks out with a happy smile, LED goes soft green.
-6. 57.3–60.0 Title card: `PACKET FROM HOME` (Bangers or Secular) + `חבילה מהבית` (Secular One, rtl) slam in with Bit's glow,
-   yellow on deep navy, small snow/confetti drifting; subtitles off (set `A.noSubs = t => t > 57.2`). Hold; the engine fades out
-   59.2–60.
+6. 57.3–60.0 **GOTV END CARD (client branding — most important frame of the film).** Bit's glow bursts into a light
+   streak that draws/forms the **GOTV** logo: bold wordmark `GOTV` centred and large (the "O" can be a glowing play-button /
+   football ring that Bit dives into), deep navy background with soft yellow/blue light, subtle snow/confetti drift.
+   Under it the tagline in Hebrew `הטלוויזיה מהבית. בכל מקום.` and smaller English `Live TV from Israel — anywhere.`
+   Small film title above or below: `PACKET FROM HOME · חבילה מהבית`. Logo resolves on the 57.3 hit, text follows at ~57.8,
+   tiny Bit peeks out from behind the logo and winks ~58.4. Subtitles off (`A.noSubs = t => t > 57.2`). Hold; engine fades 59.2–60.
+   If a client logo image exists at `assets/gotv_logo.png`, draw THAT image instead of the synthesized wordmark (load it via
+   an <img> preloaded in your file; keep the same animation around it).

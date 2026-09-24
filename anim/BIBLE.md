@@ -53,7 +53,7 @@ undersea cable (past a cable-biting shark), and bursts into the living room rout
 | 54.5 | Close-up on the router. Tiny Bit flops out of the LED port, exhausted. |
 | 55.0–56.9 | BIT: "Next time… send the goal earlier." |
 | 56.9 | Bit winks / passes out happily. |
-| 57.3 | Title card slam: **PACKET FROM HOME** + Hebrew **חבילה מהבית** (subtitles off from 57.2). |
+| 57.3 | GOTV end card: GOTV logo + tagline (film title small). Subtitles off from 57.2. |
 | 59.2–60.0 | Fade to black (engine does it). |
 
 Dialogue text/timing lives in `audio/script.json`; generated timing + per-frame lip-sync in `kits/lipsync.js`

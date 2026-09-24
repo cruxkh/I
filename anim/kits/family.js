@@ -319,7 +319,7 @@
   const SG = (A.SABA_GESTURES = {
     none: { L: [22, -12], R: [18, -8], hL: 'relax', hR: 'relax' },
     noneSit: { L: [18, -62], R: [14, -58], hL: 'relax', hR: 'relax' },
-    fists: { L: [32, -128], R: [28, -125], tL: [-46, -112], tR: [48, -118], hL: 'fist', hR: 'fist' },
+    fists: { L: [32, -128], R: [28, -125], tL: [-64, -110], tR: [66, -116], hL: 'fist', hR: 'fist' },
     point: { L: [22, -40], R: [100, 6], hL: 'relax', hR: 'point' },
     headHands: { L: [152, 78], R: [150, 80], tL: [-112, -272], tR: [116, -274], wL: 18, wR: 18, front: true, hL: 'open', hR: 'open' },
     armsUp: { L: [160, 12], R: [158, 14], hL: 'open', hR: 'open' },
@@ -767,7 +767,7 @@
     reach: { L: [-72, -8], R: [78, 6], hL: 'open', hR: 'open' },
     shrug: { L: [16, 78], R: [14, 74], hL: 'open', hR: 'open' },
     cheer: { L: [142, 8], R: [140, 10], hL: 'fist', hR: 'fist' },
-    hug: { L: [-128, 35], R: [118, 40], hL: 'relax', hR: 'relax' },
+    hug: { L: [-92, -22], R: [104, 18], hL: 'relax', hR: 'relax' },
   });
   const NOA = { l1: 54, l2: 50, shX: 42, shY: -106, handSz: 15 };
 
@@ -830,8 +830,11 @@
       strokeLine(ctx, 2.2, NC.hairHi);
       // scrunchie at puff base
       const sx = fx * 0.3 - 2, sy = -66 + bY * 0.5;
-      part(ctx, R, c => { E(c, sx, sy + 3, 34, 8); for (let i = 0; i < 5; i++) { const qx = -28 + i * 14; E(c, sx + qx, sy + qx * qx / 150 - 1, 9.5, 10.5, qx * 0.012 + 0.2); } }, NC.scrunchie, NC.scrunchieSh, { d: 5, lw: R.lw * 0.85 });
-      ctx.beginPath(); for (let i = 0; i < 4; i++) { const q = -21 + i * 14, qx = sx + q, qy = sy + q * q / 150; ctx.moveTo(qx - 2, qy - 8); ctx.quadraticCurveTo(qx + 3, qy, qx - 1, qy + 8); } strokeLine(ctx, 1.8, NC.scrunchieSh);
+      const scr = c => { c.moveTo(sx - 36, sy + 2); c.bezierCurveTo(sx - 34, sy - 14, sx + 34, sy - 14, sx + 36, sy + 2); c.bezierCurveTo(sx + 36, sy + 16, sx - 36, sy + 16, sx - 36, sy + 2); c.closePath(); };
+      part(ctx, R, scr, NC.scrunchie, NC.scrunchieSh, { d: 6, lw: R.lw * 0.85 });
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) { const q = -24 + i * 12, qy = sy + 2; ctx.moveTo(sx + q - 3, qy - 9 + Math.abs(q) * 0.12); ctx.quadraticCurveTo(sx + q + 4, qy, sx + q - 2, qy + 10 - Math.abs(q) * 0.1); }
+      strokeLine(ctx, 1.8, NC.scrunchieSh);
       // side ringlets
       for (const sd of [-1, 1]) {
         const bx = sd * 62 + fx * 0.25;

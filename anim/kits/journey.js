@@ -92,7 +92,7 @@
     cams: {
       wide: { x: 1920, y: 1080, zoom: 0.5 },
       stadium: { x: 555, y: 1675, zoom: 2.2 },
-      mast: { x: 1215, y: 1170, zoom: 1.6 },
+      mast: { x: 1230, y: 1140, zoom: 1.5 },
       mastTop: { x: 1300, y: 1000, zoom: 2.2 },
       azrieli: { x: 1600, y: 900, zoom: 1.2 },
       sea: { x: 2900, y: 1250, zoom: 1.0 },
@@ -406,7 +406,7 @@
     draws.sort((a, b) => a[0] - b[0]).forEach(d => d[1]());
     // bake atmospheric depth into the mid layer (only onto painted pixels)
     g.save(); g.globalCompositeOperation = 'source-atop';
-    g.fillStyle = A.linear(g, 0, 700, 0, 1500, [[0, 'rgba(34,22,80,0.30)'], [0.6, 'rgba(70,32,100,0.34)'], [1, 'rgba(110,45,110,0.45)']]);
+    g.fillStyle = A.linear(g, 0, 700, 0, 1500, [[0, 'rgba(30,18,72,0.38)'], [0.6, 'rgba(66,30,98,0.42)'], [1, 'rgba(110,45,110,0.5)']]);
     g.fillRect(x0, y0, x1 - x0, y1 - y0); g.restore();
   }
 
@@ -1129,9 +1129,19 @@
     const r = mul(seed), jump = roar * Math.abs(Math.sin(t * 7.5 + seed)) * 40 * s, yy = y - jump;
     const shirt = r() < 0.6 ? '#b99210' : '#16357f';
     ctx.save(); ctx.translate(x, yy); if (flip) ctx.scale(-1, 1);
-    const armA = -1.2 - roar * 0.9 + Math.sin(t * 6 + seed) * 0.25 * (0.3 + roar), armB = -1.9 + roar * 0.7 + Math.sin(t * 6.5 + seed * 2) * 0.25 * (0.3 + roar);
-    const arm = (sx, a) => { ctx.strokeStyle = OUT; ctx.lineWidth = 36 * s; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(sx, -150 * s); ctx.lineTo(sx + Math.cos(a) * 150 * s, -150 * s + Math.sin(a) * 150 * s); ctx.stroke(); ctx.strokeStyle = A.mixc(shirt, '#0d0820', 0.55); ctx.lineWidth = 27 * s; ctx.stroke(); };
-    arm(-70 * s, Math.PI + 0.3 + (armA + 1.2) * -1); arm(70 * s, armB + 0.5);
+    const sleeve = A.mixc(shirt, '#0d0820', 0.55);
+    const arm = (sd, ph) => {
+      const up = clamp(0.35 + roar * 0.8 + 0.25 * Math.sin(t * 6 + ph));
+      const sh = [sd * 72 * s, -150 * s];
+      const a1 = -Math.PI / 2 + sd * lerp(1.1, 0.35, up), el = [sh[0] + Math.cos(a1) * 95 * s, sh[1] + Math.sin(a1) * 95 * s];
+      const a2 = a1 - sd * lerp(0.9, 0.15, up), hd = [el[0] + Math.cos(a2) * 85 * s, el[1] + Math.sin(a2) * 85 * s];
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.strokeStyle = OUT; ctx.lineWidth = 40 * s; ctx.beginPath(); ctx.moveTo(sh[0], sh[1]); ctx.lineTo(el[0], el[1]); ctx.lineTo(hd[0], hd[1]); ctx.stroke();
+      ctx.strokeStyle = sleeve; ctx.lineWidth = 30 * s; ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,236,180,0.55)'; ctx.lineWidth = 4 * s; ctx.beginPath(); ctx.moveTo(el[0] + 12 * s, el[1]); ctx.lineTo(hd[0] + 12 * s, hd[1]); ctx.stroke();
+      ctx.fillStyle = '#5a3a2c'; A.ellipse(ctx, hd[0], hd[1], 21 * s, 23 * s); A.fillStroke(ctx, '#5a3a2c', 6 * s);
+    };
+    arm(-1, seed); arm(1, seed * 2 + 1);
     ctx.fillStyle = A.mixc(shirt, '#0d0820', 0.5); A.blob(ctx, [[-110 * s, 40 * s], [-95 * s, -120 * s], [-50 * s, -175 * s], [50 * s, -175 * s], [95 * s, -120 * s], [110 * s, 40 * s]]); A.fillStroke(ctx, null, 7 * s);
     ctx.fill();
     ctx.fillStyle = '#1a1030'; A.ellipse(ctx, 0, -225 * s, 50 * s, 58 * s); A.fillStroke(ctx, '#1a1030', 7 * s);
@@ -1171,7 +1181,7 @@
     A.text(ctx, 'מכבי · MACCABI', 0, 36, { font: '44px Secular', fill: TA.blue, dir: 'rtl' });
     ctx.restore();
     // flags in the stand
-    [[180, 300, 0.9, 0], [520, 250, 0.75, 1], [760, 430, 1.0, 2], [1260, 360, 0.95, 3], [1480, 250, 0.7, 4], [1790, 330, 0.9, 5]].forEach(([x, y, s, i]) =>
+    [[140, 330, 0.9, 0], [470, 240, 0.72, 1], [600, 440, 0.95, 2], [1290, 440, 0.95, 3], [1440, 235, 0.7, 4], [1720, 350, 0.9, 5]].forEach(([x, y, s, i]) =>
       scFlag(ctx, x, y - roar * Math.abs(Math.sin(t * 7 + i)) * 6, t, s, i % 2 ? TA.blue : TA.yellow, i % 2 ? TA.yellow : TA.blue, i * 1.7, roar));
     // LED ad boards (scrolling)
     ctx.save(); ctx.beginPath(); ctx.rect(0, SC.board + 3, 1920, SC.pitch - SC.board - 3); ctx.clip();
@@ -1233,7 +1243,8 @@
   // ===========================================================================
   const DT = { vx: 960, vy: 470, F: 620, floor: 0.62, rx: 1.75, ry: 1.12 };
   const hsl = (h, s, l, a = 1) => `hsla(${h},${s}%,${l}%,${a})`;
-  const TRACES = (() => { const r = mul(606), a = []; for (let i = 0; i < 46; i++) { const th = Math.PI + 0.12 + r() * (Math.PI - 0.24) * 1.0; const side = r() < 0.5; a.push({ th: side ? th : th, z0: r() * 30, len: 2 + r() * 6, jog: (r() - 0.5) * 0.18, hue: r() < 0.6 ? 0 : 1, sp: 0.6 + r() }); } return a; })();
+  const WALL0 = Math.asin(0.62 / 1.12), WALLS = Math.PI + 2 * Math.asin(0.62 / 1.12);
+  const TRACES = (() => { const r = mul(606), a = []; for (let i = 0; i < 46; i++) { const th = Math.asin(0.62 / 1.12) - (0.05 + r() * 0.9) * (Math.PI + 2 * Math.asin(0.62 / 1.12)); a.push({ th, z0: r() * 30, len: 2 + r() * 6, jog: (r() - 0.5) * 0.18, hue: r() < 0.6 ? 0 : 1, sp: 0.6 + r() }); } return a; })();
   function dtProj(th, rad, z, zCam) { // point on tunnel wall at angle th (0 = right, -PI/2 = top)
     const d = z - zCam; if (d < 0.05) return null;
     const x = Math.cos(th) * DT.rx * rad, y = Math.max(Math.sin(th) * DT.ry * rad, -9);
@@ -1267,6 +1278,18 @@
       const alt = i % 3 === 0;
       const hue = alt ? H2 : H1, a = fog * fog * (alt ? 0.9 : 0.55) * (1 - near * 0.4);
       const rx = DT.rx * sc, ry = DT.ry * sc, fy = DT.vy + DT.floor * sc;
+      // wall panels between this ring and the next (dim light tiles)
+      if (d < 26 && d > 0.6) {
+        const d2 = d + SP * 0.92;
+        for (let k = 0; k < 28; k++) {
+          const hv = H(i * 17.3 + k * 3.1); if (hv > 0.3) continue;
+          const u0 = k / 28 + 0.004, u1 = (k + 1) / 28 - 0.004, th0 = WALL0 - u0 * WALLS, th1 = WALL0 - u1 * WALLS;
+          const P = (th, dd) => { const y = Math.min(Math.sin(th) * DT.ry, DT.floor); return [DT.vx + Math.cos(th) * DT.rx * DT.F / dd, DT.vy + y * DT.F / dd]; };
+          quad(ctx, P(th0, d), P(th1, d), P(th1, d2), P(th0, d2));
+          const pa = hv < 0.06 ? 0.22 : 0.07;
+          ctx.fillStyle = hsl(hv < 0.15 ? H2 : H1, 90, 55, pa * fog * (0.7 + 0.3 * Math.sin(t * 2 + i + k))); ctx.fill();
+        }
+      }
       // ring arc (above floor) — clipped at the floor line
       ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 1920, fy); ctx.clip();
       ctx.strokeStyle = hsl(hue, 100, 62, a * 0.35); ctx.lineWidth = Math.max(1, sc * 0.09);
@@ -1292,6 +1315,16 @@
         A.glow(ctx, DT.vx + xw * 0.92, fy - sc * 0.02, sc * 0.08 + 4, `rgba(255,40,50,${bl})`);
       }
     }
+    // longitudinal rails along the wall
+    for (let k = 0; k <= 12; k++) {
+      const th = WALL0 - (k / 12) * WALLS, y = Math.min(Math.sin(th) * DT.ry, DT.floor), x = Math.cos(th) * DT.rx;
+      const dn = 0.35, a = [DT.vx + x * DT.F / dn, DT.vy + y * DT.F / dn];
+      ctx.strokeStyle = hsl(k % 3 ? H1 : H2, 100, 65, 0.10); ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(DT.vx + x * DT.F / 60, DT.vy + y * DT.F / 60); ctx.lineTo(a[0], a[1]); ctx.stroke();
+    }
+    // wet-floor reflection of the light at the end of the tunnel
+    ctx.save(); ctx.translate(DT.vx, DT.vy + 240); ctx.scale(0.22, 1);
+    A.glow(ctx, 0, 0, 300, hsl(H1, 100, 65, 0.22)); ctx.restore();
     // floor: lane lines converging to the vanishing point
     const fyN = 1080, dN = DT.floor * DT.F / (fyN - DT.vy);
     for (const lx of [-1.3, -0.45, 0.45, 1.3]) {
@@ -1471,7 +1504,7 @@
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     // far ridges + fish schools
     drawStrip(ctx, ocFar(), sc * 0.2, 260, 0.8);
-    ctx.fillStyle = 'rgba(11,74,92,0.35)'; ctx.fillRect(0, 260, 1920, 600);
+    ctx.fillStyle = A.linear(ctx, 0, 250, 0, 700, [[0, 'rgba(11,74,92,0)'], [0.5, 'rgba(11,74,92,0.35)'], [1, 'rgba(11,74,92,0.45)']]); ctx.fillRect(0, 250, 1920, 450);
     fishSchool(ctx, ((1400 - sc * 0.25 - t * 30) % 2600 + 2600) % 2600 - 300, 330, t, 34, 7, 0.9, 'rgba(6,40,58,0.8)');
     fishSchool(ctx, ((400 - sc * 0.3 - t * 22) % 2600 + 2600) % 2600 - 300, 470, t, 26, 19, 0.7, 'rgba(8,48,66,0.7)');
     // mid floor + rocks
