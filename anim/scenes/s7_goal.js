@@ -18,8 +18,8 @@
     logoBox: { cx: 960, cy: 452, w: 1120, h: 330 },     // the wordmark / client logo image is fitted into this box
     logoImage: 'assets/gotv_logo.png',                    // if this file exists it replaces the synthesized wordmark
     wordLeft: 'G', wordRight: 'TV',                        // wordmark = wordLeft + [ring "O"] + wordRight
-    tagHe: 'הטלוויזיה מהבית. בכל מקום.',
-    tagEn: 'Live TV from Israel. Anywhere.',
+    tagHe: 'הטלוויזיה מהבית. מגיעה ראשונה.',
+    tagEn: 'Live TV from Israel. First to your home.',
     filmTitle: 'PACKET FROM HOME · חבילה מהבית',
     tagHeY: 738, tagEnY: 812, filmTitleY: 138,
     navy: '#0d1033', yellow: '#ffd21f', blue: '#1f4fbf',
@@ -27,11 +27,11 @@
   const logoImg = new Image(); logoImg.src = CARD.logoImage;
   const haveImg = () => logoImg.complete && logoImg.naturalWidth > 0;
 
-  A.noSubs = t => t > 57.2;
+  A.noSubs = t => t > 77.7;
 
   const { clamp, lerp, inv, smooth, ease, hash, key } = A;
   const LR = A.LR;
-  const T_CUT_ROOM = 46.93, T_CARD = 57.12;
+  const T_CUT_ROOM = 59.83, T_PAYOFF = 69.6, T_MACRO = 72.4, T_CARD = 77.8;
 
   // ================================================================== small helpers
   const env = (t, a, b, c, d) => Math.min(smooth(a, b, t), 1 - smooth(c, d, t)); // attack a..b, release c..d
@@ -42,19 +42,20 @@
   // ================================================================== SHOT 1: TV close-up
   function shotTV(ctx, t) {
     const tv = LR.tv, cx = tv.x + tv.w / 2, cy = tv.y + tv.h / 2;
-    const punch = spring(t, 46.4, 9, 20) * 0.12 + (t > 46.4 ? 0.06 * smooth(46.4, 46.9, t) : 0);
-    const zoom = lerp(4.46, 4.62, ease.out(inv(46.0, 46.93, t))) + punch;
-    const shake = decay(t, 46.4, 7) * 1.1 + decay(t, 46.06, 12) * 0.5;
+    const punch = spring(t, 59.3, 9, 20) * 0.12 + (t > 59.3 ? 0.06 * smooth(59.3, 59.8, t) : 0);
+    const zoom = lerp(4.46, 4.62, ease.out(inv(58.9, 59.83, t))) + punch;
+    const shake = decay(t, 59.3, 7) * 1.1 + decay(t, 58.96, 12) * 0.5;
     ctx.save();
     A.camera(ctx, { x: cx, y: cy + 4, zoom, shake, t });
-    const unfrozen = t >= 46.07;
-    const pop = smooth(46.0, 46.07, t);
+    const unfrozen = t >= 58.97;
+    const pop = smooth(58.9, 58.97, t);
     if (!unfrozen) A.drawTV(ctx, tv.x, tv.y, tv.w, tv.h, t, { state: 'freeze', freezeGlitch: 0, spinner: 1 - pop, bufferPct: 100 });
-    else A.drawTV(ctx, tv.x, tv.y, tv.w, tv.h, t, { state: 'goal' });
+    else A.drawTV(ctx, tv.x, tv.y, tv.w, tv.h, t, { state: 'goal', matchT: matchT(t) });
+    tvOverlay(ctx, t, { bugPop: smooth(58.95, 59.15, t) });
     ctx.restore();
     // unfreeze pop: bright ring from the spinner centre + a scanline snap
-    if (t >= 46.03 && t < 46.35) {
-      const u = inv(46.03, 46.35, t);
+    if (t >= 58.93 && t < 59.25) {
+      const u = inv(58.93, 59.25, t);
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       ctx.strokeStyle = `rgba(200,255,240,${0.8 * (1 - u)})`; ctx.lineWidth = 30 * (1 - u) + 2;
       A.ellipse(ctx, 960, 540, 60 + ease.out(u) * 900, 60 + ease.out(u) * 900); ctx.stroke();
@@ -62,8 +63,8 @@
       ctx.restore();
     }
     // radial speed lines on the net hit (comic accent, 3 frames)
-    if (t >= 46.4 && t < 46.56) {
-      const u = inv(46.4, 46.56, t);
+    if (t >= 59.3 && t < 59.46) {
+      const u = inv(59.3, 59.46, t);
       ctx.save(); ctx.globalAlpha = 0.55 * (1 - u); ctx.fillStyle = '#fff';
       for (let i = 0; i < 46; i++) {
         const a = (i / 46) * A.TAU + hash(i) * 0.1, r0 = 520 + hash(i + 3) * 220, r1 = 1300;
@@ -74,7 +75,7 @@
       ctx.restore();
     }
     // S6 hands over on a white impact flash: let it settle
-    const wf = 1 - smooth(46.0, 46.22, t);
+    const wf = 1 - smooth(58.9, 59.12, t);
     if (wf > 0) { ctx.fillStyle = `rgba(255,252,240,${wf * 0.85})`; ctx.fillRect(0, 0, 1920, 1080); }
   }
 
@@ -87,7 +88,7 @@
     ctx.restore();
   }
   function drawConfetti(ctx, t, burstPts) {
-    if (t < 47.6) return;
+    if (t < 60.5) return;
     // bursts
     const N = 90;
     for (let b = 0; b < burstPts.length; b++) {
@@ -108,11 +109,11 @@
       }
     }
     // rain from the ceiling (starts as the burst peaks, thins out after the hug)
-    const rainA = smooth(47.75, 48.2, t) * (1 - smooth(52.0, 53.6, t));
+    const rainA = smooth(60.65, 61.1, t) * (1 - smooth(64.9, 53.6, t));
     if (rainA > 0) {
       for (let i = 0; i < 120; i++) {
         const h = k => hash(i * 3.71 + 900 + k);
-        const t0 = 47.7 + h(1) * 1.4, tau = t - t0; if (tau < 0) continue;
+        const t0 = 60.6 + h(1) * 1.4, tau = t - t0; if (tau < 0) continue;
         const vy = 110 + h(2) * 90;
         const y = -20 + tau * vy; if (y > 1100) continue;
         const x = 150 + h(3) * 1700 + Math.sin(tau * (1.5 + h(4) * 2) + h(5) * 6) * 40 + tau * 12;
@@ -138,7 +139,7 @@
     ctx.fillStyle = '#f3c25a'; A.ellipse(ctx, s * 0.1, s * 0.15, s * 0.28, s * 0.22); ctx.fill();
   }
   function drawSnacks(ctx, t) {
-    const t0 = 47.62; if (t < t0) return;
+    const t0 = 60.52; if (t < t0) return;
     const src = [LR.bamba.x, LR.bamba.y - 30];
     for (let i = 0; i < 46; i++) {
       const h = k => hash(i * 5.31 + 77 + k);
@@ -167,7 +168,7 @@
   // wall behind it with wallpaper from exactly two pattern periods (144 px) to the side.
   // The kit's lamp is baked into the cached room layer: patch it away with wallpaper from exactly one vertical
   // pattern period (168 px) / two horizontal periods (144 px) away, then redraw the lamp (same vector design) rotated.
-  function lampAngle(t) { return 0.05 * (spring(t, 47.66, 2.4, 10) + 0.55 * spring(t, 48.4, 2.8, 11)); }
+  function lampAngle(t) { return 0.05 * (spring(t, 60.56, 2.4, 10) + 0.55 * spring(t, 61.3, 2.8, 11)); }
   function feather(ctx, src, sx, sy, dx, dy, w, h, r) {
     const buf = A.layer('s7:lampbuf', 260, 460, () => {}), g = buf.getContext('2d');
     g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, 260, 460);
@@ -218,39 +219,39 @@
   function sabaState(t) {
     const o = { t, pose: 'stand', mood: 'joy', gesture: 'armsUp', scarfWave: 0.5 };
     let x = 790, y = 905;
-    if (t < 47.25) { // frozen disbelief, hands on head, jaw dropped
-      Object.assign(o, { mood: 'neutral', gesture: 'headHands', jaw: 0.55, mouth: 0.45, browRaise: 0.9, lid: 0, look: [0.9, -0.35], idle: 0.15, lean: -0.08 * smooth(46.9, 47.25, t), scarfWave: 0, happy: 0 });
-    } else if (t < 47.6) { // anticipation squat
-      const k = ease.inOut(inv(47.25, 47.58, t));
+    if (t < 60.15) { // frozen disbelief, hands on head, jaw dropped
+      Object.assign(o, { mood: 'neutral', gesture: 'headHands', jaw: 0.55, mouth: 0.45, browRaise: 0.9, lid: 0, look: [0.9, -0.35], idle: 0.15, lean: -0.08 * smooth(59.8, 60.15, t), scarfWave: 0, happy: 0 });
+    } else if (t < 60.5) { // anticipation squat
+      const k = ease.inOut(inv(60.15, 60.48, t));
       Object.assign(o, { mood: 'joy', moodFrom: 'neutral', moodK: k, gesture: 'fists', gestureFrom: 'headHands', gestureK: k, squash: 0.2 * k, lean: 0.25 * k, look: [0.8, -0.2], mouth: lerp(0.45, 0.2, k), browRaise: -0.3 * k, scarfWave: 0.2 });
-    } else if (t < 48.38) { // LEAP
-      const u = inv(47.6, 48.38, t), air = 1.55 * 4 * u * (1 - u);
+    } else if (t < 61.28) { // LEAP
+      const u = inv(60.5, 61.28, t), air = 1.55 * 4 * u * (1 - u);
       Object.assign(o, { pose: 'jump', air, gesture: 'armsUp', gestureFrom: 'fists', gestureK: smooth(0, 0.25, u), scarfWave: 1, mouth: 0.85, look: [0.4, -0.6],
         squash: u < 0.12 ? -0.16 * (1 - u / 0.12) : u > 0.9 ? -0.06 : 0, vel: [0, lerp(-1400, 1400, u)], lean: -0.15 });
       x = lerp(790, 800, u);
-    } else if (t < 48.8) { // land (squash + overshoot) and roar "Gooool!"
-      const sq = 0.24 * spring(t, 48.38, 9, 22);
-      Object.assign(o, { squash: sq, lean: -0.25 * smooth(48.38, 48.6, t), look: [0.3, -0.7], scarfWave: 1, headTilt: -6, vel: [0, 300 * decay(t, 48.38, 6)] });
+    } else if (t < 61.7) { // land (squash + overshoot) and roar "Gooool!"
+      const sq = 0.24 * spring(t, 61.28, 9, 22);
+      Object.assign(o, { squash: sq, lean: -0.25 * smooth(61.28, 61.5, t), look: [0.3, -0.7], scarfWave: 1, headTilt: -6, vel: [0, 300 * decay(t, 61.28, 6)] });
       x = 800;
-    } else if (t < 49.12) { // turn & point at Noa
-      const k = ease.outBack(inv(48.8, 49.0, t));
+    } else if (t < 62.02) { // turn & point at Noa
+      const k = ease.outBack(inv(61.7, 61.9, t));
       Object.assign(o, { gesture: 'point', gestureFrom: 'armsUp', gestureK: clamp(k), lean: lerp(-0.25, 0.3, clamp(k)), look: [1, 0.25], scarfWave: 0.7, browRaise: 0.3 });
       x = 800;
-    } else if (t < 50.0) { // happy hops toward her
-      const h1 = hop(t, 49.14, 49.55), h2 = hop(t, 49.58, 49.98);
+    } else if (t < 62.9) { // happy hops toward her
+      const h1 = hop(t, 62.04, 62.45), h2 = hop(t, 62.48, 62.88);
       const air = Math.max(h1, h2) * 0.5;
-      Object.assign(o, { pose: air > 0.01 ? 'jump' : 'stand', air, gesture: 'armsUp', gestureFrom: 'point', gestureK: smooth(49.1, 49.3, t), look: [1, 0.3], lean: 0.2, scarfWave: 1, squash: (air < 0.01 ? 0.1 : -0.04), vel: [500, 0] });
-      x = lerp(800, 900, ease.inOut(inv(49.14, 49.98, t)));
+      Object.assign(o, { pose: air > 0.01 ? 'jump' : 'stand', air, gesture: 'armsUp', gestureFrom: 'point', gestureK: smooth(62, 62.2, t), look: [1, 0.3], lean: 0.2, scarfWave: 1, squash: (air < 0.01 ? 0.1 : -0.04), vel: [500, 0] });
+      x = lerp(800, 900, ease.inOut(inv(62.04, 62.88, t)));
     } else { // scoop & hug
-      const k = ease.inOut(inv(50.0, 50.45, t));
+      const k = ease.inOut(inv(62.9, 63.35, t));
       x = 900 + 20 * k;
-      const rock = Math.sin((t - 50.45) * 4.2) * smooth(50.4, 50.7, t) * (1 - smooth(51.1, 51.5, t));
-      Object.assign(o, { gesture: 'none', mood: 'joy', happy: 1, lean: lerp(0.35, 0.05, smooth(50.15, 50.5, t)) + rock * 0.1, headTilt: -5 * k + rock * 4,
+      const rock = Math.sin((t - 63.35) * 4.2) * smooth(63.3, 63.6, t) * (1 - smooth(64, 64.4, t));
+      Object.assign(o, { gesture: 'none', mood: 'joy', happy: 1, lean: lerp(0.35, 0.05, smooth(63.05, 63.4, t)) + rock * 0.1, headTilt: -5 * k + rock * 4,
         handL: [lerp(40, 150, k), lerp(-250, -270, k)], handR: [lerp(90, 190, k), lerp(-300, -330, k)], handShapeL: 'open', handShapeR: 'open', armRBehind: true,
-        look: [1, 0.1], scarfWave: 0.4 * (1 - smooth(51, 52, t)), mouth: t < 50.5 ? 0.3 : undefined });
-      if (t > 51.2) { // listening, then puzzled look at the router
-        const p = smooth(52.35, 52.8, t);
-        Object.assign(o, { mood: 'neutral', moodFrom: 'joy', moodK: smooth(51.4, 51.9, t), happy: lerp(0.6, 0, p), look: [lerp(0.7, 0.8, p), lerp(0.0, 0.85, p)],
+        look: [1, 0.1], scarfWave: 0.4 * (1 - smooth(51, 52, t)), mouth: t < 63.4 ? 0.3 : undefined });
+      if (t > 64.1) { // listening, then puzzled look at the router
+        const p = smooth(65.25, 65.7, t);
+        Object.assign(o, { mood: 'neutral', moodFrom: 'joy', moodK: smooth(64.3, 64.8, t), happy: lerp(0.6, 0, p), look: [lerp(0.7, 0.8, p), lerp(0.0, 0.85, p)],
           browAngle: 0.7 * p, browL: 0.6 * p, browR: -0.25 * p, headTilt: lerp(-4, 8, p), lean: lerp(0.05, 0.12, p), smile: lerp(0.5, -0.2, p) });
       }
     }
@@ -260,26 +261,26 @@
   function noaState(t) {
     const o = { t, flip: true, pose: 'stand', mood: 'joy', gesture: 'cheer' };
     let x = 1395, y = 900;
-    if (t < 47.66) {
-      Object.assign(o, { flip: false, pose: 'crouch', mood: 'focused', moodFrom: 'focused', gesture: 'reach', gestureFrom: 'reach', reachTo: [150, -60], look: [0.1, -1], mouth: 0.25 * smooth(46.95, 47.2, t) });
+    if (t < 60.56) {
+      Object.assign(o, { flip: false, pose: 'crouch', mood: 'focused', moodFrom: 'focused', gesture: 'reach', gestureFrom: 'reach', reachTo: [150, -60], look: [0.1, -1], mouth: 0.25 * smooth(59.85, 60.1, t) });
       x = 1360;
-    } else if (t < 48.7) { // springs up and cheers
-      const u = inv(47.66, 47.85, t);
-      Object.assign(o, { squash: u < 1 ? -0.12 * (1 - u) : 0.08 * spring(t, 47.85, 8, 20), look: [0.6, -0.3], mouth: 0.6, bounce: 1 });
-      y = 900 - 40 * hop(t, 47.66, 47.95) - 28 * hop(t, 48.05, 48.4);
+    } else if (t < 61.6) { // springs up and cheers
+      const u = inv(60.56, 60.75, t);
+      Object.assign(o, { squash: u < 1 ? -0.12 * (1 - u) : 0.08 * spring(t, 60.75, 8, 20), look: [0.6, -0.3], mouth: 0.6, bounce: 1 });
+      y = 900 - 40 * hop(t, 60.56, 60.85) - 28 * hop(t, 60.95, 61.3);
       x = 1360;
-    } else if (t < 50.0) { // hops toward Saba
-      const h1 = hop(t, 48.75, 49.15), h2 = hop(t, 49.2, 49.6);
+    } else if (t < 62.9) { // hops toward Saba
+      const h1 = hop(t, 61.65, 62.05), h2 = hop(t, 62.1, 62.5);
       y = 900 - 36 * Math.max(h1, h2);
-      x = lerp(1360, 1175, ease.inOut(inv(48.75, 49.6, t)));
+      x = lerp(1360, 1175, ease.inOut(inv(61.65, 62.5, t)));
       Object.assign(o, { look: [0.8, -0.1], mouth: 0.35, bounce: 1, vel: [-500, 0], gesture: 'cheer' });
-      if (t > 49.6) Object.assign(o, { gesture: 'none', gestureFrom: 'cheer', gestureK: smooth(49.6, 49.95, t), mood: 'joy', squash: 0.06 * spring(t, 49.6, 8, 18) });
+      if (t > 62.5) Object.assign(o, { gesture: 'none', gestureFrom: 'cheer', gestureK: smooth(62.5, 62.85, t), mood: 'joy', squash: 0.06 * spring(t, 62.5, 8, 18) });
     } else { // scooped up into the hug
-      const k = ease.inOut(inv(50.05, 50.5, t));
-      x = lerp(1175, 1125, k); y = lerp(900, 805, k) + 12 * Math.sin((t - 50.45) * 4.2) * smooth(50.4, 50.7, t) * (1 - smooth(51.1, 51.5, t));
+      const k = ease.inOut(inv(62.95, 63.4, t));
+      x = lerp(1175, 1125, k); y = lerp(900, 805, k) + 12 * Math.sin((t - 63.35) * 4.2) * smooth(63.3, 63.6, t) * (1 - smooth(64, 64.4, t));
       Object.assign(o, { hug: k, gesture: 'none', mood: 'joy', look: [0.9, 0], bounce: 0.6 });
-      if (t > 51.2) { // talks: pulls back a little, then glances at the router
-        const q = smooth(51.25, 51.6, t), r = smooth(52.2, 52.6, t);
+      if (t > 64.1) { // talks: pulls back a little, then glances at the router
+        const q = smooth(64.15, 64.5, t), r = smooth(65.1, 65.5, t);
         Object.assign(o, { hug: lerp(1, 0.3, q), mood: 'proud', moodFrom: 'joy', moodK: q, look: [lerp(0.8, -0.9, r), lerp(0, 0.8, r)], headTilt: lerp(0, -6, r) });
       }
     }
@@ -288,15 +289,15 @@
 
   // ================================================================== SHOT 2+3: living room (master -> two-shot -> router macro)
   function roomCam(t) {
-    if (t < 51.2) {
-      const x = key(t, [[46.93, 985], [47.6, 995], [50.0, 1000], [51.2, 1020]]);
-      const y = key(t, [[46.93, 560], [47.6, 565], [48.0, 545, 'out'], [51.2, 540]]);
-      const zoom = key(t, [[46.93, 1.19], [47.58, 1.24, 'inOut'], [47.75, 1.17, 'out'], [50.0, 1.2], [51.2, 1.25]]);
+    if (t < 64.1) {
+      const x = key(t, [[59.83, 985], [60.5, 995], [62.9, 1000], [64.1, 1020]]);
+      const y = key(t, [[59.83, 560], [60.5, 565], [60.9, 545, 'out'], [64.1, 540]]);
+      const zoom = key(t, [[59.83, 1.19], [60.48, 1.24, 'inOut'], [60.65, 1.17, 'out'], [62.9, 1.2], [64.1, 1.25]]);
       return { x, y, zoom };
     }
     // two-shot in the hug, then follow their gaze to the router
     const tw = { x: 1020, y: 505, zoom: 2.05 }, rt = { x: 1458, y: 800, zoom: 6.4 };
-    const drift = inv(51.2, 53.3, t);
+    const drift = inv(64.1, 53.3, t);
     const a = { x: tw.x + 10 * drift, y: tw.y, zoom: tw.zoom + 0.08 * drift };
     if (t < 53.3) return a;
     const p = ease.inOut(inv(53.3, 54.25, t));
@@ -310,13 +311,13 @@
 
   function shotRoom(ctx, t) {
     const cam = roomCam(t);
-    const shake = decay(t, 47.6, 3.2) * 1.4 + decay(t, 48.38, 6) * 0.7;
-    const flash = Math.max(decay(t, 47.6, 3.5) * (t >= 47.6 ? 1 : 0), decay(t, 46.93, 8) * 0.35);
+    const shake = decay(t, 60.5, 3.2) * 1.4 + decay(t, 61.28, 6) * 0.7;
+    const flash = Math.max(decay(t, 60.5, 3.5) * (t >= 60.5 ? 1 : 0), decay(t, 59.83, 8) * 0.35);
     const macro = t > 53.3;
     ctx.save();
     A.camera(ctx, { ...cam, shake, t });
-    A.drawLivingRoom(ctx, t, { tvGlow: { color: t < 48 ? '#bfffd8' : '#ffe9a0', intensity: 1.3 + 0.5 * decay(t, 46.93, 3) }, lamp: 0 });
-    lampRock(ctx, t, (1 + 0.4 * decay(t, 47.6, 3)) * (0.95 + 0.05 * A.noise1(t * 2.3)));
+    A.drawLivingRoom(ctx, t, { tvGlow: { color: t < 48 ? '#bfffd8' : '#ffe9a0', intensity: 1.3 + 0.5 * decay(t, 59.83, 3) }, lamp: 0 });
+    lampRock(ctx, t, (1 + 0.4 * decay(t, 60.5, 3)) * (0.95 + 0.05 * A.noise1(t * 2.3)));
     if (flash > 0.01) {
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = clamp(flash) * 0.6;
       ctx.fillStyle = A.radial(ctx, 960, 480, 0, 1300, [[0, '#fff6e0'], [1, '#ffcf80']]); ctx.fillRect(0, 0, 1920, 1080); ctx.restore();
@@ -330,7 +331,7 @@
       A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'back');
       A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'front');
       const S = sabaState(t), N = noaState(t);
-      const hugging = t >= 50.0;
+      const hugging = t >= 62.9;
       if (hugging) { A.drawSaba(ctx, S.x, S.y, 0.95, S.o); A.drawNoa(ctx, N.x, N.y, 0.95, N.o); }
       else { A.drawNoa(ctx, N.x, N.y, 0.95, N.o); A.drawSaba(ctx, S.x, S.y, 0.95, S.o); }
       drawSnacks(ctx, t);
@@ -338,11 +339,11 @@
     if (bitOut) drawTinyBit(ctx, t);
     ctx.restore();
     if (!macro || t < 54.0) {
-      drawConfetti(ctx, t, [[680, 330, -1, 47.62], [930, 330, 1, 47.64]]);
+      drawConfetti(ctx, t, [[680, 330, -1, 60.52], [930, 330, 1, 60.54]]);
     }
     if (macro) macroGrade(ctx, t);
     // cut punch: brief white-hot flash on the leap
-    if (t >= 47.6 && t < 47.7) { ctx.fillStyle = `rgba(255,248,225,${0.35 * (1 - inv(47.6, 47.7, t))})`; ctx.fillRect(0, 0, 1920, 1080); }
+    if (t >= 60.5 && t < 60.6) { ctx.fillStyle = `rgba(255,248,225,${0.35 * (1 - inv(60.5, 60.6, t))})`; ctx.fillRect(0, 0, 1920, 1080); }
   }
 
   // ------------------------------------------------------------------ macro: tiny Bit at the router
@@ -528,7 +529,7 @@
 
   // light streak from Bit (bottom centre) sweeping up into the ring start point
   function streak(ctx, t, R) {
-    const u = inv(57.1, 57.3, t);
+    const u = inv(77.78, 77.98, t);
     if (u <= 0 || u >= 1.2) return;
     const a0 = -Math.PI * 0.62;
     const start = [R.cx + Math.cos(a0) * R.r, R.cy + Math.sin(a0) * R.r];
@@ -542,7 +543,7 @@
     };
     const head = ease.inOut(clamp(u)), tail = Math.max(0, head - 0.3);
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
-    for (const [w, c, a] of [[60, '#ffb020', 0.25], [26, '#ffe070', 0.6], [9, '#ffffff', 1]]) {
+    for (const [w, c, a] of [[80.68, '#ffb020', 0.25], [26, '#ffe070', 0.6], [9, '#ffffff', 1]]) {
       ctx.beginPath();
       for (let i = 0; i <= 40; i++) { const s = lerp(tail, head, i / 40), p = P(s); i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
       ctx.strokeStyle = c; ctx.globalAlpha = a; ctx.lineWidth = w; ctx.stroke();
@@ -566,7 +567,7 @@
     }
     ctx.globalAlpha = 1;
     // slam burst sparks
-    const tau = t - 57.3;
+    const tau = t - 77.98;
     if (tau > 0 && tau < 1.6) {
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       for (let i = 0; i < 60; i++) {
@@ -584,17 +585,17 @@
   function endCard(ctx, t) {
     if (!GL) GL = buildLogo();
     const R = GL.ring, B = CARD.logoBox, img = haveImg();
-    const slam = t >= 57.3;
-    const shake = decay(t, 57.3, 7) * 1.2;
+    const slam = t >= 77.98;
+    const shake = decay(t, 77.98, 7) * 1.2;
     ctx.drawImage(cardBG(), 0, 0);
     // breathing light behind the logo
-    const pulse = 1 + 0.06 * Math.sin((t - 57.3) * 2.4);
-    A.glow(ctx, B.cx, B.cy, 820 * pulse, '#2a5bff', 0.28 * smooth(57.2, 57.5, t));
-    A.glow(ctx, B.cx, B.cy + 20, 560, '#ffd21f', (0.16 + 0.5 * decay(t, 57.3, 3)) * smooth(57.25, 57.32, t));
+    const pulse = 1 + 0.06 * Math.sin((t - 77.98) * 2.4);
+    A.glow(ctx, B.cx, B.cy, 820 * pulse, '#2a5bff', 0.28 * smooth(77.88, 78.18, t));
+    A.glow(ctx, B.cx, B.cy + 20, 560, '#ffd21f', (0.16 + 0.5 * decay(t, 77.98, 3)) * smooth(77.93, 78, t));
     cardParticles(ctx, t, img ? { cx: B.cx, cy: B.cy, r: B.h * 0.4 } : R);
 
     ctx.save();
-    A.camera(ctx, { x: 960, y: 540, zoom: 1 + 0.035 * decay(t, 57.3, 4) + 0.012 * inv(57.3, 60, t), shake, t });
+    A.camera(ctx, { x: 960, y: 540, zoom: 1 + 0.035 * decay(t, 77.98, 4) + 0.012 * inv(77.98, 80.68, t), shake, t });
     // Bit peeks from behind the logo (drawn first = behind)
     drawPeekBit(ctx, t, img);
     if (img) drawImageLogo(ctx, t);
@@ -602,8 +603,8 @@
     ctx.restore();
 
     // shockwave ring on the slam
-    if (t > 57.3 && t < 57.9) {
-      const u = inv(57.3, 57.9, t), cx = img ? B.cx : R.cx, cy = img ? B.cy : R.cy;
+    if (t > 77.98 && t < 78.58) {
+      const u = inv(77.98, 78.58, t), cx = img ? B.cx : R.cx, cy = img ? B.cy : R.cy;
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       ctx.strokeStyle = `rgba(255,230,140,${0.7 * (1 - u)})`; ctx.lineWidth = 26 * (1 - u) + 1;
       A.ellipse(ctx, cx, cy, 120 + ease.out(u) * 1100, 120 + ease.out(u) * 1100); ctx.stroke();
@@ -611,42 +612,42 @@
     }
     drawTaglines(ctx, t);
     // white-out from Bit's burst settles into the card; slam flash
-    const wf = Math.max(0.9 * (1 - smooth(57.12, 57.2, t)), slam ? 0.55 * decay(t, 57.3, 9) : 0);
+    const wf = Math.max(0.9 * (1 - smooth(77.8, 77.88, t)), slam ? 0.55 * decay(t, 77.98, 9) : 0);
     if (wf > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,244,210,${wf})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
   }
 
   const logoBuf = () => A.layer('s7:logobuf', 1920, 1080, () => {});
   function drawWordmark(ctx, t) {
     const R = GL.ring;
-    const prog = inv(57.2, 57.3, t) >= 1 ? 1 : clamp((ease.inOut(inv(57.1, 57.3, t)) - 0.45) / 0.55);
+    const prog = inv(77.88, 77.98, t) >= 1 ? 1 : clamp((ease.inOut(inv(77.78, 77.98, t)) - 0.45) / 0.55);
     // glow halo (bloom) under the letters
-    const out = smooth(57.3, 57.3001, t);
+    const out = smooth(77.98, 77.98, t);
     const letterK = g => { // letters burst out of the ring sideways, overshoot, settle
-      const u = inv(57.3, 57.58, t); const e = ease.outBack(u);
+      const u = inv(77.98, 78.26, t); const e = ease.outBack(u);
       return { dx: (1 - e) * (R.cx - (g.x + g.g.adv / 2)), s: lerp(0.4, 1, clamp(e * 1.0)) };
     };
-    const float = Math.sin((t - 57.3) * 1.8) * 4 * smooth(57.6, 58, t);
+    const float = Math.sin((t - 77.98) * 1.8) * 4 * smooth(78.28, 58, t);
     ctx.save(); ctx.translate(0, float);
     if (out > 0) {
       // bloom
-      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.55 + 0.6 * decay(t, 57.3, 2.5);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.55 + 0.6 * decay(t, 77.98, 2.5);
       for (const p of GL.place) { const k = letterK(p); ctx.save(); ctx.translate(p.x + k.dx + p.g.adv / 2, GL.base); ctx.scale(k.s, k.s); ctx.drawImage(p.g.glow, -p.g.adv / 2 - p.g.bx, -p.g.by); ctx.restore(); }
       ctx.restore();
       for (const p of GL.place) {
         const k = letterK(p);
-        ctx.save(); ctx.translate(p.x + k.dx + p.g.adv / 2, GL.base); ctx.scale(k.s, k.s); ctx.globalAlpha = clamp(inv(57.3, 57.36, t));
+        ctx.save(); ctx.translate(p.x + k.dx + p.g.adv / 2, GL.base); ctx.scale(k.s, k.s); ctx.globalAlpha = clamp(inv(77.98, 78.04, t));
         ctx.drawImage(p.g.art, -p.g.adv / 2 - p.g.bx, -p.g.by); ctx.restore();
       }
     }
     // ring on top (letters emerge from behind it)
-    const ringPop = 1 + 0.18 * spring(t, 57.3, 6, 14);
+    const ringPop = 1 + 0.18 * spring(t, 77.98, 6, 14);
     ctx.save(); ctx.translate(R.cx, R.cy); ctx.scale(ringPop, ringPop); ctx.translate(-R.cx, -R.cy);
-    A.glow(ctx, R.cx, R.cy, R.r * 2.2, '#ffd21f', 0.18 * smooth(57.25, 57.3, t));
+    A.glow(ctx, R.cx, R.cy, R.r * 2.2, '#ffd21f', 0.18 * smooth(77.93, 77.98, t));
     drawRing(ctx, R, prog, t);
-    playIcon(ctx, R, ease.outBack(inv(57.32, 57.6, t)), t);
+    playIcon(ctx, R, ease.outBack(inv(78, 78.28, t)), t);
     // orbiting glint (Bit's light living in the ring)
     if (prog >= 1) {
-      const a = -Math.PI * 0.62 + (t - 57.3) * 2.2;
+      const a = -Math.PI * 0.62 + (t - 77.98) * 2.2;
       const gx = R.cx + Math.cos(a) * R.r - 0.14 * Math.sin(a) * R.r, gy = R.cy + Math.sin(a) * R.r;
       A.glow(ctx, gx, gy, R.w * 1.1, '#fff6c8', 0.35); star(ctx, gx, gy, R.w * 0.32, '#ffffff');
     }
@@ -654,7 +655,7 @@
     streak(ctx, t, R);
     ctx.restore();
     // shine sweep across the whole wordmark (masked to letters via buffer)
-    const su = inv(58.05, 58.7, t);
+    const su = inv(78.73, 79.38, t);
     if (su > 0 && su < 1) {
       const buf = logoBuf(), g = buf.getContext('2d');
       g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, 1920, 1080);
@@ -673,32 +674,32 @@
   function drawImageLogo(ctx, t) {
     const B = CARD.logoBox, iw = logoImg.naturalWidth, ih = logoImg.naturalHeight;
     const s = Math.min(B.w / iw, B.h / ih), w = iw * s, h = ih * s;
-    const u = inv(57.3, 57.6, t), e = ease.outBack(u);
-    const sc = t < 57.3 ? 0 : lerp(0.6, 1, e) * (1 + 0.012 * Math.sin((t - 57.3) * 1.8) * smooth(57.6, 58, t));
+    const u = inv(77.98, 78.28, t), e = ease.outBack(u);
+    const sc = t < 77.98 ? 0 : lerp(0.6, 1, e) * (1 + 0.012 * Math.sin((t - 77.98) * 1.8) * smooth(78.28, 58, t));
     const R = { cx: B.cx, cy: B.cy, r: Math.min(w, h) * 0.4, w: 20 };
     streak(ctx, t, R);
     if (sc <= 0) return;
     ctx.save(); ctx.translate(B.cx, B.cy); ctx.scale(sc, sc);
-    A.glow(ctx, 0, 0, Math.max(w, h) * 0.7, '#ffd21f', 0.25 + 0.5 * decay(t, 57.3, 3));
+    A.glow(ctx, 0, 0, Math.max(w, h) * 0.7, '#ffd21f', 0.25 + 0.5 * decay(t, 77.98, 3));
     ctx.drawImage(logoImg, -w / 2, -h / 2, w, h);
     ctx.restore();
   }
 
   function drawPeekBit(ctx, t, img) {
-    if (t < 58.15) return;
+    if (t < 78.83) return;
     const B = CARD.logoBox;
     const at = img ? [B.cx + B.w * 0.36, B.cy - B.h * 0.32] : GL.vNotch;
-    const u = ease.outBack(inv(58.15, 58.45, t));
+    const u = ease.outBack(inv(78.83, 79.13, t));
     const lift = lerp(0, 1, u);
     const bs = 0.95;
     const y = at[1] + (1 - lift) * 120 * bs + 40 * bs;
-    const w = smooth(58.45, 58.55, t) * (1 - smooth(58.95, 59.08, t));
-    A.drawBit(ctx, at[0], y, bs, { t, mood: 'cheeky', limbs: 'stand', wink: w, trail: 0, glow: 1.2, look: [-0.3, 0.2], armR: [58, -72], sparkle: w, rot: 0.06 * Math.sin((t - 58.3) * 3) });
-    if (t > 58.45 && t < 58.85) { const s = Math.sin(inv(58.45, 58.85, t) * Math.PI); star(ctx, at[0] + 60, y - 120, 30 * s + 0.01, '#fff6c8'); }
+    const w = smooth(79.13, 79.23, t) * (1 - smooth(79.63, 79.76, t));
+    A.drawBit(ctx, at[0], y, bs, { t, mouth: 0, mood: 'cheeky', limbs: 'stand', wink: w, trail: 0, glow: 1.2, look: [-0.3, 0.2], armR: [58, -72], sparkle: w, rot: 0.06 * Math.sin((t - 78.98) * 3) });
+    if (t > 79.13 && t < 79.53) { const s = Math.sin(inv(79.13, 79.53, t) * Math.PI); star(ctx, at[0] + 80.68, y - 120, 30 * s + 0.01, '#fff6c8'); }
   }
 
   function drawTaglines(ctx, t) {
-    const he = ease.out(inv(57.7, 57.95, t)), en = ease.out(inv(57.8, 58.05, t)), ti = ease.out(inv(57.85, 58.1, t));
+    const he = ease.out(inv(78.22, 78.45, t)), en = ease.out(inv(78.3, 78.52, t)), ti = ease.out(inv(78.36, 78.58, t));
     if (he > 0) {
       ctx.save(); ctx.globalAlpha = he;
       const y = CARD.tagHeY + (1 - he) * 26;
@@ -738,11 +739,13 @@
 
   // ================================================================== register
   A.scene({
-    name: 's7_goal', start: 46.0, end: 60.0,
+    name: 's7_goal', start: 58.9, end: 81.0, shift: 0,
     draw(ctx, s) {
       const t = s.t;
       if (t < T_CUT_ROOM) shotTV(ctx, t);
-      else if (t < T_CARD) shotRoom(ctx, t);
+      else if (t < T_PAYOFF) shotRoom(ctx, t);
+      else if (t < T_MACRO) shotPayoff(ctx, t);
+      else if (t < T_CARD) shotMacro(ctx, t);
       else endCard(ctx, t);
     },
   });

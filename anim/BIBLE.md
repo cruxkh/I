@@ -266,3 +266,4 @@ Speakers now also include `ILVIP`, `EMBY` (lip-sync via A.mouth('ILVIP', t) etc.
 - `A.drawSwitchOverlay(ctx, x, y, w, h, t, o)` — TV-screen UI overlay inside a screen rect: `o.p` 0..1: dim screen, card
   "עובר ל-GOTV..." with progress bar, then at p≥0.8 a big check `✓ GOTV פעיל` with gold burst.
 - `A.drawQueueSign(ctx, x, y, s, o)` — hanging sign `ממתין בתור · WAITING IN LINE` with a ticket number.
+Note (client): ILVIP and EMBY are the client's own older services, so naming them is approved by the client. Keep the jab playful.

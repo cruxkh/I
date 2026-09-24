@@ -961,10 +961,19 @@ def _wind(dur, r, muffled=False, gust_rate=0.5, fin=0.3, fout=0.6, howl=0.4):
 
 
 @sfx('room_tone_cozy', 'Cosy apartment room tone: warm air + faint fridge/electric hum, radiator hiss with an '
-     'occasional metallic tick, wall clock tick-tock (left), faint muffled wind outside. 15.5 s, 0.8 s fade-in.', 0.0,
-     'bed', -30)
+     'occasional metallic tick, wall clock tick-tock (left), faint muffled wind outside. 23.4 s (S2 v2 6.2-29.2 + '
+     'tail), 0.8 s fade-in/out.', 0.0, 'bed', -30)
 def _(r):
-    dur = 15.5
+    return _room(23.4, r)
+
+
+@sfx('room_tone_tag', 'Same cosy room tone, 19.2 s version for S7 v2 (58.9 -> fades out by 78.1 under the end card).',
+     0.0, 'bed', -30)
+def _(r):
+    return _room(19.2, r)
+
+
+def _room(dur, r):
     n = N(dur)
     t = tax(n)
     air = lp(pink(n, r), 900) * 0.5
@@ -974,7 +983,7 @@ def _(r):
     hiss = bp(white(n, r), 3500, 9000) * 0.08 * (0.8 + 0.2 * slow_noise(n, r, 0.4))
     rad = pan(hiss, 0.6)
     # radiator ticks / pings
-    for tm in [2.3, 6.9, 11.8]:
+    for tm in np.arange(2.3, dur - 1, 4.7):
         pn = N(0.4)
         p = bell(r.uniform(1800, 2600), 0.4, r, decay=0.12) * 0.25 + click(pn, r, 2500, 8, 0.003) * 0.2
         add_at(rad, pan(p, 0.6), tm + r.uniform(-0.3, 0.3), 0.35)
@@ -1007,24 +1016,24 @@ def tv_speaker(x, r, drive=1.5):
 
 
 @sfx('tv_crowd_live', 'Live match crowd from the living-room TV (small band-limited speaker, mono): excited '
-     'murmur building to a rising "ooOOH" as the striker breaks away; ends HARD at 8.3 s (= the 14.5 freeze). '
+     'murmur building to a rising "ooOOH" as the striker breaks away; ends HARD at 9.1 s (= the 15.3 freeze). '
      'Cue at 6.2.', 0.0, 'bed', -22)
 def _(r):
-    dur = 8.3
+    dur = 9.1
     n = N(dur)
     t = tax(n)
-    ex = env(n, [(0, 0.35), (5.5, 0.5), (6.4, 0.7), (8.3, 1.0)])
+    ex = env(n, [(0, 0.35), (6.3, 0.5), (7.2, 0.7), (9.1, 1.0)])
     base = _stadium_bed(dur, r, ex, count=30)
     # rising ooh near the end
     sw = np.zeros((2, n))
     rr = np.random.default_rng(99)
     for k in range(24):
         f0 = rr.uniform(110, 190)
-        pitch = f0 * (1 + 0.5 * np.clip((t - 6.2) / 2.1, 0, 1) ** 1.5)
+        pitch = f0 * (1 + 0.5 * np.clip((t - 7.0) / 2.1, 0, 1) ** 1.5)
         src = glottal(pitch, n, rr, breath=0.2)
-        wo = np.clip((t - 7.2) / 0.8, 0, 1)
+        wo = np.clip((t - 8.0) / 0.8, 0, 1)
         y = formant(src, 'u') * (1 - wo) + formant(src, 'o') * wo
-        a = np.clip((t - 6.0 - rr.uniform(0, 0.5)) / 2.0, 0, 1) ** 1.5
+        a = np.clip((t - 6.8 - rr.uniform(0, 0.5)) / 2.0, 0, 1) ** 1.5
         sw += pan(y * a, rr.uniform(-1, 1))
     sw /= np.sqrt(24)
     y = base + sw * 1.2
@@ -1210,9 +1219,9 @@ def _(r):
 # ---------------------------------------------------------------- data world
 
 @sfx('dataworld_ambience', 'Inside the fibre: electric hum with slow beating, flowing data streams (fluttering '
-     'filtered noise), tiny random digital pips flicking past in stereo, low tunnel air. 10 s bed.', 0.0, 'bed', -24)
+     'filtered noise), tiny random digital pips flicking past in stereo, low tunnel air. 14.4 s bed (29.2-43.4 + tail).', 0.0, 'bed', -24)
 def _(r):
-    dur = 10.0
+    dur = 14.4
     n = N(dur)
     t = tax(n)
     hum = (np.sin(2 * np.pi * 100 * t) + 0.5 * np.sin(2 * np.pi * 200.7 * t) + 0.25 * np.sin(2 * np.pi * 301.5 * t)
@@ -1227,7 +1236,7 @@ def _(r):
         flow.append(fl)
     flow = np.vstack(flow)
     pips = np.zeros((2, n))
-    for k in range(70):
+    for k in range(100):
         pn = N(0.05)
         f = r.choice([1200, 1600, 2000, 2400, 3000, 3600, 4800]) * r.uniform(0.98, 1.02)
         p = np.sin(2 * np.pi * f * tax(pn)) * np.exp(-tax(pn) / 0.012) * attack(pn, 0.001)
@@ -1239,9 +1248,9 @@ def _(r):
 
 
 @sfx('traffic_jam_grumble', 'Traffic jam of idling packets: low chugging engine rumble (many slow-pulsing sub '
-     'motors), impatient grumbling murmurs. 8 s bed, fades out over the last 1 s.', 0.0, 'bed', -24)
+     'motors), impatient grumbling murmurs. 12.6 s bed (29.2 -> the 41.5 boost), fades out over the last 1 s.', 0.0, 'bed', -24)
 def _(r):
-    dur = 8.0
+    dur = 12.6
     n = N(dur)
     t = tax(n)
     y = np.zeros((2, n))
@@ -1860,6 +1869,197 @@ def _(r):
     # guarantee silence by the end (film ends at 60.0 with hit at 57.3 -> 2.7 s after hit)
     y *= np.vstack([env(n, [(0, 1), (2.2, 1), (2.95, 0), (3.0, 0)])] * 2)
     return y
+
+
+# ---------------------------------------------------------------- VERSION 2 additions (81 s cut)
+
+def _ticks(dur, r, fout=0.0):
+    n = N(dur)
+    y = np.zeros(n)
+    for k in range(int(dur / 0.125)):
+        L = N(0.03)
+        f = 2400 if k % 8 == 0 else (1900 if k % 2 == 0 else 1750)
+        c = np.sin(2 * np.pi * f * tax(L)) * np.exp(-tax(L) / 0.004) * attack(L, 0.0005)
+        c += click(L, r, 4000, 5, 0.002) * 0.1
+        add_at(y, c * (1.0 if k % 8 == 0 else 0.6), k * 0.125)
+    return fade(y, 0, fout)
+
+
+@sfx('buffering_ticks_long', 'Buffering spinner ticks, 12.0 s non-looping version (15.55 -> 27.55, stops just before '
+     'the GOTV switch); same sound as buffering_tick_loop, 0.4 s fade-out.', 0.0, 'bed', -26)
+def _(r):
+    return _ticks(12.0, r, 0.4)
+
+
+@sfx('tv_crowd_calm', 'Calm live match crowd on the TV speaker (mono), smooth and relaxed -- the background TV '
+     'during the backgammon payoff. 5.2 s: 1.5 s fade-in, 0.6 s fade-out.', 0.0, 'bed', -22)
+def _(r):
+    dur = 5.2
+    y = _stadium_bed(dur, r, np.full(N(dur), 0.3), count=24)
+    m = tv_speaker(y, r, 1.2)
+    return fade(m, 1.5, 0.6)
+
+
+def _wood_hit(r, body=((230, 14, 0.8), (520, 12, 0.6), (980, 10, 0.4)), bright=((2600, 14, 1.0), (4300, 18, 0.7)),
+              dur=0.25, hard=1.0, tau=0.0008):
+    n = N(dur)
+    ex = white(n, r) * np.exp(-tax(n) / tau)
+    y = sum(reson(ex, f, q, a) for f, q, a in bright) * hard * 2.5
+    y += sum(reson(ex, f, q, a) for f, q, a in body) * 2.0
+    return y + ex * 0.15
+
+
+@sfx('dice_roll', 'Backgammon dice thrown onto the wooden board: two dice bounce with shrinking gaps, tumble-rattle, '
+     'clack against each other, settle. First landing = hit 0.0 s; settled by ~0.8 s. 1.3 s.', 0.0)
+def _(r):
+    dur = 1.3
+    n = N(dur)
+    y = np.zeros((2, n))
+    for d, (t0, p) in enumerate([(0.0, -0.15), (0.035, 0.2)]):
+        tt, gap, amp = t0, r.uniform(0.11, 0.14), 1.0
+        for k in range(7):
+            h = _wood_hit(r, hard=r.uniform(0.7, 1.2),
+                          bright=((r.uniform(2300, 3000), 14, 1.0), (r.uniform(3900, 5200), 18, 0.7)))
+            add_at(y, pan(h, p + r.uniform(-0.05, 0.05)), tt, amp)
+            tt += gap
+            gap *= 0.68
+            amp *= 0.72
+        # tumble/roll rattle
+        rt = tt
+        while rt < tt + 0.18:
+            add_at(y, pan(_wood_hit(r, hard=0.6, dur=0.05), p), rt, amp * r.uniform(0.3, 0.6))
+            rt += r.uniform(0.022, 0.035)
+        add_at(y, pan(_wood_hit(r, hard=0.5), p), rt + 0.05, amp * 0.5)  # settle
+    # dice clack into each other
+    add_at(y, st(click(N(0.03), r, 5200, 10, 0.002)) * 0.35, 0.2)
+    y = reverb(y, IR_room(), 0.25, tail=False)
+    return y
+
+
+@sfx('checker_clack', 'Backgammon checker slapped down on a point: hard wood-on-wood clack + board knock, tiny '
+     'settle click. Hit 0.0 s. 0.5 s.', 0.0)
+def _(r):
+    n = N(0.5)
+    y = np.zeros(n)
+    add_at(y, _wood_hit(r, body=((180, 12, 1.0), (420, 12, 0.7), (760, 10, 0.4)),
+                        bright=((1850, 9, 1.0), (3100, 11, 0.6)), dur=0.3, hard=1.2, tau=0.0006), 0)
+    add_at(y, _wood_hit(r, dur=0.05, hard=0.5) * 0.25, 0.028)
+    return reverb(y, IR_room(), 0.25, tail=False)
+
+
+@sfx('case_open', 'Wooden backgammon case opened: two metal latches (click ... click, hit 0.02 / 0.20 s), a short '
+     'hinge creak, lid lands open with a wooden thunk (0.95 s) and checkers rattle inside. 1.8 s.', 0.02)
+def _(r):
+    dur = 1.8
+    n = N(dur)
+    y = np.zeros((2, n))
+    for (tm, p) in [(0.02, -0.25), (0.20, 0.25)]:
+        L = N(0.25)
+        ex = white(L, r) * np.exp(-tax(L) / 0.0006)
+        c = reson(ex, 3600, 22) * 3 + reson(ex, 5900, 28) * 2 + reson(ex, 1400, 8) * 1.2 + ex * 0.2
+        c += np.sin(2 * np.pi * 6200 * tax(L)) * np.exp(-tax(L) / 0.03) * 0.08  # spring tink
+        add_at(y, pan(c, p), tm)
+    # hinge creak: stick-slip impulse train
+    cn = N(0.5)
+    tc = tax(cn)
+    rate = 70 + 60 * np.sin(np.pi * tc / 0.5) + 20 * slow_noise(cn, r, 8, -1, 1)
+    ph = np.cumsum(rate / SR)
+    imp = np.diff(np.floor(ph), prepend=0) * r.uniform(0.6, 1.0, cn)
+    cr = reson(imp, 950, 12) + reson(imp, 1750, 14) * 0.7 + reson(imp, 2700, 16) * 0.4
+    cr *= np.sin(np.pi * tc / 0.5) ** 0.7
+    add_at(y, pan(cr * 1.5, 0.1), 0.40)
+    # lid thunk + checker rattle
+    th = _wood_hit(r, body=((140, 10, 1.0), (330, 10, 0.7), (700, 9, 0.4)), bright=((1900, 8, 0.5), (3000, 10, 0.3)),
+                   dur=0.4, hard=0.8, tau=0.0015)
+    add_at(y, st(th + thump(0.4, 120, 60, 0.05, 0.0, r) * 0.4), 0.95)
+    for k in range(9):
+        add_at(y, pan(_wood_hit(r, dur=0.05, hard=0.8), r.uniform(-0.4, 0.4)), 0.97 + abs(r.normal(0, 0.08)),
+               r.uniform(0.1, 0.3))
+    return reverb(y, IR_room(), 0.25, tail=False)
+
+
+@sfx('gotv_switch', 'GOTV "switch activated" success: button click (hit 0.0 s), soft power-up sweep, rising D-major '
+     'bell arpeggio, confirming chord at 0.34 s with warm low swell and a swirl of gold sparkle. 2.4 s.', 0.0)
+def _(r):
+    dur = 2.4
+    n = N(dur)
+    t = tax(n)
+    y = np.zeros((2, n))
+    add_at(y, st(click(N(0.04), r, 2800, 6, 0.002) * 0.6 + _wood_hit(r, dur=0.04, hard=0.3) * 0.2), 0)
+    sw = np.sin(phase_of(300 * 4 ** np.clip(t / 0.3, 0, 1))) * env(n, [(0, 0), (0.05, 0.25), (0.3, 0.3), (0.4, 0)])
+    y += st(sw * 0.4)
+    bp_ = ((1, 1, 1.0), (2.0, 0.35, 0.5), (3.0, 0.15, 0.3), (4.2, 0.08, 0.2))
+    for k, f in enumerate([587.3, 740.0, 880.0, 1174.7]):
+        add_at(y, pan(bell(f, 1.2, r, bp_, decay=0.35), -0.4 + 0.27 * k), 0.06 + 0.07 * k, 0.45)
+    ch = sum(bell(f, 2.0, r, bp_, decay=0.9) for f in [1174.7, 1480.0, 1760.0, 2349.3]) * 0.3
+    add_at(y, np.vstack([ch, np.roll(ch, N(0.004))]), 0.34)
+    pad = sum(np.sin(2 * np.pi * f * t) for f in [146.8, 220.0, 293.7]) * env(n, [(0, 0), (0.34, 0), (0.5, 0.12),
+                                                                                    (1.4, 0.05), (2.4, 0)])
+    y += st(pad * 0.5)
+    for k in range(45):
+        tm = 0.34 + abs(r.normal(0, 0.35))
+        add_at(y, pan(bell(r.uniform(4000, 9500), 0.3, r, decay=0.07), np.sin(tm * 9)), tm,
+               0.12 * np.exp(-(tm - 0.34) * 1.2))
+    y += np.vstack([hp(pink(n, r), 6000), hp(pink(n, r), 6000)]) * 0.03 * env(n, [(0, 0), (0.34, 0), (0.45, 1), (2.2, 0)])
+    return reverb(y, IR_hall(), 0.35, tail=False)
+
+
+@sfx('error_bonk', 'Old-provider error: dull cheap two-tone "bonk-bonk" (descending buzzy square through the TV '
+     'speaker) + a dead thunk. Mono. Hit 0.005 s; second bonk at 0.21 s. 0.8 s.', 0.005)
+def _(r):
+    n = N(0.8)
+    y = np.zeros(n)
+    for (tm, f, L) in [(0.005, 392, 0.16), (0.21, 277, 0.32)]:
+        bn = N(L)
+        tb = tax(bn)
+        fb = f * (1 + 0.25 * np.exp(-tb / 0.012))
+        b = (square(fb, None, 0.4) * 0.6 + np.sin(phase_of(fb)) * 0.6) * env(bn, [(0, 0), (0.004, 1), (L * 0.5, 0.7), (L, 0)])
+        add_at(y, lp(b, 2500), tm)
+    add_at(y, thump(0.3, 150, 70, 0.05, 0.2, r) * 0.5, 0.21)
+    m = tv_speaker(y, r, 1.3)
+    return reverb(m, IR_room(), 0.2, tail=False)[0]
+
+
+@sfx('sleepy_tuba_wah', 'Comic deflating tuba "wuaaah..." for the sleepy buffering packet: one long low note sagging '
+     'F2 -> C2 with a lazy widening wobble, closing wah and a deflating hiss/pfft. Hit 0.05 s. 2.2 s.', 0.05)
+def _(r):
+    dur = 2.2
+    n = N(dur)
+    t = tax(n)
+    f = np.interp(t, [0, 0.3, 1.9, 2.2], [87.3, 90.0, 65.4, 62.0])
+    f *= 1 + np.clip(t / 1.5, 0, 1) * 0.03 * np.sin(2 * np.pi * (4.5 - 1.5 * t / dur) * t)
+    src = saw(f) * 0.8 + square(f, None, 0.45) * 0.2
+    a = env(n, [(0, 0), (0.05, 1), (1.2, 0.8), (1.9, 0.4), (2.2, 0)])
+    y = stft_shape(src * a, lpsweep(lambda tt: np.interp(tt, [0, 0.4, 2.2], [350, 900, 220]), 14), nper=2048)
+    y = formant(y, 'o', 0.55) * 0.8 + y * 0.6
+    hiss = bp(white(n, r), 1800, 6000) * env(n, [(0, 0), (0.8, 0), (1.3, 0.08), (2.0, 0.03), (2.2, 0)])
+    pf = bp(white(n, r), 400, 3000) * env(n, [(0, 0), (1.95, 0), (1.98, 0.4), (2.15, 0)])
+    y = sat(y * 1.3, 1.3) + hiss + pf
+    return reverb(y, IR_tunnel(), 0.25, tail=False)
+
+
+@sfx('packet_pant', 'Two little exhausted packets panting "hh-hh-hh" (tiny breathy voices, slightly out of step, '
+     'L/R), arriving late. 3.6 s with fade-in 0.3 / fade-out 0.8.', 0.0)
+def _(r):
+    dur = 3.6
+    n = N(dur)
+    y = np.zeros((2, n))
+    for (per, p, f0, sh) in [(0.27, -0.35, 520, 1.7), (0.33, 0.35, 440, 1.55)]:
+        tt = r.uniform(0, 0.1)
+        k = 0
+        while tt < dur:
+            out = (k % 2 == 0)
+            L = r.uniform(0.09, 0.13) if out else r.uniform(0.07, 0.1)
+            bn = N(L)
+            br = white(bn, r)
+            v = glottal(np.full(bn, f0 * (1.05 if out else 0.95)), bn, r, breath=0.6)
+            src = br * 0.7 + v * (0.35 if out else 0.1)
+            s = formant(src, 'ae' if out else 'e', sh) * (np.hanning(bn) ** 0.8)
+            add_at(y, pan(hp(s, 500), p), tt, 1.0 if out else 0.55)
+            tt += per * (0.45 if out else 0.55) + r.normal(0, 0.01)
+            k += 1
+    y = reverb(y, IR_room(), 0.2, tail=False)
+    return fade(y, 0.3, 0.8)
 
 
 # ----------------------------------------------------------------------------------------

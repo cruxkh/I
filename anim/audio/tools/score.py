@@ -34,12 +34,12 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 MUS = os.path.join(ROOT, 'audio', 'music')
 SF2 = os.path.join(MUS, 'sf', 'GeneralUser-GS.sf2')
 SR = 48000
-DUR = 60.0
+DUR = 81.0
 N = int(SR * DUR)
 RNG = np.random.default_rng(5401)
 
 # segment boundaries: music before 14.5 is tape-stopped, music of 14.5..44.8 is hard-gated at 44.8
-SEG_BOUNDS = [14.5, 44.85]
+SEG_BOUNDS = [15.3, 57.75]
 
 
 def seg_of(t):
@@ -79,6 +79,14 @@ def hum(amount=0.006):
 # ----------------------------------------------------------------------------------------------
 # Tracks
 # ----------------------------------------------------------------------------------------------
+SHIFT = [0.0]   # global time offset applied to every event (lets v1 sections be re-placed)
+
+
+def speaking(t, pad0=0.05, pad1=0.0):
+    t = t + SHIFT[0]
+    return any(l[0] - pad0 < t < l[1] + pad1 for l in LINES)
+
+
 class Track:
     def __init__(self, name, stem, prog=None, bank=0, drums=False, gain=1.0, pan=0.0, rev=0.25,
                  synth=None, width=1.0):
@@ -93,10 +101,10 @@ class Track:
                 self.n(t, dur, x, vel, **kw)
             return
         vel = int(np.clip(vel, 1, 127))
-        self.notes.append((float(t), float(dur), m(note), vel, kw))
+        self.notes.append((float(t) + SHIFT[0], float(dur), m(note), vel, kw))
 
     def cc(self, t, num, val):
-        self.ctl.append((float(t), 'cc', num, int(np.clip(val, 0, 127))))
+        self.ctl.append((float(t) + SHIFT[0], 'cc', num, int(np.clip(val, 0, 127))))
 
     def expr(self, t0, t1, v0, v1, curve=1.0, step=0.02):
         """CC11 ramp."""
@@ -106,7 +114,7 @@ class Track:
             self.cc(t0 + (t1 - t0) * u, 11, v0 + (v1 - v0) * (u ** curve))
 
     def bend(self, t, semis):
-        self.ctl.append((float(t), 'bend', semis, 0))
+        self.ctl.append((float(t) + SHIFT[0], 'bend', semis, 0))
 
 
 TR = {}
@@ -314,7 +322,7 @@ def s1():
 # S2  Living room 6.2 - 14.5 (tape stop)
 # ============================================================================================
 def s2():
-    g = Grid(6.2, 60 * 16 / 8.3)
+    g = Grid(6.2, 60 * 16 / 9.1)
     b = g.b
     # post-stinger snow twinkle
     for i, n_ in enumerate(['D6', 'A5', 'F#5', 'Eb5', 'D5']):
@@ -332,7 +340,7 @@ def s2():
             bb = bar * 4 + beat
             if bb == 0:
                 continue
-            speak = any(l[0] - 0.05 < g(bb) < l[1] for l in LINES)
+            speak = speaking(g(bb))
             pizzlo.n(g(bb) + hum(0.005), 0.3, bassnotes[bar][beat], 88 if beat % 2 == 0 else 74)
             root, up = harm[bar]
             if bar == 2 and beat >= 2:
@@ -351,33 +359,35 @@ def s2():
             darb.n(g(bb + 0.5) + hum(0.004), 0.2, 'ka', 30)
     # gap answers
     for i, (n_, d) in enumerate([('F#4', .11), ('G4', .11), ('A4', .09)]):  # clarinet "hiccup" 10.24-10.5
-        clar.n(10.24 + i * 0.085, d, n_, 72)
+        clar.n(10.24 + i * 0.085, d, n_, 66)
+    for i, n_ in enumerate(['A3', 'D4', 'F#4', 'A4']):   # little "come play" hint on oud (backgammon payoff later)
+        oud.n(10.25 + i * 0.06, 0.25, n_, 64 + 4 * i)
     for i, n_ in enumerate(['D4', 'Eb4', 'D4']):
-        oud.n(12.41 + i * 0.065, 0.3, n_, 70)
+        oud.n(12.36 + i * 0.045, 0.3, n_, 70)
     # ---- bar 4: rising excitement under "Just football? Go go go go!"
     t0 = g(12)
     chrom = list(range(m('D3'), m('D3') + 16))
     trem.cc(6.2, 11, 45)
     for i, n_ in enumerate(chrom):
         trem.n(t0 + i * b / 4, b / 2 * 1.05, [n_, n_ + 12], 70 + 3 * i)
-    trem.expr(t0, 14.49, 45, 125, 1.3)
+    trem.expr(t0, 15.29, 45, 125, 1.3)
     for i in range(8):
         pizzlo.n(g(12 + i / 2), 0.2, 'D2', 80 + 4 * i)
     horns.cc(t0 - 0.01, 11, 40)
-    horns.n(t0, 14.49 - t0, ['A3', 'D4', 'Eb4'], 90)
-    horns.expr(t0, 14.49, 40, 122, 1.5)
+    horns.n(t0, 15.29 - t0, ['A3', 'D4', 'Eb4'], 90)
+    horns.expr(t0, 15.29, 40, 122, 1.5)
     tuba.cc(t0 - 0.01, 11, 50)
-    tuba.n(t0, 14.49 - t0, 'D2', 90)
-    tuba.expr(t0, 14.49, 50, 120, 1.5)
-    for i in range(int((14.49 - t0) / 0.055)):
+    tuba.n(t0, 15.29 - t0, 'D2', 90)
+    tuba.expr(t0, 15.29, 50, 120, 1.5)
+    for i in range(int((15.29 - t0) / 0.055)):
         tt = t0 + i * 0.055
-        timp.n(tt, 0.08, 'D2', int(40 + 70 * (tt - t0) / (14.5 - t0)))
+        timp.n(tt, 0.08, 'D2', int(40 + 70 * (tt - t0) / (15.3 - t0)))
     for i in range(16):
         k = 'doum' if i % 4 == 0 else ('tek' if i % 2 == 0 else 'ka')
         darb.n(g(12 + i / 4), 0.2, k, 60 + 3 * i)
     for i in range(8):
         darb.n(g(14 + i / 8), 0.15, 'tek' if i % 2 else 'ka', 90 + 3 * i)
-    fx.n(13.2, 1.3, 'riser', 70, lo=400, hi=6000, curve=2.0)
+    fx.n(14.0, 1.3, 'riser', 70, lo=400, hi=6000, curve=2.0)
 
 
 # ============================================================================================
@@ -574,7 +584,7 @@ def s5():
         tt = t0
         while tt < t1 - 1e-6:
             n_ = patt[ch][k % 8]
-            speak = any(l[0] - 0.1 < tt < l[1] for l in LINES)
+            speak = speaking(tt, 0.1)
             lowstr.n(tt + hum(0.003), s * 0.95, n_, (84 if k % 4 == 0 else 70) - (10 if speak else 0))
             if not speak:
                 strings.n(tt + hum(0.003), s * 0.9, m(n_) + 12, 66 if k % 4 == 0 else 56)
@@ -1130,7 +1140,7 @@ def render_sf(tr, notes):
     s.control_change(ch, 11, 127)
     s.control_change(ch, 10, 64)
     s.pitchbend(ch, 8192)
-    s.pitchbend_range(ch, 2)
+    s.pitchbend_range(ch, getattr(tr, 'bendrange', 2))
     ev = []
     for t, dur, n, vel, kw in notes:
         ev.append((int(round(t * SR)), 1, n, vel))
@@ -1153,7 +1163,7 @@ def render_sf(tr, notes):
                 if typ == 2:
                     s.control_change(ch, a, b)
                 elif typ == 3:
-                    s.pitchbend(ch, int(np.clip(8192 + a / 2 * 8192, 0, 16383)))
+                    s.pitchbend(ch, int(np.clip(8192 + a / getattr(tr, 'bendrange', 2) * 8192, 0, 16383)))
                 continue
         smp = max(smp, pos)
         if smp > pos:
@@ -1167,7 +1177,7 @@ def render_sf(tr, notes):
         elif typ == 2:
             s.control_change(ch, a, b)
         else:
-            s.pitchbend(ch, int(np.clip(8192 + a / 2 * 8192, 0, 16383)))
+            s.pitchbend(ch, int(np.clip(8192 + a / getattr(tr, 'bendrange', 2) * 8192, 0, 16383)))
     if pos is not None and pos < stop:
         buf = np.frombuffer(s.generate(stop - pos), dtype=np.float32).reshape(-1, 2)
         out[pos:stop] = buf
@@ -1260,7 +1270,7 @@ _pseudo = {'darb': [], 'fx': []}
 
 
 def _pseudo_n(self, t, dur, note, vel=90, **kw):
-    _pseudo[self.name].append((float(t), float(dur), note, int(np.clip(vel, 1, 127)), kw))
+    _pseudo[self.name].append((float(t) + SHIFT[0], float(dur), note, int(np.clip(vel, 1, 127)), kw))
 
 
 darb.n = _pseudo_n.__get__(darb)
@@ -1293,9 +1303,9 @@ def main():
         wet = np.stack([signal.fftconvolve(send[:, c], ir[:, c])[:N] for c in range(2)], 1) * 0.5
         y = dry + wet
         if sg == 0:
-            y = tape_stop(y, SEG_BOUNDS[0])
+            y = tape_stop(y, 15.3)
         elif sg == 1:
-            y = gate_at(y, 44.8)
+            y = gate_at(y, 57.7)
         final.setdefault(stem, np.zeros((N, 2)))
         final[stem] += y
     # carve 1-4 kHz under dialogue (gentle, ~-3.5 dB) - linear, so applied per stem
@@ -1311,8 +1321,8 @@ def main():
         final[stem] = final[stem] - depth * env[:, None] * band
     # master fade: ring out, fade 58.6 -> 60
     fade = np.ones(N)
-    a = int(58.6 * SR)
-    fade[a:] = np.cos(np.linspace(0, np.pi / 2, N - a)) ** 1.5
+    a = int(80.2 * SR)
+    fade[a:] = np.cos(np.linspace(0, np.pi / 2, N - a)) ** 1.2
     for stem in final:
         final[stem] *= fade[:, None]
     # section dynamics (emotional shape): the goal must be the peak, ocean a notch below, tag intimate
