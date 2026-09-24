@@ -28,3 +28,13 @@
 - Facing: screen-right light 3/4; flip faces left. Anchors: Saba sit/rise = seat contact, floor o.floor (150) below; at rise 1 feet at y+150. Saba jump = floor under him (o.air = jump height). Noa sit = seat, feet o.floor (100) below; sitStyle:'floor' cross-legged anchor=floor.
 - Blends: moodFrom+moodK, gestureFrom+gestureK. Arms: armL/armR [shoulderDeg,elbowDeg], handL/handR IK targets (anchor-local), handShapeL/R relax|open|fist|point|grip, wristL/R, armRBehind. Face: headTilt, turn(0.25), browRaise, browAngle, browL/R, lid, happy, smile, jaw. Body: squash, shoulders, breath, idle, tremble. Light: light, rimColor, rimA, lw, shadow, vel (scarf/curls trail). Saba: air, floor, armrestX/Y, glint. Noa: reachTo, sitStyle, floor, bounce, mugTilt, steam.
 - Master scales: Saba 0.95 in chair at A.LR.chair (700,760) -> head top ~395, feet ~903. Noa 0.95 at x≈1100, feet y≈905, usually flip:true to face Saba. A.LR.sofa is a pouf at (1100,790): sit pose there.
+
+## journey.js
+- drawTelAviv(ctx,t,o): world 3840x2160, o.cam {x,y,zoom} same maths as A.camera (default {1920,1080,0.5} = whole panorama). Main plane == A.camera(ctx,o.cam) so overlays use world coords. o.roar, o.broadcast (mast pulse rings). Crisp to zoom 2.5.
+- A.TLV: stadium{545,1695,rx456,ry176}, mast{1238,1518}, mastTop{1238,836}, building{1167,1915,top1545}, sign{1112,1452} (שידור חי), iptvSign{1167,1578}, seaHorizon{y1150,x0 2600,x1 3840}, moon{3230,330}, azrieli{1570,470}, jaffa{2690,1110}, coast[...], launchPath (mast top over Azrieli out to sea (4200,1330)).
+  A.TLV.cams: wide{1920,1080,.5}, stadium{550,1665,2.0}, mast{1230,1215,1.35}, mastTop{1300,1000,2.2}, azrieli{1600,900,1.2}, sea{2900,1250,1.0}, seaWide{2700,1150,.7}. Suggested: stadium->mast whip at 4.6; from 5.0 pull toward {1700,1000,0.9} while packet stream head 0->1.
+- drawStadiumClose(ctx,t,o): o.roar 0..1; centre kept clear.
+- drawDataTunnel(ctx,t,o): o.speed(1), o.z (default t*4*speed), o.hue, o.jam 0..1. Vanishing point (960,470); a character ~1 unit deep has feet at y≈854; middle band dimmed.
+- drawOceanFloor(ctx,t,o): o.scroll (layers 0.2/0.5/1/1.35), o.cableY (760), o.cableW (56), o.depthTint. A.oceanCablePath(x,o) with same o.
+- drawRouteMap(ctx,x,y,w,h,t,o): o.p 0..1, o.km (default p*11000), o.alpha. Inset ~500x280, also good full-frame.
+- drawPacketStream(ctx,pts,t,o): count 40, speed .35, size 14, spread 26, head 0..1 (animate for launch), colors, alpha, seed, trail.

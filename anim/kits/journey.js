@@ -1215,7 +1215,16 @@
     ctx.globalCompositeOperation = 'lighter';
     ctx.fillStyle = A.linear(ctx, 0, 60, 0, 520, [[0, 'rgba(255,235,190,0.10)'], [1, 'rgba(255,235,190,0)']]); ctx.fillRect(0, 60, 1920, 460);
     const lights = [[150, 40], [1770, 40]];
+    ctx.globalCompositeOperation = 'source-over';
     for (const [lx, ly] of lights) {
+      ctx.save(); ctx.translate(lx, ly); ctx.rotate(lx < 960 ? 0.08 : -0.08);
+      ctx.fillStyle = '#1c1740'; A.rrect(ctx, -120, -34, 240, 64, 6); A.fillStroke(ctx, '#1c1740', 5);
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 8; j++) { ctx.fillStyle = '#fffbe8'; A.ellipse(ctx, -98 + j * 28, -18 + i * 18, 10, 7); ctx.fill(); }
+      ctx.restore();
+    }
+    ctx.globalCompositeOperation = 'lighter';
+    for (const [lx, ly] of lights) {
+      A.glow(ctx, lx, ly, 640, 'rgba(255,225,160,0.22)');
       ctx.fillStyle = A.linear(ctx, lx, ly, 960, 800, [[0, 'rgba(255,240,200,0.20)'], [1, 'rgba(255,240,200,0)']]);
       ctx.beginPath(); ctx.moveTo(lx - 60, ly); ctx.lineTo(lx + 60, ly); ctx.lineTo(960 + (lx - 960) * 0.1 + 500, 1080); ctx.lineTo(960 + (lx - 960) * 0.1 - 500, 1080); ctx.closePath(); ctx.fill();
       A.glow(ctx, lx, ly, 380, 'rgba(255,230,170,0.45)');
