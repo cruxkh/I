@@ -39,22 +39,22 @@
    "who": "SABA",
    "t": 12.6,
    "voice": "bm_george",
-   "speed": 1.15,
+   "speed": 1.1,
    "pitch": -1,
    "fx": "room",
-   "text": "Just football? Go, go, go, go!",
-   "he": "רק כדורגל?! סע, סע, סע!"
+   "text": "Just football?! Go, Maccabi!",
+   "he": "רק כדורגל?! קדימה מכבי!"
   },
   {
    "id": "saba3",
    "who": "SABA",
    "t": 15.2,
    "voice": "bm_george",
-   "speed": 1.0,
+   "speed": 0.95,
    "pitch": -1,
    "fx": "room",
-   "text": "No. No, no, no! Not now!",
-   "he": "לא. לא, לא, לא! לא עכשיו!"
+   "text": "No! Not now!",
+   "he": "לא! רק לא עכשיו!"
   },
   {
    "id": "noa2",

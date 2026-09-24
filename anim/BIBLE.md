@@ -21,9 +21,9 @@ undersea cable (past a cable-biting shark), and bursts into the living room rout
 | 6.2 | **CUT** → Toronto. Establishing push-in through the frosted window of a snowy apartment (warm lamp inside). |
 | 6.9–10.2 | SABA: "Noa! Eighty-nine minutes. One one. This is it." (in armchair, leaning at the TV, scarf on) |
 | 10.5–12.4 | NOA: "Saba, breathe. It's just football." (sitting on the sofa arm/floor with a mug of cocoa) |
-| 12.6–14.9 | SABA: "Just football? Go, go, go, go!" — on TV the striker breaks away; Saba rises out of the chair. |
+| 12.6–14.7 | SABA: "Just football?! Go, Maccabi!" — on TV the striker breaks away; Saba rises out of the chair. |
 | **14.5** | **FREEZE.** TV picture freezes mid-strike, blocky compression artifacts, buffering spinner appears. Music cuts. |
-| 15.2–17.3 | SABA: "No. No, no, no! Not now!" (hands on head, horror) |
+| 15.2–16.5 | SABA: "No! Not now!" (hands on head, horror) |
 | 17.6–19.7 | NOA: "Hold on, Saba. I'll find where it's stuck." — she crouches at the router under the TV cabinet. |
 | 19.8 | Push in on the router's blinking LED… |
 | 20.3 | …WHOOSH, we dive into the light. |
