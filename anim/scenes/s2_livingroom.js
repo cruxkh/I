@@ -136,6 +136,30 @@
   function tvOverlays(ctx, x, y, w, h, t) {
     screenRef(ctx, x, y, w, h, g => { oldBug(g, t); errorToast(g, t); });
     switchOverlay(ctx, x, y, w, h, t);
+    const sa = sm(PRESS + 0.75, PRESS + 1.05, t);
+    if (sa > 0) screenRef(ctx, x, y, w, h, g => gotvSplash(g, t, sa));
+  }
+  // the GOTV app splash on the smart TV (1920×1080 screen reference)
+  function gotvSplash(g, t, a) {
+    const k = t - PRESS - 0.75, pour = sm(33.0, 34.4, t);
+    g.save(); g.globalAlpha = a;
+    g.fillStyle = A.radial(g, 960, 520, 0, 1200, [[0, '#26307a'], [0.55, '#0d1033'], [1, '#05061a']]); g.fillRect(0, 0, 1920, 1080);
+    g.save(); g.translate(960, 520); g.rotate(k * 0.25);
+    for (let i = 0; i < 24; i++) { g.fillStyle = i % 2 ? `rgba(255,210,31,${0.14 + 0.2 * pour})` : `rgba(60,110,255,${0.12 + 0.1 * pour})`; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, 1500, i / 24 * A.TAU, (i + 1) / 24 * A.TAU); g.closePath(); g.fill(); }
+    g.restore();
+    A.glow(g, 960, 520, 520 + 500 * pour, '#ffd36a', 0.55 + 0.45 * pour);
+    const pop = E.outBack(cl(k / 0.45)), breathe = 1 + 0.02 * Math.sin(t * 3);
+    if (A.drawGOTVBug) A.drawGOTVBug(g, 960, 500, 6.2 * pop * breathe, { t, shine: cl((k - 0.4) / 0.8) });
+    else A.text(g, 'GOTV', 960, 500, { font: `900 ${240 * pop}px Rubik`, fill: '#ffd21f', stroke: '#1f4fbf', lw: 16 });
+    const ta = sm(PRESS + 1.3, PRESS + 1.6, t);
+    if (ta > 0) {
+      g.globalAlpha = a * ta;
+      g.fillStyle = '#d61f2a'; A.rrect(g, 760, 720, 400, 72, 36); g.fill();
+      g.fillStyle = '#fff'; A.ellipse(g, 800, 756, 11, 11); g.fill();
+      A.text(g, 'LIVE · שידור חי', 975, 757, { font: '800 40px Rubik', fill: '#fff', dir: 'rtl' });
+    }
+    g.fillStyle = `rgba(255,248,220,${0.85 * sm(34.2, 34.9, t)})`; g.fillRect(0, 0, 1920, 1080);
+    g.restore();
   }
   // cool/desaturate grade after the freeze (screen space)
   function grade(ctx, t, amt) {
@@ -586,6 +610,179 @@
       g.fillStyle = A.radial(g, w / 2, h / 2, h * 0.55, h * 1.1, [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0.55)']]); g.fillRect(0, 0, w, h);
     }), 0, 0);
     if (t >= FREEZE && t < FREEZE + 0.12) { ctx.globalAlpha = 1 - (t - FREEZE) / 0.12; ctx.fillStyle = '#e8fbff'; ctx.fillRect(0, 0, 1920, 1080); }
+    ctx.restore();
+  }
+
+  // ------------------------------------------------------------ WhatsApp close-up (screen space), 27.7–30.9
+  const WA = { x0: 650, x1: 1270, top: 36, head: 176, input: 800, kb: 888 };
+  const MSG = 'אני רוצה להתחבר לשירותי הצפייה שלכם באפליקציה על מסך הטלוויזיה';
+  const REPLY = 'בכיף! המנוי מופעל';
+  const T_SEND = 28.33, T_BUBBLE = 28.4, T_READ = 29.1, T_TYPING = 29.4, T_REPLY = 30.2;
+  function wrapRTL(g, text, font, maxW) {
+    g.save(); g.font = font; g.direction = 'rtl';
+    const words = text.split(' '), lines = []; let cur = '';
+    for (const w of words) { const tr = cur ? cur + ' ' + w : w; if (g.measureText(tr).width > maxW && cur) { lines.push(cur); cur = w; } else cur = tr; }
+    if (cur) lines.push(cur);
+    const widths = lines.map(l => g.measureText(l).width); g.restore();
+    return { lines, w: Math.max(...widths) };
+  }
+  const waWall = () => A.layer('s2:wawall', 620, 700, (g, w, h) => {
+    g.fillStyle = '#efeae2'; g.fillRect(0, 0, w, h);
+    const r = A.rng(21); g.strokeStyle = 'rgba(120,110,90,0.12)'; g.lineWidth = 2.2; g.lineCap = 'round';
+    for (let i = 0; i < 70; i++) {
+      const x = r() * w, y = r() * h, s = 8 + r() * 10, k = r();
+      g.beginPath();
+      if (k < 0.25) g.arc(x, y, s, 0, A.TAU);
+      else if (k < 0.5) { g.moveTo(x - s, y); g.lineTo(x + s, y); g.moveTo(x, y - s); g.lineTo(x, y + s); }
+      else if (k < 0.75) { g.moveTo(x - s, y + s); g.quadraticCurveTo(x, y - s * 1.5, x + s, y + s); }
+      else { g.rect(x - s * 0.7, y - s * 0.5, s * 1.4, s); }
+      g.stroke();
+    }
+  });
+  function ticks(g, x, y, blue) {
+    g.save(); g.strokeStyle = blue ? '#53bdeb' : '#8696a0'; g.lineWidth = 2.6; g.lineCap = 'round'; g.lineJoin = 'round';
+    for (const dx of [0, 7]) { g.beginPath(); g.moveTo(x + dx - 8, y); g.lineTo(x + dx - 4, y + 4); g.lineTo(x + dx + 4, y - 5); g.stroke(); }
+    g.restore();
+  }
+  function checkEmoji(g, x, y, s) {
+    g.save(); g.fillStyle = '#35b24a'; A.rrect(g, x - s / 2, y - s / 2, s, s, s * 0.22); g.fill();
+    g.strokeStyle = '#fff'; g.lineWidth = s * 0.16; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.beginPath(); g.moveTo(x - s * 0.25, y); g.lineTo(x - s * 0.06, y + s * 0.2); g.lineTo(x + s * 0.27, y - s * 0.2); g.stroke(); g.restore();
+  }
+  function waInsert(ctx, t) {
+    const lt = t - 27.7;
+    // background: the warm room, out of focus
+    ctx.fillStyle = A.radial(ctx, 960, 480, 100, 1300, [[0, '#6b3f4f'], [0.6, '#3a2230'], [1, '#170c16']]); ctx.fillRect(0, 0, 1920, 1080);
+    const r = A.rng(4);
+    for (let i = 0; i < 16; i++) { const bx = r() * 1920, by = r() * 1080, br = 40 + r() * 90; A.glow(ctx, bx + Math.sin(t * 0.3 + i) * 10, by, br, i % 3 ? '#ffb45e' : '#9ff5d0', 0.18 + 0.1 * r()); }
+    ctx.save();
+    // handheld: slow push + tiny drift
+    const z = 1 + 0.035 * E.inOut(cl(lt / 3.2)) + 0.05 * (1 - E.out(cl(lt / 0.35)));
+    ctx.translate(960 + A.noise1(t * 1.3) * 5, 560 + A.noise1(t * 1.1 + 5) * 4); ctx.rotate(-0.012 + A.noise1(t * 0.7 + 2) * 0.006); ctx.scale(z, z); ctx.translate(-960, -560);
+    // phone body
+    ctx.fillStyle = 'rgba(0,0,0,0.45)'; A.rrect(ctx, WA.x0 - 4, WA.top + 14, WA.x1 - WA.x0 + 36, 1200, 78); ctx.fill();
+    ctx.fillStyle = '#121216'; A.rrect(ctx, WA.x0 - 22, WA.top - 22, WA.x1 - WA.x0 + 44, 1240, 78); ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 5; ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 3; A.rrect(ctx, WA.x0 - 15, WA.top - 15, WA.x1 - WA.x0 + 30, 1226, 72); ctx.stroke();
+    ctx.save(); A.rrect(ctx, WA.x0, WA.top, WA.x1 - WA.x0, 1190, 58); ctx.clip();
+    const W = WA.x1 - WA.x0, cx = (WA.x0 + WA.x1) / 2;
+    // chat wallpaper
+    ctx.drawImage(waWall(), WA.x0, WA.head, W, WA.input - WA.head + 100);
+    // status bar + header
+    ctx.fillStyle = '#008069'; ctx.fillRect(WA.x0, WA.top, W, WA.head - WA.top);
+    A.text(ctx, '15:49', WA.x0 + 74, WA.top + 26, { font: '600 22px Rubik', fill: '#fff' });
+    ctx.fillStyle = '#fff'; for (let i = 0; i < 4; i++) ctx.fillRect(WA.x1 - 110 + i * 8, WA.top + 30 - i * 4, 5, 6 + i * 4);
+    A.rrect(ctx, WA.x1 - 70, WA.top + 16, 34, 18, 4); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke(); ctx.fillRect(WA.x1 - 67, WA.top + 19, 22, 12);
+    // cutout
+    ctx.fillStyle = '#121216'; A.rrect(ctx, cx - 60, WA.top + 10, 120, 30, 15); ctx.fill();
+    const hy = WA.top + 96;
+    // back arrow (right side in RTL), avatar, name, status
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(WA.x1 - 46, hy - 14); ctx.lineTo(WA.x1 - 30, hy); ctx.lineTo(WA.x1 - 46, hy + 14); ctx.moveTo(WA.x1 - 30, hy); ctx.lineTo(WA.x1 - 58, hy); ctx.stroke();
+    ctx.save(); A.ellipse(ctx, WA.x1 - 104, hy, 34, 34); ctx.fillStyle = '#0d1033'; ctx.fill(); ctx.clip();
+    if (A.drawGOTVBug) A.drawGOTVBug(ctx, WA.x1 - 104, hy, 0.4, { t }); else A.text(ctx, 'GOTV', WA.x1 - 104, hy, { font: '900 16px Rubik', fill: '#ffd21f' });
+    ctx.restore();
+    const typing = t > T_TYPING && t < T_REPLY;
+    A.text(ctx, 'GOTV · נציג שירות', WA.x1 - 154, hy - 14, { font: '700 30px Rubik', fill: '#fff', align: 'right', dir: 'rtl' });
+    A.text(ctx, typing ? 'מקליד/ה...' : 'מחובר/ת', WA.x1 - 154, hy + 22, { font: '400 22px Rubik', fill: 'rgba(255,255,255,0.85)', align: 'right', dir: 'rtl' });
+    // header icons (left side): phone + video
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 3.5;
+    A.rrect(ctx, WA.x0 + 34, hy - 12, 30, 24, 5); ctx.stroke(); ctx.beginPath(); ctx.moveTo(WA.x0 + 64, hy - 2); ctx.lineTo(WA.x0 + 76, hy - 10); ctx.lineTo(WA.x0 + 76, hy + 10); ctx.lineTo(WA.x0 + 64, hy + 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(WA.x0 + 118, hy, 13, Math.PI * 0.6, Math.PI * 1.5); ctx.stroke();
+    // date chip
+    ctx.fillStyle = '#ffffff'; A.rrect(ctx, cx - 44, WA.head + 18, 88, 34, 10); ctx.fill();
+    A.text(ctx, 'היום', cx, WA.head + 36, { font: '500 20px Rubik', fill: '#54656f', dir: 'rtl' });
+    // encryption note
+    ctx.fillStyle = '#ffeecd'; A.rrect(ctx, WA.x0 + 60, WA.head + 66, W - 120, 58, 10); ctx.fill();
+    A.text(ctx, 'ההודעות מוצפנות מקצה לקצה', cx, WA.head + 95, { font: '400 20px Rubik', fill: '#54656f', dir: 'rtl' });
+    // ---- messages (bottom anchored, sent = LEFT green, received = RIGHT white in the Hebrew UI)
+    const font = '400 30px Rubik', lineH = 40, maxW = 400;
+    const M = wrapRTL(ctx, MSG, font, maxW);
+    const mH = M.lines.length * lineH + 44, mW = Math.max(M.w, 200) + 36;
+    const R = wrapRTL(ctx, REPLY, font, maxW), rW = R.w + 36 + 44, rH = lineH + 44;
+    const tyH = 60, gap = 16, base = WA.input - 18;
+    const tyIn = sm(T_TYPING, T_TYPING + 0.15, t) * (1 - sm(T_REPLY - 0.05, T_REPLY, t));
+    const repIn = sm(T_REPLY, T_REPLY + 0.2, t);
+    const stackH = (tyIn * (tyH + gap)) + (repIn * (rH + gap));
+    const mIn = E.outBack(inv(T_BUBBLE, T_BUBBLE + 0.25, t));
+    if (t >= T_BUBBLE) {
+      const by = base - mH - stackH, bx = WA.x0 + 22;
+      ctx.save(); ctx.translate(bx, by + mH); ctx.scale(mIn, mIn); ctx.translate(-bx, -(by + mH)); ctx.globalAlpha = cl(mIn);
+      ctx.fillStyle = 'rgba(0,0,0,0.12)'; A.rrect(ctx, bx, by + 2, mW, mH, 16); ctx.fill();
+      ctx.fillStyle = '#d9fdd3'; A.rrect(ctx, bx, by, mW, mH, 16); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(bx + 4, by); ctx.lineTo(bx - 12, by); ctx.lineTo(bx + 10, by + 18); ctx.fill();
+      M.lines.forEach((l, i) => A.text(ctx, l, bx + mW - 18, by + 28 + i * lineH, { font, fill: '#111b21', align: 'right', dir: 'rtl' }));
+      A.text(ctx, '15:49', bx + 62, by + mH - 18, { font: '400 18px Rubik', fill: '#667781' });
+      ticks(ctx, bx + 26, by + mH - 19, t > T_READ);
+      ctx.restore();
+    }
+    if (tyIn > 0) {
+      const by = base - tyH - repIn * (rH + gap), bx = WA.x1 - 22 - 110;
+      ctx.save(); ctx.globalAlpha = tyIn; ctx.fillStyle = '#fff'; A.rrect(ctx, bx, by, 110, tyH, 16); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(bx + 106, by); ctx.lineTo(bx + 122, by); ctx.lineTo(bx + 100, by + 18); ctx.fill();
+      for (let i = 0; i < 3; i++) { const j = Math.max(0, Math.sin((t - T_TYPING) * 9 - i * 0.9)); ctx.fillStyle = `rgba(134,150,160,${0.5 + 0.5 * j})`; A.ellipse(ctx, bx + 32 + i * 23, by + 32 - j * 7, 7, 7); ctx.fill(); }
+      ctx.restore();
+    }
+    if (repIn > 0) {
+      const by = base - rH, bx = WA.x1 - 22 - rW, s2 = E.outBack(inv(T_REPLY, T_REPLY + 0.25, t));
+      ctx.save(); ctx.translate(bx + rW, by + rH); ctx.scale(s2, s2); ctx.translate(-(bx + rW), -(by + rH)); ctx.globalAlpha = repIn;
+      ctx.fillStyle = 'rgba(0,0,0,0.12)'; A.rrect(ctx, bx, by + 2, rW, rH, 16); ctx.fill();
+      ctx.fillStyle = '#ffffff'; A.rrect(ctx, bx, by, rW, rH, 16); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(bx + rW - 4, by); ctx.lineTo(bx + rW + 12, by); ctx.lineTo(bx + rW - 10, by + 18); ctx.fill();
+      A.text(ctx, R.lines[0], bx + rW - 18, by + 28, { font, fill: '#111b21', align: 'right', dir: 'rtl' });
+      checkEmoji(ctx, bx + 34, by + 28, 32);
+      A.text(ctx, '15:49', bx + 38, by + rH - 16, { font: '400 18px Rubik', fill: '#667781' });
+      ctx.restore();
+    }
+    // ---- input bar
+    const typed = cl(inv(27.85, 28.3, t)), sent = t >= T_SEND;
+    const nChar = sent ? 0 : Math.floor(MSG.length * typed);
+    ctx.fillStyle = '#f0f2f5'; ctx.fillRect(WA.x0, WA.input, W, WA.kb - WA.input);
+    ctx.fillStyle = '#ffffff'; A.rrect(ctx, WA.x0 + 96, WA.input + 14, W - 116, 60, 30); ctx.fill();
+    if (nChar > 0) {
+      ctx.save(); ctx.beginPath(); ctx.rect(WA.x0 + 150, WA.input + 14, W - 230, 60); ctx.clip();
+      A.text(ctx, MSG.slice(0, nChar), WA.x1 - 74, WA.input + 45, { font: '400 28px Rubik', fill: '#111b21', align: 'right', dir: 'rtl' });
+      ctx.restore();
+      if (Math.floor(t * 3) % 2) { ctx.fillStyle = '#00a884'; ctx.fillRect(WA.x0 + 150, WA.input + 28, 3, 32); }
+    } else A.text(ctx, 'הודעה', WA.x1 - 74, WA.input + 45, { font: '400 28px Rubik', fill: '#8696a0', align: 'right', dir: 'rtl' });
+    // emoji icon (right) + send/mic button (left)
+    ctx.strokeStyle = '#8696a0'; ctx.lineWidth = 3; A.ellipse(ctx, WA.x1 - 44, WA.input + 44, 13, 13); ctx.stroke();
+    const press = 1 - 0.18 * Math.sin(Math.PI * inv(T_SEND - 0.08, T_SEND + 0.1, t));
+    ctx.save(); ctx.translate(WA.x0 + 52, WA.input + 44); ctx.scale(press, press);
+    A.ellipse(ctx, 0, 0, 32, 32); ctx.fillStyle = '#00a884'; ctx.fill();
+    ctx.fillStyle = '#fff';
+    if (nChar > 0 || (t > T_SEND - 0.1 && t < T_SEND + 0.2)) { ctx.beginPath(); ctx.moveTo(-12, -12); ctx.lineTo(14, 0); ctx.lineTo(-12, 12); ctx.lineTo(-6, 0); ctx.closePath(); ctx.fill(); }
+    else { A.rrect(ctx, -6, -14, 12, 20, 6); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, 11, 0.2, Math.PI - 0.2); ctx.moveTo(0, 11); ctx.lineTo(0, 17); ctx.stroke(); }
+    ctx.restore();
+    // ---- Hebrew keyboard
+    ctx.fillStyle = '#d3d6dc'; ctx.fillRect(WA.x0, WA.kb, W, 400);
+    const rows = ['פםןוטארק', 'ףךלחיעכגדש', 'ץתצמנהבסז'];
+    const kw = (W - 24) / 10;
+    rows.forEach((row, ri) => {
+      const n = row.length, off = (W - n * kw) / 2;
+      for (let i = 0; i < n; i++) {
+        const kx = WA.x0 + off + i * kw + 3, ky = WA.kb + 14 + ri * 74;
+        const hit = typed > 0 && !sent && A.hash(Math.floor(t * 14) * 7 + ri * 13 + i) > 0.9;
+        ctx.fillStyle = hit ? '#b5bac4' : '#ffffff'; A.rrect(ctx, kx, ky, kw - 6, 62, 8); ctx.fill();
+        A.text(ctx, row[i], kx + (kw - 6) / 2, ky + 32, { font: '400 30px Rubik', fill: '#111' });
+      }
+    });
+    ctx.restore(); // screen clip
+    // glass sheen
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = A.linear(ctx, WA.x0, WA.top, WA.x1, WA.top + 700, [[0, 'rgba(255,255,255,0.06)'], [0.4, 'rgba(255,255,255,0)'], [0.55, 'rgba(255,255,255,0.03)'], [0.6, 'rgba(255,255,255,0)']]);
+    ctx.fillRect(WA.x0, WA.top, W, 1200); ctx.restore();
+    // Noa's thumbs (typing), sleeves at the bottom corners
+    const tap = sent ? 0 : typed > 0 ? Math.abs(Math.sin(t * 22)) : 0;
+    for (const side of [-1, 1]) {
+      const sxp = side < 0 ? WA.x0 - 40 : WA.x1 + 40, tx = side < 0 ? WA.x0 + 150 + 30 * Math.sin(t * 5) * (typed > 0 && !sent ? 1 : 0) : WA.x1 - 170 + 30 * Math.sin(t * 6 + 1) * (typed > 0 && !sent ? 1 : 0);
+      const ty = (typed > 0 && !sent ? WA.kb + 90 : WA.kb + 190) - (side < 0 ? tap : 1 - tap) * 14;
+      ctx.save();
+      ctx.fillStyle = '#2aa198'; ctx.beginPath(); ctx.ellipse(sxp - side * 30, 1160, 150, 120, side * 0.3, 0, A.TAU); ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 5; ctx.stroke();
+      ctx.fillStyle = '#d9a57c'; ctx.beginPath(); ctx.ellipse(sxp + side * 10, 1040, 90, 70, side * 0.4, 0, A.TAU); ctx.fill(); ctx.stroke();
+      ctx.lineCap = 'round'; ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 50; ctx.beginPath(); ctx.moveTo(sxp + side * 10, 1030); ctx.quadraticCurveTo((sxp + tx) / 2, ty + 70, tx, ty); ctx.stroke();
+      ctx.strokeStyle = '#d9a57c'; ctx.lineWidth = 42; ctx.stroke();
+      ctx.fillStyle = '#f3d5c0'; A.ellipse(ctx, tx, ty - 4, 11, 8); ctx.fill();
+      ctx.restore();
+    }
     ctx.restore();
   }
 
