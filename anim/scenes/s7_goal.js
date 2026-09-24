@@ -15,13 +15,14 @@
 (() => {
   // ------------------------------------------------------------------ END CARD CONSTANTS (edit here)
   const CARD = {
-    logoBox: { cx: 960, cy: 452, w: 1120, h: 330 },     // the wordmark / client logo image is fitted into this box
+    logoBox: { cx: 960, cy: 385, w: 1080, h: 318 },     // the wordmark / client logo image is fitted into this box
     logoImage: 'assets/gotv_logo.png',                    // if this file exists it replaces the synthesized wordmark
     wordLeft: 'G', wordRight: 'TV',                        // wordmark = wordLeft + [ring "O"] + wordRight
     tagHe: 'הטלוויזיה של ישראל',
     tagEn: '(התקנת אפליקציה על המסך החכם)',
     filmTitle: 'PACKET FROM HOME · חבילה מהבית',
-    tagHeY: 738, tagEnY: 812, filmTitleY: 138,
+    tagHeY: 836, tagEnY: 906, filmTitleY: 104,
+    bit: { x: 960, y: 760, s: 1.3 },                      // Bit stands between the logo and the taglines (feet point)
     navy: '#0d1033', yellow: '#ffd21f', blue: '#1f4fbf',
   };
   const logoImg = new Image(); logoImg.src = CARD.logoImage;
@@ -799,6 +800,10 @@
     const R = GL.ring, B = CARD.logoBox, img = haveImg();
     const slam = t >= 77.8;
     const shake = decay(t, 77.8, 7) * 1.2;
+    // TV-style ending: crash-zoom into Bit's wink (79.8 - 80.4), then hold
+    const cz = crashZoom(t);
+    ctx.save();
+    if (cz.zoom > 1.0001) A.camera(ctx, cz);
     ctx.drawImage(cardBG(), 0, 0);
     // breathing light behind the logo
     const pulse = 1 + 0.06 * Math.sin((t - 77.8) * 2.4);
@@ -808,8 +813,6 @@
 
     ctx.save();
     A.camera(ctx, { x: 960, y: 540, zoom: 1 + 0.035 * decay(t, 77.8, 4) + 0.012 * inv(77.8, 80.5, t), shake, t });
-    // Bit peeks from behind the logo (drawn first = behind)
-    drawPeekBit(ctx, t, img);
     if (img) drawImageLogo(ctx, t);
     else drawWordmark(ctx, t);
     ctx.restore();
@@ -823,6 +826,9 @@
       ctx.restore();
     }
     drawTaglines(ctx, t);
+    drawCardBit(ctx, t);
+    ctx.restore();
+    crashFX(ctx, t);
     // white-out from Bit's burst settles into the card; slam flash
     const wf = Math.max(0.9 * (1 - smooth(77.62, 77.7, t)), slam ? 0.55 * decay(t, 77.8, 9) : 0);
     if (wf > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,244,210,${wf})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
@@ -897,17 +903,43 @@
     ctx.restore();
   }
 
-  function drawPeekBit(ctx, t, img) {
-    if (t < 78.65) return;
-    const B = CARD.logoBox;
-    const at = img ? [B.cx + B.w * 0.36, B.cy - B.h * 0.32] : GL.vNotch;
-    const u = ease.outBack(inv(78.65, 78.95, t));
-    const lift = lerp(0, 1, u);
-    const bs = 0.95;
-    const y = at[1] + (1 - lift) * 120 * bs + 40 * bs;
-    const w = smooth(78.95, 79.05, t) * (1 - smooth(79.45, 79.58, t));
-    A.drawBit(ctx, at[0], y, bs, { t, mouth: 0, mood: 'cheeky', limbs: 'stand', wink: w, trail: 0, glow: 1.2, look: [-0.3, 0.2], armR: [78.5, -72], sparkle: w, rot: 0.06 * Math.sin((t - 78.8) * 3) });
-    if (t > 78.95 && t < 79.35) { const s = Math.sin(inv(78.95, 79.35, t) * Math.PI); star(ctx, at[0] + 60, y - 120, 30 * s + 0.01, '#fff6c8'); }
+  // Bit on the card: pops up between the logo and the taglines (~78.6), idles, winks (~79.6), crash-zoom onto the wink
+  const BIT_FACE = () => [CARD.bit.x + 18 * CARD.bit.s, CARD.bit.y - 64 * CARD.bit.s]; // his face / winking eye area
+  function crashZoom(t) {
+    const k = ease.in(inv(79.8, 80.12, t)), settle = spring(t, 80.12, 7, 16);
+    const zoom = t < 79.8 ? 1 : lerp(1, 5.2, k) - 0.35 * settle * (t > 80.12 ? 1 : 0) + 0.12 * smooth(80.12, 81, t);
+    const f = BIT_FACE(), q = t < 79.8 ? 0 : clamp((1 - 1 / zoom) / (1 - 1 / 5.2)); // keep the face drifting to centre as we punch in
+    return { x: lerp(960, f[0], q), y: lerp(540, f[1], q), zoom, t, shake: 0.6 * decay(t, 80.12, 9) * (t > 80.12 ? 1 : 0) };
+  }
+  function crashFX(ctx, t) {
+    if (t > 79.8 && t < 80.2) { // speed lines rushing out
+      const u = inv(79.8, 80.2, t);
+      ctx.save(); ctx.globalAlpha = 0.5 * Math.sin(u * Math.PI); ctx.fillStyle = '#fff6d8';
+      for (let i = 0; i < 54; i++) {
+        const a = (i / 54) * A.TAU + hash(i + 3) * 0.1, r0 = 360 + hash(i + 5) * 260 - 200 * u, r1 = 1400, w = 0.01 + hash(i + 9) * 0.012;
+        ctx.beginPath(); ctx.moveTo(960 + Math.cos(a) * r0, 540 + Math.sin(a) * r0);
+        ctx.lineTo(960 + Math.cos(a + w) * r1, 540 + Math.sin(a + w) * r1); ctx.lineTo(960 + Math.cos(a - w) * r1, 540 + Math.sin(a - w) * r1); ctx.fill();
+      }
+      ctx.restore();
+    }
+    const fl = decay(t, 80.12, 10) * (t > 80.12 ? 0.45 : 0);
+    if (fl > 0.01) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,240,200,${fl})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
+  }
+  function drawCardBit(ctx, t) {
+    if (t < 78.55) return;
+    const { x, y: y0, s: bs } = CARD.bit;
+    const u = inv(78.55, 78.9, t), pop = ease.outBack(u);
+    const y = y0 + (1 - clamp(pop)) * 60 - 26 * hop(t, 78.55, 78.9) - 6 * Math.abs(Math.sin((t - 78.9) * 3.2)) * smooth(78.9, 79.1, t) * (1 - smooth(79.5, 79.6, t));
+    const sc = bs * lerp(0.3, 1, clamp(pop * 1.05));
+    A.glow(ctx, x, y - 60 * bs, 170 * bs, '#ffd21f', 0.3 * clamp(u * 2));
+    const w = smooth(79.55, 79.68, t);
+    A.drawBit(ctx, x, y, sc, { t, mouth: 0, mood: t < 79.5 ? 'joy' : 'cheeky', joyEyes: 'open', limbs: t < 79.5 ? 'arms-up' : 'stand', wink: w, winkEye: 'R', trail: 0, glow: 1.25,
+      look: [0, 0.05], sparkle: w, squash: 0.18 * spring(t, 78.9, 9, 22), shadow: 0,
+      armR: t >= 79.5 ? [58, -86 - 6 * Math.sin((t - 79.5) * 14)] : undefined });
+    if (t > 79.6 && t < 81) { // wink glint next to the winking eye
+      const q = inv(79.6, 79.9, t), s = Math.sin(clamp(q) * Math.PI * 0.5 + (q >= 1 ? 0 : 0)) * (0.8 + 0.2 * Math.sin(t * 9));
+      star(ctx, x + 52 * bs, y - 104 * bs, 26 * s + 0.01, '#fff6c8');
+    }
   }
 
   function drawTaglines(ctx, t) {
