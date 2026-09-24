@@ -148,14 +148,14 @@
 
   // ---------------------------------------------------------------- 2-bone IK
   // returns [shoulderDeg, elbowDeg] in the arm convention for side s (-1 near/left, +1 far/right)
-  function ik(sh, target, l1, l2, s) {
+  function ik(sh, target, l1, l2, s, down = 0) {
     let dx = target[0] - sh[0], dy = target[1] - sh[1];
     let dist = Math.hypot(dx, dy); const dd = clamp(dist, Math.abs(l1 - l2) + 1, l1 + l2 - 0.5);
     const phi = Math.atan2(dy, dx), cA = clamp((l1 * l1 + dd * dd - l2 * l2) / (2 * l1 * dd), -1, 1), a = Math.acos(cA);
     let best = null;
     for (const sg of [1, -1]) {
       const ang = phi + sg * a, ex = sh[0] + Math.cos(ang) * l1, ey = sh[1] + Math.sin(ang) * l1;
-      const score = s * (ex - sh[0]) + 0.6 * (ey - sh[1]);
+      const score = s * (ex - sh[0]) * (1 - down) + (0.6 + down * 3) * (ey - sh[1]);
       if (!best || score > best.score) best = { score, ex, ey };
     }
     const tx = sh[0] + Math.cos(phi) * dd, ty = sh[1] + Math.sin(phi) * dd;
@@ -321,7 +321,7 @@
     noneSit: { L: [18, -62], R: [14, -58], hL: 'relax', hR: 'relax' },
     fists: { L: [32, -128], R: [28, -125], tL: [-46, -112], tR: [48, -118], hL: 'fist', hR: 'fist' },
     point: { L: [22, -40], R: [100, 6], hL: 'relax', hR: 'point' },
-    headHands: { L: [152, 78], R: [150, 80], tL: [-88, -316], tR: [94, -318], wL: 75, wR: 75, hL: 'open', hR: 'open' },
+    headHands: { L: [152, 78], R: [150, 80], tL: [-62, -200], tR: [70, -200], wL: 8, wR: 8, down: 1, front: true, hL: 'open', hR: 'open' },
     armsUp: { L: [160, 12], R: [158, 14], hL: 'open', hR: 'open' },
     grip: { L: [30, -18], R: [30, -18], hL: 'grip', hR: 'grip' },
   });
@@ -588,13 +588,17 @@
     strokeLine(ctx, 3, SC.trimSh); ctx.restore();
   }
 
-  function sabaArm(ctx, R, s, arm, sleeveCol, handKind) {
+  // stage: 0 = whole arm, 1 = sleeve only, 2 = hand + cuff only
+  function sabaArm(ctx, R, s, arm, sleeveCol, handKind, stage = 0) {
     const { sh, e, w, dir } = arm;
+    if (stage !== 2) {
     part(ctx, R, c => tube(c, [sh, e, w], [23, 21, 18]), sleeveCol, SC.cardiganSh, { d: 10 });
     // elbow crease
     ctx.save(); ctx.beginPath(); tube(ctx, [sh, e, w], [23, 21, 18]); ctx.clip();
     ctx.beginPath(); ctx.moveTo(e[0] + (sh[0] - e[0]) * 0.18, e[1] + (sh[1] - e[1]) * 0.18); ctx.quadraticCurveTo(e[0], e[1], e[0] + (w[0] - e[0]) * 0.18, e[1] + (w[1] - e[1]) * 0.18);
     strokeLine(ctx, 2.2, 'rgba(50,25,10,0.45)'); ctx.restore();
+    }
+    if (stage === 1) return;
     const hd = dir - s * (arm.wrist || 0) * D;
     drawHand(ctx, R, [w[0] + Math.cos(dir) * 4, w[1] + Math.sin(dir) * 4], hd, handKind, SABA.handSz, s, SC.skin, SC.skinSh);
     // cuff
@@ -648,7 +652,7 @@
     const gName = pose === 'jump' && !o.gesture ? 'armsUp' : (o.gesture || 'none');
     const gKey = g => (g === 'none' && (pose === 'sit' || (pose === 'rise' && rise < 0.5))) ? 'noneSit' : g;
     const shL = [-SABA.shX, SABA.shY - shoulders - br * 1.5], shR = [SABA.shX - 4, SABA.shY - shoulders - br * 1.5];
-    const gArms = g => ({ L: g.tL ? ik(shL, g.tL, SABA.l1, SABA.l2, -1) : g.L, R: g.tR ? ik(shR, g.tR, SABA.l1, SABA.l2, 1) : g.R });
+    const gArms = g => ({ L: g.tL ? ik(shL, g.tL, SABA.l1, SABA.l2, -1, g.down || 0) : g.L, R: g.tR ? ik(shR, g.tR, SABA.l1, SABA.l2, 1, g.down || 0) : g.R });
     let G = SG[gKey(gName)] || SG.none, GA = gArms(G);
     let armL = GA.L.slice(), armR = GA.R.slice(), hL = G.hL, hR = G.hR;
     if (o.gestureFrom) {
@@ -676,7 +680,7 @@
     armR = [armR[0] + tr(8, 17) * 3 + idle * A.wob(t, 9, 0.4) * 1.5, armR[1] + tr(9, 21) * 4];
     const aL = armPts(shL, armL[0], armL[1], SABA.l1, SABA.l2, -1); aL.sh = shL; aL.wrist = wrL;
     const aR = armPts(shR, armR[0], armR[1], SABA.l1, SABA.l2, 1); aR.sh = shR; aR.wrist = wrR;
-    const rBehind = o.armRBehind ?? (aR.w[0] > SABA.shX * 0.7 && aR.w[1] > SABA.shY - 60);
+    const rBehind = o.armRBehind ?? (!(G.front && (o.gestureK ?? 1) > 0.5) && aR.w[0] > SABA.shX * 0.7 && aR.w[1] > SABA.shY - 60);
 
     // ------------- draw: far arm behind
     const torsoFrame = () => { ctx.translate(P[0], P[1]); ctx.rotate(lean); };
@@ -731,11 +735,17 @@
       blush: M.blush, glint: o.glint || 0,
     };
     if (F.gritted) F.mouthH = Math.max(F.mouthH, 12);
+    // raised arms: sleeves go behind the head, hands stay in front (keeps the face readable)
+    const upL = aL.w[1] < -230, upR = !rBehind && aR.w[1] < -230;
+    ctx.restore();
+    if (upL) sabaArm(ctx, Rt, -1, aL, SC.cardigan, hL, 1);
+    if (upR) sabaArm(ctx, Rt, 1, aR, SC.cardigan, hR, 1);
+    ctx.save(); ctx.translate(headP[0], headP[1] + 70); ctx.rotate(tilt); ctx.scale(1.08, 1.08); ctx.translate(0, -70);
     sabaHead(ctx, RR(Rt, tilt), F, t);
     ctx.restore();
     // front arms
-    sabaArm(ctx, Rt, -1, aL, SC.cardigan, hL);
-    if (!rBehind) sabaArm(ctx, Rt, 1, aR, SC.cardigan, hR);
+    sabaArm(ctx, Rt, -1, aL, SC.cardigan, hL, upL ? 2 : 0);
+    if (!rBehind) sabaArm(ctx, Rt, 1, aR, SC.cardigan, hR, upR ? 2 : 0);
     ctx.restore();
 
     ctx.restore();

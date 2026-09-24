@@ -90,7 +90,7 @@ env = np.zeros(N); a, r = np.exp(-1 / (0.08 * SR)), np.exp(-1 / (0.35 * SR)); e 
 side_s = np.convolve(side, np.ones(4800) / 4800, 'same')
 for i in range(0, N, 48):  # control rate 1 kHz
     v = side_s[i]; e = a * e + (1 - a) * v if v > e else r * e + (1 - r) * v; env[i:i + 48] = e
-duck_m, duck_s = db(-6.5 * env)[:, None], db(-3 * env)[:, None]
+duck_m, duck_s = db(-4.5 * env)[:, None], db(-3 * env)[:, None]
 
 MUS_DB, SFX_DB, DIA_DB = float(os.environ.get('MUS_DB', -3)), float(os.environ.get('SFX_DB', -2)), 0.0
 mix = dia * db(DIA_DB) + sfx * db(SFX_DB) * duck_s + mus * db(MUS_DB) * duck_m
