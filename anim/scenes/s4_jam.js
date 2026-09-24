@@ -337,7 +337,7 @@
   // ============================================================ SHOTS
   function shotA(ctx, t) {
     const k = t - 8.2; // authored against the v1 21.0 start
-    const zc = key(k, [[21.0, -0.6], [21.45, -0.2, 'out'], [21.9, 8.6, 'inOut']]);
+    const zc = key(k, [[21.0, -0.6], [21.45, -0.2, 'out'], [21.9, 11.3, 'inOut']]);
     CAMX = 0.9 * smooth(21.2, 21.85, k);
     const bz = bitZ(t), bx = bitX(t);
     const [bxs, bys] = proj(bx, 0, bz, zc);
