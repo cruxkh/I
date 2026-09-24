@@ -31,7 +31,7 @@
 
   const { clamp, lerp, inv, smooth, ease, hash, key } = A;
   const LR = A.LR;
-  const T_CUT_ROOM = 59.83, T_PAYOFF = 69.6, T_MACRO = 72.4, T_CARD = 77.62;
+  const T_CUT_ROOM = 59.83, T_PAYOFF = 68.85, T_MACRO = 72.4, T_CARD = 77.62;
 
   // ================================================================== small helpers
   const env = (t, a, b, c, d) => Math.min(smooth(a, b, t), 1 - smooth(c, d, t)); // attack a..b, release c..d
@@ -324,9 +324,15 @@
       A.text(ctx, 'TV', 36, 2, { font: '900 60px Rubik', fill: '#ffd21f', stroke: '#1f4fbf', lw: 8 });
     }
     ctx.restore();
+    if (o.live) { // restart after the goal: repaint the scorebug score 2-1 and a later clock
+      ctx.fillStyle = '#060a22'; A.rrect(ctx, 62, 52, 150, 62, 9); ctx.fill();
+      A.text(ctx, `89:${String(52 + Math.floor(o.live + 6)).padStart(2, '0')}`, 137, 85, { font: '800 38px Rubik', fill: '#fff' });
+      ctx.fillStyle = '#f4f4f4'; A.rrect(ctx, 408, 50, 150, 66, 8); ctx.fill();
+      A.text(ctx, '2-1', 483, 85, { font: '900 44px Rubik', fill: '#0b1034' });
+    }
     if (o.badge) { // payoff: LIVE · 4K · ללא תקיעות (replaces the kit's LIVE pill)
       const a = clamp(o.badge);
-      ctx.save(); ctx.globalAlpha = a; ctx.translate(1846, 190); ctx.scale(1.6, 1.6); ctx.translate(0, 0);
+      ctx.save(); ctx.globalAlpha = a; ctx.translate(1800, 196); ctx.scale(1.5, 1.5); ctx.translate(0, 0);
       ctx.font = '900 30px Rubik'; const w1 = ctx.measureText('LIVE · 4K ·').width; ctx.font = '700 30px Rubik'; const w2 = ctx.measureText('ללא תקיעות').width;
       const W = w1 + w2 + 84;
       ctx.fillStyle = '#d61f2a'; A.rrect(ctx, -W, -30, W, 60, 30); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 2.5; ctx.stroke();
@@ -339,7 +345,8 @@
   }
   function drawTVSet(ctx, t, o = {}) {
     const tv = LR.tv;
-    A.drawTV(ctx, tv.x, tv.y, tv.w, tv.h, t, { state: 'goal', matchT: o.matchT ?? matchT(t) });
+    if (o.live) A.drawTV(ctx, tv.x, tv.y, tv.w, tv.h, t, { state: 'live', matchT: o.live });
+    else A.drawTV(ctx, tv.x, tv.y, tv.w, tv.h, t, { state: 'goal', matchT: o.matchT ?? matchT(t) });
     tvOverlay(ctx, t, o);
   }
 
@@ -356,9 +363,17 @@
     return { x: 1025 + 10 * d - 10 * b, y: 505 + 25 * b, zoom: 2.05 + 0.08 * d - 0.28 * b };
   }
 
+  // after the switch the set-top box on the cabinet says GOTV (kit bakes "IPTV" into the room layer)
+  function stbLabel(ctx) {
+    const x = LR.cabinet.x + 196 + 36, y = LR.cabinet.y + 56;
+    ctx.save(); ctx.fillStyle = '#081a22'; ctx.fillRect(x, y, 60, 12);
+    A.text(ctx, 'GOTV', x + 30, y + 6.5, { font: '800 10px Rubik', fill: '#ffd21f' });
+    A.glow(ctx, x + 30, y + 6, 22, '#ffd21f', 0.18); ctx.restore();
+  }
   function roomBase(ctx, t, o = {}) {
     const flash = o.flash || 0;
     A.drawLivingRoom(ctx, t, { tvGlow: { color: t < 61 ? '#bfffd8' : '#ffe9a0', intensity: o.tvGlow ?? 1.3 }, lamp: 0 });
+    stbLabel(ctx);
     lampRock(ctx, t, (o.lamp ?? 1) * (0.95 + 0.05 * A.noise1(t * 2.3)));
     if (flash > 0.01) {
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = clamp(flash) * 0.6;
@@ -386,7 +401,7 @@
     if (t >= 67.62) drawConfetti2(ctx, t);
     if (t >= 60.5 && t < 60.6) { ctx.fillStyle = `rgba(255,248,225,${0.35 * (1 - inv(60.5, 60.6, t))})`; ctx.fillRect(0, 0, 1920, 1080); }
     // cut to the payoff on a quick warm dip
-    const dip = smooth(69.45, 69.6, t);
+    const dip = smooth(68.7, 68.85, t);
     if (dip > 0) { ctx.fillStyle = `rgba(255,236,200,${dip * 0.5})`; ctx.fillRect(0, 0, 1920, 1080); }
   }
   // a second little confetti puff on "backgammon!" (from the ceiling edge, few pieces)
@@ -425,29 +440,61 @@
     }
     ctx.restore();
   }
+  function fallbackCase(ctx, x, y, s) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+    ctx.fillStyle = '#7a4424'; A.rrect(ctx, -90, -70, 180, 70, 10); ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 5; ctx.stroke();
+    ctx.fillStyle = '#e9cf9a'; A.rrect(ctx, -70, -55, 140, 40, 6); ctx.fill();
+    ctx.fillStyle = '#5a3218'; for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(-66 + i * 23, -55); ctx.lineTo(-54 + i * 23, -30); ctx.lineTo(-42 + i * 23, -55); ctx.fill(); }
+    ctx.fillStyle = '#d6a850'; for (const dx of [-40, 40]) { ctx.fillRect(dx - 7, -74, 14, 10); }
+    ctx.strokeStyle = '#3a2216'; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(0, -70, 16, Math.PI, 0); ctx.stroke();
+    ctx.restore();
+  }
   function shotPayoff(ctx, t) {
-    const lt = t - 69.6;
+    const lt = t - 68.85;
     const cam = { x: 1080 - 6 * lt, y: 575, zoom: 1.5 + 0.03 * lt };
     ctx.save();
     A.camera(ctx, { ...cam, t, shake: 0.25 * decay(t, 70.62, 8) });
     roomBase(ctx, t, { tvGlow: 1.2 });
-    drawTVSet(ctx, t, { badge: smooth(69.75, 70.1, t) });
+    drawTVSet(ctx, t, { badge: smooth(69.0, 69.35, t), live: -6 + (t - 68.85) });
     A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.5, ledColor: GOLD_LED });
     // Saba in his armchair, turned to the table and to Noa
     const land = smooth(70.55, 70.65, t), laugh = env(t, 70.6, 70.75, 72.0, 72.35);
     const lm = 0.35 + 0.4 * Math.abs(Math.sin(t * 13));
     A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'back');
-    const shakeDice = env(t, 69.6, 69.7, 69.95, 70.02);
+    const shakeDice = env(t, 69.55, 69.65, 69.95, 70.02);
     const throwK = smooth(69.98, 70.12, t) * (1 - smooth(70.5, 70.9, t));
     const sO = { t, pose: 'sit', mood: 'joy', gesture: 'none', look: laugh > 0.3 ? [0.8, -0.3] : [0.9, 0.35], lean: 0.25 - 0.3 * laugh, headTilt: -10 * laugh,
       handR: [lerp(150, 235, throwK) + 6 * Math.sin(t * 40) * shakeDice, lerp(-240, -150, throwK) + 10 * Math.sin(t * 37) * shakeDice], handShapeR: throwK > 0.5 ? 'open' : 'fist',
       mouth: laugh > 0.05 ? lm * laugh : 0.12, happy: 0.4 + 0.6 * laugh, browRaise: 0.3 * laugh, scarfWave: 0.3 * laugh };
+    if (t < 69.55) Object.assign(sO, { handR: undefined, gesture: 'point', gestureFrom: 'none', gestureK: smooth(68.85, 69.1, t), mouth: undefined, look: [0.9, 0.4], lean: 0.2, happy: 0.4 });
     if (t > 71.45) Object.assign(sO, { gesture: 'point', handR: undefined, look: [0.9, 0.2] }); // "hey!" teasing finger at her move
     A.drawSaba(ctx, LR.chair.x, LR.chair.y, 0.95, sO);
     A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'front');
-    // board + dice
-    const bo = { t, mode: 'board', dice: inv(70.0, 70.6, t), diceVals: [6, 6], move: inv(71.05, 71.42, t) };
-    if (A.drawBackgammon) A.drawBackgammon(ctx, BOARD.x, BOARD.y, BOARD.s, bo); else fallbackBoard(ctx, BOARD.x, BOARD.y, BOARD.s, bo);
+    // the case: latches pop at 69.0, lid swings open, board lands flat with a thunk at 69.95; then dice + checker move
+    const lid = ease.inOut(inv(69.25, 69.95, t)), thunk = spring(t, 69.95, 10, 26);
+    if (t < 69.95) {
+      const co = { t, mode: 'case' };
+      ctx.save(); ctx.translate(BOARD.x, BOARD.y); ctx.scale(1 + 0.04 * lid + 0.05 * spring(t, 69.0, 12, 30), 1 - 0.55 * lid); ctx.translate(-BOARD.x, -BOARD.y);
+      if (A.drawBackgammon) A.drawBackgammon(ctx, BOARD.x, BOARD.y, BOARD.s * 1.2, co); else fallbackCase(ctx, BOARD.x, BOARD.y, BOARD.s * 1.2);
+      ctx.restore();
+      if (t > 69.0 && t < 69.3) for (const dx of [-30, 30]) star(ctx, BOARD.x + dx, BOARD.y - 38, 16 * Math.sin(inv(69.0, 69.3, t) * Math.PI) + 0.01, '#ffe7a0');
+      if (lid > 0.4) { // the board unfolding
+        ctx.save(); ctx.globalAlpha = smooth(0.4, 0.9, lid); ctx.translate(BOARD.x, BOARD.y); ctx.scale(lerp(0.6, 1, lid), lerp(0.3, 1, lid)); ctx.translate(-BOARD.x, -BOARD.y);
+        const bo0 = { t, mode: 'board', dice: 0, diceVals: [6, 6], move: 0 };
+        if (A.drawBackgammon) A.drawBackgammon(ctx, BOARD.x, BOARD.y, BOARD.s, bo0); else fallbackBoard(ctx, BOARD.x, BOARD.y, BOARD.s, bo0);
+        ctx.restore();
+      }
+    } else {
+      const bo = { t, mode: 'board', dice: inv(70.0, 70.6, t), diceVals: [6, 6], move: inv(71.05, 71.42, t) };
+      ctx.save(); ctx.translate(BOARD.x, BOARD.y); ctx.scale(1 + 0.03 * thunk, 1 - 0.06 * thunk); ctx.translate(-BOARD.x, -BOARD.y);
+      if (A.drawBackgammon) A.drawBackgammon(ctx, BOARD.x, BOARD.y, BOARD.s, bo); else fallbackBoard(ctx, BOARD.x, BOARD.y, BOARD.s, bo);
+      ctx.restore();
+      if (t < 70.3) { // dust puff from the thunk
+        const u = inv(69.95, 70.3, t);
+        for (let i = 0; i < 10; i++) { const a = Math.PI + (i / 9) * Math.PI, r = 30 + 80 * ease.out(u); ctx.globalAlpha = 0.35 * (1 - u); ctx.fillStyle = '#f3e3c8'; A.ellipse(ctx, BOARD.x + Math.cos(a) * r * 1.4, BOARD.y - 6 + Math.sin(a) * r * 0.25, 10 + 10 * u, 6 + 6 * u); ctx.fill(); }
+        ctx.globalAlpha = 1;
+      }
+    }
     // "double six!" pop
     if (t > 70.6 && t < 71.4) {
       const u = inv(70.6, 71.4, t), k = ease.outBack(clamp(u * 3));
@@ -458,9 +505,9 @@
       for (let i = 0; i < 8; i++) { const a = i / 8 * A.TAU, r = 60 + 90 * ease.out(u); star(ctx, BOARD.x + Math.cos(a) * r, BOARD.y - 40 + Math.sin(a) * r * 0.5, 14 * (1 - u) + 0.01, '#ffe680'); }
     }
     // Noa on the pouf, cross-table, laughing, then moves a checker
-    const reach = env(t, 70.9, 71.05, 71.5, 71.7);
+    const reach = Math.max(env(t, 70.9, 71.05, 71.5, 71.7), env(t, 68.9, 69.0, 69.85, 70.0));
     A.drawNoa(ctx, LR.sofa.x, LR.sofa.y, 0.95, { t, pose: 'sit', flip: true, mood: 'joy', gesture: reach > 0 ? 'reach' : laugh > 0.4 ? 'cheer' : 'none', gestureFrom: 'none', gestureK: Math.max(reach, laugh > 0.4 ? smooth(70.6, 70.8, t) * (1 - smooth(71.0, 71.2, t)) : 0),
-      reachTo: [165, -40], look: reach > 0 ? [0.8, 0.8] : laugh > 0.3 ? [0.8, -0.1] : [0.7, 0.5], mouth: laugh > 0.05 ? (0.3 + 0.4 * Math.abs(Math.sin(t * 11 + 1))) * laugh : 0.1, bounce: laugh, happy: laugh });
+      reachTo: t < 70.2 ? [175, -70] : [165, -40], look: reach > 0 ? [0.8, 0.8] : laugh > 0.3 ? [0.8, -0.1] : [0.7, 0.5], mouth: laugh > 0.05 ? (0.3 + 0.4 * Math.abs(Math.sin(t * 11 + 1))) * laugh : 0.1, bounce: laugh, happy: laugh });
     ctx.restore();
   }
 
@@ -537,6 +584,7 @@
     ctx.save();
     A.camera(ctx, { ...cam, t });
     A.drawLivingRoom(ctx, t, { tvGlow: 1.2, lamp: 1, snow: false });
+    stbLabel(ctx);
     drawCable(ctx);
     A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.3, ledColor: GOLD_LED, ledGlow: key(t, [[77.3, 0.15], [77.42, 0.8], [77.6, 0]]) });
     drawRouterBit(ctx, t);
