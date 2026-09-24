@@ -28,7 +28,7 @@
   const logoImg = new Image(); logoImg.src = CARD.logoImage;
   const haveImg = () => logoImg.complete && logoImg.naturalWidth > 0;
 
-  A.noSubs = t => t > 77.7;
+  A.noSubs = t => t > 83.7;
 
   const { clamp, lerp, inv, smooth, ease, hash, key } = A;
   const LR = A.LR;
@@ -329,7 +329,9 @@
       ctx.fillStyle = '#060a22'; A.rrect(ctx, 62, 52, 150, 62, 9); ctx.fill();
       A.text(ctx, `89:${String(52 + Math.floor(o.live + 6)).padStart(2, '0')}`, 137, 85, { font: '800 38px Rubik', fill: '#fff' });
       ctx.fillStyle = '#f4f4f4'; A.rrect(ctx, 408, 50, 150, 66, 8); ctx.fill();
-      A.text(ctx, '2-1', 483, 85, { font: '900 44px Rubik', fill: '#0b1034' });
+      A.text(ctx, '1', 448, 85, { font: '900 44px Rubik', fill: '#0b1034' });
+      A.text(ctx, ':', 483, 83, { font: '900 40px Rubik', fill: '#0b1034' });
+      A.text(ctx, '2', 518, 85, { font: '900 44px Rubik', fill: '#1f4fbf' }); // Maccabi's goals sit on the Maccabi (right) side
     }
     if (o.badge) { // payoff: LIVE · 4K · ללא תקיעות (replaces the kit's LIVE pill)
       const a = clamp(o.badge);
@@ -1010,7 +1012,7 @@
 
   // ================================================================== register
   A.scene({
-    name: 's7_goal', start: 58.9, end: 81.0, shift: 0,
+    name: 's7_goal', start: 58.9, end: 81.0, shift: 6.0,
     draw(ctx, s) {
       const t = s.t;
       if (t < T_CUT_ROOM) shotTV(ctx, t);

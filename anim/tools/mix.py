@@ -73,7 +73,7 @@ for L in tl:
 
 sfx = np.zeros((N, 2)); missing = set()
 # scene cue files authored in a scene's own (shifted) time base, see A.SHIFT in index.html
-CUE_SHIFT = {'s5_ocean': 12.9, 's6_lastmile': 12.9}
+CUE_SHIFT = {'s4_jam': 6.0, 's5_ocean': 18.9, 's6_lastmile': 18.9, 's7_goal': 6.0}
 for cf in sorted(glob.glob(f"{ROOT}/audio/cues/*.json")):
     sh = CUE_SHIFT.get(os.path.basename(cf)[:-5], 0.0)
     for c in json.load(open(cf)):

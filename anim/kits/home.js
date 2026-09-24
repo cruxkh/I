@@ -1208,7 +1208,10 @@
     A.text(g, 'הפועל', 262, 39, { font: '800 40px Rubik', fill: '#fff', dir: 'rtl' });
     // score
     g.fillStyle = flash > 0 ? A.mixc('#ffd21f', '#f4f4f4', 1 - flash) : '#f4f4f4'; A.rrect(g, 352, 4, 150, 66, 8); g.fill();
-    A.text(g, scored ? '2-1' : '1-1', 427, 39, { font: '900 44px Rubik', fill: '#0b1034' });
+    // each team's goals sit next to its own name (Hapoel left, Maccabi right), so 2-1 reads as Maccabi leading
+    A.text(g, '1', 392, 39, { font: '900 44px Rubik', fill: '#0b1034' });
+    A.text(g, ':', 427, 37, { font: '900 40px Rubik', fill: '#0b1034' });
+    A.text(g, scored ? '2' : '1', 462, 39, { font: '900 44px Rubik', fill: scored ? '#1f4fbf' : '#0b1034' });
     // Maccabi
     A.text(g, 'מכבי', 590, 39, { font: '800 40px Rubik', fill: '#fff', dir: 'rtl' });
     g.fillStyle = '#ffd21f'; g.fillRect(658, 6, 12, 62);

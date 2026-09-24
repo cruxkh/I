@@ -267,3 +267,27 @@ Speakers now also include `ILVIP`, `EMBY` (lip-sync via A.mouth('ILVIP', t) etc.
   "עובר ל-GOTV..." with progress bar, then at p≥0.8 a big check `✓ GOTV פעיל` with gold burst.
 - `A.drawQueueSign(ctx, x, y, s, o)` — hanging sign `ממתין בתור · WAITING IN LINE` with a ticket number.
 Note (client): ILVIP and EMBY are the client's own older services, so naming them is approved by the client. Keep the jab playful.
+
+# ===================== VERSION 5 (87 s) — SUPERSEDES the v2 table where they differ =====================
+Client changes: (a) Noa no longer switches via the router: she yanks out the OLD set-top box with its messy tangle of cables and
+throws it in the bin, then WhatsApps a GOTV rep on her phone; the rep replies; the GOTV app opens on the smart TV and the light/
+flash comes OUT OF THE TV SCREEN; we dive into the TV and the rest continues from there. (b) Shark: Bit is unimpressed and
+dismissive: "Ahh... another attacker..." and the attack makes him laugh. (c) Last mile: Bit enters the SMART TV, not the router.
+(d) Tag: Bit exhausted on the TV stand/cabinet top next to the TV; ILVIP and EMBY arrive there late. The old set-top box is GONE
+after 26 s everywhere (empty shelf; router may stay as plain home internet). (e) Scorebug after the goal: Maccabi 2, Hapoel 1
+(each team's number next to its own name; fixed in home.js).
+Shifts: S4 +6.0 (index.html A.SHIFT=6 before s4), S5/S6 +18.9, S7 +6.0. Duration 87.0 = 2610 frames.
+| global t | event |
+|---|---|
+| 20.6–24.7 | NOA "Because you're still with the old provider, Saba. Everyone switched to GOTV!" (unchanged) |
+| 25.0–26.1 | NOA "Bye-bye, old box!" — she yanks the old box out of the cabinet, spaghetti of cables comes with it |
+| ~26.4 | she tosses it into a bin (crash); dusts off her hands |
+| 27.3–28.8 | NOA "One message to GOTV..." — phone out; WhatsApp close-up |
+| ~28.4 | her message appears: `אני רוצה להתחבר לשירותי הצפייה שלכם באפליקציה על מסך הטלוויזיה` |
+| ~29.4 | rep typing… ; ~30.2 rep: `בכיף! המנוי מופעל ✅` (rep name `GOTV · נציג שירות`, green check marks) |
+| 31.3–32.8 | NOA "Activated! Look, Saba!" — GOTV app splash opens on the smart TV (A.drawSwitchOverlay / GOTV bug), Saba turns |
+| 33.0–35.2 | Light pours OUT of the TV screen, push into the screen, white-gold flash 34.7–35.2 |
+| 35.2–49.4 | S4 jam (v2 content, +6) |
+| 49.4–60.4 | S5 ocean (+18.9): BIT 51.1–52.4 "Marseille... the Atlantic..."; shark reveal ~52.9; BIT 53.2–54.9 bored, dismissive "Ahh... another attacker..." (half-lidded eye-roll); CHOMP 54.9; zap 55.1 and Bit LAUGHS at the shark; 56.5 "Nice try, fishy!" |
+| 60.4–64.9 | S6 last mile (+18.9): into the apartment, along the cable to the SMART TV; "Delivered!" 63.5; impact INTO THE TV 63.8 |
+| 64.9–87.0 | S7 (+6.0): goal 65.3, ... backgammon 75.6–78.4, tag at the TV stand 78.4–83.8 (ILVIP 79.0 "Did we miss the goal?", BIT 80.8 "Sorry, guys... GOTV got here first."), end card 83.8–87.0 with tongue-out crash zoom |
