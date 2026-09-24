@@ -325,6 +325,10 @@
       A.text(ctx, 'TV', 36, 2, { font: '900 60px Rubik', fill: '#ffd21f', stroke: '#1f4fbf', lw: 8 });
     }
     ctx.restore();
+    if (o.bugLow && A.drawGOTVBug) { // GOTV app watermark low on screen (visible in the TV-stand close-up)
+      ctx.fillStyle = 'rgba(8,12,40,0.55)'; A.rrect(ctx, 1500, 900, 360, 120, 24); ctx.fill();
+      A.drawGOTVBug(ctx, 1680, 960, 2.1, { alpha: 1, t, shine: (t % 3) / 3 });
+    }
     if (o.live) { // restart after the goal: repaint the scorebug score 2-1 and a later clock
       ctx.fillStyle = '#060a22'; A.rrect(ctx, 62, 52, 150, 62, 9); ctx.fill();
       A.text(ctx, `89:${String(52 + Math.floor(o.live + 6)).padStart(2, '0')}`, 137, 85, { font: '800 38px Rubik', fill: '#fff' });
@@ -366,12 +370,24 @@
     return { x: 1025 + 10 * d - 10 * b, y: 505 + 25 * b, zoom: 2.05 + 0.08 * d - 0.28 * b };
   }
 
-  // after the switch the set-top box on the cabinet says GOTV (kit bakes "IPTV" into the room layer)
+  // V5: the old set-top box was thrown out in S2. The kit bakes it (and its cable) into the room layer, so repaint
+  // the cabinet's middle compartments empty (same construction as the kit's cabinet).
   function stbLabel(ctx) {
-    const x = LR.cabinet.x + 196 + 36, y = LR.cabinet.y + 56;
-    ctx.save(); ctx.fillStyle = '#081a22'; ctx.fillRect(x, y, 60, 12);
-    A.text(ctx, 'GOTV', x + 30, y + 6.5, { font: '800 10px Rubik', fill: '#ffd21f' });
-    A.glow(ctx, x + 30, y + 6, 22, '#ffd21f', 0.18); ctx.restore();
+    const c = LR.cabinet, mx = c.x + 196, mw = c.w - 392, y = c.y, h = c.h;
+    ctx.save();
+    const cav = (cy, ch) => {
+      ctx.fillStyle = A.linear(ctx, 0, cy, 0, cy + ch, [[0, '#0b0504'], [0.7, '#1b0f0a'], [1, '#24140e']]); ctx.fillRect(mx, cy, mw, ch);
+      ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(mx, cy, mw, 8);
+      ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 2.5; ctx.strokeRect(mx, cy, mw, ch);
+    };
+    cav(y + 20, 58); cav(y + 88, h - 108);
+    ctx.fillStyle = '#5e3923'; ctx.fillRect(mx - 2, y + 78, mw + 4, 10);
+    ctx.fillStyle = 'rgba(255,200,150,0.12)'; ctx.fillRect(mx - 2, y + 78, mw + 4, 2);
+    // a faint dust-free rectangle where the box used to sit
+    ctx.fillStyle = 'rgba(255,220,180,0.05)'; ctx.fillRect(mx + 22, y + 72, mw - 44, 6);
+    // router's own cable disappears down the back
+    ctx.strokeStyle = '#161218'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(mx + mw - 30, y + 150); ctx.bezierCurveTo(mx + mw - 20, y + 120, mx + mw - 8, y + 100, mx + mw - 4, y + 92); ctx.stroke();
+    ctx.restore();
   }
   function roomBase(ctx, t, o = {}) {
     const flash = o.flash || 0;
@@ -392,7 +408,7 @@
     A.camera(ctx, { ...cam, shake, t });
     roomBase(ctx, t, { flash, tvGlow: 1.3 + 0.5 * decay(t, 59.83, 3), lamp: 1 + 0.4 * decay(t, 60.5, 3) });
     drawTVSet(ctx, t);
-    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.7, ledColor: GOLD_LED });
+    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.7, });
     A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'back');
     A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'front');
     const S = sabaState(t), N = noaState(t);
@@ -459,7 +475,7 @@
     A.camera(ctx, { ...cam, t, shake: 0.25 * decay(t, 70.62, 8) });
     roomBase(ctx, t, { tvGlow: 1.2 });
     drawTVSet(ctx, t, { badge: smooth(69.0, 69.35, t), live: -6 + (t - 68.85) });
-    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.5, ledColor: GOLD_LED });
+    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.5, });
     // Saba in his armchair, turned to the table and to Noa
     const land = smooth(70.55, 70.65, t), laugh = env(t, 70.6, 70.75, 72.0, 72.35);
     const lm = 0.35 + 0.4 * Math.abs(Math.sin(t * 13));
@@ -516,8 +532,9 @@
 
   // ================================================================== SHOT 4: router close-up, the competitors arrive late
   const LED = A.routerLED(LR.router.x, LR.router.y, LR.router.s);
-  const MCAM = { x: 1478, y: 796, zoom: 5.4 };
-  const CABLE = [[1680, 836], [1600, 834], [1545, 828], [1530, 812]]; // world pts: from off-screen right along the shelf into the router's side
+  const MCAM = { x: 1478, y: 574, zoom: 3.1 };
+  const TOP = 652; // cabinet-top standing line in front of the TV stand
+  const CABLE = [[1800, 656], [1700, 655], [1610, 652], [1560, 644]]; // world pts: from off-screen right along the cabinet top to the TV stand
   function cablePt(u) { // along CABLE polyline by fraction
     const segs = []; let L = 0;
     for (let i = 0; i < CABLE.length - 1; i++) { const l = Math.hypot(CABLE[i + 1][0] - CABLE[i][0], CABLE[i + 1][1] - CABLE[i][1]); segs.push(l); L += l; }
@@ -527,7 +544,7 @@
   }
   function drawCable(ctx) {
     ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.beginPath(); ctx.moveTo(1700, 838); ctx.bezierCurveTo(1600, 838, 1560, 834, 1532, 812);
+    ctx.beginPath(); ctx.moveTo(1820, 657); ctx.bezierCurveTo(1690, 657, 1600, 655, 1552, 642);
     ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 6; ctx.stroke(); ctx.strokeStyle = '#3a3a46'; ctx.lineWidth = 4; ctx.stroke();
     ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 1; ctx.stroke();
     ctx.restore();
@@ -542,12 +559,12 @@
     ctx.restore();
   }
   function drawPackets(ctx, t) {
-    const s = 0.3;
+    const s = 0.52;
     // ILVIP: stumbles in along the cable, stops, pants; "Did... did we miss the goal?"; deflates on "GOTV got here first."
     if (t > 72.55) {
       const u = ease.out(inv(72.55, 73.05, t)), p = cablePt(u * 0.85);
       const bob = Math.abs(Math.sin(t * 16)) * 4 * (1 - smooth(72.95, 73.1, t));
-      const x = p[0] - 18 * u, y = Math.max(p[1], 826) + 2 - bob;
+      const x = p[0] - 18 * u, y = TOP + 2 - bob;
       const deflate = smooth(75.7, 76.1, t);
       const mood = t < 73.0 ? 'panting' : t < 74.55 ? (t > 73.9 ? 'shock' : 'panting') : t < 75.7 ? 'shock' : 'grumpy';
       brandPacket(ctx, x, y, s, { t, brand: 'ILVIP', who: 'ILVIP', mood, flip: true, look: t < 74.6 ? [-0.9, -0.2] : [-0.9, 0.1], vel: [t < 73.05 ? -300 : 0, 0],
@@ -557,12 +574,12 @@
     if (t > 73.5) {
       const u = ease.out(inv(73.5, 74.25, t)), p = cablePt(u * 0.52);
       const flop = ease.outBounce(inv(74.25, 74.6, t));
-      brandPacket(ctx, p[0] + 14, Math.max(p[1], 828) + 4, s * 0.95, { t, brand: 'EMBY', who: 'EMBY', mood: t < 74.25 ? 'panting' : 'sleepy', spinner: 1, flip: true,
+      brandPacket(ctx, p[0] + 30, TOP + 4, s * 0.95, { t, brand: 'EMBY', who: 'EMBY', mood: t < 74.25 ? 'panting' : 'sleepy', spinner: 1, flip: true,
         rot: 0.35 * flop, look: [-0.8, 0.3], vel: [t < 74.25 ? -200 : 0, 0], mouth: 0.25 * Math.abs(Math.sin(t * 8)) * (1 - flop) });
     }
   }
   function drawRouterBit(ctx, t) {
-    const bs = 0.27, x = LED[0] - 10, y = LR.router.y + 3;
+    const bs = 0.46, x = 1352, y = TOP + 1;
     const o = { t, mood: 'exhausted', limbs: 'flop', shadow: 0.6, glow: 0.85, trail: 0, light: [-0.4, -0.8], rim: '#ffe7a0' };
     const pant = Math.sin(t * 9) * 0.03;
     o.squash = pant + 0.22 * spring(t, 72.48, 8, 20);
@@ -588,8 +605,9 @@
     A.camera(ctx, { ...cam, t });
     A.drawLivingRoom(ctx, t, { tvGlow: 1.2, lamp: 1, snow: false });
     stbLabel(ctx);
+    drawTVSet(ctx, t, { live: 3 + (t - 72.4), badge: 1, bugLow: 1 });
+    A.glow(ctx, LR.tv.x + LR.tv.w / 2, LR.tv.y + LR.tv.h, 420, '#9ff5d0', 0.18); // screen light spilling onto the cabinet top
     drawCable(ctx);
-    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.3, ledColor: GOLD_LED, ledGlow: key(t, [[77.3, 0.15], [77.42, 0.8], [77.6, 0]]) });
     drawRouterBit(ctx, t);
     drawPackets(ctx, t);
     ctx.restore();
@@ -614,7 +632,7 @@
     // Bit's burst whiteout -> end card
     const w = smooth(77.5, 77.62, t);
     if (w > 0) {
-      const g = ctx.createRadialGradient(840, 700, 0, 840, 700, 200 + w * 1600);
+      const g = ctx.createRadialGradient(570, 700, 0, 570, 700, 200 + w * 1600);
       g.addColorStop(0, `rgba(255,255,245,${w})`); g.addColorStop(0.5, `rgba(255,236,170,${w * 0.9})`); g.addColorStop(1, `rgba(255,220,120,${w * w})`);
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080); ctx.restore();
     }

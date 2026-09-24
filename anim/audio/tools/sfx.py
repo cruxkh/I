@@ -961,10 +961,10 @@ def _wind(dur, r, muffled=False, gust_rate=0.5, fin=0.3, fout=0.6, howl=0.4):
 
 
 @sfx('room_tone_cozy', 'Cosy apartment room tone: warm air + faint fridge/electric hum, radiator hiss with an '
-     'occasional metallic tick, wall clock tick-tock (left), faint muffled wind outside. 23.4 s (S2 v2 6.2-29.2 + '
+     'occasional metallic tick, wall clock tick-tock (left), faint muffled wind outside. 29.4 s (S2 v5 6.2-35.2 + '
      'tail), 0.8 s fade-in/out.', 0.0, 'bed', -30)
 def _(r):
-    return _room(23.4, r)
+    return _room(29.4, r)
 
 
 @sfx('room_tone_tag', 'Same cosy room tone, 19.2 s version for S7 v2 (58.9 -> fades out by 78.1 under the end card).',
@@ -1175,7 +1175,7 @@ def _(r):
 
 
 @sfx('dive_whoosh', 'Deep dive INTO the router LED: sub rising from 30 Hz, reversed-air suck and a huge sweeping '
-     'whoosh that peaks at 1.0 s (= the 29.2 flash in v2), then roars away into a tunnel tail. 2.4 s.', 1.0)
+     'whoosh that peaks at 1.0 s (= the 35.2 flash in v5), then roars away into a tunnel tail. 2.4 s.', 1.0)
 def _(r):
     dur = 2.4
     n = N(dur)
@@ -1592,7 +1592,7 @@ def _(r):
 
 
 @sfx('shore_arrival_swell', 'Cable rising to the shore: a big rolling water swell + magical upward shimmer that '
-     'crests at 1.6 s (= 53.4 in v2), then washes out. 3.2 s.', 1.6)
+     'crests at 1.6 s (= 59.4 in v5), then washes out. 3.2 s.', 1.6)
 def _(r):
     dur = 3.2
     n = N(dur)
@@ -1885,10 +1885,10 @@ def _ticks(dur, r, fout=0.0):
     return fade(y, 0, fout)
 
 
-@sfx('buffering_ticks_long', 'Buffering spinner ticks, 12.0 s non-looping version (15.55 -> 27.55, stops just before '
-     'the GOTV switch); same sound as buffering_tick_loop, 0.4 s fade-out.', 0.0, 'bed', -26)
+@sfx('buffering_ticks_long', 'Buffering spinner ticks, 9.8 s non-looping version (15.55 -> 25.35, stops as the old box '
+     'is yanked out); same sound as buffering_tick_loop, 0.4 s fade-out.', 0.0, 'bed', -26)
 def _(r):
-    return _ticks(12.0, r, 0.4)
+    return _ticks(9.8, r, 0.3)
 
 
 @sfx('tv_crowd_calm', 'Calm live match crowd on the TV speaker (mono), smooth and relaxed -- the background TV '
@@ -2060,6 +2060,154 @@ def _(r):
             k += 1
     y = reverb(y, IR_room(), 0.2, tail=False)
     return fade(y, 0.3, 0.8)
+
+
+# ---------------------------------------------------------------- VERSION 5 additions (87 s cut)
+
+@sfx('cable_yank', 'Noa yanks the old set-top box out: plastic scrape on the shelf, two plugs popping out '
+     '(main pop = hit 0.15 s, second 0.24 s), cable spaghetti whipping through the air, rattle. 1.3 s.', 0.15)
+def _(r):
+    dur = 1.3
+    n = N(dur)
+    t = tax(n)
+    y = np.zeros((2, n))
+    # scrape: stick-slip friction on wood
+    sn = N(0.25)
+    ts = tax(sn)
+    rate = 180 + 120 * ts / 0.25
+    imp = np.diff(np.floor(np.cumsum(rate / SR)), prepend=0) * r.uniform(0.4, 1, sn)
+    scr = reson(imp, 1300, 6) + reson(imp, 2900, 8) * 0.6 + bp(white(sn, r), 1500, 6000) * 0.08
+    add_at(y, pan(scr * np.hanning(sn) ** 0.5 * 1.5, -0.1), 0.0)
+    # plug pops
+    for (tm, f, a) in [(0.15, 2100, 1.0), (0.24, 1600, 0.7)]:
+        L = N(0.12)
+        ex = white(L, r) * np.exp(-tax(L) / 0.0007)
+        pp = reson(ex, f, 7) * 3 + reson(ex, f * 2.4, 9) * 1.5 + ex * 0.3
+        pp += np.sin(2 * np.pi * 220 * tax(L)) * np.exp(-tax(L) / 0.02) * 0.3
+        add_at(y, pan(pp, r.uniform(-0.3, 0.3)), tm, a)
+    # cables whipping
+    for k in range(4):
+        wd = r.uniform(0.18, 0.3)
+        w = whoosh(wd, r, peak=wd * 0.45, f_lo=700, f_hi=4500, bw=0.8, pan_from=r.uniform(-0.7, 0),
+                   pan_to=r.uniform(0, 0.7), sharp=1.5)
+        add_at(y, w, 0.2 + k * 0.1 + r.uniform(0, 0.04), 0.5)
+    # rattle of loose connectors / box
+    for k in range(14):
+        add_at(y, pan(click(N(0.03), r, r.uniform(1800, 4500), 6, 0.002), r.uniform(-0.5, 0.5)),
+               0.25 + abs(r.normal(0, 0.25)), r.uniform(0.1, 0.35))
+    return reverb(y, IR_room(), 0.25, tail=False)
+
+
+@sfx('trash_crash', 'Old box tossed into a metal trash bin: plastic-box thud + ringing bin clang, cables slapping, '
+     'debris rattle settling. Hit 0.0 s. 1.5 s.', 0.0)
+def _(r):
+    dur = 1.5
+    n = N(dur)
+    t = tax(n)
+    y = np.zeros((2, n))
+    ex = white(n, r) * np.exp(-t / 0.002)
+    clang = sum(reson(ex, f, q, a) for f, q, a in [(410, 60, 1.0), (937, 80, 0.8), (1512, 90, 0.6),
+                                                     (2660, 110, 0.45), (3980, 120, 0.3)])
+    clang *= 6
+    thud = thump(dur, 160, 70, 0.07, 0.4, r) + _wood_hit(r, body=((260, 8, 1.0), (600, 8, 0.6)),
+                                                          bright=((1500, 5, 0.6), (2700, 6, 0.4)), dur=dur,
+                                                          hard=1.0, tau=0.002) * 0.6
+    y += st(thud * 0.8) + pan(clang * 0.8, 0.1) + haas(clang * 0.2, 0.9)
+    for k in range(3):  # cables slap in after
+        L = N(0.06)
+        s = bp(white(L, r), 800, 5000) * np.exp(-tax(L) / 0.01)
+        add_at(y, pan(s, r.uniform(-0.5, 0.5)), 0.07 + k * 0.06 + r.uniform(0, 0.03), 0.5)
+    for k in range(18):
+        tm = 0.05 + abs(r.normal(0, 0.3))
+        add_at(y, pan(click(N(0.03), r, r.uniform(1500, 5000), 8, 0.002), r.uniform(-0.4, 0.5)), tm,
+               0.3 * np.exp(-tm * 2))
+    # second smaller clank as it settles
+    add_at(y, pan(clang[:N(0.8)] * 0.25, 0.1), 0.32)
+    return reverb(y, IR_room(), 0.25, tail=False)
+
+
+@sfx('phone_whoosh', 'Phone pulled out + unlocked: quick soft swoosh (peak = hit 0.18 s), glassy unlock tick and a '
+     'gentle UI shimmer blip. 0.9 s.', 0.18)
+def _(r):
+    dur = 0.9
+    n = N(dur)
+    y = whoosh(dur, r, peak=0.18, f_lo=600, f_hi=5000, bw=0.9, pan_from=0.4, pan_to=-0.1, sharp=1.8) * 0.8
+    add_at(y, st(click(N(0.03), r, 3800, 10, 0.0015) * 0.35), 0.24)
+    bn = N(0.25)
+    tb = tax(bn)
+    blip = (np.sin(phase_of(1400 + 700 * np.clip(tb / 0.06, 0, 1))) + 0.3 * np.sin(phase_of(2800 + 1400 * np.clip(tb / 0.06, 0, 1))))
+    blip *= np.exp(-tb / 0.06) * attack(bn, 0.003)
+    add_at(y, st(blip * 0.25), 0.27)
+    return reverb(y, IR_room(), 0.2, tail=False)
+
+
+@sfx('wa_send', 'Chat message sent: soft rounded upward "whoop" bubble (original, not a brand sound). Hit 0.0 s. 0.45 s.',
+     0.0)
+def _(r):
+    n = N(0.45)
+    t = tax(n)
+    f = 480 * (2.6 ** np.clip(t / 0.07, 0, 1))
+    y = np.sin(phase_of(f)) * env(n, [(0, 0), (0.004, 1), (0.07, 0.8), (0.2, 0.15), (0.45, 0)])
+    y += 0.15 * np.sin(2 * phase_of(f)) * np.exp(-t / 0.05)
+    return reverb(y, IR_room(), 0.15, tail=False)
+
+
+@sfx('wa_typing', 'Someone is typing: 7 soft irregular phone-keyboard taps (tiny glassy ticks). First tap 0.0 s. 0.8 s.',
+     0.0)
+def _(r):
+    n = N(0.8)
+    y = np.zeros(n)
+    tt = 0.0
+    for k in range(7):
+        L = N(0.03)
+        c = np.sin(2 * np.pi * r.uniform(1800, 2300) * tax(L)) * np.exp(-tax(L) / 0.003) * attack(L, 0.0004)
+        c += click(L, r, 5000, 6, 0.0015) * 0.15
+        add_at(y, c, tt, r.uniform(0.5, 1.0))
+        tt += r.uniform(0.07, 0.13)
+    return reverb(y, IR_room(), 0.15, tail=False)
+
+
+@sfx('wa_receive', 'Chat reply received: bright two-note marimba-bell "ba-ding" (up a fifth), friendly. Hits 0.0 / '
+     '0.09 s. 0.9 s.', 0.0)
+def _(r):
+    n = N(0.9)
+    y = np.zeros(n)
+    mar = ((1, 1, 1.0), (4.0, 0.25, 0.25), (9.2, 0.08, 0.1))
+    add_at(y, fade(bell(1174.7, 0.8, r, mar, decay=0.18), 0, 0.3), 0.0)
+    add_at(y, fade(bell(1760.0, 0.8, r, mar, decay=0.28), 0, 0.3), 0.09)
+    return reverb(y, IR_room(), 0.2, tail=False)
+
+
+@sfx('bit_laugh', 'Bit giggles at the shark: short high cartoon "hee-hee-hee-hah!" (voiced h-bursts, pitch around '
+     'Bit\'s voice, tumbling down), underwater-tinted. Hit 0.02 s. 1.3 s.', 0.02)
+def _(r):
+    dur = 1.3
+    n = N(dur)
+    t = tax(n)
+    syl = [(0.02, 0.085, 360, 'i'), (0.14, 0.085, 345, 'i'), (0.26, 0.085, 330, 'i'), (0.38, 0.09, 315, 'e'),
+           (0.51, 0.09, 300, 'e'), (0.66, 0.16, 285, 'ae')]
+    pitch = np.full(n, 330.0)
+    amp = np.zeros(n)
+    asp = np.zeros(n)
+    w = {v: np.zeros(n) for v in 'iae'} | {'ae': np.zeros(n)}
+    for (s, L, f, v) in syl:
+        i0, i1 = N(s), N(s + L)
+        pitch[i0:i1] = f * np.linspace(1.08, 0.94, i1 - i0)
+        amp[i0:i1] = np.hanning(i1 - i0) ** 0.5
+        w[v][i0:i1] = 1
+        h0 = max(0, i0 - N(0.025))
+        asp[h0:i0 + N(0.01)] = np.hanning(i0 + N(0.01) - h0)
+    pitch = smooth(pitch, 0.012)
+    src = glottal(pitch, n, r, breath=0.2, jitter=0.015, tilt=2600)
+    y = np.zeros(n)
+    for v in ['i', 'e', 'ae']:
+        if w[v].any():
+            y += formant(src, v, 1.25) * smooth(w[v], 0.01)
+    y = y * amp + formant(white(n, r), 'e', 1.3) * asp * 0.35
+    # little in-breath at the end
+    y += formant(white(n, r), 'i', 1.3) * env(n, [(0, 0), (0.92, 0), (1.0, 0.12), (1.12, 0)]) * 0.5
+    y = lp(y, 5500)
+    return reverb(y, IR_water(), 0.12, tail=False)
 
 
 # ----------------------------------------------------------------------------------------

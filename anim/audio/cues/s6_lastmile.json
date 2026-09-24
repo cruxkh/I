@@ -7,7 +7,7 @@
  {"sfx": "bit_charge", "t": 44.06, "gain_db": -12, "pan": -0.2},
  {"sfx": "whip_pan", "t": 44.1, "gain_db": -12, "pan": 0.2},
  {"sfx": "spark_zap", "t": 44.9, "gain_db": -12, "pan": 0.1},
- {"sfx": "router_beeps", "t": 45.12, "gain_db": -12, "pan": 0.2},
+ {"sfx": "pixel_shatter", "t": 44.92, "gain_db": -13, "pan": 0.2},
  {"sfx": "light_shimmer", "t": 44.65, "gain_db": -13, "pan": 0.0},
  {"sfx": "map_ding", "t": 45.74, "gain_db": -15, "pan": 0.35}
 ]

@@ -6,12 +6,13 @@
 // SHOTS
 //  1  30.50-32.10  WIDE establishing: calm abyss, Bit streaks in from the left inside the cable, lights the seabed.
 //                  Map inset slides in (ding 30.8 TLV), km rolling.
-//  2  32.10-33.95  TRACKING close alongside Bit inside the glass tube. Map dings MRS 32.3, GIB 32.95.
-//                  "Marseille... the Atlantic... whoa, shark!" eyes pop at 33.6 (shark silhouette ahead).
-//  3  33.95-35.60  REVEAL: the shark hovering over the cable, eyeing the incoming glow. Nom-nom, anticipation.
-//  4  35.60-36.00  LUNGE (smear) -> 36.0 CHOMP (impact frame, sparks, shake).
-//  5  36.00-37.50  36.2 Bit bounces off the pinched glass at the shark's nose -> ZAP (x-ray), shark dazed, drifts off.
-//  6  37.50-38.60  CLOSE: Bit looks back, wink: "Nice try, fishy!" (dazed shark behind).
+//  2  32.10-33.60  TRACKING close alongside Bit inside the glass tube. Map dings MRS 32.3, GIB 32.95.
+//                  "Marseille... the Atlantic..."; a shark shape glides in ahead, Bit clocks it, unimpressed.
+//  3  33.60-34.35  REVEAL (mid): the shark glides in over the cable, eyeing the incoming glow.
+//  3b 34.35-35.30  CLOSE: bored drawl "Ahh... another attacker..." half-lidded eye-roll + lazy wave; shark looms, nom-nom.
+//  4  35.30-36.00  MID: anticipation coil, LUNGE (smear) -> 36.0 CHOMP (impact frame, sparks, shake).
+//  5  36.00-36.45  36.2 Bit bounces off the pinched glass at the shark's nose -> ZAP (x-ray), shark dazed.
+//  6  36.45-38.60  CLOSE: Bit LAUGHS at the fried shark (belly laugh, tears, HA HA), then "Nice try, fishy!" wink.
 //  7  38.60-39.75  WIDE racing across the Atlantic, map back, HFX ding 39.3, light rising.
 //  8  39.75-41.50  SPLIT-LEVEL crane up: cable climbs the lake slope, surface breaks, Toronto skyline + snow,
 //                  YYZ arrive ding 40.5 (shore swell crest), 41.3 light-streak transition.
@@ -24,7 +25,7 @@
   // ---------------------------------------------------------------- timing
   const T = {
     start: 30.5, end: 41.5,
-    s2: 32.1, s3: 33.95, lunge: 35.6, chomp: 36.0, bounce: 36.2, s6: 37.5, s7: 38.6, s8: 39.75, streak: 41.3,
+    s2: 32.1, s3: 33.6, s3b: 34.35, s4: 35.3, lunge: 35.6, chomp: 36.0, bounce: 36.2, s6: 36.45, s7: 38.6, s8: 39.75, streak: 41.3,
     dings: { TLV: 30.8, MRS: 32.3, GIB: 32.95, HFX: 39.3, YYZ: 40.5 },
   };
   // route progress (pin fractions measured on the kit's route: MRS .2733, GIB .3929, HFX .8720, YYZ 1)
@@ -267,15 +268,15 @@
     const jb = sharkPt(0, 0, SHK, { flip: true, rot: BITE_ROT }, 300, 34), bx = XB - jb[0], by = cableAt(XB) - jb[1] - 6;
     const hx = 1330, hy = 420; // hover
     const bob = Math.sin(t * 1.7) * 10;
-    if (t < 35.15) {
+    if (t < 35.3) {
       // glide in from the right, settle, eye the cable
-      x = key(t, [[33.95, 1560], [34.9, hx, 'out']]); y = hy + bob;
-      o.rot = key(t, [[33.95, -0.05], [34.9, 0.1]]) + Math.sin(t * 1.7 + 1) * 0.02;
+      x = key(t, [[33.6, 1560], [34.3, hx, 'out']]); y = hy + bob;
+      o.rot = key(t, [[33.6, -0.05], [34.3, 0.1]]) + Math.sin(t * 1.7 + 1) * 0.02;
       // nom-nom anticipation chomps
       o.bite = 0.15 + 0.35 * Math.max(0, Math.sin(inv(34.6, 35.1, t) * Math.PI * 2)) * (t > 34.6 ? 1 : 0);
     } else if (t < T.lunge) {
       // anticipation: coil back & up, jaw opens
-      const u = E.inOut(inv(35.15, T.lunge, t));
+      const u = E.inOut(inv(35.3, T.lunge, t));
       x = hx + 90 * u; y = hy - 70 * u + bob * (1 - u);
       o.rot = lerp(0.1, -0.3, u); o.bite = lerp(0.15, 1, u);
     } else if (t < T.chomp) {
@@ -306,9 +307,9 @@
   function shotShark(ctx, t) {
     const lt = t - T.s3;
     // camera: slow push on the shark, then a reframe for the chomp, shake on impact
-    let cz = key(t, [[33.95, 1.0], [35.5, 1.1, 'inOut'], [35.62, 1.02, 'out'], [35.98, 1.02], [36.02, 1.24, 'out'], [36.6, 1.2], [37.5, 1.04, 'inOut']]);
-    let cx = key(t, [[33.95, 1080], [35.5, 1170, 'inOut'], [35.62, 1000, 'out'], [35.98, 980], [36.02, 930, 'out'], [36.6, 960], [37.5, 1060, 'inOut']]);
-    let cyc = key(t, [[33.95, 560], [35.5, 520], [35.62, 590, 'out'], [35.98, 600], [36.02, 630, 'out'], [36.6, 600], [37.5, 540, 'inOut']]);
+    let cz = key(t, [[33.6, 1.0], [35.5, 1.1, 'inOut'], [35.62, 1.02, 'out'], [35.98, 1.02], [36.02, 1.24, 'out'], [36.6, 1.2], [37.5, 1.04, 'inOut']]);
+    let cx = key(t, [[33.6, 1080], [35.5, 1170, 'inOut'], [35.62, 1000, 'out'], [35.98, 980], [36.02, 930, 'out'], [36.6, 960], [37.5, 1060, 'inOut']]);
+    let cyc = key(t, [[33.6, 560], [35.5, 520], [35.62, 590, 'out'], [35.98, 600], [36.02, 630, 'out'], [36.6, 600], [37.5, 540, 'inOut']]);
     const shake = Math.max(0, 1 - (t - T.chomp) / 0.45) * (t >= T.chomp ? 2.2 : 0) + Math.max(0, 1 - (t - T.bounce) / 0.4) * (t >= T.bounce ? 1.6 : 0);
     ctx.save();
     A.camera(ctx, { x: cx, y: cyc, zoom: cz, shake, t });
@@ -464,21 +465,17 @@
   // ---------------------------------------------------------------- shot 2 · tracking close ("Marseille... whoa, shark!")
   function shotTrack(ctx, t) {
     const lt = t - T.s2;
-    const pop = t >= 33.6 ? E.outElastic(clamp((t - 33.6) / 0.5)) : 0;
-    const punch = t >= 33.6 ? 1 + 0.12 * E.out(clamp((t - 33.6) / 0.1)) : 1;
-    const bxS = key(t, [[32.1, 640], [33.2, 780, 'inOut'], [33.55, 760], [33.7, 700, 'out'], [33.95, 690]]);
+    const bxS = key(t, [[32.1, 640], [33.2, 780, 'inOut'], [33.6, 790]]);
     const byS = 520 + Math.sin(t * 5.2) * 8;
-    ctx.save();
-    ctx.translate(bxS, byS); ctx.scale(punch, punch); ctx.translate(-bxS, -byS);
     const scroll = lt * 2800;
     tubeClose(ctx, t, {
-      cy: 540, R: 190, scroll, bgScroll: 6000 + lt * 900, anchorX: bxS, clampSpeed: 2800, clamps: [31.95, 32.62, 33.12, 34.2],
+      cy: 540, R: 190, scroll, bgScroll: 6000 + lt * 900, anchorX: bxS, clampSpeed: 2800, clamps: [31.95, 32.62, 33.1, 34.2],
       behind: g => {
         // the shark silhouette ahead in the murk
-        if (t > 33.1) {
-          const u = inv(33.1, 33.95, t);
-          g.save(); g.globalAlpha = 0.75 * smooth(33.1, 33.4, t);
-          A.drawShark(g, lerp(1400, 1080, E.out(u)), 215 + Math.sin(t * 1.5) * 8, 0.4, { t, flip: true, mood: 'hungry', bite: 0.2 + 0.3 * smooth(33.5, 33.7, t), look: [-1, 0.6], rot: 0.12 });
+        if (t > 33.05) {
+          const u = inv(33.05, 33.6, t);
+          g.save(); g.globalAlpha = 0.75 * smooth(33.05, 33.3, t);
+          A.drawShark(g, lerp(1400, 1150, E.out(u)), 215 + Math.sin(t * 1.5) * 8, 0.4, { t, flip: true, mood: 'hungry', bite: 0.2, look: [-1, 0.6], rot: 0.12 });
           g.restore();
         }
       },
@@ -487,49 +484,104 @@
         if (t < 32.25) { bo.mood = 'joy'; bo.joyEyes = 'open'; bo.look = [0.8, 0]; }
         else if (t < 32.8) { bo.mood = 'joy'; bo.joyEyes = 'open'; bo.look = [0.55, -0.85]; }
         else if (t < 33.3) { bo.mood = 'joy'; bo.joyEyes = 'open'; bo.look = [-0.2, 0.6]; }
-        else if (t < 33.58) { bo.mood = 'neutral'; bo.look = [1, -0.35]; bo.browRaise = 8; }
-        else { bo.mood = 'panic'; bo.look = [1, -0.4]; bo.browRaise = 10 + 8 * pop; bo.pupil = 0.55 + 0.25 * (1 - pop); bo.squash = -0.18 * (1 - clamp((t - 33.6) / 0.35)); bo.vel = [700, 0]; }
-        // glow of Bit lighting the tube
-        g.save(); g.globalCompositeOperation = 'lighter';
-        A.glow(g, bxS, byS, 620, 'rgba(255,190,70,0.35)'); A.glow(g, bxS, byS, 240, 'rgba(255,230,150,0.6)');
-        g.restore();
-        const tp = []; for (let i = 0; i < 16; i++) tp.push([bxS - 90 - (15 - i) * 44, byS + Math.sin(i * 0.7 + t * 7) * 10]);
-        A.drawBinaryTrail(g, tp, t, { width: 70, size: 30, speed: 500, alpha: 0.9 });
+        else { bo.mood = 'neutral'; bo.look = [0.9, -0.5]; bo.lid = 0.45 * smooth(33.3, 33.5, t); bo.browRaise = -3; }
+        bitGlowTrail(g, t, bxS, byS);
         A.drawBit(g, bxS, feetY(byS, 1.75), 1.75, bo);
       },
     });
-    ctx.restore();
-    // "!" pop on shark
-    if (t > 33.6) {
-      const u = E.outBack(clamp((t - 33.6) / 0.18));
-      ctx.save(); ctx.translate(bxS + 150, byS - 230); ctx.rotate(0.15); ctx.scale(u, u);
-      A.text(ctx, '!', 0, 0, { font: '150px Bangers', fill: '#ffd21f', stroke: '#1a1330', lw: 14 });
-      ctx.restore();
+  }
+  function bitGlowTrail(g, t, bxS, byS, trail = 1) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    A.glow(g, bxS, byS, 620, 'rgba(255,190,70,0.35)'); A.glow(g, bxS, byS, 240, 'rgba(255,230,150,0.6)');
+    g.restore();
+    if (trail > 0.02) {
+      const tp = []; for (let i = 0; i < 16; i++) tp.push([bxS - 90 - (15 - i) * 44, byS + Math.sin(i * 0.7 + t * 7) * 10]);
+      A.drawBinaryTrail(g, tp, t, { width: 70, size: 30, speed: 500, alpha: 0.9 * trail });
     }
   }
 
-  // ---------------------------------------------------------------- shot 6 · wink close
-  function shotWink(ctx, t) {
-    const lt = t - T.s6;
-    const bxS = key(t, [[37.5, 1240], [38.6, 1180]]), byS = 520 + Math.sin(t * 5.2) * 8;
+  // ---------------------------------------------------------------- shot 3b · "Ahh... another attacker..." (bored)
+  function shotBored(ctx, t) {
+    const lt = t - T.s3b;
+    const bxS = key(t, [[T.s3b, 760], [T.s4, 820]]), byS = 560 + Math.sin(t * 3.2) * 6;
+    // slow push in
+    const z = key(t, [[T.s3b, 1.0], [T.s4, 1.06]]);
+    ctx.save(); ctx.translate(bxS, byS); ctx.scale(z, z); ctx.translate(-bxS, -byS);
     tubeClose(ctx, t, {
-      cy: 540, R: 190, scroll: 9000 + lt * 2600, bgScroll: 9000 + lt * 700, anchorX: bxS, clampSpeed: 2600, clamps: [37.62, 38.75],
+      cy: 560, R: 190, scroll: 14000 + lt * 1800, bgScroll: 12000 + lt * 500, anchorX: bxS, clampSpeed: 1800, clamps: [34.2, 35.55],
       behind: g => {
-        // dazed shark tumbling away behind, lit faintly
-        const u = lt;
-        A.drawShark(g, 460 - u * 160, 300 - u * 40, 0.5, { t, flip: false, mood: 'dazed', rot: 0.5 + Math.sin(t * 2) * 0.1 - u * 0.2, bandaid: false });
-        g.fillStyle = 'rgba(3,26,40,0.25)'; g.fillRect(0, 0, 1000, 700);
+        // the shark looms above the tube, hungry, nom-nom
+        const sx = key(t, [[T.s3b, 1520], [T.s4, 1380]]), sy = 250 + Math.sin(t * 1.7) * 10;
+        const bite = 0.2 + 0.4 * Math.max(0, Math.sin(inv(34.9, 35.3, t) * Math.PI * 2)) * (t > 34.9 ? 1 : 0);
+        A.drawShark(g, sx, sy, 0.78, { t, flip: true, mood: 'hungry', bite, look: [-1, 0.7], rot: 0.14 });
+        g.fillStyle = 'rgba(3,26,40,0.18)'; g.fillRect(900, 0, 1020, 420);
       },
       inside: g => {
-        const wink = smooth(38.12, 38.22, t) * (1 - smooth(38.5, 38.6, t));
-        const turn = E.outBack(inv(37.52, 37.75, t));
-        const bo = { t, limbs: 'fly', vel: [1200, 0], glow: 1.6, trail: 0.9, mood: 'cheeky', look: [lerp(0.6, -1, turn), -0.05], wink, winkEye: 'R', rot: -0.08 * turn };
-        g.save(); g.globalCompositeOperation = 'lighter';
-        A.glow(g, bxS, byS, 620, 'rgba(255,190,70,0.35)'); A.glow(g, bxS, byS, 240, 'rgba(255,230,150,0.6)');
-        g.restore();
-        const tp = []; for (let i = 0; i < 16; i++) tp.push([bxS - 90 - (15 - i) * 44, byS + Math.sin(i * 0.7 + t * 7) * 10]);
-        A.drawBinaryTrail(g, tp, t, { width: 70, size: 30, speed: 500, alpha: 0.9 });
+        // eye-roll: look at shark -> up -> over -> half-lidded back at camera
+        const lookK = [[34.3, [0.9, -0.6]], [34.62, [0.9, -0.6]], [34.82, [0.35, -1]], [35.02, [-0.4, -0.9]], [35.25, [0, 0.1]]];
+        const look = key(t, lookK.map(([a, v]) => [a, v]));
+        const lid = key(t, [[34.3, 0.25], [34.5, 0.42], [34.8, 0.28], [35.05, 0.45]]);
+        // lazy dismissive wave (right arm), left arm resting on hip
+        const wv = smooth(34.45, 34.65, t) * (1 - smooth(35.2, 35.3, t));
+        const armR = [lerp(76, 96, wv) + Math.sin(t * 6) * 10 * wv, lerp(-40, -112, wv) + Math.cos(t * 6) * 8 * wv];
+        const bo = { t, limbs: 'fly', vel: [500, 0], glow: 1.5, trail: 0.6, mood: 'neutral', look, lid, browRaise: -4, armR, armL: [-66, -22], rot: -0.05 + 0.03 * Math.sin(t * 2), winkEye: 'R' };
+        bitGlowTrail(g, t, bxS, byS);
+        A.drawBit(g, bxS, feetY(byS, 1.9), 1.9, bo);
+        // "sigh" puff at the start of "Ahh..."
+        if (t > 34.3 && t < 34.9) {
+          const u = inv(34.3, 34.9, t);
+          g.save(); g.globalAlpha = 0.7 * Math.sin(u * Math.PI);
+          g.fillStyle = 'rgba(220,250,255,0.8)';
+          for (let i = 0; i < 3; i++) { A.ellipse(g, bxS + 110 + u * 90 + i * 22, byS - 20 - u * 40 - i * 10, 10 + i * 5 + u * 8, 7 + i * 4); g.fill(); }
+          g.restore();
+        }
+      },
+    });
+    ctx.restore();
+  }
+
+  // ---------------------------------------------------------------- shot 6 · laugh -> "Nice try, fishy!" wink (close)
+  function shotWink(ctx, t) {
+    const lt = t - T.s6;
+    const laughK = smooth(T.s6, T.s6 + 0.08, t) * (1 - smooth(37.4, 37.62, t));
+    const bxS = key(t, [[T.s6, 1180], [37.5, 1230], [38.6, 1180]]);
+    const byS = 520 + Math.sin(t * 5.2) * 8 * (1 - laughK) - Math.abs(Math.sin(t * 17)) * 16 * laughK;
+    tubeClose(ctx, t, {
+      cy: 540, R: 190, scroll: 9000 + lt * 2200, bgScroll: 9000 + lt * 600, anchorX: bxS, clampSpeed: 2200, clamps: [37.52, 38.75],
+      behind: g => {
+        // dazed shark tumbling away behind, still crackling
+        const u = lt;
+        A.drawShark(g, 520 - u * 110, 290 - u * 30, 0.52, { t, flip: false, mood: 'dazed', rot: 0.5 + Math.sin(t * 2) * 0.1 - u * 0.12 });
+        g.fillStyle = 'rgba(3,26,40,0.22)'; g.fillRect(0, 0, 1000, 700);
+        if (t < 36.95) { const fr = Math.floor(t * 30); if (fr % 3 !== 0) bolt(g, 520 - u * 110 + 150, 250, 520 - u * 110 - 120, 330 + (H(fr) - 0.5) * 60, fr * 5, 3); }
+      },
+      inside: g => {
+        const bo = { t, limbs: 'fly', vel: [1100 * (1 - laughK) + 300, 0], glow: 1.6, trail: 0.9 - 0.6 * laughK };
+        if (laughK > 0.01) {
+          // big belly laugh: eyes squeezed, mouth wide, hands on belly, shaking
+          bo.mood = 'joy'; bo.mouth = 0.6 + 0.4 * Math.abs(Math.sin(t * 17));
+          bo.armL = [-62, -24 + Math.sin(t * 17) * 5]; bo.armR = [62, -24 + Math.sin(t * 17) * 5];
+          bo.rot = -0.12 * laughK + Math.sin(t * 34) * 0.04 * laughK; bo.squash = 0.06 * Math.sin(t * 34) * laughK;
+          bo.look = [-0.5, -0.2]; bo.browRaise = 6;
+        } else {
+          const wink = smooth(38.12, 38.22, t) * (1 - smooth(38.5, 38.6, t));
+          const turn = E.outBack(inv(37.5, 37.72, t));
+          Object.assign(bo, { mood: 'cheeky', look: [lerp(0.6, -1, turn), -0.05], wink, winkEye: 'R', rot: -0.08 * turn });
+        }
+        bitGlowTrail(g, t, bxS, byS, 1 - 0.6 * laughK);
         A.drawBit(g, bxS, feetY(byS, 1.75), 1.75, bo);
+        if (laughK > 0.01) {
+          // tears of laughter flying off both eyes
+          for (const side of [-1, 1]) for (let i = 0; i < 4; i++) {
+            const age = ((t * 3.2 + i * 0.25 + (side > 0 ? 0.12 : 0)) % 1);
+            const ex = bxS + side * 72, ey = byS - 22;
+            const x = ex + side * (40 + 260 * age), y = ey - 90 * age + 260 * age * age;
+            g.save(); g.globalAlpha = laughK * (1 - age);
+            g.fillStyle = '#9fe8ff'; g.strokeStyle = A.OUTLINE; g.lineWidth = 4;
+            g.beginPath(); g.moveTo(x, y - 26); g.quadraticCurveTo(x + 16, y, x, y + 14); g.quadraticCurveTo(x - 16, y, x, y - 26); g.fill(); g.stroke();
+            g.restore();
+          }
+        }
         // wink sparkle
         if (t > 38.18 && t < 38.7) {
           const u = inv(38.18, 38.7, t), sx = bxS - 40, sy = byS - 140;
@@ -539,6 +591,14 @@
           g.restore();
         }
       },
+    });
+    // "HA HA!" comic pops
+    [[36.5, 'HA', 1330, 250, -0.18], [36.78, 'HA HA!', 1480, 330, 0.12], [37.08, 'HA!', 1300, 200, -0.1]].forEach(([t0, s, x, y, r]) => {
+      const d = t - t0; if (d < 0 || d > 0.55) return;
+      const k = E.outBack(clamp(d / 0.14)) * (1 - E.in(inv(0.4, 0.55, d)));
+      ctx.save(); ctx.translate(x, y - d * 40); ctx.rotate(r); ctx.scale(k, k);
+      A.text(ctx, s, 0, 0, { font: '120px Bangers', fill: '#ffd21f', stroke: '#1a1330', lw: 16 });
+      ctx.restore();
     });
   }
 
@@ -689,6 +749,8 @@
       const t = s.t;
       if (t < T.s2) shotWide(ctx, t);
       else if (t < T.s3) shotTrack(ctx, t);
+      else if (t < T.s3b) shotShark(ctx, t);
+      else if (t < T.s4) shotBored(ctx, t);
       else if (t < T.s6) shotShark(ctx, t);
       else if (t < T.s7) shotWink(ctx, t);
       else if (t < T.s8) shotCross(ctx, t);

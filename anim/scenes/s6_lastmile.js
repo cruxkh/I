@@ -6,8 +6,10 @@
 //                    street + CN Tower reveal, then pushes into the warm window.        "Last mile… last meter…"
 //   SH2 43.47–44.42  MACRO behind the TV cabinet: Bit bursts out of the wall jack, races along a giant CAT6 cable,
 //                    hurdles a lost Bamba puff, dust bunnies blown, a 10-agorot coin glints, leaps up-frame.
-//   SH3 44.42–45.35  ROUTER hero shot (giant from Bit's scale): lands on the shelf, anticipation crouch, "Delivered!"
-//                    dive → 44.9 IMPACT (2 impact frames), shake, sparks, shockwave, all LEDs flare gold, bloom→white.
+//   SH3 44.42–45.35  SMART TV hero shot (towering from Bit's scale, GOTV app on screen): lands on the cabinet top,
+//                    anticipation crouch, "Delivered!" dive INTO the screen's spinner → 44.9 IMPACT (2 impact frames),
+//                    TV jolts, screen flares, shake, sparks, shockwave, bloom→white.
+//   (v5: file keeps its own time base 41.5–46.0; index.html plays it +18.9 s.)
 //   SH4 45.35–46.00  White settles onto the TV close-up: frozen picture, spinner 99% → gold pulse → 100%.
 // ============================================================================
 (() => {
@@ -448,7 +450,7 @@
       ctx.save(); ctx.lineCap = 'round';
       ctx.beginPath(); ctx.moveTo(j[0], j[1]); ctx.bezierCurveTo(j[0], j[1] + 160 * z, st[0] - 200 * z, st[1], st[0], st[1]);
       for (let x = Math.max(900, xs0); x <= xs1; x += 24) { const p = toScr(x, cableY(x), 1); ctx.lineTo(p[0], p[1]); }
-      // end: rises up toward the shelf/router (off right)
+      // end: rises up toward the TV (off right)
       const e0 = toScr(3200, cableY(3200), 1), e1 = toScr(3600, 200, 1);
       ctx.bezierCurveTo(e0[0] + 200 * z, e0[1], e1[0] - 80 * z, e1[1] + 300 * z, e1[0], e1[1]);
       ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = (CAB_R * 2 + 8) * z; ctx.stroke();
@@ -555,128 +557,124 @@
   }
 
   // ======================================================================================================
-  // SH3 · ROUTER HERO SHOT
+  // SH3 · SMART TV HERO SHOT (low angle from the cabinet top, TV towering like a cinema screen)
   // ======================================================================================================
   const R0 = M1, R1 = 45.35, T_IMP = 44.9;
-  const RT = { x: 1250, y: 900, s: 3.3 };
-  const LED = A.routerLED ? A.routerLED(RT.x, RT.y, RT.s) : [1032, 768];
+  const TOPY = 905;                                    // cabinet-top surface (Bit's floor)
+  const GTV = (() => { const w = 1560, h = w * 9 / 16, b = w * 0.028, st = w * 0.09; return { x: 560, y: TOPY - st - b - h + 2, w, h, b, st }; })();
+  const SSC = Math.max(GTV.w / 1920, GTV.h / 1080);
+  const SPIN = [GTV.x + (GTV.w - 1920 * SSC) / 2 + 960 * SSC, GTV.y + (GTV.h - 1080 * SSC) / 2 + 520 * SSC]; // spinner centre = dive target
   const T_LAND = 44.52, T_JUMP = 44.66;
-  function routerBitPos(t) {
-    if (t < T_LAND) { const p = A.inv(R0, T_LAND, t); return { ph: 'up', x: L(230, 470, p), y: L(1250, 900, p) - Math.sin(p * PI * 0.9) * 180, p }; }
-    if (t < T_JUMP) { const p = A.inv(T_LAND, T_JUMP, t); return { ph: 'crouch', x: 470, y: 900, p }; }
-    const p = A.inv(T_JUMP, T_IMP, t), e = p;
-    // arc to the LED (feet target so that his core lands on the LED); shrinks as he's sucked in
+  function tvBitPos(t) {
+    if (t < T_LAND) { const p = A.inv(R0, T_LAND, t); return { ph: 'up', x: L(250, 430, p), y: L(1250, TOPY, p) - Math.sin(p * PI * 0.9) * 200, p, sc: 1.25 }; }
+    if (t < T_JUMP) { const p = A.inv(T_LAND, T_JUMP, t); return { ph: 'crouch', x: 430, y: TOPY, p, sc: 1.25 }; }
+    const p = A.inv(T_JUMP, T_IMP, t);
     const sc = p > 0.7 ? 1.25 * L(1, 0.3, A.ease.in((p - 0.7) / 0.3)) : 1.25;
-    const tx = LED[0], ty = LED[1] + 62 * sc;
-    return { ph: 'dive', x: L(470, tx, e), y: L(900, ty, e) - Math.sin(p * PI) * 560 * (1 - p), p, sc };
+    const e = A.ease.in(p) * 0.35 + p * 0.65;
+    return { ph: 'dive', x: L(430, SPIN[0], e), y: L(TOPY, SPIN[1] + 62 * sc, e) - Math.sin(p * PI) * 330 * (1 - p * 0.6), p, sc };
   }
-  const shelfLayer = () => A.layer('s6:shelf', 2400, 1400, (g, w, h) => {
-    g.translate(240, 160);
-    // back panel
-    g.fillStyle = A.linear(g, 0, -160, 0, 900, [[0, '#1a0f14'], [0.6, '#2c1a1c'], [1, '#3a2220']]); g.fillRect(-240, -160, w, 1060);
-    const r = A.rng(12);
-    for (let i = 0; i < 60; i++) { const y = r() * 900 - 150; g.strokeStyle = `rgba(0,0,0,${0.1 + r() * 0.15})`; g.lineWidth = 1 + r() * 2; g.beginPath(); g.moveTo(-240, y); g.bezierCurveTo(500, y + (r() - 0.5) * 30, 1200, y + (r() - 0.5) * 30, 2200, y + (r() - 0.5) * 20); g.stroke(); }
-    // shelf underside above (top band)
-    g.fillStyle = A.linear(g, 0, -160, 0, 70, [[0, '#0e080a'], [1, '#2a1812']]); g.fillRect(-240, -160, w, 230);
-    g.fillStyle = 'rgba(160,250,220,0.35)'; g.fillRect(-240, 66, w, 4);
-    // side panel (left) in perspective
-    g.fillStyle = A.linear(g, -240, 0, 240, 0, [[0, '#4a2c22'], [1, '#2a1812']]); A.path(g, [[-240, -160], [120, 70], [120, 900], [-240, 1300]]); g.fill();
-    g.strokeStyle = 'rgba(0,0,0,0.5)'; g.lineWidth = 3; g.beginPath(); g.moveTo(120, 70); g.lineTo(120, 900); g.stroke();
-    // cable holes & cables at the back
-    g.fillStyle = '#0a0608'; A.ellipse(g, 1650, 520, 70, 60); g.fill();
-    g.strokeStyle = '#141018'; g.lineCap = 'round'; g.lineWidth = 26;
-    g.beginPath(); g.moveTo(1650, 520); g.bezierCurveTo(1700, 700, 1900, 760, 2150, 860); g.stroke();
-    g.lineWidth = 18; g.strokeStyle = '#1e1a24'; g.beginPath(); g.moveTo(1640, 540); g.bezierCurveTo(1560, 700, 1650, 820, 1580, 900); g.stroke();
-    // shelf top surface
-    g.fillStyle = A.linear(g, 0, 900, 0, 1240, [[0, '#6a4228'], [0.2, '#7e5030'], [1, '#4a2c1a']]); g.fillRect(-240, 900, w, 340);
-    for (let i = 0; i < 40; i++) { const y = 905 + Math.pow(r(), 1.4) * 330; g.strokeStyle = `rgba(40,20,10,${0.15 + r() * 0.25})`; g.lineWidth = 1 + r() * 2.5; g.beginPath(); g.moveTo(-240, y); g.bezierCurveTo(600, y + (r() - 0.5) * 16, 1400, y + (r() - 0.5) * 16, 2200, y); g.stroke(); }
-    g.fillStyle = 'rgba(0,0,0,0.5)'; g.fillRect(-240, 898, w, 10);
-    // dust fuzz on the shelf
-    for (let i = 0; i < 120; i++) { g.fillStyle = `rgba(200,190,210,${0.12 + r() * 0.2})`; g.fillRect(r() * w - 240, 915 + r() * 300, 2 + r() * 6, 1 + r() * 2); }
-    // front lip (lit by room)
-    g.fillStyle = A.linear(g, 0, 1170, 0, 1240, [[0, '#9a6a40'], [0.3, '#c4905a'], [1, '#3a2014']]); g.fillRect(-240, 1170, w, 70);
+  const tvBgLayer = () => A.layer('s6:tvbg', 2600, 1600, (g, w, h) => {
+    g.translate(300, 300);
+    // wall behind the TV (warm living-room mauve), soft out-of-focus room shapes
+    g.fillStyle = A.linear(g, 0, -300, 0, TOPY, [[0, '#2a1624'], [0.5, '#4a2838'], [1, '#5a3040']]); g.fillRect(-300, -300, w, TOPY + 300);
+    for (let x = -300; x < w; x += 60) { g.fillStyle = 'rgba(255,200,220,0.03)'; g.fillRect(x, -300, 26, TOPY + 300); }
+    g.filter = 'blur(14px)';
+    g.fillStyle = 'rgba(40,20,30,0.7)'; A.rrect(g, -240, 120, 420, 300, 20); g.fill();           // photo frame (blurred)
+    g.fillStyle = 'rgba(120,170,220,0.35)'; A.rrect(g, -210, 150, 360, 240, 10); g.fill();
+    g.fillStyle = 'rgba(20,10,20,0.8)'; A.rrect(g, -300, 560, 520, 400, 60); g.fill();            // armchair silhouette far left
+    g.filter = 'none';
+    // cabinet top surface (wood, perspective grain toward the TV)
+    g.fillStyle = A.linear(g, 0, TOPY, 0, TOPY + 400, [[0, '#5a3822'], [0.25, '#7a4e30'], [1, '#3a2214']]); g.fillRect(-300, TOPY, w, 400);
+    const r = A.rng(44);
+    for (let i = 0; i < 46; i++) { const y = TOPY + 6 + Math.pow(r(), 1.6) * 380; g.strokeStyle = `rgba(30,14,6,${0.12 + r() * 0.25})`; g.lineWidth = 1 + r() * 2.5; g.beginPath(); g.moveTo(-300, y); g.bezierCurveTo(600, y + (r() - 0.5) * 14, 1400, y + (r() - 0.5) * 14, 2300, y); g.stroke(); }
+    g.fillStyle = 'rgba(0,0,0,0.45)'; g.fillRect(-300, TOPY - 2, w, 8);
+    for (let i = 0; i < 140; i++) { g.fillStyle = `rgba(210,200,220,${0.1 + r() * 0.2})`; g.fillRect(r() * w - 300, TOPY + 10 + r() * 360, 2 + r() * 6, 1 + r() * 2); }
+    // a Maccabi scarf tassel & a remote lying on the cabinet (props, far right)
+    g.fillStyle = '#1b1a22'; A.rrect(g, 1880, TOPY + 30, 360, 70, 30); g.fill(); g.strokeStyle = A.OUTLINE; g.lineWidth = 4; g.stroke();
+    for (let i = 0; i < 12; i++) { g.fillStyle = i === 0 ? '#e0314f' : '#4a4a58'; A.ellipse(g, 1920 + (i % 6) * 40, TOPY + 52 + Math.floor(i / 6) * 26, 11, 9); g.fill(); }
   });
-  function drawRouterShot(ctx, t, f) {
+  function drawTVHero(ctx, t, f) {
     const k = t - T_IMP, post = k >= 0;
     const imp = post ? Math.exp(-k * 6) : 0;
-    const c = spline(t, [[R0, [860, 640, 1.0, 0.03]], [T_JUMP, [900, 650, 1.06, 0.0]], [T_IMP, [1010, 720, 1.42, -0.04]], [T_IMP + 0.12, [1020, 700, 1.2, 0.03]], [R1, [1030, 700, 1.3, 0.0]]]);
-    const shake = post ? 2.2 * Math.exp(-k * 5) : 0.06;
-    const cam = { x: c[0], y: c[1], zoom: c[2], rot: c[3], shake, t };
-    ctx.save(); A.camera(ctx, cam);
-    ctx.drawImage(shelfLayer(), -240 - 240, -160 - 160 + 0, 2400, 1400);
-    // light ambience: TV spill from above (cyan), lamp from left
+    const c = spline(t, [[R0, [900, 560, 1.0, 0.03]], [T_JUMP, [930, 560, 1.03, 0.0]], [T_IMP, [SPIN[0] - 60, SPIN[1] + 140, 1.3, -0.04]], [T_IMP + 0.12, [SPIN[0] - 40, SPIN[1] + 170, 1.12, 0.03]], [R1, [SPIN[0] - 30, SPIN[1] + 150, 1.22, 0.0]]]);
+    const shake = post ? 2.4 * Math.exp(-k * 5) : 0.06;
+    ctx.save(); A.camera(ctx, { x: c[0], y: c[1], zoom: c[2], rot: c[3], shake, t });
+    ctx.drawImage(tvBgLayer(), -600, -600, 2600, 1600);
+    // lamp light from the left + screen light spill on the wall and cabinet top
     additive(ctx, () => {
-      ctx.fillStyle = A.linear(ctx, 0, 60, 0, 600, [[0, 'rgba(120,250,210,0.25)'], [1, 'rgba(120,250,210,0)']]); ctx.fillRect(-300, 60, 2600, 540);
-      ctx.fillStyle = A.linear(ctx, -300, 0, 800, 0, [[0, 'rgba(255,170,90,0.28)'], [1, 'rgba(255,170,90,0)']]); ctx.fillRect(-300, -200, 1100, 1500);
+      ctx.fillStyle = A.linear(ctx, -300, 0, 900, 0, [[0, 'rgba(255,170,90,0.3)'], [1, 'rgba(255,170,90,0)']]); ctx.fillRect(-600, -600, 1500, 2200);
+      const sa = 0.35 + 0.1 * A.noise1(t * 7) + 0.9 * imp;
+      ctx.globalAlpha = sa; ctx.save(); ctx.translate(GTV.x + GTV.w / 2, TOPY + 30); ctx.scale(1, 0.16);
+      ctx.fillStyle = A.radial(ctx, 0, 0, 0, 1100, [[0, post ? '#ffe7a0' : '#9ff5d0'], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(-1100, -1100, 2200, 2200); ctx.restore();
     });
-    // cable arriving from below-left, over the shelf lip, into the router's back
+    // LAN cable: up over the cabinet's back edge and into the TV's side port
     ctx.save(); ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(150, 1400); ctx.bezierCurveTo(260, 1120, 360, 930, 700, 915); ctx.bezierCurveTo(1000, 905, 1150, 900, 1300, 860);
-    ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 50; ctx.stroke(); ctx.strokeStyle = '#8fa6d8'; ctx.lineWidth = 42; ctx.stroke();
-    ctx.save(); ctx.translate(0, -7); ctx.strokeStyle = '#c4d4f6'; ctx.lineWidth = 16; ctx.stroke(); ctx.restore();
+    ctx.beginPath(); ctx.moveTo(60, 1500); ctx.bezierCurveTo(140, 1150, 240, TOPY - 10, 520, TOPY - 14); ctx.bezierCurveTo(620, TOPY - 16, GTV.x + 30, TOPY - 60, GTV.x + 40, GTV.y + GTV.h - 120);
+    ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 46; ctx.stroke(); ctx.strokeStyle = '#8fa6d8'; ctx.lineWidth = 38; ctx.stroke();
+    ctx.save(); ctx.translate(0, -6); ctx.strokeStyle = '#c4d4f6'; ctx.lineWidth = 14; ctx.stroke(); ctx.restore();
     ctx.restore();
-    // energised cable (Bit came along it)
-    additive(ctx, () => { ctx.globalAlpha = 0.5 * (1 - A.smooth(R0, T_IMP, t)) + 0.6 * imp; ctx.strokeStyle = '#ffd36a'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(150, 1400); ctx.bezierCurveTo(260, 1120, 360, 930, 700, 890); ctx.stroke(); });
+    additive(ctx, () => { ctx.globalAlpha = 0.55 * (1 - A.smooth(R0, T_IMP, t)) + 0.7 * imp; ctx.strokeStyle = '#ffd36a'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(60, 1500); ctx.bezierCurveTo(140, 1150, 240, TOPY - 10, 520, TOPY - 34); ctx.stroke(); });
 
-    // router with jolt (squash & stretch around its feet)
+    // the SMART TV (jolts on impact: squash & stretch around the stand foot)
     const jol = post ? Math.exp(-k * 7) * Math.sin(k * 38) : 0;
-    const anticip = A.smooth(T_JUMP + 0.12, T_IMP, t) * (post ? 0 : 1); // router "flinches" as Bit comes in
-    ctx.save(); ctx.translate(RT.x, RT.y); ctx.scale(1 + 0.07 * jol - 0.015 * anticip, 1 - 0.09 * jol + 0.02 * anticip); ctx.rotate(post ? 0.04 * Math.exp(-k * 6) * Math.sin(k * 30) : 0); ctx.translate(-RT.x, -RT.y);
-    const ledGlow = post ? 3 * (0.7 + 0.3 * Math.exp(-k * 4)) + 0.3 * Math.sin(k * 40) * imp : A.smooth(T_JUMP, T_IMP, t) * 1.4 + 0.3;
-    A.drawRouter(ctx, RT.x, RT.y, RT.s, { t, activity: post ? 1 : 0.55, ledGlow, shake: post ? 1.5 * Math.exp(-k * 5) : 0, ledColor: post ? '#ffd36a' : '#7ff6ff' });
-    // all small LEDs flare after impact
-    if (post) additive(ctx, () => {
-      for (const lx of [-40, -18, 4, 26, 48, 70]) {
-        const q = [RT.x + lx * RT.s, RT.y - 41 * RT.s];
-        A.glow(ctx, q[0], q[1], 60 + 60 * imp, lx % 44 === 4 ? '#58c8ff' : '#9fffb0', 0.5 + 0.5 * imp);
+    const flinch = post ? 0 : A.smooth(T_JUMP + 0.12, T_IMP, t);
+    const fx = GTV.x + GTV.w / 2;
+    ctx.save(); ctx.translate(fx, TOPY); ctx.scale(1 + 0.05 * jol - 0.01 * flinch, 1 - 0.07 * jol + 0.012 * flinch); ctx.rotate(post ? 0.035 * Math.exp(-k * 6) * Math.sin(k * 30) : 0); ctx.translate(-fx, -TOPY);
+    A.drawTV(ctx, GTV.x, GTV.y, GTV.w, GTV.h, t, { state: 'freeze', matchT: 1.5, freezeGlitch: post ? 0.9 : 0.45, spinner: 1, bufferPct: 99, stand: GTV.st, glare: 1 });
+    // GOTV app bug on the screen (top-right) — the family watches via the GOTV app now
+    if (A.drawGOTVBug) { ctx.save(); ctx.beginPath(); ctx.rect(GTV.x, GTV.y, GTV.w, GTV.h); ctx.clip(); ctx.translate(GTV.x + (GTV.w - 1920 * SSC) / 2 + 1686 * SSC, GTV.y + (GTV.h - 1080 * SSC) / 2 + 90 * SSC); ctx.scale(SSC, SSC);
+      ctx.fillStyle = A.linear(ctx, 0, -54, 0, 30, [[0, '#1b2466'], [1, '#0b1034']]); A.rrect(ctx, -152, -56, 312, 88, 18); ctx.fill();
+      A.drawGOTVBug(ctx, 0, 0, 1.55, { alpha: 1, t }); ctx.restore(); }
+    // screen reacts: spinner draws him in (pre), flares gold-white (post)
+    ctx.save(); ctx.beginPath(); ctx.rect(GTV.x, GTV.y, GTV.w, GTV.h); ctx.clip();
+    additive(ctx, () => {
+      if (!post) {
+        const a = A.smooth(T_JUMP, T_IMP, t);
+        A.glow(ctx, SPIN[0], SPIN[1], 200 + 200 * a, '#bff8ff', 0.25 + 0.5 * a);
+      } else {
+        ctx.fillStyle = `rgba(255,236,170,${0.55 * imp + 0.15})`; ctx.fillRect(GTV.x, GTV.y, GTV.w, GTV.h);
+        for (let i = 0; i < 5; i++) { const y = GTV.y + ((H(i * 3 + Math.floor(t * 30)) * GTV.h) | 0); ctx.fillStyle = `rgba(255,255,255,${0.5 * imp})`; ctx.fillRect(GTV.x, y, GTV.w, 6 + H(i) * 20); } // scanline tears
+        A.glow(ctx, SPIN[0], SPIN[1], 900, '#fff2c0', 0.9 * (0.4 + 0.6 * imp));
       }
     });
     ctx.restore();
+    ctx.restore();
 
-    // Bit
     if (!post) {
-      const b = routerBitPos(t), sc = 1.25;
-      const d = 1 / 60, qa = routerBitPos(t - d), qb = routerBitPos(t + d), vel = [(qb.x - qa.x) * 30 * c[2], (qb.y - qa.y) * 30 * c[2]];
-      // trail
+      const b = tvBitPos(t), sc = b.sc;
+      const d = 1 / 60, qa = tvBitPos(t - d), qb = tvBitPos(t + d), vel = [(qb.x - qa.x) * 30 * c[2], (qb.y - qa.y) * 30 * c[2]];
       const pts = [];
-      for (let i = 20; i >= 0; i--) { const tk = t - 0.18 * i / 20; if (tk < R0) continue; const q = routerBitPos(tk); if (q.ph === 'crouch' && b.ph === 'crouch') continue; const cc = A.bitCore(q.x, q.y, sc); pts.push(cc); }
+      for (let i = 20; i >= 0; i--) { const tk = t - 0.18 * i / 20; if (tk < R0) continue; const q = tvBitPos(tk); if (q.ph === 'crouch' && b.ph === 'crouch') continue; pts.push(A.bitCore(q.x, q.y, q.sc)); }
       if (pts.length > 1) A.drawBinaryTrail(ctx, pts, t, { width: 70, size: 32 });
       const core = A.bitCore(b.x, b.y, sc);
       A.glow(ctx, core[0], core[1], 480, GOLD, 0.45);
-      const o = { t, glow: 1.6, trail: 0, vel, light: [-0.7, -0.6], rim: '#9ff5d0', shadow: b.ph === 'crouch' ? 0.8 : 0 };
-      let S2 = sc;
-      if (b.ph === 'up') { o.limbs = 'fly'; o.mood = 'determined'; o.look = [1, -0.2]; }
+      const o = { t, glow: 1.6, trail: 0, vel, light: [0.6, -0.7], rim: '#9ff5d0', shadow: b.ph === 'crouch' ? 0.8 : 0 };
+      if (b.ph === 'up') { o.limbs = 'fly'; o.mood = 'determined'; o.look = [1, -0.4]; }
       else if (b.ph === 'crouch') {
         const p = b.p;
-        o.limbs = p < 0.15 ? 'stand' : 'crouch'; o.mood = 'determined'; o.look = [1, -0.35];
-        o.squash = p < 0.15 ? 0.35 * (1 - p / 0.15) : 0.1 + 0.32 * A.ease.out((p - 0.15) / 0.85); // land-squash → anticipation
-        o.rot = -0.22 * A.smooth(0.15, 1, p); o.browRaise = -5; o.boost = 0.5 * p;
+        o.limbs = p < 0.15 ? 'stand' : 'crouch'; o.mood = 'determined'; o.look = [0.8, -0.9];
+        o.squash = p < 0.15 ? 0.35 * (1 - p / 0.15) : 0.1 + 0.3 * A.ease.out((p - 0.15) / 0.85);
+        o.rot = -0.18 * A.smooth(0.15, 1, p); o.browRaise = -5; o.boost = 0.5 * p;
       } else {
         const p = b.p;
-        o.limbs = 'fly'; o.mood = 'joy'; o.look = [1, 0.4]; o.stretch = 1.2;
-        o.rot = L(-0.5, 0.9, p);
-        S2 = b.sc;
+        o.limbs = 'fly'; o.mood = 'joy'; o.look = [1, -0.3]; o.stretch = 1.2; o.rot = L(-0.7, 0.5, p);
       }
-      A.drawBit(ctx, b.x, b.y, S2, o);
-      // anticipation energy gather
+      A.drawBit(ctx, b.x, b.y, sc, o);
       if (b.ph === 'crouch') additive(ctx, () => {
         for (let i = 0; i < 10; i++) { const a = i / 10 * TAU + t * 3, rr = 180 * (1 - ((t * 3 + i * 0.1) % 1)); ctx.fillStyle = `rgba(255,220,120,${0.6 * b.p})`; A.ellipse(ctx, core[0] + Math.cos(a) * rr, core[1] + Math.sin(a) * rr, 4, 4); ctx.fill(); }
       });
-      // LED "suck" lines just before impact
-      if (b.ph === 'dive' && b.p > 0.6) {
-        const a = A.inv(0.6, 1, b.p);
-        additive(ctx, () => { ctx.strokeStyle = `rgba(200,255,255,${0.7 * a})`; ctx.lineWidth = 3; for (let i = 0; i < 12; i++) { const an = i / 12 * TAU + 0.3, r0 = 50 + 200 * (1 - a), r1 = r0 + 90; ctx.beginPath(); ctx.moveTo(LED[0] + Math.cos(an) * r0, LED[1] + Math.sin(an) * r0); ctx.lineTo(LED[0] + Math.cos(an) * r1, LED[1] + Math.sin(an) * r1); ctx.stroke(); } });
+      if (b.ph === 'dive' && b.p > 0.55) {
+        const a = A.inv(0.55, 1, b.p);
+        additive(ctx, () => { ctx.strokeStyle = `rgba(200,255,255,${0.7 * a})`; ctx.lineWidth = 4; for (let i = 0; i < 14; i++) { const an = i / 14 * TAU + 0.3, r0 = 130 + 260 * (1 - a), r1 = r0 + 120; ctx.beginPath(); ctx.moveTo(SPIN[0] + Math.cos(an) * r0, SPIN[1] + Math.sin(an) * r0); ctx.lineTo(SPIN[0] + Math.cos(an) * r1, SPIN[1] + Math.sin(an) * r1); ctx.stroke(); } });
       }
     } else {
-      // IMPACT: shockwave rings, sparks, light rays, dust shaken off the router top
       additive(ctx, () => {
-        for (const [dl, sp, w, col] of [[0, 2600, 18, '255,240,190'], [0.05, 1700, 8, '160,250,255']]) {
+        for (const [dl, sp, w, col] of [[0, 2800, 20, '255,240,190'], [0.05, 1800, 9, '160,250,255']]) {
           const kk = k - dl; if (kk < 0) continue;
           const r = sp * kk * (1 - kk * 0.6), a = Math.exp(-kk * 5);
-          ctx.strokeStyle = `rgba(${col},${a})`; ctx.lineWidth = w * (1 + kk * 3); A.ellipse(ctx, LED[0], LED[1], r, r * 0.8); ctx.stroke();
+          ctx.strokeStyle = `rgba(${col},${a})`; ctx.lineWidth = w * (1 + kk * 3); A.ellipse(ctx, SPIN[0], SPIN[1], r, r * 0.8); ctx.stroke();
         }
-        // god rays out of the LED
-        ctx.save(); ctx.translate(LED[0], LED[1]); ctx.rotate(k * 0.4);
+        ctx.save(); ctx.translate(SPIN[0], SPIN[1]); ctx.rotate(k * 0.4);
         for (let i = 0; i < 14; i++) {
           const an = i / 14 * TAU + H(i) * 0.3, len = (900 + H(i + 3) * 900) * (0.4 + 0.6 * A.ease.out(cl(k / 0.2))), wd = 18 + H(i + 5) * 40;
           ctx.save(); ctx.rotate(an); ctx.globalAlpha = (0.25 + 0.3 * H(i + 7)) * (0.6 + 0.4 * imp);
@@ -685,37 +683,33 @@
         }
         ctx.restore();
       });
-      burst(ctx, LED[0], LED[1], T_IMP, t, { n: 70, speed: 1900, spread: TAU, size: 9, life: 0.8, g: 1800, seed: 77, drag: 2.2, add: true, streak: 0.035, color: '#ffe08a', dir: -PI / 2 });
-      burst(ctx, LED[0], LED[1], T_IMP, t, { n: 40, speed: 1300, spread: TAU, size: 7, life: 0.7, g: 1400, seed: 91, drag: 2.5, add: true, streak: 0.03, color: '#a8f7ff', dir: -PI / 2 });
-      burst(ctx, RT.x, RT.y - 98 * RT.s, T_IMP + 0.02, t, { n: 30, speed: 300, spread: 2.8, size: 6, life: 1.2, g: 900, seed: 5, alpha: 0.6, jit: 500 });
-      A.glow(ctx, LED[0], LED[1], 500 + 300 * imp, '#fff2c0', 0.8 * (0.5 + 0.5 * imp));
-      // bloom takes over → white
+      burst(ctx, SPIN[0], SPIN[1], T_IMP, t, { n: 70, speed: 2000, spread: TAU, size: 9, life: 0.8, g: 1800, seed: 77, drag: 2.2, add: true, streak: 0.035, color: '#ffe08a', dir: -PI / 2 });
+      burst(ctx, SPIN[0], SPIN[1], T_IMP, t, { n: 40, speed: 1400, spread: TAU, size: 7, life: 0.7, g: 1400, seed: 91, drag: 2.5, add: true, streak: 0.03, color: '#a8f7ff', dir: -PI / 2 });
+      burst(ctx, fx, GTV.y - GTV.b, T_IMP + 0.02, t, { n: 34, speed: 300, spread: 2.8, size: 6, life: 1.2, g: 900, seed: 5, alpha: 0.6, jit: 1200 }); // dust shaken off the TV top
       const bl = A.smooth(45.08, R1, t);
-      A.glow(ctx, LED[0], LED[1], 400 + 2400 * bl, '#fff6dc', bl);
+      A.glow(ctx, SPIN[0], SPIN[1], 400 + 2600 * bl, '#fff6dc', bl);
     }
     ctx.restore();
-    // screen-space: impact speed lines + white
+    const S2 = [960 + (SPIN[0] - c[0]) * c[2], 540 + (SPIN[1] - c[1]) * c[2]];
     if (post) {
-      const L2 = [960 + (LED[0] - c[0]) * c[2], 540 + (LED[1] - c[1]) * c[2]];
-      speedLines(ctx, L2[0], L2[1], t, 0.9 * Math.exp(-k * 5), 60, '255,245,215', 260);
+      speedLines(ctx, S2[0], S2[1], t, 0.9 * Math.exp(-k * 5), 60, '255,245,215', 260);
       whiteOut(ctx, Math.pow(A.smooth(45.12, R1, t), 1.5), '255,250,238');
-    } else if (t > T_JUMP) {
-      const L2 = [960 + (LED[0] - c[0]) * c[2], 540 + (LED[1] - c[1]) * c[2]];
-      speedLines(ctx, L2[0], L2[1], t, 0.35 * A.smooth(T_JUMP, T_IMP, t), 40, '200,250,255', 420);
-    }
-    // cut in from the macro shot: quick flash
+    } else if (t > T_JUMP) speedLines(ctx, S2[0], S2[1], t, 0.35 * A.smooth(T_JUMP, T_IMP, t), 40, '200,250,255', 420);
     whiteOut(ctx, 0.6 * Math.pow(1 - A.smooth(R0, R0 + 0.08, t), 2), '255,236,200');
 
-    // IMPACT FRAMES (2 frames): #1 white paper + black ink rays, #2 inverted image
-    if (f === Math.round(T_IMP * 30)) {
+    // IMPACT FRAMES (2 frames, scene-local frame count): #1 white paper + black ink rays, #2 inverted image
+    const fl = Math.round(t * 30), fi = Math.round(T_IMP * 30);
+    if (fl === fi) {
       ctx.save(); ctx.fillStyle = '#fffaf0'; ctx.fillRect(0, 0, 1920, 1080);
-      const L2 = [960 + (LED[0] - c[0]) * c[2], 540 + (LED[1] - c[1]) * c[2]];
       ctx.fillStyle = A.OUTLINE;
-      for (let i = 0; i < 48; i++) { const an = i / 48 * TAU + H(i) * 0.1, r0 = 90 + H(i + 1) * 160, w = 6 + H(i + 2) * 22; ctx.beginPath(); ctx.moveTo(L2[0] + Math.cos(an) * r0, L2[1] + Math.sin(an) * r0); ctx.lineTo(L2[0] + Math.cos(an - w / 1400) * 2400, L2[1] + Math.sin(an - w / 1400) * 2400); ctx.lineTo(L2[0] + Math.cos(an + w / 1400) * 2400, L2[1] + Math.sin(an + w / 1400) * 2400); ctx.fill(); }
-      A.ellipse(ctx, L2[0], L2[1], 70, 70); ctx.fill();
-      ctx.fillStyle = '#fffaf0'; A.ellipse(ctx, L2[0], L2[1], 40, 40); ctx.fill();
+      for (let i = 0; i < 48; i++) { const an = i / 48 * TAU + H(i) * 0.1, r0 = 90 + H(i + 1) * 160, w = 6 + H(i + 2) * 22; ctx.beginPath(); ctx.moveTo(S2[0] + Math.cos(an) * r0, S2[1] + Math.sin(an) * r0); ctx.lineTo(S2[0] + Math.cos(an - w / 1400) * 2400, S2[1] + Math.sin(an - w / 1400) * 2400); ctx.lineTo(S2[0] + Math.cos(an + w / 1400) * 2400, S2[1] + Math.sin(an + w / 1400) * 2400); ctx.fill(); }
+      // ink silhouette of the TV frame
+      const tl = [960 + (GTV.x - c[0]) * c[2], 540 + (GTV.y - c[1]) * c[2]];
+      ctx.lineWidth = 26; ctx.strokeStyle = A.OUTLINE; ctx.strokeRect(tl[0], tl[1], GTV.w * c[2], GTV.h * c[2]);
+      A.ellipse(ctx, S2[0], S2[1], 70, 70); ctx.fill();
+      ctx.fillStyle = '#fffaf0'; A.ellipse(ctx, S2[0], S2[1], 40, 40); ctx.fill();
       ctx.restore();
-    } else if (f === Math.round(T_IMP * 30) + 1) {
+    } else if (fl === fi + 1) {
       ctx.save(); ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 1920, 1080); ctx.restore();
     }
   }
@@ -753,7 +747,7 @@
     });
     ctx.restore();
     ctx.restore();
-    // white from the router flash settles; slight rise again toward the S7 unfreeze flash
+    // white from the TV flash settles; slight rise again toward the S7 unfreeze flash
     whiteOut(ctx, Math.pow(1 - A.smooth(R1, 45.72, t), 1.6), '255,250,238');
     whiteOut(ctx, 0.3 * A.smooth(45.84, 46.0, t), '255,248,230');
   }
@@ -765,7 +759,7 @@
       ctx.fillStyle = '#0a0a18'; ctx.fillRect(0, 0, 1920, 1080);
       if (t < T_WIN) drawStreet(ctx, t, f);
       else if (t < M1) drawMacro(ctx, t, f);
-      else if (t < R1) drawRouterShot(ctx, t, f);
+      else if (t < R1) drawTVHero(ctx, t, f);
       else drawTVShot(ctx, t, f);
     },
   });

@@ -37,12 +37,12 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 MUS = os.path.join(ROOT, 'audio', 'music')
 SF2 = os.path.join(MUS, 'sf', 'GeneralUser-GS.sf2')
 SR = 48000
-DUR = 81.0
+DUR = 87.0
 N = int(SR * DUR)
 RNG = np.random.default_rng(5401)
 
 # segment boundaries: music before 14.5 is tape-stopped, music of 14.5..44.8 is hard-gated at 44.8
-SEG_BOUNDS = [15.3, 57.75]
+SEG_BOUNDS = [15.3, 63.75]
 
 
 def seg_of(t):
@@ -442,44 +442,96 @@ def freeze():
     for i, n_ in enumerate(['A5', 'D6', 'Eb6', 'F#6', 'A6']):
         celesta.n(24.43 + i * 0.05, 0.5, n_, 62)
     glock.n(24.43, 0.4, 'D7', 55)
-    # 25.0 - 27.65 Noa at the router: curious pizzicato + a "progress bar" celesta climb
+
+
+# ============================================================================================
+# v5  OUT WITH THE OLD 25.0 - 35.2: box yank, bin crash, WhatsApp, "Activated!", gold light out of the TV
+# ============================================================================================
+def oldbox():
+    # "Bye-bye, old box!" - cheeky determined pizz/bassoon strut
     g = Grid(25.0, 120)
-    line = [(0, 'D4', 62), (1, 'F#4', 58), (1.5, 'G4', 60), (2, 'A4', 64), (3, 'Bb4', 60), (3.5, 'A4', 56),
-            (4, 'G4', 60), (4.5, 'F#4', 56), (5, 'Eb4', 58)]
-    for bt, n_, v in line:
-        pizz.n(g(bt) + hum(0.005), 0.2, n_, v)
-    for bt, n_ in [(0, 'D2'), (1, 'A1'), (2, 'D2'), (3, 'A1'), (4, 'G1'), (5, 'A1')]:
-        pizzlo.n(g(bt), 0.3, n_, 66)
-    for bt in (0.5, 2.5, 4.5):
-        bassoon.n(g(bt), 0.12, ['D3', 'A2', 'G2'][int(bt // 2)], 50)
-        darb.n(g(bt + 0.25), 0.15, 'ka', 26)
-    prog = hijaz_notes(62, 74, 93)
+    for bt, n_ in [(0, 'D3'), (0.5, 'A2'), (1.0, 'D3')]:
+        pizzlo.n(g(bt), 0.2, n_, 76)
+        bassoon.n(g(bt), 0.12, n_, 60)
+    # 25.3 YANK: trombone rip up + cable-spaghetti xylophone scramble
+    T = 25.3
+    trombone.cc(25.2, 11, 110)
+    trombone.n(T, 0.35, 'D3', 104)
     for i in range(12):
-        celesta.n(26.0 + i * 0.135, 0.2, prog[i % len(prog)], 34 + 2 * i)
-    # "...now!" (27.65) - the switch clicks
-    T = 27.65
-    pizz.n(T, 0.2, ['D4', 'A4', 'D5'], 96)
-    glock.n(T, 0.5, ['D6', 'A6'], 80)
-    timp.n(T, 0.5, 'D2', 80)
-    darb.n(T, 0.3, 'doum', 90)
-    # 27.7 -> 29.2 magical GOLD rise into the LED
-    crystal.cc(27.6, 11, 0)
-    crystal.n(27.7, 1.5, ['D5', 'A5', 'D6'], 90)
-    crystal.expr(27.7, 29.18, 0, 120, 1.4)
+        trombone.bend(T + i * 0.02, 2.0 * (i + 1) / 12 - 2.0)
+    trombone.bend(T - 0.005, -2.0)
+    trombone.bend(T + 0.4, 0)
+    pizz.n(T, 0.15, ['D4', 'A4'], 96)
+    darb.n(T, 0.2, 'tek', 100)
+    fx.n(T, 0.4, 'swoosh', 60)
+    for i, n_ in enumerate([74, 77, 75, 79, 76, 80, 78, 82, 79, 83, 81, 86]):
+        xylo.n(25.36 + i * 0.045, 0.06, n_, 70 - 2 * i)
+    # 26.4 into the BIN: comic crash stab + tuba "blat"
+    T = 26.4
+    ohit.n(T, 0.2, ['Eb3', 'A3', 'D4'], 104)
+    tuba.n(T, 0.3, 'D1', 110)
+    trombone.n(T, 0.18, ['Eb2', 'A2'], 110)
+    okit.n(T, 1.0, 57, 96)
+    kit.n(T, 0.8, 55, 110)
+    kit.n(T + 0.03, 0.1, 38, 100)
+    darb.n(T, 0.3, 'doum', 110)
+    fx.n(T, 0.6, 'boom', 60, f0=110, f1=50)
+    # dusting off hands: pat pat
+    for tt in (26.8, 26.95):
+        pizz.n(tt, 0.08, ['A4', 'D5'], 66)
+        darb.n(tt, 0.1, 'ka', 44)
+    # 27.3 - 30.2 WhatsApp: light curious pizz + celesta
+    g = Grid(27.3, 120)
+    line = [(0, 'D4', 62), (1, 'F#4', 58), (1.5, 'G4', 60), (2, 'A4', 64), (3, 'Bb4', 58), (3.5, 'A4', 54),
+            (4, 'G4', 58), (5, 'F#4', 54)]
+    for bt, n_, v in line:
+        pizz.n(g(bt) + hum(0.004), 0.2, n_, v)
+    for bt, n_ in [(0, 'D2'), (1, 'A1'), (2, 'D2'), (3, 'A1'), (4, 'G1'), (5, 'A1')]:
+        pizzlo.n(g(bt), 0.3, n_, 60)
+    celesta.n(28.4, 0.4, ['D6', 'A6'], 58)                       # her message pops up
+    for i in range(6):                                            # rep typing...
+        celesta.n(29.4 + i * 0.12, 0.08, ['A5', 'Bb5'][i % 2], 36)
+    # 30.2 "message received" button (ding-DING)
+    for tt, ns in [(30.08, ['A5']), (30.2, ['D6', 'F#6'])]:
+        glock.n(tt, 0.4, ns, 80)
+        celesta.n(tt, 0.4, ns, 70)
+    pizz.n(30.2, 0.15, ['D4', 'A4'], 80)
+    for i, n_ in enumerate(['D4', 'F#4', 'A4', 'D5']):
+        harp.n(30.5 + i * 0.12, 0.6, n_, 50 + 3 * i)
+    # 31.3 "Activated! Look, Saba!" - happy warm swell
+    T = 31.3
+    slowstr.cc(31.2, 11, 50)
+    slowstr.n(T, 1.72, ['D3', 'A3', 'D4', 'F#4'], 92)
+    slowstr.expr(T, 32.9, 50, 105)
+    horns.cc(31.2, 11, 60)
+    horns.n(T, 1.7, ['D4', 'F#4', 'A4'], 84)
+    horns.expr(T, 32.9, 60, 98)
+    pizzlo.n(T, 0.4, 'D2', 84)
+    timp.n(T, 0.5, 'D2', 70)
+    for i, n_ in enumerate(hijaz_notes(62, 62, 86)):
+        harp.n(T + i * 0.03, 0.5, n_, 60 + i)
+    for i, n_ in enumerate(['A5', 'D6', 'Eb6', 'F#6', 'A6']):     # Bit's call sparkles on the GOTV splash
+        celesta.n(32.0 + i * 0.06, 0.5, n_, 60)
+    # 33.0 -> 35.2 the GOLD light pours out of the TV, push in, flash 34.7-35.2
+    crystal.cc(32.9, 11, 0)
+    crystal.n(33.0, 2.2, ['D5', 'A5', 'D6'], 92)
+    crystal.expr(33.0, 35.18, 0, 122, 1.4)
     gl = hijaz_notes(62, 50, 98)
     for i, n_ in enumerate(gl):
         u = i / (len(gl) - 1)
-        harp.n(27.75 + 1.4 * (u ** 0.7), 0.6, n_, int(48 + 60 * u))
+        harp.n(33.3 + 1.85 * (u ** 0.7), 0.6, n_, int(48 + 62 * u))
     arp = hijaz_notes(62, 74, 98)
-    for i in range(18):
-        celesta.n(27.8 + i * 0.077, 0.4, arp[i % len(arp)], 45 + 3 * i)
-    slowstr.n(27.7, 1.49, ['D4', 'A4', 'D5', 'F#5'], 70)
-    slowstr.expr(27.7, 29.18, 20, 112, 1.6)
-    choir.cc(27.6, 11, 20)
-    choir.n(27.8, 1.39, ['D4', 'A4', 'D5'], 70)
-    choir.expr(27.8, 29.18, 20, 100, 1.5)
-    fx.n(27.8, 1.4, 'riser', 85, lo=900, hi=12000, curve=1.8)
-    fx.n(28.2, 1.0, 'revcym', 90)
+    for i in range(26):
+        celesta.n(33.1 + i * 0.08, 0.4, arp[i % len(arp)], 42 + 2 * i)
+    slowstr.n(33.0, 2.19, ['D4', 'A4', 'D5', 'F#5'], 74)
+    slowstr.expr(33.0, 35.18, 30, 118, 1.6)
+    choir.cc(32.9, 11, 20)
+    choir.n(33.2, 1.99, ['D4', 'A4', 'D5'], 76)
+    choir.expr(33.2, 35.18, 20, 108, 1.5)
+    for i in range(int((35.18 - 34.4) / 0.05)):
+        timp.n(34.4 + i * 0.05, 0.06, 'D2', 40 + 4 * i)
+    fx.n(33.2, 2.0, 'riser', 90, lo=700, hi=12000, curve=1.8)
+    fx.n(34.2, 1.0, 'revcym', 95)
 
 
 # ============================================================================================
@@ -644,9 +696,9 @@ def s5():
             'Gm': ['G2', 'A2', 'Bb2', 'A2', 'G2', 'A2', 'Bb2', 'D3'],
             'Cm': ['C3', 'D3', 'Eb3', 'D3', 'C3', 'D3', 'Eb3', 'G3'],
             'Eb': ['Eb3', 'F3', 'G3', 'F3', 'Eb3', 'G3', 'Bb3', 'G3']}
-    plan = [(30.5, 'Gm'), (31.5, 'D'), (32.5, 'D'), (33.5, 'Cm'), (34.5, 'D'),
+    plan = [(30.5, 'Gm'), (31.5, 'D'), (32.5, 'D'), (33.5, 'Cm'),
             (38.0, 'Gm'), (39.0, 'Cm'), (39.5, 'Eb'), (40.5, 'D'), (41.0, 'D')]
-    ends = {34.5: 35.0, 39.5: 40.5}
+    ends = {33.5: 34.0, 39.5: 40.5}
     lowstr.cc(30.4, 11, 110)
     for i, (t0, ch) in enumerate(plan):
         t1 = ends.get(t0, plan[i + 1][0] if i + 1 < len(plan) else 41.5)
@@ -667,13 +719,13 @@ def s5():
     # driving darbuka (2-beat cycle of 16ths)
     cyc = ['doum', None, 'ka', 'tek', 'doum', None, 'tek', 'ka']
     fill = ['doum', 'ka', 'tek', 'ka', 'tek', 'ka', 'tek', 'tek']
-    for base in list(np.arange(30.5, 35.0, 1.0)) + list(np.arange(38.0, 41.5, 1.0)):
+    for base in list(np.arange(30.5, 34.0, 1.0)) + list(np.arange(38.0, 41.5, 1.0)):
         use = fill if base in (33.5, 40.5) else cyc
         for i, k in enumerate(use):
             tt = base + i * s
-            if k and tt < (35.0 if base < 36 else 41.5):
+            if k and tt < (34.0 if base < 36 else 41.5):
                 darb.n(tt + hum(0.003), 0.2, k, (96 if k == 'doum' else 80) + (6 if i == 0 else 0))
-    for tt in np.arange(30.5, 35.0, 0.25):
+    for tt in np.arange(30.5, 34.0, 0.25):
         kit.n(tt + 0.125, 0.05, 54, 40)
     # low brass & horns: theme bar 2 continues over the cut
     horns.cc(30.4, 11, 115)
@@ -682,49 +734,53 @@ def s5():
     trombone.n(30.5, 1.0, ['G2', 'D3', 'Bb3'], 95)
     trombone.n(31.5, 1.0, ['D3', 'A3', 'F#3'], 95)
     tuba.n(30.5, 1.0, 'G1', 100)
-    tuba.n(31.5, 3.4, 'D2', 92)
-    tuba.expr(31.5, 34.9, 110, 70)
+    tuba.n(31.5, 2.45, 'D2', 92)
+    tuba.expr(31.5, 33.9, 110, 70)
     trombone.n(33.5, 1.0, ['C3', 'G3'], 60)
-    # --- shark menace 35.0 - 36.0
-    men = [(35.0, .25), (35.25, .25), (35.5, .125), (35.625, .125), (35.75, .0625), (35.8125, .0625),
-           (35.875, .0625), (35.9375, .0625)]
-    for i, (tt, d) in enumerate(men):
-        n_ = ['D1', 'Eb1'][i % 2]
-        tuba.n(tt, d * 0.9, [n_], 100 + 3 * i)
-        lowstr.n(tt, d * 0.9, [m(n_) + 12, m(n_) + 24], 100 + 3 * i)
-        trombone.n(tt, d * 0.9, [m(n_) + 24], 90 + 4 * i)
-    tuba.cc(34.9, 11, 120)
-    trem.cc(34.95, 11, 30)
-    trem.n(35.0, 0.99, ['D6', 'Eb6', 'A5'], 80)
-    trem.expr(35.0, 35.99, 30, 110, 1.5)
-    for i in range(int(1.0 / 0.05)):
-        timp.n(35.0 + i * 0.05, 0.06, 'D2', 40 + 4 * i)
-    # --- 36.0 CHOMP
+    # --- v5 shark: mock-menace that DEFLATES under Bit's bored "Ahh... another attacker..." (v1 34.3-35.95)
+    tuba.cc(33.9, 11, 110)
+    for tt, n_, d in [(34.0, 'D1', .42), (34.5, 'Eb1', .42), (35.0, 'D1', .9)]:
+        tuba.n(tt, d, n_, 104)
+        lowstr.n(tt, d, [m(n_) + 12, m(n_) + 24], 96)
+        trombone.n(tt, d, [m(n_) + 24], 84)
+    bassoon.n(35.0, 0.9, 'D2', 70)
+    for i in range(30):     # ...pfffff: the motif sags like a punctured tyre
+        tt = 35.15 + i * 0.025
+        bnd = -6 * ((i + 1) / 30) ** 1.2 + 0.3 * np.sin(2 * np.pi * 8 * (tt - 35.15))
+        tuba.bend(tt, bnd)
+        bassoon.bend(tt, bnd)
+    tuba.bend(35.95, 0)
+    bassoon.bend(35.95, 0)
+    mute.n(35.6, 0.14, 'A4', 66)       # unimpressed little "meh"
+    mute.n(35.76, 0.2, 'Ab4', 60)
+    for i in range(int(0.45 / 0.05)):  # comic timpani lean-in to the chomp
+        timp.n(35.55 + i * 0.05, 0.06, 'D2', 40 + 6 * i)
+    # --- 36.0 CHOMP (a comic clonk, not a horror hit)
     T = 36.0
-    for tr_, ns in [(trombone, ['D2', 'Eb3', 'A3']), (tuba, ['D1', 'D2']), (horns, ['Eb4', 'A4', 'D5']),
-                    (trumpet, ['Eb5', 'A5']), (strings, ['D3', 'Eb4', 'A4', 'Eb5']), (lowstr, ['D2', 'Eb2'])]:
-        tr_.cc(T - 0.01, 11, 127)
-        tr_.n(T, 0.14, ns, 124)
-    ohit.n(T, 0.2, ['D3', 'Eb4'], 118)
-    okit.n(T, 1.5, 36, 127)
-    okit.n(T, 1.6, 57, 112)
-    timp.n(T, 0.6, 'D2', 127)
-    darb.n(T, 0.3, 'doum', 124)
-    fx.n(T, 1.0, 'boom', 100, f0=75, f1=32)
-    # --- 36.2 boing
+    for tr_, ns in [(trombone, ['D2', 'A2', 'D3']), (tuba, ['D1', 'D2']), (horns, ['D4', 'A4']),
+                    (strings, ['D3', 'A3', 'D4']), (lowstr, ['D2'])]:
+        tr_.cc(T - 0.01, 11, 120)
+        tr_.n(T, 0.12, ns, 110)
+    ohit.n(T, 0.2, ['D3', 'A3'], 100)
+    okit.n(T, 1.2, 36, 118)
+    okit.n(T, 1.2, 57, 96)
+    timp.n(T, 0.6, 'D2', 118)
+    darb.n(T, 0.3, 'doum', 118)
+    xylo.n(T, 0.2, ['D5', 'Eb5'], 90)
+    fx.n(T, 0.8, 'boom', 80, f0=75, f1=40)
+    # --- 36.2 zap / boing
     fx.n(36.2, 0.9, 'boing', 95)
     pizz.n(36.2, 0.2, ['D3', 'A3', 'D4'], 100)
     xylo.n(36.2, 0.2, ['D6'], 90)
-    # dazed: wobbly chromatic clarinet descent + stars
-    clar.cc(36.3, 11, 100)
-    for i, n_ in enumerate(range(m('D5'), m('D5') - 8, -1)):
-        clar.n(36.35 + i * 0.135, 0.14, n_, 78 - 2 * i)
-    for i in range(60):
-        tt = 36.35 + i * 0.02
-        clar.bend(tt, 0.35 * np.sin(2 * np.pi * 7 * (tt - 36.35)))
-    clar.bend(37.6, 0)
-    for tt, n_ in [(36.45, 'A6'), (36.7, 'F#6'), (36.95, 'D6'), (37.2, 'Eb6')]:
-        vibes.n(tt, 0.5, n_, 60)
+    # Bit LAUGHS at the shark (v1 36.3-37.5): bouncy "ha-ha-ha" figure - xylophone + pizz + bassoon + darbuka tickle
+    laugh = ['A5', 'A5', 'F#5', 'A5', 'A5', 'F#5', 'G5', 'F#5', 'Eb5', 'D5']
+    for i, n_ in enumerate(laugh):
+        tt = 36.35 + i * 0.12
+        xylo.n(tt, 0.1, n_, 84 - 2 * i)
+        pizz.n(tt, 0.1, m(n_) - 12, 80 - 2 * i)
+        bassoon.n(tt, 0.08, m(n_) - 36 + (12 if i % 2 else 0), 70)
+        darb.n(tt, 0.1, 'ka' if i % 2 else 'tek', 58)
+    pizzlo.n(37.55, 0.2, 'D2', 80)
     # --- 37.6 cheeky theme snippet
     snip = [(37.6, 'A3', .12), (37.75, 'D4', .2), (38.0, 'D4', .1), (38.125, 'Eb4', .1), (38.25, 'F#4', .2),
             (38.5, 'A4', .3)]
@@ -1401,13 +1457,11 @@ def compose():
     s1()
     s2()
     freeze()
-    s4()
-    for fn, sh in [(s5, 12.9), (s6, 12.9), (s7, 12.9), (title, 20.5)]:
+    oldbox()
+    for fn, sh in [(s4, 6.0), (s5, 18.9), (s6, 18.9), (s7, 18.9), (backgammon, 6.0), (tag, 6.0), (title, 26.5)]:
         SHIFT[0] = sh
         fn()
     SHIFT[0] = 0.0
-    backgammon()
-    tag()
     # map darbuka / fx pseudo-notes
     for tr in (darb, fx):
         tr.notes = [(t, d, 0, v, dict(kw, kind=k)) for t, d, k, v, kw in
@@ -1454,7 +1508,7 @@ def main():
         if sg == 0:
             y = tape_stop(y, 15.3)
         elif sg == 1:
-            y = gate_at(y, 57.7)
+            y = gate_at(y, 63.7)
         final.setdefault(stem, np.zeros((N, 2)))
         final[stem] += y
     # carve 1-4 kHz under dialogue (gentle, ~-3.5 dB) - linear, so applied per stem
@@ -1470,13 +1524,13 @@ def main():
         final[stem] = final[stem] - depth * env[:, None] * band
     # master fade: ring out, fade 58.6 -> 60
     fade = np.ones(N)
-    a = int(80.2 * SR)
+    a = int(86.7 * SR)
     fade[a:] = np.cos(np.linspace(0, np.pi / 2, N - a)) ** 1.2
     for stem in final:
         final[stem] *= fade[:, None]
     # section dynamics (emotional shape): the goal must be the peak, ocean a notch below, tag intimate
-    dyn = [(0, 0), (43.3, 0), (43.5, -2.5), (47.9, -2.5), (48.2, -1), (50.9, -2), (53.2, -1.5), (53.5, 0),
-           (59.2, 0), (59.35, 1.5), (66.4, 1.5), (67.0, 0), (72.3, 0), (72.45, 3), (77.7, 3), (77.79, 0), (81, 0)]
+    dyn = [(0, 0), (49.3, 0), (49.5, -2.5), (52.9, -2.5), (53.2, -1), (56.9, -2), (59.2, -1.5), (59.5, 0),
+           (65.2, 0), (65.35, 1.5), (72.4, 1.5), (73.0, 0), (78.3, 0), (78.45, 3), (83.7, 3), (83.79, 0), (87, 0)]
     dcurve = 10 ** (np.interp(np.arange(N) / SR, [d[0] for d in dyn], [d[1] for d in dyn]) / 20)
     for stem in final:
         final[stem] *= dcurve[:, None]

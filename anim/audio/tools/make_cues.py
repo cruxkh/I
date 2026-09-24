@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""VERSION 2 (81.0 s). Writes audio/cues/base.json from SYNC-point cues below.
+"""VERSION 5 (87.0 s; the SYNC table below is the v2 list, remapped to v5 at the bottom). Writes audio/cues/base.json from SYNC-point cues below.
 Each entry: (sync_time, sfx, gain_db, pan). Cue t = sync_time - hit offset (audio/sfx/hits.json)."""
 import os, json
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -19,11 +19,11 @@ SYNC = [
     (6.15, 'whip_pan', -9, 0.0),               # 6.2 whip-blur cut to Toronto
     # --- S2 v2 living room 6.2-29.2
     (6.2, 'snow_wind_window', -12, 0.0),
-    (6.2, 'room_tone_cozy', -8, 0.0),          # 23.4 s bed -> fades under the 29.2 flash
+    (6.2, 'room_tone_cozy', -8, 0.0),          # 29.4 s bed -> fades under the 35.2 flash (v5)
     (6.2, 'tv_crowd_live', -14, TV),           # 9.1 s, ends hard at 15.3
     (15.3, 'freeze_glitch', -6, TV),           # THE FREEZE (old provider)
     (15.3, 'record_scratch', -14, 0.0),
-    (15.55, 'buffering_ticks_long', -13, TV),  # 15.55 -> 27.55
+    (15.55, 'buffering_ticks_long', -13, TV),  # 15.55 -> 25.35 (v5)
     (15.6, 'sad_trombone', -21, -0.1),         # subtle, before "No! Not now!" (16.0)
     (18.0, 'error_bonk', -10, TV),             # old provider error ("Again?!")
     (25.3, 'router_beeps', -14, 0.1),          # Noa crouches at the router
@@ -86,6 +86,21 @@ SYNC = [
     (77.4, 'wink_ding', -8, 0.3),
     (77.8, 'title_slam', -3, 0.0),             # GOTV end card
 ]
+
+# ===== VERSION 5 (87.0 s): router/switch beat replaced; everything at v2 t >= 29.2 moves +6.0 =====
+V5_DROP = {(25.3, 'router_beeps'), (27.7, 'gotv_switch')}
+V5_NEW = [
+    (25.3, 'cable_yank', -6, 0.2),             # "Bye-bye, old box!" -- box ripped out with its cables
+    (26.4, 'trash_crash', -5, 0.3),            # into the bin
+    (27.3, 'phone_whoosh', -12, -0.2),         # phone out (under "One message to GOTV...")
+    (28.4, 'wa_send', -12, -0.1),              # her message appears
+    (29.4, 'wa_typing', -16, -0.1),            # rep typing... (29.4-30.1)
+    (30.2, 'wa_receive', -10, -0.1),           # rep: subscription activated
+    (31.2, 'gotv_switch', -8, TV),             # GOTV app splash on the smart TV (chord 31.54)
+    (33.7, 'light_shimmer', -11, TV),          # light pours OUT of the TV (swell starts 33.0)
+    (55.25, 'bit_laugh', -8, 0.0),             # Bit laughs at the shark after the zap
+]
+SYNC = [(ts + 6.0 if ts >= 29.2 else ts, nm, g, p) for (ts, nm, g, p) in SYNC if (ts, nm) not in V5_DROP] + V5_NEW
 
 cues = []
 for (ts, name, g, p) in SYNC:

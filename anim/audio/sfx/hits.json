@@ -64,5 +64,12 @@
  "gotv_switch": 0.0,
  "error_bonk": 0.005,
  "sleepy_tuba_wah": 0.05,
- "packet_pant": 0.0
+ "packet_pant": 0.0,
+ "cable_yank": 0.15,
+ "trash_crash": 0.0,
+ "phone_whoosh": 0.18,
+ "wa_send": 0.0,
+ "wa_typing": 0.0,
+ "wa_receive": 0.0,
+ "bit_laugh": 0.02
 }
