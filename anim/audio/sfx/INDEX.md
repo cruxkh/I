@@ -25,8 +25,8 @@ All sounds are synthesised procedurally by `audio/tools/sfx.py` (seeded, reprodu
 | `buffering_tick_loop` | mono | 5.00 | 0.000 | bed, RMS -26 dBFS | Buffering spinner: soft, patient digital "tk" ticks (8 per second, subtle pitch alternation) -- the sound of waiting. Loopable 5.0 s (period-exact). |
 | `sad_trombone` | st | 2.80 | 0.030 | one-shot, peak -1 dBFS | Subtle muted "wah-wah-wah-waaah" sad trombone (plunger-muted, soft, comic despair). First note at 0.03 s. 2.8 s. |
 | `router_beeps` | st | 0.90 | 0.000 | one-shot, peak -1 dBFS | Router status beeps: three short square-ish blips + a lower confirm blip, cute and small. First beep at 0.0 s. 0.9 s. |
-| `dive_whoosh` | st | 2.40 | 1.000 | one-shot, peak -1 dBFS | Deep dive INTO the router LED: sub rising from 30 Hz, reversed-air suck and a huge sweeping whoosh that peaks at 1.0 s (= 20.3), then roars away into a tunnel tail. 2.4 s. |
-| `light_shimmer` | st | 2.80 | 0.700 | one-shot, peak -1 dBFS | Into-the-light shimmer: a swelling major chord of glassy partials and twinkling sparkles, blooming at 0.7 s (the white-cyan flash at 21.0), long airy tail. 2.8 s. |
+| `dive_whoosh` | st | 2.40 | 1.000 | one-shot, peak -1 dBFS | Deep dive INTO the router LED: sub rising from 30 Hz, reversed-air suck and a huge sweeping whoosh that peaks at 1.0 s (= the 29.2 flash in v2), then roars away into a tunnel tail. 2.4 s. |
+| `light_shimmer` | st | 2.80 | 0.700 | one-shot, peak -1 dBFS | Into-the-light shimmer: a swelling major chord of glassy partials and twinkling sparkles, blooming at 0.7 s (use hit 0.7 on a flash), long airy tail. 2.8 s. |
 | `dataworld_ambience` | st | 14.40 | 0.000 | bed, RMS -24 dBFS | Inside the fibre: electric hum with slow beating, flowing data streams (fluttering filtered noise), tiny random digital pips flicking past in stereo, low tunnel air. 14.4 s bed (29.2-43.4 + tail). |
 | `traffic_jam_grumble` | st | 12.60 | 0.000 | bed, RMS -24 dBFS | Traffic jam of idling packets: low chugging engine rumble (many slow-pulsing sub motors), impatient grumbling murmurs. 12.6 s bed (29.2 -> the 41.5 boost), fades out over the last 1 s. |
 | `packet_honk_hi` | st | 0.26 | 0.010 | one-shot, peak -1 dBFS | Little cartoon bulb-horn honk, high (packet annoyance). Hit 0.01 s. |
@@ -50,7 +50,7 @@ All sounds are synthesised procedurally by `audio/tools/sfx.py` (seeded, reprodu
 | `map_ding` | st | 2.00 | 0.000 | one-shot, peak -1 dBFS | Map pin "ding": warm glassy bell with sparkle -- one per city pin. Hit 0.0 s. 2.0 s. |
 | `map_ding_arrive` | st | 1.80 | 0.000 | one-shot, peak -1 dBFS | Arrival pin: two-note rising chime (Toronto reached). Hits at 0.0 and 0.14 s. 1.8 s. |
 | `km_counter_ticks` | st | 10.40 | 0.000 | bed, RMS -30 dBFS | Mechanical/digital km counter rolling 0 -> 11,000: fast soft ticks that accelerate then slow, ending with a "clunk" at 9.9 s (= arrival). 10.4 s. |
-| `shore_arrival_swell` | st | 3.20 | 1.600 | one-shot, peak -1 dBFS | Cable rising to the shore: a big rolling water swell + magical upward shimmer that crests at 1.6 s (= 40.5), then washes out. 3.2 s. |
+| `shore_arrival_swell` | st | 3.20 | 1.600 | one-shot, peak -1 dBFS | Cable rising to the shore: a big rolling water swell + magical upward shimmer that crests at 1.6 s (= 53.4 in v2), then washes out. 3.2 s. |
 | `snowy_street_wind` | st | 5.00 | 0.000 | bed, RMS -24 dBFS | Snowy Toronto street at night: gusting wind with howl, snow hiss, far-off city hum and a distant streetcar bell. 5.0 s bed. |
 | `pole_buzz` | st | 5.00 | 0.000 | bed, RMS -28 dBFS | Utility-pole transformer buzz: 120 Hz mains buzz with gritty harmonics and faint arcing sizzle (Toronto = 60 Hz grid). 5 s bed. |
 | `wire_zip` | st | 2.20 | 0.000 | one-shot, peak -1 dBFS | Zip along the power line: metallic zipline whirr rising in pitch, wire-singing tone, spark ticks, doppler pan L->R. Starts 0.0 s, peak ~1.2 s. 2.2 s. |

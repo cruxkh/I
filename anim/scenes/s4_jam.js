@@ -223,3 +223,328 @@
     }
   }
 
+
+  // ---------------------------------------------------------------- Bit's appearance in the jam (A/B/Q)
+  function bitJamOpts(t) {
+    const push = pushing(t), pk = popK(t), speaking = A.speaking('BIT', t);
+    const vz = (bitZ(t + 0.03) - bitZ(t - 0.03)) / 0.06; // units/s (negative = toward camera)
+    const o = { t, mood: push ? 'squeeze' : 'determined', shadow: 0.8, glow: 1.25 };
+    if (push) { o.limbs = 'push'; o.squash = -0.16 - 0.06 * Math.sin(t * 30); }
+    else if (Math.abs(vz) > 0.25) { o.limbs = 'run'; o.vel = [0, 0]; o.runRate = 3.4; o.phase = t * Math.PI * 2 * 3.4; }
+    else o.limbs = 'stand';
+    if (pk > 0) { o.squash = -0.28 * pk; o.hop = 14 * pk; o.sparkle = pk; }
+    if (!push && !(pk > 0) && t > 30.55 && t < 31.25) { o.limbs = 'run'; o.armR = [80, -150]; } // "Live goal!" arm up
+    if (t > 31.72 && t < 32.3) { o.armR = [78, -160 + Math.sin(t * 20) * 8]; o.armL = [-66, -100]; }
+    if (QUEUE(t)) { // sandwiched between ILVIP and EMBY
+      const sq = -0.2 + 0.03 * Math.sin(t * 3);
+      o.limbs = 'stand'; o.squash = sq; o.armL = [-50, -70]; o.armR = [50, -70];
+      if (t < 32.5) { o.mood = 'determined'; o.look = [0.2, -0.1]; }
+      else if (t < 35.0) { // ILVIP scolds him (ILVIP is screen-left)
+        o.mood = t < 33.9 ? 'panic' : 'neutral'; o.look = [-0.85, -0.05]; o.sweat = 1; o.browRaise = 4;
+        if (t > 34.3) { o.armL = [-60, -110]; o.armR = [60, -110]; } // sheepish "okay okay" hands
+      } else { // EMBY snoozes on the right; Bit's deadpan
+        o.mood = 'neutral'; o.look = t < 35.9 ? [0.85, 0.0] : [0.0, 0.05]; o.lid = t > 35.5 ? 0.45 : 0.15;
+      }
+    }
+    if (t >= 36.78) { // wedged against the cat
+      const w = inv(36.78, 36.95, t);
+      o.limbs = 'push'; o.mood = 'squeeze'; o.squash = -0.34 + 0.06 * Math.sin(w * 20) * (1 - w); o.sweat = 1; o.look = [-0.8, -0.4]; o.rot = -0.08;
+    }
+    o.look = o.look || (speaking ? [0.1, -0.1] : [A.wob(t, 3, 0.8) * 0.5, -0.1]);
+    return o;
+  }
+  // neighbours get shoved while Bit squeezes past; queue brands act
+  function shoveO(p, t) {
+    const out = {};
+    if (p.brand === 'ILVIP' && t > 32.25 && t < 36.4) {
+      const talk = t > 32.35 && t < 35.0;
+      Object.assign(out, { look: talk ? [0.9, -0.05] : [0.3, 0.1], bmood: 'grumpy', rot: talk ? 0.05 * Math.sin(t * 2.2) + 0.04 : 0, squash: talk ? -0.04 * Math.abs(Math.sin(t * 7)) : 0 });
+    }
+    if (p.brand === 'EMBY' && t > 32.25 && t < 36.4) Object.assign(out, { look: [-0.4, 0.3], bmood: 'sleepy', rot: -0.06 + 0.02 * Math.sin(t * 1.1) });
+    const bz = bitZ(t), bx = bitX(t);
+    if (!(p.li === 3 || p.li === 4)) return out;
+    const dz = Math.abs(p.Z - bz); if (dz > 0.45) return out;
+    const k = (1 - dz / 0.45) * (pushing(t) || t > 36.78 ? 1 : QUEUE(t) ? 0.35 : 0.5);
+    const side = Math.sign(p.X - bx) || 1;
+    const wob = popK(t) * Math.sin(t * 40) * 0.4;
+    return Object.assign({ dx: side * 0.1 * k, squash: 0.18 * k + wob * 0.12, mood: k > 0.3 ? 'annoyed' : undefined, look: [-side * 0.8, 0.2], rot: side * 0.06 * k }, out,
+      out.squash != null ? { squash: out.squash + 0.1 * k } : {});
+  }
+
+  // ============================================================ SHOTS
+  function shotA(ctx, t) {
+    const k = t - 8.2; // authored against the v1 21.0 start
+    const zc = key(k, [[21.0, -0.6], [21.45, -0.2, 'out'], [21.9, 6.3, 'inOut']]);
+    CAMX = 0.9 * smooth(21.2, 21.85, k);
+    const bz = bitZ(t), bx = bitX(t);
+    const [bxs, bys] = proj(bx, 0, bz, zc);
+    const zk = ease.out(inv(21.5, 21.72, k));
+    const cam = { x: lerp(960, bxs, zk), y: lerp(540, bys - 50, zk), zoom: key(k, [[21.0, 1.35], [21.4, 1.03, 'out'], [21.5, 1.03], [21.72, 2.9, 'out'], [21.9, 3.1, 'lin']]), rot: 0, t };
+    clampCam(cam);
+    ctx.save(); fillBase(ctx); A.camera(ctx, cam);
+    jamWorld(ctx, t, zc, {
+      jam: 0.95, catX: -0.62,
+      bit: { X: bx, Y: 0, Z: bz, draw: (c, x, y, sc) => { A.glow(c, x, y - 70 * sc, 260 * sc, '#ffc93c', 0.5 + 0.3 * Math.sin(t * 6)); const hp = Math.max(0, Math.sin((k - 21.3) * Math.PI * 3.2)) * smooth(21.25, 21.4, k); A.drawBit(c, x, y, sc, Object.assign(bitJamOpts(t), { glow: 1.6, hop: hp * 55, limbs: 'arms-up', mood: 'determined', squash: hp < 0.1 ? 0.12 : -0.08 })); } },
+      catO: () => ({ mood: 'bored' }),
+      pkO: p => shoveO(p, t),
+    });
+    ctx.restore();
+    const ping = inv(21.66, 21.9, k);
+    if (ping > 0 && ping < 1) {
+      const [sx, sy] = [960 + (bxs - cam.x) * cam.zoom, 540 + (bys - 25 - cam.y) * cam.zoom];
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = `rgba(255,220,120,${0.7 * (1 - ping)})`; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.arc(sx, sy, 70 + ping * 220, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+    }
+    speedLines(ctx, t, 960, 470, Math.sin(inv(21.48, 21.75, k) * Math.PI) * 0.9, 40);
+  }
+
+  // B + Q1 + Q2: the squeeze and the competitor queue (one geography, three setups)
+  function shotB(ctx, t) {
+    const bz = bitZ(t), bx = bitX(t);
+    let zc, cam;
+    const bump = t > 36.8 ? Math.exp(-(t - 36.8) * 14) : 0;
+    if (t < 32.3) { // B: tracking behind the squeeze
+      zc = bitZ(t - 0.18) - 1.28; CAMX = 0.9;
+      const [bxs, bys] = proj(bx, 0, bz, zc);
+      cam = { x: lerp(960, bxs, 0.75) - 40, y: bys - 190, zoom: 1.3, t };
+    } else if (t < 35.0) { // Q1: ILVIP two-shot, slow push
+      const u = inv(32.3, 35.0, t);
+      zc = lerp(6.42, 6.58, ease.inOut(u)); CAMX = 0.8;
+      const [ix, iy] = proj(0.64, 0, ROW(9), zc), [bxs] = proj(bx, 0, bz, zc);
+      cam = { x: (ix + bxs) / 2 + 10, y: iy - 170, zoom: lerp(1.42, 1.52, ease.inOut(u)), rot: -0.012, t };
+    } else { // Q2: EMBY, then Bit pops out and tracks to the cat
+      const u = inv(35.0, 36.2, t), w = smooth(36.2, 36.75, t);
+      zc = lerp(6.52, bitZ(t - 0.18) - 1.28, smooth(36.2, 36.4, t)) - 0.1 * w;
+      CAMX = lerp(1.08, 0.55, w);
+      const [ex, ey] = proj(1.19, 0, ROW(9), zc), [bxs, bys] = proj(bx, 0, bz, zc), cx = proj(0, 0, CATZ, zc)[0];
+      cam = { x: lerp((ex + bxs) / 2 - 10, lerp(bxs, cx, 0.35), w), y: lerp(ey - 170, bys - 200, w), zoom: lerp(lerp(1.5, 1.58, u), 1.55, w), rot: 0.012 * (1 - w), shake: bump * 1.4, t };
+    }
+    clampCam(cam);
+    ctx.save(); fillBase(ctx); A.camera(ctx, cam);
+    jamWorld(ctx, t, zc, {
+      jam: 0.95,
+      bit: { X: bx, Y: 0, Z: bz, draw: (c, x, y, sc) => A.drawBit(c, x, y, sc, bitJamOpts(t)) },
+      catO: () => ({ mood: 'bored', look: [0.6, 0.3], squash: -0.03 * bump }),
+      pkO: p => shoveO(p, t),
+    });
+    // Bit's side-eye "..." at EMBY
+    if (t > 35.95 && t < 36.2) {
+      const [x, y, d] = proj(bx, 0.36, bz, zc), a = smooth(35.95, 36.0, t);
+      ctx.save(); ctx.globalAlpha = a; A.text(ctx, '...', x + 10, y, { font: `900 ${Math.round(60 / d)}px Fredoka`, fill: '#fff', stroke: A.OUTLINE, lw: 5 }); ctx.restore();
+    }
+    // bonk impact star
+    if (t > 36.78 && t < 36.96) {
+      const [x, y] = proj(0.58, 0.2, CATZ - 0.1, zc), u = inv(36.78, 36.96, t);
+      ctx.save(); ctx.translate(x, y); ctx.scale(0.6 + 0.6 * u, 0.6 + 0.6 * u); ctx.globalAlpha = 1 - u;
+      ctx.beginPath(); for (let i = 0; i < 16; i++) { const r = i % 2 ? 22 : 58, a = i / 16 * Math.PI * 2; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath();
+      A.fillStroke(ctx, '#fff3a0', 4); A.text(ctx, 'BONK', 0, 2, { font: '400 30px Bangers', fill: '#e8344e', stroke: A.OUTLINE, lw: 4 });
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  // --- shot C: low-angle Catpacket (authored at v1 times, k = t - 11.8)
+  function shotC(ctx, t) {
+    const k = t - 11.8, lt = k - 25.0;
+    const cam = {
+      x: key(k, [[25.0, 1330], [25.15, 1310], [25.85, 960, 'inOut'], [27.95, 930]]),
+      y: key(k, [[25.0, 860], [25.15, 850], [25.85, 548, 'inOut'], [27.95, 530]]),
+      zoom: key(k, [[25.0, 1.9], [25.15, 1.85], [25.85, 1.02, 'inOut'], [27.95, 1.1]]),
+      rot: key(k, [[25.0, 0.0], [25.85, -0.05, 'inOut']]), t,
+    };
+    ctx.save(); fillBase(ctx); A.camera(ctx, cam);
+    ctx.save(); ctx.translate(900, 860); ctx.scale(1.95, 1.95); ctx.translate(-960, -470);
+    A.drawDataTunnel(ctx, t, { z: 30 + t * 0.15, speed: 0.1, jam: 0.85 });
+    ctx.restore();
+    // background queue at the horizon (competitors among them)
+    for (let i = 0; i < 9; i++) {
+      const x = 900 + (i - 4) * 150 + (H(i) - 0.5) * 40, y = 905 + H(i * 3) * 14, sc = 0.4 + H(i * 5) * 0.1;
+      if (Math.abs(x - 880) < 260) continue;
+      A.glow(ctx, x, y - 20, 70, 'rgba(255,40,60,1)', 0.18);
+      ctx.save(); ctx.globalAlpha = 0.8;
+      const hk = i === 7 ? smooth(39.36, 39.42, t) : 0;
+      if (i === 1 || i === 6) drawBrand(ctx, x, y, sc, { t, brand: i === 1 ? 'LAGTV' : 'LOADING+', seed: 40 + i, mood: 'sleepy', spinner: i === 6 ? 1 : 0, mouth: 0, look: [0.6 * Math.sign(880 - x), -0.2], glow: 0.5 });
+      else A.drawPacket(ctx, x, y, sc, { t, seed: 40 + i, mood: i % 3 ? 'bored' : 'sleep', honk: hk, look: [0.6 * Math.sign(880 - x), -0.2] });
+      ctx.restore();
+    }
+    const lookK = smooth(25.35, 25.9, k);
+    const catMood = k > 26.62 && k < 27.45 ? 'grumpy' : 'bored';
+    const arms = k > 25.62 && k < 26.3 ? 'point' : 'crossed';
+    const armPop = Math.max(0, 1 - Math.abs(k - 25.62) / 0.12, k > 26.3 && k < 26.45 ? 1 - (k - 26.3) / 0.15 : 0);
+    A.glow(ctx, 880, 560, 700, '#ff3fa4', 0.12);
+    A.drawCatPacket(ctx, 900, 1010, 3.35, {
+      t, mood: catMood, arms,
+      look: [lerp(-0.55, 0.62, lookK), lerp(-0.1, 0.55, lookK)],
+      rot: lerp(-0.02, 0.05, smooth(25.6, 26.2, k)) - 0.02 * smooth(27.2, 27.8, k),
+      lid: k > 27.4 ? 0.12 : 0, browRaise: k > 27.1 && k < 27.6 ? 6 : 0,
+      squash: 0.04 * armPop,
+    });
+    const recoil = Math.exp(-lt * 5) * Math.sin(lt * 18);
+    const bmood = k < 26.7 ? 'panic' : k < 27.35 ? 'neutral' : 'determined';
+    A.drawBit(ctx, 1580 + recoil * 12, 975, 0.72, {
+      t, mood: bmood, shadow: 1, mouth: 0, glow: 1.3, look: [-0.75, -0.85],
+      limbs: 'stand', squash: 0.05 * Math.sin(t * 22) * (k < 26.7 ? 1 : 0) + (k > 27.5 ? 0.1 * smooth(27.5, 27.8, k) : 0),
+      sweat: k < 27.2 ? 1 : 0, browL: k > 27.35 ? -4 : 0, browR: k > 27.35 ? -4 : 0,
+    });
+    ctx.fillStyle = A.radial(ctx, 40, 1180, 60, 420, [[0, 'rgba(40,20,50,0.95)'], [0.6, 'rgba(60,25,60,0.7)'], [1, 'rgba(40,20,50,0)']]); ctx.fillRect(-400, 700, 900, 800);
+    ctx.fillStyle = A.radial(ctx, 1900, 1200, 60, 380, [[0, 'rgba(20,40,60,0.95)'], [0.6, 'rgba(25,50,70,0.7)'], [1, 'rgba(20,40,60,0)']]); ctx.fillRect(1450, 750, 900, 800);
+    ctx.restore();
+  }
+
+  // --- shot D: Bit close-up, "Sorry! GOTV doesn't wait in line!"
+  function shotD(ctx, t) {
+    const u = inv(39.6, 41.45, t);
+    const zoom = lerp(1.0, 1.14, ease.inOut(u)), sh = smooth(41.2, 41.45, t) * 0.6;
+    ctx.save();
+    ctx.drawImage(bokeh(), -190 - u * 80, -110 - u * 25);
+    A.glow(ctx, -80, 560, 620, 'rgba(171,156,192,0.9)', 0.55);
+    ctx.fillStyle = A.radial(ctx, -160, 600, 200, 560, [[0, 'rgba(120,105,150,0.85)'], [1, 'rgba(120,105,150,0)']]); ctx.fillRect(0, 0, 700, 1080);
+    A.camera(ctx, { x: 960, y: 560, zoom, shake: sh, t });
+    const charge = smooth(40.7, 41.45, t);
+    A.glow(ctx, 960, 560, 520, '#ffc93c', 0.18 + 0.35 * charge);
+    const crouch = smooth(41.25, 41.45, t);
+    const sorry = t > 39.7 && t < 40.05, gotv = t >= 40.0 && t < 40.35;
+    const o = {
+      t, mood: 'determined', glow: 1.2 + 0.7 * charge, look: t < 39.72 ? [-0.5, -0.45] : [0.05, -0.05],
+      limbs: crouch > 0.3 ? 'crouch' : 'stand', squash: 0.12 * crouch, browL: -3, browR: -3,
+      boost: 0.18 * charge, sparkle: Math.max(charge, gotv ? 1 : 0), trail: 0, rot: -0.02 + 0.02 * Math.sin(t * 2),
+    };
+    if (sorry) { const s = ease.outBack(inv(39.7, 39.85, t)); Object.assign(o, { mood: 'cheeky', browL: 6, browR: 6, armL: [-86, -60 - 40 * s], armR: [86, -60 - 40 * s], rot: 0.06 * s, look: [0.2, -0.05] }); }
+    else if (gotv) Object.assign(o, { mood: 'cheeky', armR: [22, -64], armL: [-64, -40], look: [0.1, -0.05] }); // hand on heart: that's me
+    else if (t > 40.35 && t < 41.25) Object.assign(o, { mood: t < 40.9 ? 'cheeky' : 'determined', look: [0.05, -0.05] });
+    A.drawBit(ctx, 960, 960 + crouch * 14, 5.4, o);
+    ctx.restore();
+    // "GOTV" brand pop beside him on the word
+    const gp = smooth(39.98, 40.1, t) * (1 - smooth(40.75, 40.95, t));
+    if (gp > 0) {
+      const s = ease.outBack(clamp(inv(39.98, 40.16, t)));
+      ctx.save(); ctx.translate(1470, 300); ctx.rotate(0.08); ctx.globalAlpha = gp;
+      A.glow(ctx, 0, 0, 240, '#ffc93c', 0.5);
+      if (A.drawGOTVBug) A.drawGOTVBug(ctx, 0, 0, 2.2 * s, { alpha: gp, t });
+      else { ctx.scale(s, s); A.text(ctx, 'GOTV', 0, 0, { font: '900 110px Rubik', fill: '#ffd21f', stroke: '#1f4fbf', lw: 14 }); }
+      ctx.restore();
+    }
+    if (charge > 0.05) {
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = `rgba(255,236,150,${0.8 * charge})`; ctx.lineWidth = 3;
+      const fr = Math.floor(t * 20);
+      for (let i = 0; i < 5; i++) {
+        const a = H(fr * 3 + i) * Math.PI * 2, r0 = 380 + H(fr + i * 7) * 60;
+        ctx.beginPath(); let x = 960 + Math.cos(a) * r0, y = 600 + Math.sin(a) * r0 * 0.8; ctx.moveTo(x, y);
+        for (let q = 0; q < 4; q++) { x += Math.cos(a) * 30 + (H(fr * 11 + i * 5 + q) - 0.5) * 50; y += Math.sin(a) * 30 + (H(fr * 13 + i + q) - 0.5) * 50; ctx.lineTo(x, y); }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+  }
+
+  // --- shot E: BOOST over the whole queue
+  const E0 = 41.5, E1 = 42.7;
+  function bitE(t) {
+    if (t < E0) return { X: 0.72, Y: 0, Z: 6.92 };
+    const u = inv(E0, E1, t);
+    const Z = lerp(6.92, 0.1, Math.pow(u, 1.2));
+    const Y = 1.0 * Math.sin(Math.min(1, u * 2.1) * Math.PI * 0.5) - 0.42 * smooth(0.45, 0.9, u);
+    const X = lerp(0.72, 0.1, ease.inOut(u));
+    return { X, Y: Math.max(0, Y), Z };
+  }
+  function shotE(ctx, t) {
+    const zc = key(t, [[41.45, 5.05], [41.52, 5.1], [42.18, 1.7, 'inOut'], [42.7, 0.0, 'lin']]);
+    CAMX = lerp(0.5, 0.05, smooth(41.5, 42.18, t));
+    const launch = t >= E0;
+    const b = bitE(t);
+    const sh = launch ? Math.exp(-(t - E0) * 3) * 1.6 + 0.3 : 0;
+    const [bx0, by0] = proj(b.X, b.Y, b.Z, zc);
+    const cam = clampCam({ x: lerp(1080, 960 + (bx0 - 960) * 0.35, smooth(41.5, 42.0, t)), y: lerp(640, by0 + 60, smooth(41.52, 41.9, t) * 0.6), zoom: key(t, [[41.45, 1.3], [41.5, 1.34], [42.0, 1.08, 'out'], [42.7, 1.12]]), shake: sh, t });
+    ctx.save(); fillBase(ctx); A.camera(ctx, cam);
+    const trail = [];
+    if (launch) for (let i = 22; i >= 0; i--) { const tt = Math.max(E0, t - i * 0.025), p = bitE(tt); const [x, y, d] = proj(p.X, p.Y + 0.14, p.Z, zc); if (d > 0.3) trail.push([x, y]); }
+    jamWorld(ctx, t, zc, {
+      jam: 0.95, near: 0.6,
+      bit: { X: b.X, Y: b.Y, Z: b.Z, draw: (c, x, y, sc) => {
+        if (trail.length > 2) A.drawBinaryTrail(c, trail, t, { width: 30 * sc * 1.4, size: Math.max(12, 18 * sc), alpha: 0.95 });
+        const pre = !launch, crouch = pre ? smooth(41.45, 41.5, t) : 0;
+        const nx = bitE(t + 0.02), [x2, y2] = proj(nx.X, nx.Y, nx.Z, zc);
+        const vel = launch ? [(x2 - x) / 0.02, (y2 - y) / 0.02] : [0, 0];
+        const spd = Math.hypot(vel[0], vel[1]); if (spd > 2600) { vel[0] *= 2600 / spd; vel[1] *= 2600 / spd; }
+        A.drawBit(c, x, y, sc, { t, mood: 'determined', glow: 1.8, shadow: pre ? 1 : 0, limbs: pre ? 'crouch' : 'fly', squash: pre ? 0.25 * crouch : 0, boost: launch ? 1 : 0.3 * crouch, vel });
+      } },
+      catO: () => {
+        const s = smooth(41.62, 41.9, t);
+        return { mood: t > 41.56 ? 'shock' : 'bored', shades: ease.outBounce(clamp(inv(41.62, 41.95, t))), look: [0.3, -0.9 * s + 0.2], squash: t > 41.52 && t < 41.7 ? -0.08 : 0, arms: t > 41.56 ? 'down' : 'crossed' };
+      },
+      pkO: p => {
+        if (!launch) return shoveO(p, t);
+        const delay = 0.06 + Math.abs(p.Z - CATZ) * 0.05 + H(p.seed) * 0.08;
+        const k = smooth(E0 + delay, E0 + delay + 0.08, t);
+        if (k <= 0) return {};
+        const [px, py] = proj(p.X, 0.15, p.Z, zc), [qx, qy] = proj(b.X, b.Y, b.Z, zc);
+        const dx = qx - px, dy = qy - py - 200, n = Math.hypot(dx, dy) || 1;
+        const jump = Math.exp(-Math.max(0, t - E0 - delay) * 6) * Math.sin(Math.max(0, t - E0 - delay) * 20);
+        return { mood: 'shock', bmood: 'shock', spinner: 0, look: [dx / n, dy / n], squash: -0.1 * k + 0.08 * jump, y: 0.02 * Math.max(0, jump) };
+      },
+    });
+    ctx.restore();
+    if (launch && t < 41.9) {
+      const u = inv(E0, 41.9, t);
+      const [px, py] = proj(0.72, 0, CATZ, 5.05);
+      const sx = 960 + (px - cam.x) * cam.zoom, sy = 540 + (py - cam.y) * cam.zoom;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.strokeStyle = `rgba(255,220,130,${0.8 * (1 - u)})`; ctx.lineWidth = 10 * (1 - u) + 2;
+      A.ellipse(ctx, sx, sy, 40 + u * 700, 12 + u * 160); ctx.stroke();
+      ctx.fillStyle = `rgba(255,240,200,${0.2 * Math.max(0, 1 - u * 6)})`; ctx.fillRect(0, 0, 1920, 1080);
+      ctx.restore();
+    }
+    speedLines(ctx, t, 960, 470, smooth(42.15, 42.7, t), 60);
+    const pass = smooth(42.58, 42.7, t);
+    if (pass > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(255,214,110,${0.75 * pass})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
+  }
+
+  // --- shot F: open fibre, streak to the vanishing point
+  function shotF(ctx, t) {
+    const u = inv(42.7, 43.4, t);
+    const zc = 60 + ease.in(u) * 14 + u * 10;
+    A.drawDataTunnel(ctx, t, { z: zc, speed: lerp(4, 9, u), jam: 0.3 * (1 - smooth(0, 0.25, u)) });
+    speedLines(ctx, t, 960, 470, 1, 90);
+    const dOf = uu => 0.6 * Math.exp(Math.pow(uu, 1.6) * Math.log(28));
+    const d = dOf(u);
+    const X = lerp(0.16, 0, u), Y = lerp(0.85, 0.62, ease.out(u));
+    const x = VX + X * F / d, y = VY + (FL - Y) * F / d, sc = BTS / d;
+    const trail = [];
+    for (let i = 24; i >= 0; i--) { const uu = Math.max(0, u - i * 0.02), dd = dOf(uu), XX = lerp(0.16, 0, uu), YY = lerp(0.85, 0.62, ease.out(uu)); trail.push([VX + XX * F / dd, VY + (FL - YY) * F / dd + 60 * BTS / dd]); }
+    trail.unshift([trail[0][0] + 80, 1180]);
+    A.drawBinaryTrail(ctx, trail, t, { width: 40, size: 22 });
+    const dirx = VX - x, diry = VY - y, n = Math.hypot(dirx, diry) || 1;
+    A.glow(ctx, x, y - 60 * sc, 300 * sc + 60, '#ffc93c', 0.7);
+    A.drawBit(ctx, x, y, sc, { t, mood: 'determined', glow: 2, boost: 1, limbs: 'fly', vel: [dirx / n * 2000, diry / n * 2000], trail: 1.3 });
+    const st = smooth(0.55, 1, u);
+    if (st > 0) {
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      A.glow(ctx, VX, VY, 60 + 240 * st, '#fff2c0', 0.9 * st);
+      ctx.fillStyle = A.linear(ctx, VX - 900, 0, VX + 900, 0, [[0, 'rgba(255,230,160,0)'], [0.5, `rgba(255,250,230,${0.9 * st})`], [1, 'rgba(255,230,160,0)']]);
+      ctx.fillRect(VX - 900, VY - 3 - 3 * st, 1800, 6 + 6 * st);
+      ctx.restore();
+    }
+    const fl = 1 - smooth(42.7, 42.8, t);
+    if (fl > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(200,250,255,${0.35 * fl})`; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
+  }
+
+  A.scene({
+    name: 's4_jam', start: 29.2, end: 43.4,
+    draw(ctx, s) {
+      const t = s.t;
+      if (t < 30.1) shotA(ctx, t);
+      else if (t < 36.8) shotB(ctx, t);
+      else if (t < 39.6) shotC(ctx, t);
+      else if (t < 41.45) shotD(ctx, t);
+      else if (t < 42.7) shotE(ctx, t);
+      else shotF(ctx, t);
+      hud(ctx, t);
+      // white-gold flash out of the GOTV LED dive
+      const fa = 1 - ease.out(inv(29.2, 29.6, t));
+      if (fa > 0) {
+        ctx.save(); ctx.fillStyle = `rgba(255,248,222,${fa})`; ctx.fillRect(0, 0, 1920, 1080);
+        ctx.globalCompositeOperation = 'lighter'; A.glow(ctx, 960, 470, 1200, 'rgba(255,201,60,1)', fa * 0.8); ctx.restore();
+      }
+    },
+  });
+})();

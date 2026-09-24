@@ -157,6 +157,7 @@ crystal = track('crystal', 'synth', 98, gain=0.45, pan=0.0, rev=0.5)
 blips = track('blips', 'synth', 80, gain=0.22, pan=0.3, rev=0.3)
 okit = track('okit', 'perc', 48, bank=128, drums=True, gain=0.9, pan=0.0, rev=0.35)
 kit = track('kit', 'perc', 0, bank=128, drums=True, gain=0.7, pan=0.0, rev=0.2)
+accord = track('accord', 'winds', 21, gain=0.5, pan=-0.3, rev=0.3)
 # balance trims (dB) found by per-stem analysis
 for _k, _db in dict(strings=9, slowstr=9, lowstr=8, violins=10, trem=9, solo=18, horns=8, trumpet=7, trombone=7,
                     tuba=8, mute=6, ohit=3, clar=6, bassoon=6, ney=5, choir=6, timp=-2, okit=-3, kit=-5).items():
@@ -929,8 +930,8 @@ def s7():
     for tr_, ns, v in [(slowstr, ['E3', 'B3', 'E4', 'G#4'], 80), (choir, ['E4', 'G#4', 'B4'], 60),
                        (horns, ['E4', 'G#4'], 60)]:
         tr_.cc(T - 0.01, 11, 90)
-        tr_.n(T, 54.55 - T, ns, v)
-        tr_.expr(T, 54.5, 90, 30)
+        tr_.n(T, 54.15 - T, ns, v)
+        tr_.expr(T, 54.1, 90, 30)
     for i, n_ in enumerate(['E3', 'B3', 'E4', 'G#4', 'B4', 'E5', 'G#5']):
         harp.n(T + i * 0.12, 0.8, n_, 70 - 3 * i)
     for i in range(10):
@@ -938,26 +939,102 @@ def s7():
 
 
 # ============================================================================================
-# TAG 54.5 - 57.3  and TITLE 57.3 - 60
+# v2  BACKGAMMON payoff 67.0 - 72.4 (E Hijaz, warm family groove: oud, darbuka, accordion)
+# ============================================================================================
+def backgammon():
+    E = 64
+    g = Grid(67.0, 60 / 0.54)          # 10 beats -> 72.4
+    b = g.b
+    chords = [(0, 2, 'E'), (2, 4, 'F'), (4, 5, 'E'), (5, 7, 'E'), (7, 9, 'Am'), (9, 9.5, 'F'), (9.5, 10, 'E')]
+    tri = {'E': (52, 'M'), 'F': (53, 'M'), 'Am': (57, 'm')}
+    for b0, b1, c in chords:
+        r, q = tri[c]
+        ns = triad(r, q)
+        k = b0
+        while k < b1 - 1e-6:
+            pizzlo.n(g(k), 0.3, r - 12 if (k - b0) % 1 == 0 and int(k) % 2 == 0 else r - 5, 80)
+            oud.n(g(k + 0.5) + hum(0.004), 0.2, ns, 70 if speaking(g(k + 0.5)) else 80)
+            accord.n(g(k + 0.5), b * 0.4, [n_ + 12 for n_ in ns], 58 if speaking(g(k + 0.5)) else 70)
+            k += 1
+        slowstr.n(g(b0), (b1 - b0) * b, [n_ for n_ in ns], 50)
+    slowstr.cc(66.95, 11, 60)
+    accord.cc(66.95, 11, 100)
+    # baladi on the darbuka + riq, claps once Saba finishes talking
+    bal = [(0, 'doum'), (.5, 'doum'), (1.5, 'tek'), (2, 'doum'), (3, 'tek')]
+    for bar in range(3):
+        for off, k in bal:
+            bt = bar * 4 + off
+            if bt < 10:
+                darb.n(g(bt) + hum(0.004), 0.25, k, 92 if k == 'doum' else 80)
+        for off in (.75, 1.0, 2.5, 3.25, 3.5, 3.75):
+            bt = bar * 4 + off
+            if bt < 10:
+                darb.n(g(bt) + hum(0.004), 0.2, 'ka', 52)
+        for i in range(8):
+            bt = bar * 4 + i / 2
+            if bt < 10:
+                kit.n(g(bt), 0.1, 54, 58 if i % 2 == 0 else 44)
+    for bt in (5, 7, 9):
+        kit.n(g(bt), 0.1, 39, 78)
+        kit.n(g(bt) + 0.015, 0.1, 39, 62)
+    # the payoff: Bit's theme as a folk dance tune (oud + klezmer clarinet), cadence F -> E at 72.4
+    play_theme(oud, g.__class__(g(5), g.bpm), E, beats=(-1, 4), vel=96)
+    clar.cc(69.2, 11, 105)
+    play_theme(clar, g.__class__(g(5), g.bpm), E, beats=(-1, 4), vel=82, octave=1)
+    for tr_, octv, v in [(oud, 0, 92), (clar, 1, 80)]:
+        tr_.n(g(9), b * 0.45, E + 1 + 12 * octv, v)          # F (bII)
+        tr_.n(g(9.5), b * 0.9, E + 12 * octv, v + 4)         # -> E
+    # oud tremolo on the long notes
+    for bt, d, s_ in THEME:
+        if d >= 1 and bt < 4:
+            k = 1
+            while k * b / 4 < b * d * 0.9:
+                oud.n(g(5 + bt) + k * b / 4, 0.1, E + s_, 66)
+                k += 1
+    for i in range(4):
+        darb.n(g(9 + i / 4), 0.15, 'tek' if i % 2 else 'ka', 80 + 5 * i)
+
+
+# ============================================================================================
+# v2  TAG 72.4 - 77.8: music box, comic sag as the late competitors pant in, wink 77.4
 # ============================================================================================
 def tag():
-    E = 64
-    mel = [(54.5, 'B4', .28, 70), (54.8, 'E5', .45, 76), (55.3, 'E5', .18, 66), (55.5, 'F5', .28, 68),
-           (55.8, 'G#5', .36, 72), (56.2, 'B5', .5, 76)]
+    mbox.n(72.4, 0.28, 'B4', 70)
+    mbox.n(72.7, 0.75, 'E5', 76)
+    # 73.0 the competitors stagger in - the music box winds down (sags flat) and stops
+    for i in range(18):
+        mbox.bend(72.98 + i * 0.02, -1.2 * ((i + 1) / 18) ** 1.2)
+    mbox.bend(73.5, 0)
+    celesta.n(72.4, 0.6, ['E4', 'G#4', 'B4'], 34)
+    # panting: wheezy tuba / bassoon huff-puff under "Did... did we miss the goal?"
+    tuba.cc(72.9, 11, 80)
+    for i, tt in enumerate([73.05, 73.35, 73.65, 73.95, 74.25]):
+        tuba.n(tt, 0.1, 'B1', 62 - 3 * i)
+        tuba.n(tt + 0.14, 0.1, 'C2', 56 - 3 * i)
+        bassoon.n(tt, 0.08, 'B2', 50 - 3 * i)
+        bassoon.n(tt + 0.14, 0.08, 'C3', 46 - 3 * i)
+    # rewind (quick celesta sweep) then the theme again, tender, under Bit's line
+    for i, n_ in enumerate(hijaz_notes(64, 71, 88)):
+        celesta.n(74.5 + i * 0.022, 0.2, n_, 40 + i)
+    mel = [(74.75, 'B4', .28, 70), (75.05, 'E5', .45, 76), (75.55, 'E5', .18, 66), (75.75, 'F5', .28, 68),
+           (76.05, 'G#5', .36, 72), (76.45, 'B5', .6, 76)]
     for tt, n_, d, v in mel:
         mbox.n(tt, d, n_, v)
-    for tt, ns in [(54.5, ['E4', 'G#4', 'B4']), (55.5, ['F4', 'A4', 'C5']), (56.2, ['E4', 'G#4', 'B4'])]:
+    for tt, ns in [(74.75, ['E4', 'G#4', 'B4']), (75.75, ['F4', 'A4', 'C5']), (76.45, ['E4', 'G#4', 'B4'])]:
         celesta.n(tt, 0.7, ns, 34)
-    slowstr.cc(54.45, 11, 35)
-    slowstr.n(54.5, 2.7, ['E3', 'B3'], 60)
-    slowstr.expr(56.2, 57.2, 35, 10)
+    slowstr.cc(72.35, 11, 35)
+    slowstr.n(72.4, 5.2, ['E3', 'B3'], 60)
+    slowstr.expr(76.6, 77.6, 35, 10)
     # wink button (the theme's own "ta-DA")
-    for tt, n_ in [(56.76, 'B5'), (56.9, 'E6')]:
+    for tt, n_ in [(77.26, 'B5'), (77.4, 'E6')]:
         mbox.n(tt, 0.12, n_, 84)
         pizz.n(tt, 0.1, m(n_) - 24, 84)
-    glock.n(56.9, 0.2, 'E7', 70)
-    fx.n(56.9, 0.3, 'blip', 70)
-    # ---- 57.3 TITLE: E Hijaz cadence hit (bII F grace -> I E)
+    glock.n(77.4, 0.2, 'E7', 70)
+    fx.n(77.4, 0.3, 'blip', 70)
+
+
+def title():
+    """Written in v1 time (57.3); placed with SHIFT = +20.5 -> end-card hit 77.8."""
     for i, tt in enumerate([57.13, 57.215]):
         darb.n(tt, 0.1, 'tek', 88 + 10 * i)
         okit.n(tt, 0.05, 38, 80 + 10 * i)
@@ -968,8 +1045,8 @@ def tag():
                choir=['E3', 'B3', 'G#4', 'E5'], violins=['G#5', 'B5', 'E6'], slowstr=['E4', 'B4', 'E5'])
     for k_, ns in fin.items():
         TR[k_].cc(T - 0.002, 11, 127)
-        TR[k_].n(T, 2.65, ns, 118)
-        TR[k_].expr(T + 0.35, 59.9, 118, 70, 0.6)
+        TR[k_].n(T, 3.1, ns, 118)
+        TR[k_].expr(T + 0.35, 60.4, 118, 70, 0.6)
     ohit.n(T, 0.4, ['E3', 'B3', 'E4'], 118)
     timp.n(T, 1.5, 'E2', 127)
     okit.n(T, 2.5, 36, 127)
@@ -979,14 +1056,13 @@ def tag():
     fx.n(T, 2.5, 'boom', 110, f0=80, f1=30)
     for i in range(24):
         oud.n(T + 0.3 + i * 0.06, 0.1, ['E3', 'B3'][i % 2], 70 - i)
-    # ney ornament over the ringing chord (Hijaz descent)
     ney.cc(57.5, 11, 100)
     orn = [(57.75, 'B5', .2), (57.95, 'C6', .12), (58.07, 'B5', .12), (58.19, 'A5', .12), (58.31, 'G#5', .14),
-           (58.45, 'F5', .16), (58.61, 'G#5', .2), (58.81, 'E5', 1.1)]
+           (58.45, 'F5', .16), (58.61, 'G#5', .2), (58.81, 'E5', 1.5)]
     for tt, n_, d in orn:
         ney.n(tt, d, n_, 72)
-    ney.expr(58.9, 59.95, 100, 20)
-    for i in range(50):
+    ney.expr(58.9, 60.4, 100, 30)
+    for i in range(70):
         tt = 58.95 + i * 0.02
         ney.bend(tt, 0.13 * np.sin(2 * np.pi * 5.0 * (tt - 58.95)))
 
@@ -1323,9 +1399,11 @@ def compose():
     s2()
     freeze()
     s4()
-    s5()
-    s6()
-    s7()
+    for fn, sh in [(s5, 12.9), (s6, 12.9), (s7, 12.9), (title, 20.5)]:
+        SHIFT[0] = sh
+        fn()
+    SHIFT[0] = 0.0
+    backgammon()
     tag()
     # map darbuka / fx pseudo-notes
     for tr in (darb, fx):
@@ -1394,8 +1472,8 @@ def main():
     for stem in final:
         final[stem] *= fade[:, None]
     # section dynamics (emotional shape): the goal must be the peak, ocean a notch below, tag intimate
-    dyn = [(0, 0), (30.4, 0), (30.6, -2.5), (35.0, -2.5), (35.3, -1), (38.0, -2), (40.3, -1.5), (40.6, 0),
-           (46.3, 0), (46.45, 1.5), (53.5, 1.5), (54.4, 3), (57.2, 3), (57.29, 0), (60, 0)]
+    dyn = [(0, 0), (43.3, 0), (43.5, -2.5), (47.9, -2.5), (48.2, -1), (50.9, -2), (53.2, -1.5), (53.5, 0),
+           (59.2, 0), (59.35, 1.5), (66.4, 1.5), (67.0, 0), (72.3, 0), (72.45, 3), (77.7, 3), (77.79, 0), (81, 0)]
     dcurve = 10 ** (np.interp(np.arange(N) / SR, [d[0] for d in dyn], [d[1] for d in dyn]) / 20)
     for stem in final:
         final[stem] *= dcurve[:, None]

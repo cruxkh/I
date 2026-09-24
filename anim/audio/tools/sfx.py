@@ -1175,7 +1175,7 @@ def _(r):
 
 
 @sfx('dive_whoosh', 'Deep dive INTO the router LED: sub rising from 30 Hz, reversed-air suck and a huge sweeping '
-     'whoosh that peaks at 1.0 s (= 20.3), then roars away into a tunnel tail. 2.4 s.', 1.0)
+     'whoosh that peaks at 1.0 s (= the 29.2 flash in v2), then roars away into a tunnel tail. 2.4 s.', 1.0)
 def _(r):
     dur = 2.4
     n = N(dur)
@@ -1194,7 +1194,7 @@ def _(r):
 
 
 @sfx('light_shimmer', 'Into-the-light shimmer: a swelling major chord of glassy partials and twinkling sparkles, '
-     'blooming at 0.7 s (the white-cyan flash at 21.0), long airy tail. 2.8 s.', 0.7)
+     'blooming at 0.7 s (use hit 0.7 on a flash), long airy tail. 2.8 s.', 0.7)
 def _(r):
     dur = 2.8
     n = N(dur)
@@ -1592,7 +1592,7 @@ def _(r):
 
 
 @sfx('shore_arrival_swell', 'Cable rising to the shore: a big rolling water swell + magical upward shimmer that '
-     'crests at 1.6 s (= 40.5), then washes out. 3.2 s.', 1.6)
+     'crests at 1.6 s (= 53.4 in v2), then washes out. 3.2 s.', 1.6)
 def _(r):
     dur = 3.2
     n = N(dur)

@@ -249,10 +249,17 @@
       Object.assign(o, { gesture: 'none', mood: 'joy', happy: 1, lean: lerp(0.35, 0.05, smooth(63.05, 63.4, t)) + rock * 0.1, headTilt: -5 * k + rock * 4,
         handL: [lerp(40, 150, k), lerp(-250, -270, k)], handR: [lerp(90, 190, k), lerp(-300, -330, k)], handShapeL: 'open', handShapeR: 'open', armRBehind: true,
         look: [1, 0.1], scarfWave: 0.4 * (1 - smooth(51, 52, t)), mouth: t < 63.4 ? 0.3 : undefined });
-      if (t > 64.1) { // listening, then puzzled look at the router
-        const p = smooth(65.25, 65.7, t);
-        Object.assign(o, { mood: 'neutral', moodFrom: 'joy', moodK: smooth(64.3, 64.8, t), happy: lerp(0.6, 0, p), look: [lerp(0.7, 0.8, p), lerp(0.0, 0.85, p)],
-          browAngle: 0.7 * p, browL: 0.6 * p, browR: -0.25 * p, headTilt: lerp(-4, 8, p), lean: lerp(0.05, 0.12, p), smile: lerp(0.5, -0.2, p) });
+      if (t > 64.1) { // listens to Noa (glances at the TV on "GOTV"), then: "And now... backgammon! Come, let's play!"
+        const gl = env(t, 64.6, 64.85, 65.4, 65.7), nod = Math.sin((t - 65.9) * 9) * env(t, 65.9, 66.0, 66.4, 66.6);
+        Object.assign(o, { mood: 'joy', happy: 0.5, look: [lerp(0.8, 0.6, gl), lerp(0.05, -0.35, gl)], browRaise: 0.4 * gl, headTilt: -3 + nod * 4, lean: 0.05 + nod * 0.04, smile: 0.7 });
+        if (t > 66.8) { // lets go: finger up "And now..." -> arms up "backgammon!" -> beckons "Come, let's play!"
+          delete o.handL; delete o.handR; delete o.armRBehind;
+          const up = smooth(66.85, 67.1, t), burst = smooth(67.55, 67.72, t), come = smooth(68.3, 68.5, t);
+          Object.assign(o, { gesture: t > 68.3 ? 'point' : t > 67.55 ? 'armsUp' : 'point', gestureFrom: t > 68.3 ? 'armsUp' : t > 67.55 ? 'point' : 'none',
+            gestureK: t > 68.3 ? come : t > 67.55 ? burst : up, mood: 'joy', happy: burst * 0.6,
+            browL: 0.7 * up * (1 - burst), browR: -0.2 * up * (1 - burst), smile: 0.8, look: [0.9, 0.05], headTilt: -4 + 6 * burst * (1 - come),
+            lean: lerp(0.05, -0.12, burst) + 0.2 * come, squash: 0.08 * spring(t, 67.6, 7, 18), scarfWave: 0.6 * burst });
+        }
       }
     }
     return { x, y, o };
@@ -279,15 +286,63 @@
       const k = ease.inOut(inv(62.95, 63.4, t));
       x = lerp(1175, 1125, k); y = lerp(900, 805, k) + 12 * Math.sin((t - 63.35) * 4.2) * smooth(63.3, 63.6, t) * (1 - smooth(64, 64.4, t));
       Object.assign(o, { hug: k, gesture: 'none', mood: 'joy', look: [0.9, 0], bounce: 0.6 });
-      if (t > 64.1) { // talks: pulls back a little, then glances at the router
-        const q = smooth(64.15, 64.5, t), r = smooth(65.1, 65.5, t);
-        Object.assign(o, { hug: lerp(1, 0.3, q), mood: 'proud', moodFrom: 'joy', moodK: q, look: [lerp(0.8, -0.9, r), lerp(0, 0.8, r)], headTilt: lerp(0, -6, r) });
+      if (t > 64.1) { // "Thank GOTV, Saba. No more freezing!" (glances back at the TV on GOTV, then a cocky little shrug)
+        const q = smooth(64.15, 64.5, t), tvL = env(t, 64.65, 64.85, 65.15, 65.4), sh = env(t, 65.45, 65.65, 66.5, 66.8);
+        Object.assign(o, { hug: lerp(1, 0.25, q) * (1 - sh), mood: 'proud', moodFrom: 'joy', moodK: q, look: [lerp(0.8, -0.8, tvL), lerp(0, -0.2, tvL)], headTilt: lerp(0, -8, tvL),
+          gesture: sh > 0 ? 'shrug' : 'none', gestureFrom: 'none', gestureK: sh });
+        if (t > 67.5) { // "backgammon!" -> delighted
+          const k = smooth(67.62, 67.85, t);
+          Object.assign(o, { hug: 0, mood: 'joy', moodFrom: 'proud', moodK: k, gesture: 'cheer', gestureFrom: 'none', gestureK: k, look: [0.9, -0.1], bounce: 1, mouth: 0.45 * k,
+            squash: 0.07 * spring(t, 67.75, 8, 18) });
+          y = 805 - 22 * hop(t, 67.8, 68.15) - 16 * hop(t, 68.6, 68.9);
+        }
       }
     }
     return { x, y, o };
   }
 
-  // ================================================================== SHOT 2+3: living room (master -> two-shot -> router macro)
+  // ================================================================== TV helpers (GOTV channel bug over the broadcast)
+  const matchT = t => 1.5 + (t - 58.9); // ball in the net at matchT 1.9 = 59.3
+  const GOLD_LED = '#ffcf4a';
+  // Draws inside the TV screen rect in broadcast (1920x1080) coords: covers the kit's old channel bug with the GOTV bug,
+  // and optionally the payoff badge `LIVE · 4K · ללא תקיעות`.
+  function tvOverlay(ctx, t, o = {}) {
+    const tv = LR.tv, sc = Math.max(tv.w / 1920, tv.h / 1080);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(tv.x, tv.y, tv.w, tv.h); ctx.clip();
+    ctx.translate(tv.x + (tv.w - 1920 * sc) / 2, tv.y + (tv.h - 1080 * sc) / 2); ctx.scale(sc, sc);
+    ctx.fillStyle = A.linear(ctx, 0, 36, 0, 120, [[0, '#1b2466'], [1, '#0b1034']]); A.rrect(ctx, 1534, 34, 312, 88, 18); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 2; ctx.stroke();
+    const pop = o.bugPop ?? 1, k = 0.6 + 0.4 * ease.outBack(clamp(pop));
+    ctx.save(); ctx.translate(1690, 78); ctx.scale(k, k); ctx.globalAlpha = clamp(pop * 3);
+    if (A.drawGOTVBug) A.drawGOTVBug(ctx, 0, 0, 1.7, { alpha: 1, t });
+    else { // fallback mini wordmark
+      A.text(ctx, 'G', -86, 2, { font: '900 60px Rubik', fill: '#ffd21f', stroke: '#1f4fbf', lw: 8 });
+      ctx.lineWidth = 11; ctx.strokeStyle = '#1f4fbf'; A.ellipse(ctx, -34, 2, 22, 22); ctx.stroke(); ctx.lineWidth = 8; ctx.strokeStyle = '#ffd21f'; ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(-40, -9); ctx.lineTo(-24, 2); ctx.lineTo(-40, 13); ctx.fill();
+      A.text(ctx, 'TV', 36, 2, { font: '900 60px Rubik', fill: '#ffd21f', stroke: '#1f4fbf', lw: 8 });
+    }
+    ctx.restore();
+    if (o.badge) { // payoff: LIVE · 4K · ללא תקיעות (replaces the kit's LIVE pill)
+      const a = clamp(o.badge);
+      ctx.save(); ctx.globalAlpha = a; ctx.translate(1846, 146);
+      ctx.font = '900 30px Rubik'; const w1 = ctx.measureText('LIVE · 4K ·').width; ctx.font = '700 30px Rubik'; const w2 = ctx.measureText('ללא תקיעות').width;
+      const W = w1 + w2 + 84;
+      ctx.fillStyle = '#d61f2a'; A.rrect(ctx, -W, -30, W, 60, 30); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.fillStyle = `rgba(255,255,255,${0.6 + 0.4 * Math.sin(t * 5)})`; A.ellipse(ctx, -W + 30, 0, 10, 10); ctx.fill();
+      A.text(ctx, 'LIVE · 4K ·', -W + 52, 1, { font: '900 30px Rubik', fill: '#fff', align: 'left' });
+      A.text(ctx, 'ללא תקיעות', -22, 1, { font: '700 30px Rubik', fill: '#ffe066', align: 'right', dir: 'rtl' });
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+  function drawTVSet(ctx, t, o = {}) {
+    const tv = LR.tv;
+    A.drawTV(ctx, tv.x, tv.y, tv.w, tv.h, t, { state: 'goal', matchT: o.matchT ?? matchT(t) });
+    tvOverlay(ctx, t, o);
+  }
+
+  // ================================================================== SHOT 2: living room (master -> two-shot)
   function roomCam(t) {
     if (t < 64.1) {
       const x = key(t, [[59.83, 985], [60.5, 995], [62.9, 1000], [64.1, 1020]]);
@@ -295,87 +350,199 @@
       const zoom = key(t, [[59.83, 1.19], [60.48, 1.24, 'inOut'], [60.65, 1.17, 'out'], [62.9, 1.2], [64.1, 1.25]]);
       return { x, y, zoom };
     }
-    // two-shot in the hug, then follow their gaze to the router
-    const tw = { x: 1020, y: 505, zoom: 2.05 }, rt = { x: 1458, y: 800, zoom: 6.4 };
-    const drift = inv(64.1, 53.3, t);
-    const a = { x: tw.x + 10 * drift, y: tw.y, zoom: tw.zoom + 0.08 * drift };
-    if (t < 53.3) return a;
-    const p = ease.inOut(inv(53.3, 54.25, t));
-    const lz = Math.exp(lerp(Math.log(a.zoom), Math.log(rt.zoom), p));
-    // keep the path on a gentle curve: centre moves in screen space proportionally to zoom change
-    const q = (1 / a.zoom - 1 / lz) / (1 / a.zoom - 1 / rt.zoom);
-    const cam = { x: lerp(a.x, rt.x, q), y: lerp(a.y, rt.y, q), zoom: lz };
-    if (t > 54.25) { const d = inv(54.25, 57.2, t); cam.zoom = rt.zoom * (1 + 0.1 * ease.out(d)); cam.x = rt.x - 8 * d; cam.y = rt.y + 4 * d; }
-    return cam;
+    // two-shot in the hug; a small push-back as Saba bursts out with "backgammon!"
+    const d = inv(64.1, 67.5, t), b = ease.inOut(inv(67.55, 68.3, t));
+    return { x: 1025 + 10 * d - 10 * b, y: 505 + 25 * b, zoom: 2.05 + 0.08 * d - 0.28 * b };
   }
 
-  function shotRoom(ctx, t) {
-    const cam = roomCam(t);
-    const shake = decay(t, 60.5, 3.2) * 1.4 + decay(t, 61.28, 6) * 0.7;
-    const flash = Math.max(decay(t, 60.5, 3.5) * (t >= 60.5 ? 1 : 0), decay(t, 59.83, 8) * 0.35);
-    const macro = t > 53.3;
-    ctx.save();
-    A.camera(ctx, { ...cam, shake, t });
-    A.drawLivingRoom(ctx, t, { tvGlow: { color: t < 48 ? '#bfffd8' : '#ffe9a0', intensity: 1.3 + 0.5 * decay(t, 59.83, 3) }, lamp: 0 });
-    lampRock(ctx, t, (1 + 0.4 * decay(t, 60.5, 3)) * (0.95 + 0.05 * A.noise1(t * 2.3)));
+  function roomBase(ctx, t, o = {}) {
+    const flash = o.flash || 0;
+    A.drawLivingRoom(ctx, t, { tvGlow: { color: t < 61 ? '#bfffd8' : '#ffe9a0', intensity: o.tvGlow ?? 1.3 }, lamp: 0 });
+    lampRock(ctx, t, (o.lamp ?? 1) * (0.95 + 0.05 * A.noise1(t * 2.3)));
     if (flash > 0.01) {
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = clamp(flash) * 0.6;
       ctx.fillStyle = A.radial(ctx, 960, 480, 0, 1300, [[0, '#fff6e0'], [1, '#ffcf80']]); ctx.fillRect(0, 0, 1920, 1080); ctx.restore();
     }
-    const tv = LR.tv;
-    A.drawTV(ctx, tv.x, tv.y, tv.w, tv.h, t, { state: 'goal' });
-    const ledC = A.mixc('#7ff6ff', '#7dffa8', smooth(56.9, 57.2, t));
-    const bitOut = t > 54.38;
-    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: macro ? 0.35 : 0.7, ledGlow: bitFlare(t), ledColor: ledC, shake: key(t, [[54.3, 0], [54.4, 1.2], [54.7, 0]]) });
-    if (!macro || t < 53.9) {
-      A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'back');
-      A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'front');
-      const S = sabaState(t), N = noaState(t);
-      const hugging = t >= 62.9;
-      if (hugging) { A.drawSaba(ctx, S.x, S.y, 0.95, S.o); A.drawNoa(ctx, N.x, N.y, 0.95, N.o); }
-      else { A.drawNoa(ctx, N.x, N.y, 0.95, N.o); A.drawSaba(ctx, S.x, S.y, 0.95, S.o); }
-      drawSnacks(ctx, t);
-    }
-    if (bitOut) drawTinyBit(ctx, t);
-    ctx.restore();
-    if (!macro || t < 54.0) {
-      drawConfetti(ctx, t, [[680, 330, -1, 60.52], [930, 330, 1, 60.54]]);
-    }
-    if (macro) macroGrade(ctx, t);
-    // cut punch: brief white-hot flash on the leap
-    if (t >= 60.5 && t < 60.6) { ctx.fillStyle = `rgba(255,248,225,${0.35 * (1 - inv(60.5, 60.6, t))})`; ctx.fillRect(0, 0, 1920, 1080); }
   }
 
-  // ------------------------------------------------------------------ macro: tiny Bit at the router
+  function shotRoom(ctx, t) {
+    const cam = roomCam(t);
+    const shake = decay(t, 60.5, 3.2) * 1.4 + decay(t, 61.28, 6) * 0.7 + decay(t, 67.62, 6) * 0.3;
+    const flash = Math.max(decay(t, 60.5, 3.5) * (t >= 60.5 ? 1 : 0), decay(t, 59.83, 8) * 0.35);
+    ctx.save();
+    A.camera(ctx, { ...cam, shake, t });
+    roomBase(ctx, t, { flash, tvGlow: 1.3 + 0.5 * decay(t, 59.83, 3), lamp: 1 + 0.4 * decay(t, 60.5, 3) });
+    drawTVSet(ctx, t);
+    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.7, ledColor: GOLD_LED });
+    A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'back');
+    A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'front');
+    const S = sabaState(t), N = noaState(t);
+    if (t >= 62.9) { A.drawSaba(ctx, S.x, S.y, 0.95, S.o); A.drawNoa(ctx, N.x, N.y, 0.95, N.o); }
+    else { A.drawNoa(ctx, N.x, N.y, 0.95, N.o); A.drawSaba(ctx, S.x, S.y, 0.95, S.o); }
+    drawSnacks(ctx, t);
+    ctx.restore();
+    drawConfetti(ctx, t, [[680, 330, -1, 60.52], [930, 330, 1, 60.54]]);
+    if (t >= 67.62) drawConfetti2(ctx, t);
+    if (t >= 60.5 && t < 60.6) { ctx.fillStyle = `rgba(255,248,225,${0.35 * (1 - inv(60.5, 60.6, t))})`; ctx.fillRect(0, 0, 1920, 1080); }
+    // cut to the payoff on a quick warm dip
+    const dip = smooth(69.45, 69.6, t);
+    if (dip > 0) { ctx.fillStyle = `rgba(255,236,200,${dip * 0.5})`; ctx.fillRect(0, 0, 1920, 1080); }
+  }
+  // a second little confetti puff on "backgammon!" (from the ceiling edge, few pieces)
+  function drawConfetti2(ctx, t) {
+    const tau0 = t - 67.62;
+    for (let i = 0; i < 40; i++) {
+      const h = k => hash(i * 6.1 + 1500 + k);
+      const tau = tau0 - h(0) * 0.2; if (tau < 0) continue;
+      const x = 200 + h(1) * 1500 + Math.sin(tau * (2 + h(2) * 2) + h(3) * 6) * 30, y = -20 + tau * (140 + h(4) * 100);
+      if (y > 1100) continue;
+      ctx.globalAlpha = 0.9;
+      confettiPiece(ctx, x, y, 7 + h(5) * 6, tau * (4 + h(6) * 6), Math.cos(tau * (6 + h(7) * 6)), CONF_COLS[i % CONF_COLS.length]);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ================================================================== SHOT 3: PAYOFF, backgammon at the side table
+  const BOARD = { x: 935, y: 712, s: 0.4 };
+  function fallbackBoard(ctx, x, y, s, o) {
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+    const W = 420, H = 150;
+    ctx.fillStyle = '#5a3218'; A.rrect(ctx, -W / 2, -H - 14, W, H + 14, 12); ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 5; ctx.stroke();
+    ctx.fillStyle = '#e9cf9a'; A.rrect(ctx, -W / 2 + 14, -H, W / 2 - 22, H - 16, 6); ctx.fill(); A.rrect(ctx, 8, -H, W / 2 - 22, H - 16, 6); ctx.fill();
+    for (let i = 0; i < 12; i++) {
+      const bx = (i < 6 ? -W / 2 + 18 : 12) + (i % 6) * 30, c = i % 2 ? '#b8322a' : '#23324f';
+      ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(bx, -H); ctx.lineTo(bx + 26, -H); ctx.lineTo(bx + 13, -H + 58); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(bx, -16); ctx.lineTo(bx + 26, -16); ctx.lineTo(bx + 13, -74); ctx.fill();
+    }
+    const d = o.dice ?? 1;
+    for (let k = 0; k < 2; k++) {
+      const u = clamp(d), dx = lerp(-160, 60 + k * 40, ease.out(u)), dy = -60 - Math.abs(Math.sin(u * 9)) * 60 * (1 - u);
+      ctx.save(); ctx.translate(dx, dy); ctx.rotate((1 - u) * 8 + k);
+      ctx.fillStyle = '#fff'; A.rrect(ctx, -14, -14, 28, 28, 6); ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 3; ctx.stroke();
+      ctx.fillStyle = '#111'; for (const [px, py] of [[-7, -7], [7, -7], [-7, 0], [7, 0], [-7, 7], [7, 7]]) { A.ellipse(ctx, px, py, 2.8, 2.8); ctx.fill(); }
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+  function shotPayoff(ctx, t) {
+    const lt = t - 69.6;
+    const cam = { x: 985 - 8 * lt, y: 560, zoom: 1.34 + 0.035 * lt };
+    ctx.save();
+    A.camera(ctx, { ...cam, t, shake: 0.25 * decay(t, 70.62, 8) });
+    roomBase(ctx, t, { tvGlow: 1.2 });
+    drawTVSet(ctx, t, { badge: smooth(69.75, 70.1, t) });
+    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.5, ledColor: GOLD_LED });
+    // Saba in his armchair, turned to the table and to Noa
+    const land = smooth(70.55, 70.65, t), laugh = env(t, 70.6, 70.75, 72.0, 72.35);
+    const lm = 0.35 + 0.4 * Math.abs(Math.sin(t * 13));
+    A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'back');
+    const shakeDice = env(t, 69.6, 69.7, 69.95, 70.02);
+    const throwK = smooth(69.98, 70.12, t) * (1 - smooth(70.5, 70.9, t));
+    const sO = { t, pose: 'sit', mood: 'joy', gesture: 'none', look: laugh > 0.3 ? [0.8, -0.3] : [0.9, 0.35], lean: 0.25 - 0.3 * laugh, headTilt: -10 * laugh,
+      handR: [lerp(150, 235, throwK) + 6 * Math.sin(t * 40) * shakeDice, lerp(-240, -150, throwK) + 10 * Math.sin(t * 37) * shakeDice], handShapeR: throwK > 0.5 ? 'open' : 'fist',
+      mouth: laugh > 0.05 ? lm * laugh : 0.12, happy: 0.4 + 0.6 * laugh, browRaise: 0.3 * laugh, scarfWave: 0.3 * laugh };
+    if (t > 71.25) Object.assign(sO, { gesture: 'point', handR: undefined, look: [0.9, 0.2] }); // "hey!" teasing finger at her move
+    A.drawSaba(ctx, LR.chair.x, LR.chair.y, 0.95, sO);
+    A.drawArmchair(ctx, LR.chair.x, LR.chair.y, 1, 'front');
+    // board + dice
+    const bo = { t, mode: 'board', dice: inv(70.0, 70.6, t), diceVals: [6, 6], move: inv(71.3, 71.75, t) };
+    if (A.drawBackgammon) A.drawBackgammon(ctx, BOARD.x, BOARD.y, BOARD.s, bo); else fallbackBoard(ctx, BOARD.x, BOARD.y, BOARD.s, bo);
+    // "double six!" pop
+    if (t > 70.6 && t < 71.4) {
+      const u = inv(70.6, 71.4, t), k = ease.outBack(clamp(u * 3));
+      ctx.save(); ctx.globalAlpha = 1 - smooth(1.1, 1.4, t - 70);
+      ctx.translate(BOARD.x, BOARD.y - 120 - 30 * u); ctx.scale(k, k); ctx.rotate(-0.06);
+      A.text(ctx, 'שש-שש!', 0, 0, { font: '900 44px Rubik', fill: '#ffd21f', stroke: A.OUTLINE, lw: 9, dir: 'rtl' });
+      ctx.restore();
+      for (let i = 0; i < 8; i++) { const a = i / 8 * A.TAU, r = 60 + 90 * ease.out(u); star(ctx, BOARD.x + Math.cos(a) * r, BOARD.y - 40 + Math.sin(a) * r * 0.5, 14 * (1 - u) + 0.01, '#ffe680'); }
+    }
+    // Noa on the pouf, cross-table, laughing, then moves a checker
+    const reach = env(t, 71.2, 71.35, 71.75, 71.95);
+    A.drawNoa(ctx, LR.sofa.x, LR.sofa.y, 0.95, { t, pose: 'sit', flip: true, mood: 'joy', gesture: reach > 0 ? 'reach' : laugh > 0.4 ? 'cheer' : 'none', gestureFrom: 'none', gestureK: Math.max(reach, laugh > 0.4 ? smooth(70.6, 70.8, t) * (1 - smooth(71.0, 71.2, t)) : 0),
+      reachTo: [165, -40], look: reach > 0 ? [0.8, 0.8] : laugh > 0.3 ? [0.8, -0.1] : [0.7, 0.5], mouth: laugh > 0.05 ? (0.3 + 0.4 * Math.abs(Math.sin(t * 11 + 1))) * laugh : 0.1, bounce: laugh, happy: laugh });
+    ctx.restore();
+  }
+
+  // ================================================================== SHOT 4: router close-up, the competitors arrive late
   const LED = A.routerLED(LR.router.x, LR.router.y, LR.router.s);
-  function bitFlare(t) { return key(t, [[54.2, 0], [54.38, 1.6, 'in'], [54.6, 0.2, 'out'], [56.9, 0.2], [57.0, 0.8], [57.2, 0]]); }
-  function drawTinyBit(ctx, t) {
-    const bs = 0.27; // world scale (screen ~1.8 at the macro zoom)
-    const land = [LED[0] - 6, LR.router.y + 3];
-    let x, y, o = { t, mood: 'exhausted', limbs: 'flop', shadow: 0.6, glow: 0.8, trail: 0, light: [-0.4, -0.8], rim: '#a8f7ff' };
-    let sc = bs;
-    if (t < 54.52) { // squeezes out of the LED and drops
-      const u = inv(54.38, 54.52, t);
-      x = lerp(LED[0], land[0], u); y = lerp(LED[1] + 14, land[1], u * u);
-      sc = bs * lerp(0.35, 1, ease.outBack(clamp(u * 1.4)));
-      Object.assign(o, { mood: 'panic', limbs: 'fly', vel: [0, 900], rot: -0.3 * (1 - u), glow: 1.4 });
-    } else {
-      x = land[0]; y = land[1];
-      const tau = t - 54.52;
-      const pant = Math.sin(t * 9) * 0.03 * (t < 56.9 ? 1 : 0.3);
-      Object.assign(o, { squash: 0.25 * spring(t, 54.52, 8, 20) + pant });
-      if (t > 55.5 && t < 56.9) o.rot = -0.08 * Math.sin((t - 55.5) * 2.2); // lifts his head a bit to deliver the line
-      if (t >= 56.9) { // wink, sparkle ... happy conk-out
-        const w = smooth(56.9, 56.98, t) * (1 - smooth(57.05, 57.12, t));
-        Object.assign(o, { mood: t < 57.05 ? 'cheeky' : 'joy', limbs: 'flop', wink: w, sparkle: 1, mouth: t < 57.05 ? 0.1 : 0, glow: lerp(0.9, 2, smooth(57.0, 57.2, t)), lid: t > 57.05 ? 1 : 0 });
-      }
-      void tau;
+  const MCAM = { x: 1478, y: 796, zoom: 5.4 };
+  const CABLE = [[1680, 836], [1600, 834], [1545, 828], [1530, 812]]; // world pts: from off-screen right along the shelf into the router's side
+  function cablePt(u) { // along CABLE polyline by fraction
+    const segs = []; let L = 0;
+    for (let i = 0; i < CABLE.length - 1; i++) { const l = Math.hypot(CABLE[i + 1][0] - CABLE[i][0], CABLE[i + 1][1] - CABLE[i][1]); segs.push(l); L += l; }
+    let d = clamp(u) * L;
+    for (let i = 0; i < segs.length; i++) { if (d <= segs[i]) { const k = d / segs[i]; return [lerp(CABLE[i][0], CABLE[i + 1][0], k), lerp(CABLE[i][1], CABLE[i + 1][1], k)]; } d -= segs[i]; }
+    return CABLE[CABLE.length - 1];
+  }
+  function drawCable(ctx) {
+    ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(1700, 838); ctx.bezierCurveTo(1600, 838, 1560, 834, 1532, 812);
+    ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 6; ctx.stroke(); ctx.strokeStyle = '#3a3a46'; ctx.lineWidth = 4; ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.restore();
+  }
+  function brandPacket(ctx, x, y, s, o) {
+    if (A.drawBrandPacket) return A.drawBrandPacket(ctx, x, y, s, o);
+    const mood = { panting: 'annoyed', grumpy: 'annoyed', sleepy: 'sleep', shock: 'shock' }[o.mood] || 'bored';
+    A.drawPacket(ctx, x, y, s * 1.1, { t: o.t, kind: o.brand === 'EMBY' ? 'video' : 'update', seed: o.brand === 'EMBY' ? 3 : 7, mood, mouth: o.mouth ?? A.mouth(o.who || o.brand, o.t), look: o.look, rot: o.rot, noZ: true });
+    ctx.save(); ctx.translate(x, y - 108 * s); ctx.rotate(-0.1);
+    ctx.fillStyle = '#eee'; A.rrect(ctx, -34 * s, -12 * s, 68 * s, 24 * s, 5 * s); ctx.fill(); ctx.strokeStyle = A.OUTLINE; ctx.lineWidth = 2 * s; ctx.stroke();
+    A.text(ctx, o.brand, 0, 0, { font: `800 ${15 * s}px Rubik`, fill: '#333' });
+    ctx.restore();
+  }
+  function drawPackets(ctx, t) {
+    const s = 0.3;
+    // ILVIP: stumbles in along the cable, stops, pants; "Did... did we miss the goal?"; deflates on "GOTV got here first."
+    if (t > 72.55) {
+      const u = ease.out(inv(72.55, 73.05, t)), p = cablePt(1 - u * 0.62);
+      const bob = Math.abs(Math.sin(t * 16)) * 4 * (1 - smooth(72.95, 73.1, t));
+      const x = p[0] - 18 * u, y = Math.max(p[1], 826) + 2 - bob;
+      const deflate = smooth(75.7, 76.1, t);
+      const mood = t < 73.0 ? 'panting' : t < 74.55 ? (t > 73.9 ? 'shock' : 'panting') : t < 75.7 ? 'shock' : 'grumpy';
+      brandPacket(ctx, x, y, s, { t, brand: 'ILVIP', who: 'ILVIP', mood, flip: true, look: t < 74.6 ? [-0.9, -0.2] : [-0.9, 0.1], vel: [t < 73.05 ? -300 : 0, 0],
+        rot: -0.05 * Math.sin(t * 7) * (1 - smooth(73, 73.3, t)) + 0.1 * deflate, squash: 0.12 * deflate + 0.05 * Math.sin(t * 9) * (t < 74.5 ? 1 : 0.3) });
     }
-    A.drawBit(ctx, x, y, sc, o);
-    if (t >= 56.9 && t < 57.3) { // sparkle glint by the wink
-      const u = inv(56.9, 57.2, t), s = Math.sin(u * Math.PI);
-      star(ctx, x + 40 * bs * 1.1, y - 118 * bs, 28 * s * bs * 1.3 + 0.01, '#ffffff');
+    // EMBY: arrives later, spinner still turning, flops over
+    if (t > 73.5) {
+      const u = ease.out(inv(73.5, 74.25, t)), p = cablePt(1 - u * 0.36);
+      const flop = ease.outBounce(inv(74.25, 74.6, t));
+      brandPacket(ctx, p[0] + 6, Math.max(p[1], 828) + 4, s * 0.95, { t, brand: 'EMBY', who: 'EMBY', mood: t < 74.25 ? 'panting' : 'sleepy', spinner: 1, flip: true,
+        rot: 0.35 * flop, look: [-0.8, 0.3], vel: [t < 74.25 ? -200 : 0, 0], mouth: 0.25 * Math.abs(Math.sin(t * 8)) * (1 - flop) });
     }
+  }
+  function drawRouterBit(ctx, t) {
+    const bs = 0.27, x = LED[0] - 10, y = LR.router.y + 3;
+    const o = { t, mood: 'exhausted', limbs: 'flop', shadow: 0.6, glow: 0.85, trail: 0, light: [-0.4, -0.8], rim: '#ffe7a0' };
+    const pant = Math.sin(t * 9) * 0.03;
+    o.squash = pant;
+    // notices the late arrivals, lifts his head
+    const turn = smooth(72.7, 73.0, t);
+    o.look = [lerp(0, 0.9, turn), lerp(0.5, 0.1, turn)];
+    if (t > 74.7) { // "Sorry, guys..." (sympathetic) -> "GOTV got here first." (proud)
+      const pr = smooth(75.55, 75.8, t);
+      Object.assign(o, { mood: pr > 0.5 ? 'cheeky' : 'exhausted', rot: -0.1 * pr - 0.05 * Math.sin((t - 74.7) * 2), look: [0.9, 0], browRaise: 3 * (1 - pr), squash: pant * (1 - pr) });
+    }
+    if (t >= 77.3) { // wink, sparkle ... happy conk-out -> glow burst
+      const w = smooth(77.35, 77.43, t) * (1 - smooth(77.58, 77.64, t));
+      Object.assign(o, { mood: t < 77.58 ? 'cheeky' : 'joy', wink: w, sparkle: 1, mouth: t < 77.58 ? 0.1 : 0, glow: lerp(0.9, 2, smooth(77.55, 77.75, t)), lid: t > 77.58 ? 1 : 0, look: [0.3, 0] });
+    }
+    A.drawBit(ctx, x, y, bs, o);
+    if (t >= 77.35 && t < 77.7) { const s = Math.sin(inv(77.35, 77.65, t) * Math.PI); star(ctx, x + 44 * bs, y - 118 * bs, 34 * s * bs + 0.01, '#ffffff'); }
+  }
+  function shotMacro(ctx, t) {
+    const d = inv(72.4, 77.8, t);
+    const cam = { x: MCAM.x - 6 * d, y: MCAM.y + 3 * d, zoom: MCAM.zoom * (1 + 0.1 * ease.inOut(d)) };
+    ctx.save();
+    A.camera(ctx, { ...cam, t });
+    A.drawLivingRoom(ctx, t, { tvGlow: 1.2, lamp: 1, snow: false });
+    drawCable(ctx);
+    A.drawRouter(ctx, LR.router.x, LR.router.y, LR.router.s, { t, activity: 0.3, ledColor: GOLD_LED, ledGlow: key(t, [[77.3, 0.15], [77.45, 0.8], [77.7, 0]]) });
+    drawRouterBit(ctx, t);
+    drawPackets(ctx, t);
+    ctx.restore();
+    macroGrade(ctx, t);
+    const cut = 1 - smooth(72.4, 72.5, t); // soft in from the payoff
+    if (cut > 0) { ctx.fillStyle = `rgba(255,236,200,${cut * 0.5})`; ctx.fillRect(0, 0, 1920, 1080); }
   }
   function star(ctx, x, y, r, c) {
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = c; ctx.beginPath();
@@ -383,23 +550,18 @@
     ctx.closePath(); ctx.fill(); A.glow(ctx, x, y, r * 1.6, c, 0.6); ctx.restore();
   }
   function macroGrade(ctx, t) {
-    const k = smooth(53.6, 54.3, t);
     // shallow depth-of-field feel: darken the frame edges, warm/cool bokeh
-    ctx.save();
-    ctx.globalAlpha = 0.55 * k;
+    ctx.save(); ctx.globalAlpha = 0.55;
     ctx.fillStyle = A.radial(ctx, 960, 560, 300, 1150, [[0, 'rgba(8,4,20,0)'], [1, 'rgba(8,4,20,0.9)']]); ctx.fillRect(0, 0, 1920, 1080);
     ctx.restore();
-    if (k > 0) {
-      for (let i = 0; i < 9; i++) {
-        const x = hash(i + 40) * 1920, y = hash(i + 50) * 420 + 20, r = 50 + hash(i + 60) * 70;
-        A.glow(ctx, x + Math.sin(t * 0.3 + i) * 12, y, r, i % 3 ? '#ffb45e' : '#9ff5d0', 0.12 * k);
-      }
+    for (let i = 0; i < 9; i++) {
+      const x = hash(i + 40) * 1920, y = hash(i + 50) * 420 + 20, r = 50 + hash(i + 60) * 70;
+      A.glow(ctx, x + Math.sin(t * 0.3 + i) * 12, y, r, i % 3 ? '#ffb45e' : '#9ff5d0', 0.12);
     }
     // Bit's burst whiteout -> end card
-    const w = smooth(56.99, 57.12, t);
+    const w = smooth(77.66, 77.8, t);
     if (w > 0) {
-      const b = A.bitCore ? A.bitCore(0, 0, 1) : [0, 0]; void b;
-      const g = ctx.createRadialGradient(960, 720, 0, 960, 720, 200 + w * 1600);
+      const g = ctx.createRadialGradient(840, 700, 0, 840, 700, 200 + w * 1600);
       g.addColorStop(0, `rgba(255,255,245,${w})`); g.addColorStop(0.5, `rgba(255,236,170,${w * 0.9})`); g.addColorStop(1, `rgba(255,220,120,${w * w})`);
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080); ctx.restore();
     }
