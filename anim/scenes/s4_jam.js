@@ -35,6 +35,7 @@
     let X = lane + (path ? 0 : (H(seed * 3.1) - 0.5) * 0.12), Z = ROW(r) + (path ? 0 : (H(seed * 5.3) - 0.5) * 0.3) + (li % 2 ? 0.12 : 0);
     if (path && li === 3) X = 0.64;
     if (path && li === 4) X = 1.19;
+    if (r === 7 && li === 3) continue; // gap: sightline to the wedge
     if (r === 8 && li === 3) X = 0.98;
     if (r === 8 && li === 4) X = 1.3;  // squeezed aside by the cat
     if (r === 8 && li === 1) X = -0.74;
@@ -68,7 +69,7 @@
   function drawPk(ctx, p, t, zc, o = {}) {
     const d = p.Z + (o.dz || 0) - zc; if (d < 0.32) return;
     const [x, y] = proj(p.X + (o.dx || 0), o.y || 0, p.Z + (o.dz || 0), zc);
-    const sc = PKS / d, fog = clamp(1 - (d - 5) / 16);
+    const sc = PKS / d, fog = clamp(1 - (d - 5) / 16) * clamp((d - (o.near || 0.32)) / 0.3);
     if (fog <= 0.02) return;
     // brake-light spill behind each car
     if (d > 1.2) A.glow(ctx, x, y - sc * 20, sc * 95, 'rgba(255,36,60,1)', 0.10 * fog * (0.8 + 0.2 * Math.sin(t * 3 + p.seed)));
@@ -148,7 +149,7 @@
     const items = [];
     const bz = opt.bit ? opt.bit.Z : 99;
     for (const p of PK) {
-      const d = p.Z - zc; if (d < 0.32 || d > 22) continue;
+      const d = p.Z - zc; if (d < (opt.near || 0.32) - 0.2 || d > 22) continue;
       items.push({ d, p });
     }
     if (opt.cat !== false) items.push({ d: CATZ - zc, cat: true });
@@ -163,7 +164,7 @@
         continue;
       }
       const p = it.p;
-      let o = { dz: creep(p, t) };
+      let o = { dz: creep(p, t), near: opt.near };
       if (opt.pkO) o = Object.assign(o, opt.pkO(p, it.d));
       drawPk(ctx, p, t, zc, o);
     }
@@ -317,7 +318,7 @@
     const charge = smooth(28.0, 28.5, t);
     A.glow(ctx, 960, 560, 520, '#ffc93c', 0.18 + 0.35 * charge);
     const crouch = smooth(28.3, 28.5, t);
-    A.drawBit(ctx, 960, 1010 + crouch * 30, 5.6, {
+    A.drawBit(ctx, 960, 960 + crouch * 14, 5.6, {
       t, mood: 'determined', glow: 1.2 + 0.7 * charge, look: t < 28.02 ? [-0.5, -0.45] : [0.05, -0.05],
       limbs: crouch > 0.3 ? 'crouch' : 'stand', squash: 0.12 * crouch, browL: -3, browR: -3,
       boost: 0.18 * charge, sparkle: charge, trail: 0, rot: -0.02 + 0.02 * Math.sin(t * 2),
@@ -360,7 +361,7 @@
     const trail = [];
     if (launch) for (let i = 22; i >= 0; i--) { const tt = Math.max(E0, t - i * 0.025), p = bitE(tt); const [x, y, d] = proj(p.X, p.Y + 0.14, p.Z, zc); if (d > 0.3) trail.push([x, y]); }
     jamWorld(ctx, t, zc, {
-      jam: 0.95,
+      jam: 0.95, near: 0.6,
       bit: { X: b.X, Y: b.Y, Z: b.Z, draw: (c, x, y, sc, d) => {
         if (trail.length > 2) A.drawBinaryTrail(c, trail, t, { width: 30 * sc * 1.4, size: Math.max(12, 18 * sc), alpha: 0.95 });
         const pre = !launch, crouch = pre ? smooth(28.5, 28.6, t) : 0;
@@ -392,7 +393,7 @@
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       ctx.strokeStyle = `rgba(255,220,130,${0.8 * (1 - u)})`; ctx.lineWidth = 10 * (1 - u) + 2;
       A.ellipse(ctx, sx, sy, 40 + u * 700, 12 + u * 160); ctx.stroke();
-      ctx.fillStyle = `rgba(255,240,200,${0.3 * Math.max(0, 1 - u * 6)})`; ctx.fillRect(0, 0, 1920, 1080);
+      ctx.fillStyle = `rgba(255,240,200,${0.2 * Math.max(0, 1 - u * 6)})`; ctx.fillRect(0, 0, 1920, 1080);
       ctx.restore();
     }
     speedLines(ctx, t, 960, 470, smooth(29.3, 29.85, t), 60);

@@ -1,0 +1,9 @@
+[
+ {"sfx": "zip_streak", "t": 21.5, "gain_db": -13, "pan": 0.1},
+ {"sfx": "packet_honk_lo", "t": 21.74, "gain_db": -14, "pan": -0.5},
+ {"sfx": "packet_honk_hi", "t": 21.94, "gain_db": -15, "pan": 0.45},
+ {"sfx": "packet_honk_hi", "t": 22.61, "gain_db": -14, "pan": -0.35},
+ {"sfx": "packet_honk_mid", "t": 23.61, "gain_db": -15, "pan": 0.45},
+ {"sfx": "squeeze_squeak", "t": 24.28, "gain_db": -14, "pan": 0.15},
+ {"sfx": "boing", "t": 24.83, "gain_db": -13, "pan": 0.1}
+]
