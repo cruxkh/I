@@ -22,7 +22,7 @@
     tagEn: '(התקנת אפליקציה על המסך החכם)',
     filmTitle: 'PACKET FROM HOME · חבילה מהבית',
     tagHeY: 836, tagEnY: 906, filmTitleY: 104,
-    bit: { x: 960, y: 760, s: 1.3 },                      // Bit stands between the logo and the taglines (feet point)
+    bit: { x: 960, y: 786, s: 1.3 },                      // Bit stands between the logo and the taglines (feet point)
     navy: '#0d1033', yellow: '#ffd21f', blue: '#1f4fbf',
   };
   const logoImg = new Image(); logoImg.src = CARD.logoImage;
