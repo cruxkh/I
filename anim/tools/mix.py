@@ -8,7 +8,8 @@ import numpy as np, soundfile as sf
 from scipy.signal import butter, sosfilt, fftconvolve
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SR, DUR = 48000, 60.0
+SR = 48000
+DUR = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'audio/script.json'))).get('duration', 60.0)
 N = int(SR * DUR)
 rng = np.random.default_rng(7)
 
@@ -71,8 +72,12 @@ for L in tl:
     i = int(L['t'] * SR); side[i:i + len(x)] = 1
 
 sfx = np.zeros((N, 2)); missing = set()
+# scene cue files authored in a scene's own (shifted) time base, see A.SHIFT in index.html
+CUE_SHIFT = {'s5_ocean': 12.9, 's6_lastmile': 12.9}
 for cf in sorted(glob.glob(f"{ROOT}/audio/cues/*.json")):
+    sh = CUE_SHIFT.get(os.path.basename(cf)[:-5], 0.0)
     for c in json.load(open(cf)):
+        c = {**c, 't': c['t'] + sh}
         p = f"{ROOT}/audio/sfx/{c['sfx']}.wav"
         if not os.path.exists(p): missing.add(c['sfx']); continue
         x = load(p)

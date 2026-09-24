@@ -1,6 +1,6 @@
 {
  "fps": 30,
- "duration": 60.0,
+ "duration": 81.0,
  "lines": [
   {
    "id": "ann1",
@@ -116,68 +116,96 @@
    "speed": 1.05,
    "pitch": 3,
    "fx": "room",
-   "text": "Saba, breathe. It's just football.",
-   "he": "סבא, תנשום. זה רק כדורגל.",
-   "dur": 1.908,
-   "end": 12.408,
+   "text": "Saba, come play backgammon with me!",
+   "he": "סבא, בוא תשחק איתי שש-בש!",
+   "dur": 1.844,
+   "end": 12.344,
    "words": [
     {
      "w": "Saba,",
      "t": 10.5
     },
     {
-     "w": "breathe.",
-     "t": 10.804
+     "w": "come",
+     "t": 10.774
     },
     {
-     "w": "It's",
-     "t": 11.274
+     "w": "play",
+     "t": 11.048
     },
     {
-     "w": "just",
-     "t": 11.579
+     "w": "backgammon",
+     "t": 11.322
     },
     {
-     "w": "football.",
-     "t": 11.883
+     "w": "with",
+     "t": 11.895
+    },
+    {
+     "w": "me!",
+     "t": 12.169
     }
    ]
   },
   {
    "id": "saba2",
    "who": "SABA",
-   "t": 12.6,
+   "t": 12.5,
    "voice": "bm_george",
    "speed": 1.1,
    "pitch": -1,
    "fx": "room",
-   "text": "Just football?! Go, Maccabi!",
-   "he": "רק כדורגל?! קדימה מכבי!",
-   "dur": 2.108,
-   "end": 14.708,
+   "text": "Not now, motek! I'm in the middle of the game!",
+   "he": "לא עכשיו, מותק! אני באמצע משחק!",
+   "dur": 2.63,
+   "end": 15.13,
    "words": [
     {
-     "w": "Just",
-     "t": 12.6
+     "w": "Not",
+     "t": 12.5
     },
     {
-     "w": "football?!",
-     "t": 13.029
+     "w": "now,",
+     "t": 12.742
     },
     {
-     "w": "Go,",
-     "t": 13.771
+     "w": "motek!",
+     "t": 12.983
     },
     {
-     "w": "Maccabi!",
-     "t": 14.045
+     "w": "I'm",
+     "t": 13.332
+    },
+    {
+     "w": "in",
+     "t": 13.574
+    },
+    {
+     "w": "the",
+     "t": 13.762
+    },
+    {
+     "w": "middle",
+     "t": 14.003
+    },
+    {
+     "w": "of",
+     "t": 14.406
+    },
+    {
+     "w": "the",
+     "t": 14.594
+    },
+    {
+     "w": "game!",
+     "t": 14.835
     }
    ]
   },
   {
    "id": "saba3",
    "who": "SABA",
-   "t": 15.2,
+   "t": 16.0,
    "voice": "bm_george",
    "speed": 0.95,
    "pitch": -1,
@@ -185,73 +213,181 @@
    "text": "No! Not now!",
    "he": "לא! רק לא עכשיו!",
    "dur": 1.342,
-   "end": 16.542,
+   "end": 17.342,
    "words": [
     {
      "w": "No!",
-     "t": 15.2
+     "t": 16.0
     },
     {
      "w": "Not",
-     "t": 15.576
+     "t": 16.376
     },
     {
      "w": "now!",
-     "t": 16.059
+     "t": 16.859
+    }
+   ]
+  },
+  {
+   "id": "saba5",
+   "who": "SABA",
+   "t": 17.8,
+   "voice": "bm_george",
+   "speed": 1.05,
+   "pitch": -1,
+   "fx": "room",
+   "text": "Again?! Every single game it gets stuck!",
+   "he": "שוב?! כל משחק זה נתקע!",
+   "dur": 2.486,
+   "end": 20.286,
+   "words": [
+    {
+     "w": "Again?!",
+     "t": 17.8
+    },
+    {
+     "w": "Every",
+     "t": 18.189
+    },
+    {
+     "w": "single",
+     "t": 18.579
+    },
+    {
+     "w": "game",
+     "t": 19.028
+    },
+    {
+     "w": "it",
+     "t": 19.357
+    },
+    {
+     "w": "gets",
+     "t": 19.567
+    },
+    {
+     "w": "stuck!",
+     "t": 19.896
+    }
+   ]
+  },
+  {
+   "id": "noa4",
+   "who": "NOA",
+   "t": 20.6,
+   "voice": "af_bella",
+   "speed": 1.08,
+   "pitch": 3,
+   "fx": "room",
+   "text": "Because you're still with the old provider, Saba. Everyone switched to GOTV!",
+   "he": "כי אתה עדיין אצל הספק הישן, סבא. כולם כבר עברו ל-GOTV!",
+   "say": "Because you're still with the old provider, Saba. Everyone switched to Go T V!",
+   "dur": 4.108,
+   "end": 24.708,
+   "words": [
+    {
+     "w": "Because",
+     "t": 20.6
+    },
+    {
+     "w": "you're",
+     "t": 21.036
+    },
+    {
+     "w": "still",
+     "t": 21.422
+    },
+    {
+     "w": "with",
+     "t": 21.755
+    },
+    {
+     "w": "the",
+     "t": 22.038
+    },
+    {
+     "w": "old",
+     "t": 22.269
+    },
+    {
+     "w": "provider,",
+     "t": 22.5
+    },
+    {
+     "w": "Saba.",
+     "t": 22.988
+    },
+    {
+     "w": "Everyone",
+     "t": 23.27
+    },
+    {
+     "w": "switched",
+     "t": 23.758
+    },
+    {
+     "w": "to",
+     "t": 24.245
+    },
+    {
+     "w": "GOTV!",
+     "t": 24.425
     }
    ]
   },
   {
    "id": "noa2",
    "who": "NOA",
-   "t": 17.6,
+   "t": 25.0,
    "voice": "af_bella",
    "speed": 1.08,
    "pitch": 3,
    "fx": "room",
-   "text": "Hold on, Saba. I'll find where it's stuck.",
-   "he": "רגע, סבא. אני אמצא איפה זה תקוע.",
-   "dur": 2.1,
-   "end": 19.7,
+   "text": "Hold on, Saba. Switching you to GOTV... now!",
+   "he": "רגע, סבא. מעבירה אותך ל-GOTV... עכשיו!",
+   "say": "Hold on, Saba. Switching you to Go T V... now!",
+   "dur": 2.957,
+   "end": 27.957,
    "words": [
     {
      "w": "Hold",
-     "t": 17.6
+     "t": 25.0
     },
     {
      "w": "on,",
-     "t": 17.863
+     "t": 25.378
     },
     {
      "w": "Saba.",
-     "t": 18.03
+     "t": 25.619
     },
     {
-     "w": "I'll",
-     "t": 18.292
+     "w": "Switching",
+     "t": 25.997
     },
     {
-     "w": "find",
-     "t": 18.555
+     "w": "you",
+     "t": 26.719
     },
     {
-     "w": "where",
-     "t": 18.817
+     "w": "to",
+     "t": 27.029
     },
     {
-     "w": "it's",
-     "t": 19.127
+     "w": "GOTV...",
+     "t": 27.269
     },
     {
-     "w": "stuck.",
-     "t": 19.39
+     "w": "now!",
+     "t": 27.648
     }
    ]
   },
   {
    "id": "bit1",
    "who": "BIT",
-   "t": 21.9,
+   "t": 30.1,
    "voice": "am_puck",
    "speed": 1.1,
    "pitch": 5,
@@ -259,46 +395,124 @@
    "text": "Excuse me! Live goal coming through! Live goal!",
    "he": "סליחה! גול חי עובר! גול חי!",
    "dur": 1.981,
-   "end": 23.881,
+   "end": 32.081,
    "words": [
     {
      "w": "Excuse",
-     "t": 21.9
+     "t": 30.1
     },
     {
      "w": "me!",
-     "t": 22.203
+     "t": 30.403
     },
     {
      "w": "Live",
-     "t": 22.345
+     "t": 30.545
     },
     {
      "w": "goal",
-     "t": 22.567
+     "t": 30.767
     },
     {
      "w": "coming",
-     "t": 22.789
+     "t": 30.989
     },
     {
      "w": "through!",
-     "t": 23.093
+     "t": 31.293
     },
     {
      "w": "Live",
-     "t": 23.436
+     "t": 31.636
     },
     {
      "w": "goal!",
-     "t": 23.658
+     "t": 31.858
+    }
+   ]
+  },
+  {
+   "id": "ilvip1",
+   "who": "ILVIP",
+   "t": 32.4,
+   "voice": "am_eric",
+   "speed": 1.05,
+   "pitch": -2,
+   "fx": "data",
+   "text": "Hey! We've been waiting in line since the first half!",
+   "he": "היי! אנחנו מחכים בתור מהמחצית הראשונה!",
+   "dur": 2.497,
+   "end": 34.897,
+   "words": [
+    {
+     "w": "Hey!",
+     "t": 32.4
+    },
+    {
+     "w": "We've",
+     "t": 32.597
+    },
+    {
+     "w": "been",
+     "t": 32.882
+    },
+    {
+     "w": "waiting",
+     "t": 33.123
+    },
+    {
+     "w": "in",
+     "t": 33.495
+    },
+    {
+     "w": "line",
+     "t": 33.649
+    },
+    {
+     "w": "since",
+     "t": 33.89
+    },
+    {
+     "w": "the",
+     "t": 34.174
+    },
+    {
+     "w": "first",
+     "t": 34.371
+    },
+    {
+     "w": "half!",
+     "t": 34.656
+    }
+   ]
+  },
+  {
+   "id": "emby1",
+   "who": "EMBY",
+   "t": 35.1,
+   "voice": "am_liam",
+   "speed": 0.9,
+   "pitch": -3,
+   "fx": "data",
+   "text": "Still... buffering...",
+   "he": "עדיין... טוען...",
+   "dur": 1.447,
+   "end": 36.547,
+   "words": [
+    {
+     "w": "Still...",
+     "t": 35.1
+    },
+    {
+     "w": "buffering...",
+     "t": 35.653
     }
    ]
   },
   {
    "id": "cat1",
    "who": "CATPACKET",
-   "t": 25.1,
+   "t": 36.9,
    "voice": "am_fenrir",
    "speed": 0.92,
    "pitch": -4,
@@ -306,65 +520,82 @@
    "text": "Get in line, kid. Cat videos first.",
    "he": "תעמוד בתור, ילד. סרטוני חתולים קודם.",
    "dur": 2.502,
-   "end": 27.602,
+   "end": 39.402,
    "words": [
     {
      "w": "Get",
-     "t": 25.1
+     "t": 36.9
     },
     {
      "w": "in",
-     "t": 25.408
+     "t": 37.208
     },
     {
      "w": "line,",
-     "t": 25.648
+     "t": 37.448
     },
     {
      "w": "kid.",
-     "t": 26.025
+     "t": 37.825
     },
     {
      "w": "Cat",
-     "t": 26.334
+     "t": 38.134
     },
     {
      "w": "videos",
-     "t": 26.642
+     "t": 38.442
     },
     {
      "w": "first.",
-     "t": 27.156
+     "t": 38.956
     }
    ]
   },
   {
    "id": "bit2",
    "who": "BIT",
-   "t": 28.0,
+   "t": 39.7,
    "voice": "am_puck",
    "speed": 1.1,
    "pitch": 5,
    "fx": "data",
-   "text": "Not today!",
-   "he": "לא היום!",
-   "dur": 0.688,
-   "end": 28.688,
+   "text": "Sorry! GOTV doesn't wait in line!",
+   "he": "סליחה! GOTV לא מחכה בתור!",
+   "say": "Sorry! Go T V doesn't wait in line!",
+   "dur": 1.692,
+   "end": 41.392,
    "words": [
     {
-     "w": "Not",
-     "t": 28.0
+     "w": "Sorry!",
+     "t": 39.7
     },
     {
-     "w": "today!",
-     "t": 28.282
+     "w": "GOTV",
+     "t": 40.014
+    },
+    {
+     "w": "doesn't",
+     "t": 40.28
+    },
+    {
+     "w": "wait",
+     "t": 40.691
+    },
+    {
+     "w": "in",
+     "t": 40.957
+    },
+    {
+     "w": "line!",
+     "t": 41.126
     }
    ]
   },
   {
    "id": "bit3",
    "who": "BIT",
-   "t": 32.2,
+   "t": 45.1,
    "voice": "am_puck",
    "speed": 1.15,
    "pitch": 5,
@@ -372,34 +603,34 @@
    "text": "Marseille... the Atlantic... whoa, shark!",
    "he": "מרסיי... האטלנטי... וואו, כריש!",
    "dur": 1.707,
-   "end": 33.907,
+   "end": 46.807,
    "words": [
     {
      "w": "Marseille...",
-     "t": 32.2
+     "t": 45.1
     },
     {
      "w": "the",
-     "t": 32.691
+     "t": 45.591
     },
     {
      "w": "Atlantic...",
-     "t": 32.902
+     "t": 45.802
     },
     {
      "w": "whoa,",
-     "t": 33.346
+     "t": 46.246
     },
     {
      "w": "shark!",
-     "t": 33.603
+     "t": 46.503
     }
    ]
   },
   {
    "id": "bit4",
    "who": "BIT",
-   "t": 37.6,
+   "t": 50.5,
    "voice": "am_puck",
    "speed": 1.1,
    "pitch": 5,
@@ -407,26 +638,26 @@
    "text": "Nice try, fishy!",
    "he": "יפה ניסית, דגיג!",
    "dur": 0.985,
-   "end": 38.585,
+   "end": 51.485,
    "words": [
     {
      "w": "Nice",
-     "t": 37.6
+     "t": 50.5
     },
     {
      "w": "try,",
-     "t": 37.928
+     "t": 50.828
     },
     {
      "w": "fishy!",
-     "t": 38.197
+     "t": 51.097
     }
    ]
   },
   {
    "id": "bit5",
    "who": "BIT",
-   "t": 41.9,
+   "t": 54.8,
    "voice": "am_puck",
    "speed": 1.0,
    "pitch": 5,
@@ -434,30 +665,30 @@
    "text": "Last mile... last meter...",
    "he": "הקילומטר האחרון... המטר האחרון...",
    "dur": 1.497,
-   "end": 43.397,
+   "end": 56.297,
    "words": [
     {
      "w": "Last",
-     "t": 41.9
+     "t": 54.8
     },
     {
      "w": "mile...",
-     "t": 42.258
+     "t": 55.158
     },
     {
      "w": "last",
-     "t": 42.616
+     "t": 55.516
     },
     {
      "w": "meter...",
-     "t": 42.974
+     "t": 55.874
     }
    ]
   },
   {
    "id": "bit6",
    "who": "BIT",
-   "t": 44.6,
+   "t": 57.5,
    "voice": "am_puck",
    "speed": 1.0,
    "pitch": 5,
@@ -465,18 +696,18 @@
    "text": "Delivered!",
    "he": "נמסר!",
    "dur": 0.691,
-   "end": 45.291,
+   "end": 58.191,
    "words": [
     {
      "w": "Delivered!",
-     "t": 44.6
+     "t": 57.5
     }
    ]
   },
   {
    "id": "ann2",
    "who": "ANNOUNCER",
-   "t": 46.6,
+   "t": 59.5,
    "voice": "am_michael",
    "speed": 1.0,
    "pitch": 0,
@@ -484,22 +715,22 @@
    "text": "Goooal! Maccabi!",
    "he": "גוווול! מכבי!",
    "dur": 1.154,
-   "end": 47.754,
+   "end": 60.654,
    "words": [
     {
      "w": "Goooal!",
-     "t": 46.6
+     "t": 59.5
     },
     {
      "w": "Maccabi!",
-     "t": 47.141
+     "t": 60.041
     }
    ]
   },
   {
    "id": "saba4",
    "who": "SABA",
-   "t": 48.3,
+   "t": 61.2,
    "voice": "bm_george",
    "speed": 1.1,
    "pitch": -1,
@@ -507,105 +738,189 @@
    "text": "Gooool! Noa, you are a genius!",
    "he": "גוווול! נועה, את גאונה!",
    "dur": 2.177,
-   "end": 50.477,
+   "end": 63.377,
    "words": [
     {
      "w": "Gooool!",
-     "t": 48.3
+     "t": 61.2
     },
     {
      "w": "Noa,",
-     "t": 48.81
+     "t": 61.71
     },
     {
      "w": "you",
-     "t": 49.116
+     "t": 62.016
     },
     {
      "w": "are",
-     "t": 49.423
+     "t": 62.323
     },
     {
      "w": "a",
-     "t": 49.729
+     "t": 62.629
     },
     {
      "w": "genius!",
-     "t": 49.967
+     "t": 62.867
     }
    ]
   },
   {
    "id": "noa3",
    "who": "NOA",
-   "t": 51.4,
+   "t": 64.3,
    "voice": "af_bella",
    "speed": 1.05,
    "pitch": 3,
    "fx": "room",
-   "text": "Thank the little packet, Saba.",
-   "he": "תודה לחבילה הקטנה, סבא.",
-   "dur": 1.446,
-   "end": 52.846,
+   "text": "Thank GOTV, Saba. No more freezing!",
+   "he": "תגיד תודה ל-GOTV, סבא. בלי תקיעות!",
+   "say": "Thank Go T V, Saba. No more freezing!",
+   "dur": 2.369,
+   "end": 66.669,
    "words": [
     {
      "w": "Thank",
-     "t": 51.4
+     "t": 64.3
     },
     {
-     "w": "the",
-     "t": 51.698
-    },
-    {
-     "w": "little",
-     "t": 51.905
-    },
-    {
-     "w": "packet,",
-     "t": 52.249
+     "w": "GOTV,",
+     "t": 64.728
     },
     {
      "w": "Saba.",
-     "t": 52.594
+     "t": 65.09
+    },
+    {
+     "w": "No",
+     "t": 65.452
+    },
+    {
+     "w": "more",
+     "t": 65.682
+    },
+    {
+     "w": "freezing!",
+     "t": 66.044
+    }
+   ]
+  },
+  {
+   "id": "saba6",
+   "who": "SABA",
+   "t": 67.0,
+   "voice": "bm_george",
+   "speed": 1.0,
+   "pitch": -1,
+   "fx": "room",
+   "text": "And now... backgammon! Come, let's play!",
+   "he": "ועכשיו... שש-בש! בואי נשחק!",
+   "dur": 2.595,
+   "end": 69.595,
+   "words": [
+    {
+     "w": "And",
+     "t": 67.0
+    },
+    {
+     "w": "now...",
+     "t": 67.307
+    },
+    {
+     "w": "backgammon!",
+     "t": 67.615
+    },
+    {
+     "w": "Come,",
+     "t": 68.4
+    },
+    {
+     "w": "let's",
+     "t": 68.775
+    },
+    {
+     "w": "play!",
+     "t": 69.219
+    }
+   ]
+  },
+  {
+   "id": "ilvip2",
+   "who": "ILVIP",
+   "t": 73.0,
+   "voice": "am_eric",
+   "speed": 1.0,
+   "pitch": -2,
+   "fx": "small",
+   "text": "Did... did we miss the goal?",
+   "he": "רגע... פספסנו את הגול?",
+   "dur": 1.465,
+   "end": 74.465,
+   "words": [
+    {
+     "w": "Did...",
+     "t": 73.0
+    },
+    {
+     "w": "did",
+     "t": 73.235
+    },
+    {
+     "w": "we",
+     "t": 73.471
+    },
+    {
+     "w": "miss",
+     "t": 73.654
+    },
+    {
+     "w": "the",
+     "t": 73.942
+    },
+    {
+     "w": "goal?",
+     "t": 74.177
     }
    ]
   },
   {
    "id": "bit7",
    "who": "BIT",
-   "t": 55.0,
+   "t": 74.8,
    "voice": "am_puck",
    "speed": 0.95,
    "pitch": 5,
    "fx": "small",
-   "text": "Next time... send the goal earlier.",
-   "he": "בפעם הבאה... תשלחו את הגול מוקדם יותר.",
-   "dur": 1.846,
-   "end": 56.846,
+   "text": "Sorry, guys... GOTV got here first.",
+   "he": "סליחה, חבר'ה... GOTV הגיעה ראשונה.",
+   "say": "Sorry, guys... Go T V got here first.",
+   "dur": 2.407,
+   "end": 77.207,
    "words": [
     {
-     "w": "Next",
-     "t": 55.0
+     "w": "Sorry,",
+     "t": 74.8
     },
     {
-     "w": "time...",
-     "t": 55.29
+     "w": "guys...",
+     "t": 75.26
     },
     {
-     "w": "send",
-     "t": 55.58
+     "w": "GOTV",
+     "t": 75.65
     },
     {
-     "w": "the",
-     "t": 55.87
+     "w": "got",
+     "t": 76.039
     },
     {
-     "w": "goal",
-     "t": 56.107
+     "w": "here",
+     "t": 76.358
     },
     {
-     "w": "earlier.",
-     "t": 56.397
+     "w": "first.",
+     "t": 76.747
     }
    ]
   }

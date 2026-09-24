@@ -207,3 +207,62 @@ Bamba bag on the table!).
 ## Text rule (client request)
 NO em dash "—" or en dash "–" anywhere in on-screen text (signs, captions, scorebugs, subtitles, logos, labels).
 Use a period, comma, colon, middle dot "·" or a plain hyphen "-" instead (e.g. score `1-1`, not `1–1`).
+
+# ===================== VERSION 2 (81 s) — SUPERSEDES the story table above =====================
+Client brief v2: (1) Noa asks Saba to come play backgammon (שש-בש) with her; he can't, he's in the middle of the game,
+and the OLD provider freezes. (2) Noa switches him to **GOTV**, and from then on everything is smooth, fast, no freezes.
+(3) Comic jab at competitors: in the jam, packets of the competitors **ILVIP** and **EMBY** (plus fictional **LAGTV** and
+**LOADING+**) are stuck "waiting in line"; GOTV's Bit overtakes them all and arrives FIRST to the home.
+Tone: playful comic hyperbole, never nasty; competitors are sleepy/whiny packets in a queue, not villains.
+Duration 81.0 s = 2430 frames. Engine: `A.DUR = 81`; scene files loaded after `A.SHIFT = d` play d s later (s.t is in
+their own time base; lipsync compensates). S5 and S6 are unchanged and shifted by +12.9 s.
+
+| global t | event |
+|---|---|
+| 0.0–6.2 | S1 Tel Aviv cold open (unchanged). |
+| 6.2–29.2 | **S2 v2 living room** (scenes/s2_livingroom.js, now 6.2–29.2, shift 0): |
+| 6.9–10.2 | SABA "Noa! Eighty-nine minutes. One one. This is it." (TV shows OLD provider bug `הספק הישן`, no GOTV anywhere yet) |
+| 10.5–12.3 | NOA (holding a closed wooden backgammon case, hopeful): "Saba, come play backgammon with me!" |
+| 12.5–15.1 | SABA (waves her off, eyes glued to TV, rising): "Not now, motek! I'm in the middle of the game!" — striker breakaway |
+| **15.3** | **FREEZE** (old provider): macroblocks, spinner stalls. |
+| 16.0–17.3 | SABA horror: "No! Not now!" |
+| 17.8–20.3 | SABA exasperated at the TV: "Again?! Every single game it gets stuck!" (spinner, maybe the TV UI shows `שגיאה` / retry) |
+| 20.6–24.7 | NOA (sets down the backgammon case, knowing smile): "Because you're still with the old provider, Saba. Everyone switched to GOTV!" |
+| 25.0–28.0 | NOA crouches at the router: "Hold on, Saba. Switching you to GOTV... now!" On "now!" (~27.6) she presses; the TV shows `A.drawSwitchOverlay` (עובר ל-GOTV... ✓ GOTV פעיל) and the router LED turns GOTV-gold. |
+| 28.0–29.2 | Push into the gold LED, whoosh, white-gold flash. |
+| 29.2–43.4 | **S4 v2 jam** (scenes/s4_jam.js, now 29.2–43.4, shift 0): |
+| 30.1–32.1 | BIT "Excuse me! Live goal coming through! Live goal!" |
+| 32.4–34.9 | ILVIP packet (brand packet, grumpy, in the queue under a `ממתין בתור` sign): "Hey! We've been waiting in line since the first half!" |
+| 35.1–36.6 | EMBY packet (sleepy, spinner on its face): "Still... buffering..." |
+| 36.9–39.4 | CATPACKET "Get in line, kid. Cat videos first." |
+| 39.7–41.4 | BIT "Sorry! GOTV doesn't wait in line!" |
+| 41.5 | BOOST over the whole queue (ILVIP, EMBY, LAGTV, LOADING+ look up in shock). 42.7 bursts into open fibre. |
+| 43.4–54.4 | S5 ocean (unchanged, shift +12.9): shark chomp 48.9, "Nice try, fishy!" 50.5. |
+| 54.4–58.9 | S6 last mile (unchanged, shift +12.9): "Delivered!" impact 57.8. |
+| 58.9–81.0 | **S7 v2** (scenes/s7_goal.js; rewrite its times to new global, shift 0): |
+| 58.9–59.3 | TV unfreeze, now with the GOTV channel bug (A.drawGOTVBug) instead of the old one. Ball in net 59.3. |
+| 59.5–60.7 | ANNOUNCER "Goooal! Maccabi!" |
+| 60.5 | Saba leaps, confetti, Bamba. |
+| 61.2–63.4 | SABA "Gooool! Noa, you are a genius!" hug. |
+| 64.3–66.7 | NOA "Thank GOTV, Saba. No more freezing!" |
+| 67.0–69.6 | SABA "And now... backgammon! Come, let's play!" |
+| 69.6–72.4 | Payoff: Saba and Noa at the side table playing backgammon (A.drawBackgammon open board, dice roll), laughing; behind them the TV plays smooth live football with GOTV bug and a `LIVE · 4K · ללא תקיעות` badge. The promise delivered: he has time for her. |
+| 72.4–77.8 | Router close-up tag: Bit flopped on the shelf, exhausted and proud. Two competitor brand packets (ILVIP, EMBY) finally stagger in from the cable, panting, late. ILVIP 73.0–74.5 "Did... did we miss the goal?"; BIT 74.8–77.2 "Sorry, guys... GOTV got here first." wink ~77.4. |
+| 77.8–81.0 | GOTV end card (same design), taglines now: Hebrew `הטלוויזיה מהבית. מגיעה ראשונה.` English `Live TV from Israel. First to your home.` Subtitles off from 77.7. Engine fades 80.2–81.0. |
+
+Speakers now also include `ILVIP`, `EMBY` (lip-sync via A.mouth('ILVIP', t) etc.).
+
+## v2 shared props kit `kits/props.js` (built by the props agent; scenes may guard with `if (A.drawBackgammon)` until it lands)
+- `A.drawBackgammon(ctx, x, y, s, o)` — (x,y) bottom centre. `o.mode`: `'case'` (closed wooden case with inlay and handle,
+  ~180 px wide at s=1, can be carried: draw it at a hand position) | `'board'` (open board on a table, ~420 px wide at s=1, seen at
+  a 3/4 top-down angle, checkers in play). `o.t`, `o.dice` (0..1 roll animation: dice tumble then land), `o.diceVals [a,b]`,
+  `o.move` (0..1 a checker hop between two points).
+- `A.drawBrandPacket(ctx, x, y, scale, o)` — competitor packet (~100 px tall at 1), same family look as A.drawPacket but with a
+  clear brand label tag. `o.brand`: `'ILVIP'|'EMBY'|'LAGTV'|'LOADING+'`, `o.who` (speaker id for lipsync, default the brand),
+  `o.mood`: `'grumpy'|'sleepy'|'shock'|'panting'`, `o.spinner` (0..1 little loading spinner on its face/head),
+  `o.sign` (0..1 small held sign `ממתין בתור`), `o.mouth`, `o.look`, `o.flip`, `o.vel`, `o.rot`.
+- `A.drawGOTVBug(ctx, x, y, s, o)` — small TV channel logo (GOTV wordmark matching the end card look, yellow/blue), `o.alpha`.
+- `A.drawOldProviderBug(ctx, x, y, s, o)` — dull grey generic logo `הספק הישן`.
+- `A.drawSwitchOverlay(ctx, x, y, w, h, t, o)` — TV-screen UI overlay inside a screen rect: `o.p` 0..1: dim screen, card
+  "עובר ל-GOTV..." with progress bar, then at p≥0.8 a big check `✓ GOTV פעיל` with gold burst.
+- `A.drawQueueSign(ctx, x, y, s, o)` — hanging sign `ממתין בתור · WAITING IN LINE` with a ticket number.

@@ -12,8 +12,8 @@ from scipy.signal import resample_poly
 from kokoro_onnx import Kokoro
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FPS, DUR, SR = 30, 60.0, 48000
-script = json.load(open(f"{ROOT}/audio/script.json"))["lines"]
+FPS, SR = 30, 48000
+_S = json.load(open(f"{ROOT}/audio/script.json")); script = _S["lines"]; DUR = _S.get("duration", 60.0)
 k = Kokoro("/opt/kokoro/kokoro-v1.0.onnx", "/opt/kokoro/voices-v1.0.bin")
 os.makedirs(f"{ROOT}/audio/dialogue", exist_ok=True)
 
@@ -30,7 +30,7 @@ mouths = {}
 for L in script:
     ratio = 2 ** (L["pitch"] / 12)
     # pre-slow by ratio so that playing faster (pitch up) restores the intended pace
-    s, sr = k.create(L["text"], voice=L["voice"], speed=L["speed"] / ratio, lang="en-us")
+    s, sr = k.create(L.get("say", L["text"]), voice=L["voice"], speed=L["speed"] / ratio, lang="en-us")
     s = trim(np.asarray(s, dtype=np.float64))
     # resample to 48k while pitch shifting: output rate SR, pretend input rate sr*ratio
     from fractions import Fraction

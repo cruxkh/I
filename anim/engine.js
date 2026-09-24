@@ -3,7 +3,10 @@
 // Deterministic: every frame is a pure function of time t (seconds). No Date, no Math.random.
 // ============================================================================
 const A = (window.A = {});
-A.W = 1920; A.H = 1080; A.FPS = 30; A.DUR = 60;
+A.W = 1920; A.H = 1080; A.FPS = 30; A.DUR = 81;
+// Time shift: a scene file loaded while A.SHIFT = d is authored in its own time base and plays d seconds later.
+// Inside its draw(), s.t / s.lt are in the scene's own time base, and A.mouth/A.speaking compensate automatically.
+A.SHIFT = 0; A._shift = 0;
 A.scenes = [];
 A.debug = false;
 
@@ -58,10 +61,10 @@ A.mixc = (h1, h2, t) => { const a = parseInt(h1.slice(1), 16), b = parseInt(h2.s
 // mouth openness 0..1 for a speaker at time t (from generated lipsync @30fps)
 A.mouth = (who, t) => {
   const L = A.LIPSYNC && A.LIPSYNC[who]; if (!L) return 0;
-  const f = t * A.FPS, i = Math.floor(f), k = f - i;
+  const f = (t + A._shift) * A.FPS, i = Math.floor(f), k = f - i;
   return A.lerp(L[i] || 0, L[i + 1] || 0, k);
 };
-A.speaking = (who, t) => (A.LINES || []).some(l => l.who === who && t >= l.t && t <= l.end);
+A.speaking = (who, t) => (A.LINES || []).some(l => l.who === who && t + A._shift >= l.t && t + A._shift <= l.end);
 // eyelid closure 0..1 (1 = closed): natural blinks every ~2.5-5s, seed per character
 A.blink = (t, seed = 0) => {
   const period = 3.2 + A.hash(seed) * 1.8; const ph = (t + A.hash(seed + 9) * period) % period;
@@ -118,18 +121,19 @@ A.camera = (ctx, { x = 960, y = 540, zoom = 1, rot = 0, shake = 0, t = 0 } = {})
 // A.scene({name, start, end, draw(ctx, s)}) where s = {t, lt, p, dur, f}
 // Scenes may overlap by a few frames for transitions; later-registered scene draws on top. A scene can
 // implement its own transition by reading s.lt/s.p. Engine never crossfades automatically.
-A.scene = def => A.scenes.push(def);
+A.scene = def => { def.shift = def.shift ?? A.SHIFT; A.scenes.push(def); };
 
 A.renderFrame = f => {
   const t = f / A.FPS, cv = document.getElementById('c'), ctx = cv.getContext('2d');
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, A.W, A.H);
   for (const s of A.scenes) {
-    if (t >= s.start && t < s.end) {
-      ctx.save();
-      try { s.draw(ctx, { t, lt: t - s.start, p: (t - s.start) / (s.end - s.start), dur: s.end - s.start, f }); }
+    const st = t - s.shift;
+    if (st >= s.start && st < s.end) {
+      ctx.save(); A._shift = s.shift;
+      try { s.draw(ctx, { t: st, lt: st - s.start, p: (st - s.start) / (s.end - s.start), dur: s.end - s.start, f }); }
       catch (e) { console.error(s.name, e); ctx.restore(); ctx.save(); A.text(ctx, 'ERR ' + s.name + ': ' + e.message, 960, 540, { font: '28px monospace', fill: '#f44' }); }
-      ctx.restore();
+      ctx.restore(); A._shift = 0;
     }
   }
   if (A.post) { ctx.save(); A.post(ctx, t, f); ctx.restore(); }

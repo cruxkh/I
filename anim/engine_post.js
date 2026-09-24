@@ -43,7 +43,7 @@
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     subs(ctx, t);
     // fade from / to black at very start and end
-    const fb = Math.max(1 - A.inv(0, 0.6, t), A.inv(59.2, 60, t));
+    const fb = Math.max(1 - A.inv(0, 0.6, t), A.inv(A.DUR - 0.8, A.DUR, t));
     if (fb > 0) { ctx.fillStyle = `rgba(0,0,0,${fb})`; ctx.fillRect(0, 0, 1920, 1080); }
   };
 })();
