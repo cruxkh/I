@@ -276,7 +276,7 @@
       if (t > 49.6) Object.assign(o, { gesture: 'none', gestureFrom: 'cheer', gestureK: smooth(49.6, 49.95, t), mood: 'joy', squash: 0.06 * spring(t, 49.6, 8, 18) });
     } else { // scooped up into the hug
       const k = ease.inOut(inv(50.05, 50.5, t));
-      x = lerp(1175, 1125, k); y = lerp(900, 790, k) + 12 * Math.sin((t - 50.45) * 4.2) * smooth(50.4, 50.7, t) * (1 - smooth(51.1, 51.5, t));
+      x = lerp(1175, 1125, k); y = lerp(900, 805, k) + 12 * Math.sin((t - 50.45) * 4.2) * smooth(50.4, 50.7, t) * (1 - smooth(51.1, 51.5, t));
       Object.assign(o, { hug: k, gesture: 'none', mood: 'joy', look: [0.9, 0], bounce: 0.6 });
       if (t > 51.2) { // talks: pulls back a little, then glances at the router
         const q = smooth(51.25, 51.6, t), r = smooth(52.2, 52.6, t);

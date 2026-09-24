@@ -252,19 +252,19 @@
   function shotC(ctx, t) {
     const lt = t - 25.0;
     const cam = {
-      x: key(t, [[25.0, 1250], [25.8, 960, 'inOut'], [27.95, 920]]),
-      y: key(t, [[25.0, 860], [25.8, 560, 'inOut'], [27.95, 520]]),
-      zoom: key(t, [[25.0, 1.6], [25.8, 1.0, 'inOut'], [27.95, 1.1]]),
-      rot: -0.035, t,
+      x: key(t, [[25.0, 1330], [25.15, 1310], [25.85, 960, 'inOut'], [27.95, 930]]),
+      y: key(t, [[25.0, 860], [25.15, 850], [25.85, 548, 'inOut'], [27.95, 530]]),
+      zoom: key(t, [[25.0, 1.9], [25.15, 1.85], [25.85, 1.02, 'inOut'], [27.95, 1.1]]),
+      rot: key(t, [[25.0, 0.0], [25.85, -0.05, 'inOut']]), t,
     };
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     // tunnel: horizon dropped low behind the cat (looking up)
-    ctx.save(); ctx.translate(880, 790); ctx.scale(1.7, 1.7); ctx.translate(-960, -470);
+    ctx.save(); ctx.translate(900, 860); ctx.scale(1.95, 1.95); ctx.translate(-960, -470);
     A.drawDataTunnel(ctx, t, { z: 30 + t * 0.15, speed: 0.1, jam: 0.85 });
     ctx.restore();
     // background queue at the horizon
     for (let i = 0; i < 9; i++) {
-      const x = 880 + (i - 4) * 150 + (H(i) - 0.5) * 40, y = 830 + H(i * 3) * 18, sc = 0.42 + H(i * 5) * 0.12;
+      const x = 900 + (i - 4) * 150 + (H(i) - 0.5) * 40, y = 905 + H(i * 3) * 14, sc = 0.4 + H(i * 5) * 0.1;
       if (Math.abs(x - 880) < 260) continue;
       A.glow(ctx, x, y - 20, 70, 'rgba(255,40,60,1)', 0.18);
       ctx.save(); ctx.globalAlpha = 0.8;
@@ -278,7 +278,7 @@
     const arms = t > 25.62 && t < 26.3 ? 'point' : 'crossed';
     const armPop = Math.max(0, 1 - Math.abs(t - 25.62) / 0.12, t > 26.3 && t < 26.45 ? 1 - (t - 26.3) / 0.15 : 0);
     A.glow(ctx, 880, 560, 700, '#ff3fa4', 0.12);
-    A.drawCatPacket(ctx, 880, 975, 3.0, {
+    A.drawCatPacket(ctx, 900, 1010, 3.35, {
       t, mood: catMood, arms,
       look: [lerp(-0.55, 0.62, lookK), lerp(-0.1, 0.55, lookK)],
       rot: lerp(-0.02, 0.05, smooth(25.6, 26.2, t)) - 0.02 * smooth(27.2, 27.8, t),
@@ -288,7 +288,7 @@
     // Bit, tiny, looking up
     const recoil = Math.exp(-lt * 5) * Math.sin(lt * 18);
     const bmood = t < 26.7 ? 'panic' : t < 27.35 ? 'neutral' : 'determined';
-    A.drawBit(ctx, 1500 + recoil * 12, 955, 0.66, {
+    A.drawBit(ctx, 1490 + recoil * 12, 975, 0.7, {
       t, mood: bmood, shadow: 1, mouth: 0, glow: 1.3, look: [-0.75, -0.85],
       limbs: 'stand', squash: 0.05 * Math.sin(t * 22) * (t < 26.7 ? 1 : 0) + (t > 27.6 ? 0.1 * smooth(27.6, 27.95, t) : 0),
       sweat: t < 27.2 ? 1 : 0, browL: t > 27.35 ? -4 : 0, browR: t > 27.35 ? -4 : 0,
@@ -389,7 +389,7 @@
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
       ctx.strokeStyle = `rgba(255,220,130,${0.8 * (1 - u)})`; ctx.lineWidth = 10 * (1 - u) + 2;
       A.ellipse(ctx, sx, sy, 40 + u * 700, 12 + u * 160); ctx.stroke();
-      ctx.fillStyle = `rgba(255,240,200,${0.45 * Math.max(0, 1 - u * 4)})`; ctx.fillRect(0, 0, 1920, 1080);
+      ctx.fillStyle = `rgba(255,240,200,${0.3 * Math.max(0, 1 - u * 6)})`; ctx.fillRect(0, 0, 1920, 1080);
       ctx.restore();
     }
     speedLines(ctx, t, 960, 470, smooth(29.3, 29.85, t), 60);

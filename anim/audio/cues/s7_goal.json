@@ -1,0 +1,9 @@
+[
+  {"sfx": "cheer_whoop", "t": 48.62, "gain_db": -16, "pan": 0.35},
+  {"sfx": "data_whoosh", "t": 53.05, "gain_db": -16, "pan": 0.3},
+  {"sfx": "router_beeps", "t": 54.3, "gain_db": -15, "pan": 0.2},
+  {"sfx": "light_shimmer", "t": 56.4, "gain_db": -13, "pan": 0.0},
+  {"sfx": "zip_streak", "t": 57.08, "gain_db": -10, "pan": -0.2},
+  {"sfx": "confetti_popper", "t": 57.3, "gain_db": -15, "pan": 0.0},
+  {"sfx": "wink_ding", "t": 58.46, "gain_db": -11, "pan": 0.3}
+]
