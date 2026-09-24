@@ -343,19 +343,19 @@
     const bz = bitZ(t), bx = bitX(t);
     let zc, cam;
     const bump = t > 36.8 ? Math.exp(-(t - 36.8) * 14) : 0;
-    if (t < 32.3) { // B: fast tracking run through the queue
+    if (t < 31.9) { // B: fast tracking run through the queue (v2 only)
       zc = bitZ(t - 0.09) - 1.4; CAMX = bitX(t - 0.1);
       const [bxs, bys] = proj(bx, 0, bz, zc);
       const lat = (bitX(t - 0.07) - bitX(t - 0.13)) / 0.06;
       const land = t > 31.6 ? Math.exp(-(t - 31.6) * 10) : 0;
       cam = { x: lerp(960, bxs, 0.8), y: bys - 175 - bitY(t) * 120, zoom: lerp(1.25, 1.34, smooth(31.8, 32.25, t)), rot: -lat * 0.05, shake: land * 1.2 + (t > 32.05 ? Math.exp(-(t - 32.05) * 8) * 0.6 : 0), t };
-    } else if (t < 35.0) { // Q1: push in on ILVIP's crown as he turns, then settle on the two-shot
-      const pin = ease.inOut(inv(32.36, 32.8, t)), out = ease.inOut(inv(33.75, 34.55, t)), k = pin * (1 - out);
+    } else if (t < 35.0) { // Q1 (v7: from the arrival cut at 31.95): push in on ILVIP's crown as he turns, then settle on the two-shot
+      const pin = ease.inOut(inv(32.36, 32.8, t)), out = ease.inOut(inv(33.75, 34.55, t)), k = pin * (1 - out), arr = 1 - ease.out(inv(31.95, 32.3, t));
       zc = 6.9 + 0.05 * out; CAMX = 0.8;
       const [ix, iy] = proj(0.71, 0, ROW(9), zc), [bxs] = proj(bx, 0, bz, zc), [hx, hy] = proj(0.71, 0.26, ROW(9) + 0.12, zc);
       const two = { x: (ix + bxs) / 2 + 10, y: iy - 230, zoom: lerp(1.12, 1.18, out) };
       const tight = { x: hx + 25, y: hy + 110, zoom: 2.4 };
-      cam = { x: lerp(two.x, tight.x, k), y: lerp(two.y, tight.y, k), zoom: lerp(two.zoom, tight.zoom, k), rot: -0.012 - 0.02 * k, t };
+      cam = { x: lerp(two.x, tight.x, k), y: lerp(two.y, tight.y, k) + 40 * arr, zoom: lerp(two.zoom, tight.zoom, k) - 0.1 * arr, rot: -0.012 - 0.02 * k, shake: t > 32.2 && t < 32.5 ? 0.6 * (1 - inv(32.2, 32.5, t)) : 0, t };
     } else { // Q2: EMBY, then Bit pops out and tracks to the cat
       const u = inv(35.0, 36.2, t), w = smooth(36.2, 36.75, t);
       zc = lerp(lerp(6.92, 6.99, u), bitZ(t - 0.18) - 1.28, smooth(36.2, 36.45, t)) - 0.1 * w;
@@ -366,7 +366,7 @@
     clampCam(cam);
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     jamWorld(ctx, t, zc, {
-      jam: 0.95, near: t > 32.3 && t < 36.3 ? 0.5 : t > 31.9 && t < 32.3 ? 0.75 : undefined, sign: t >= 32.06, cat: t > 36.2, signK: 1.5,
+      jam: 0.95, near: t > 31.9 && t < 36.3 ? 0.5 : undefined, sign: t >= 32.06, cat: t > 36.2, signK: 1.5,
       signDrop: (1 - ease.outBack(inv(32.06, 32.42, t))) * 1.6, signSwing: Math.exp(-Math.max(0, t - 32.35) * 2.5) * Math.sin(Math.max(0, t - 32.35) * 9) * 0.14,
       signFlicker: t > 32.3 && t < 32.75 ? 1 : 0.5,
       bit: { X: bx, Y: bitY(t), Z: bz, draw: (c, x, y, sc) => A.drawBit(c, x, y, sc, bitJamOpts(t)) },
@@ -409,7 +409,7 @@
   function drawBitBack(ctx, x, y, sc, o = {}) {
     const t = o.t || 0, ph = o.phase ?? t * Math.PI * 2 * 3.6, run = o.run ?? 1, hop = o.hop || 0;
     ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
-    if (!hop) { A.ellipse(ctx, 0, -2, 54, 10); ctx.fillStyle = 'rgba(5,5,25,0.4)'; ctx.fill(); }
+    if (!hop && !o.noShadow) { A.ellipse(ctx, 0, -2, 54, 10); ctx.fillStyle = 'rgba(5,5,25,0.4)'; ctx.fill(); }
     A.glow(ctx, 0, -70 - hop, 150, '#ffbe3a', 0.32 * (o.glow ?? 1));
     ctx.translate(0, -hop); ctx.rotate(o.rot || 0);
     const bob = -Math.abs(Math.sin(ph)) * 6 * run;
@@ -462,6 +462,16 @@
     return { a: 44 * sw, b: 36 * sh, cy: -(36 * sh + 9) };
   };
   function drawPkBack(ctx, p, x, y, sc, t, o = {}) {
+    const zoom = Math.hypot(ctx.getTransform().a, ctx.getTransform().b) * sc;
+    const res = zoom < 0.45 ? 0.5 : zoom < 0.9 ? 1 : zoom < 1.8 ? 2 : 3.5;
+    const key = `s4pkb:${p.brand || p.kind}:${p.seed}:${p.prop || ''}:${p.mood === 'sleep' ? 1 : 0}:${res}`;
+    const spr = A.layer(key, Math.ceil(200 * res), Math.ceil(190 * res), g => { g.scale(res, res); drawPkBackRaw(g, p, 100, 170, 1, 0, {}); });
+    ctx.save(); ctx.translate(x, y); ctx.rotate(o.rot || 0); const sq = o.squash || 0; ctx.scale(sc * (1 + sq * 0.7), sc * (1 - sq) * (1 + 0.012 * Math.sin(t * 3 + p.seed)));
+    ctx.drawImage(spr, -100, -170, 200, 190);
+    ctx.restore();
+    if (p.mood === 'sleep' && !p.brand && zoom > 0.5) { ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc); for (let i = 0; i < 2; i++) { const u = ((t * 0.35 + i * 0.5 + H(p.seed)) % 1); ctx.globalAlpha *= Math.sin(u * Math.PI); A.text(ctx, 'z', 30 + u * 16, -90 - u * 28, { font: '700 14px Fredoka', fill: '#e8f6ff', stroke: A.OUTLINE, lw: 3 }); ctx.globalAlpha = 1; } ctx.restore(); }
+  }
+  function drawPkBackRaw(ctx, p, x, y, sc, t, o = {}) {
     const g = pkGeom(p.seed), a = p.brand ? 46 : g.a, b = p.brand ? 40 : g.b, cy = p.brand ? -49 : g.cy;
     const col = p.brand ? (A.BRAND_COLORS && A.BRAND_COLORS[p.brand]) || { c: BRAND_COL[p.brand], d: '#333' } : (A.PACKET_COLORS || {})[p.kind] || { c: '#999', d: '#555' };
     ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
@@ -488,7 +498,6 @@
     if (p.brand === 'EMBY') { ctx.beginPath(); ctx.moveTo(-a * 0.8, cy - b * 0.7); ctx.quadraticCurveTo(0, cy - b * 1.6, a * 0.9, cy - b * 0.9 + 14); ctx.quadraticCurveTo(a * 0.3, cy - b * 0.95, -a * 0.8, cy - b * 0.7); A.fillStroke(ctx, '#aeb4bf', 3); A.ellipse(ctx, a * 0.95, cy - b * 0.9 + 18, 8, 8); A.fillStroke(ctx, '#eef0f4', 2.5); }
     if (p.brand === 'LOADING+') { ctx.save(); ctx.translate(0, cy - b - 18); ctx.rotate(Math.floor(t * 1.5) * Math.PI * 0.5 + smooth(0.8, 1, (t * 1.5) % 1) * Math.PI * 0.5); ctx.beginPath(); ctx.moveTo(-9, -12); ctx.lineTo(9, -12); ctx.lineTo(-9, 12); ctx.lineTo(9, 12); ctx.closePath(); A.fillStroke(ctx, '#f0e2b8', 2.5); ctx.restore(); }
     if (p.prop === 'paper') { ctx.save(); ctx.rotate(-0.05); [-1, 1].forEach(s => { ctx.beginPath(); ctx.moveTo(s * a * 0.92, cy - b * 0.55); ctx.lineTo(s * (a + 16), cy - b * 0.65); ctx.lineTo(s * (a + 14), cy + b * 0.05); ctx.lineTo(s * a * 0.92, cy); ctx.closePath(); A.fillStroke(ctx, '#f1ecdc', 2.5); }); ctx.restore(); }
-    if (p.mood === 'sleep' && !p.brand) for (let i = 0; i < 2; i++) { const u = ((t * 0.35 + i * 0.5 + H(p.seed)) % 1); ctx.globalAlpha = Math.sin(u * Math.PI); A.text(ctx, 'z', a * 0.6 + u * 16, cy - b - u * 28, { font: '700 14px Fredoka', fill: '#e8f6ff', stroke: A.OUTLINE, lw: 3 }); ctx.globalAlpha = 1; }
     ctx.restore();
   }
   // Catpacket from behind (far ahead in the chase)
@@ -531,7 +540,7 @@
   function chaseWorld(ctx, t, zc, opt) {
     A.drawDataTunnel(ctx, t, { z: -zc * 1.0 + 40, speed: 0.4, jam: 0.9 });
     const bz = RZ(t), bx = RX(t), items = [];
-    for (const p of PK) { const d = zc - p.Z; if (d > 0.35 && d < 20) items.push({ d, p }); }
+    for (const p of PK) { const d = zc - p.Z; if (d > 0.3 && d < 20) items.push({ d, p }); }
     items.push({ d: zc - CATZ, cat: true });
     items.push({ d: zc - bz - 0.01, bit: true });
     items.sort((a, b) => b.d - a.d);
@@ -548,17 +557,17 @@
       if (dz < 0.5 && Math.abs(p.X - bx) < 0.5) { const k = (1 - dz / 0.5) * (STUCK(t) ? 1 : 0.4); dx += side * 0.07 * k; sq += 0.16 * k + rpop(t) * Math.sin(t * 40) * 0.05; rot = side * 0.08 * k; }
       if (t > BONK && t < BONK + 0.5 && p.r === 28 && p.li <= 3) { const u = t - BONK; sq += Math.exp(-u * 10) * Math.sin(u * 40) * 0.12; }
       const d = zc - p.Z, [x, y] = projR(p.X + dx, 0, p.Z, zc), sc = PKS / d;
-      const fog = clamp(1 - (d - 6) / 13) * clamp((d - 0.35) / 0.3);
+      const fog = clamp(1 - (d - 6) / 13) * clamp((d - 0.3) / 0.25);
       if (fog <= 0.02) continue;
       // turn around to see who's coming, turn back once he's past
       const ahead = bz - p.Z, near = Math.abs(p.X - bx) < 0.95;
-      let k = near ? smooth(2.1, 1.1, ahead) * (1 - smooth(0.1, -0.5, ahead)) : 0;
+      let k = Math.abs(p.X - bx) < 0.5 && H(p.seed * 1.9) < 0.75 ? smooth(1.5, 0.8, ahead) * (1 - smooth(0.05, -0.45, ahead)) : 0;
       if (p.vault) k = smooth(16.9, 16.5, bz) * (1 - smooth(15.3, 15.0, bz));
       if (p.brand === 'ILVIP' || p.brand === 'EMBY') k = 0;
       let honk = 0; for (const [li, r, t0] of CH_HONKS) if (p.li === li && p.r === r) honk = Math.max(honk, smooth(t0 - 0.04, t0 + 0.05, t) * (1 - smooth(t0 + 0.26, t0 + 0.45, t)));
       if (honk > 0) k = Math.max(k, 1);
       ctx.save(); ctx.globalAlpha = fog;
-      if (d > 1.2) A.glow(ctx, x, y - sc * 30, sc * 80, 'rgba(255,36,60,1)', 0.12 * fog);
+      if (d > 1.2 && d < 9) A.glow(ctx, x, y - sc * 30, sc * 80, 'rgba(255,36,60,1)', 0.12 * fog);
       if (k <= 0.001) drawPkBack(ctx, p, x, y, sc, t, { squash: sq, rot });
       else turnDraw(ctx, x, k, () => drawPkBack(ctx, p, x, y, sc, t, { squash: sq, rot }), () => {
         const shock = ahead < 0.9 && ahead > -0.4, look = [(bx - p.X) * -0.8, 0.35];
@@ -586,14 +595,14 @@
   function chaseShot(ctx, t, style) {
     const bz = RZ(t), bx = RX(t);
     const lag = style === 'low' ? 0.12 : 0.16;
-    const zc = RZ(t - lag) + (style === 'low' ? 1.15 : 1.5);
-    CAMX = RX(t - lag - 0.05) + (style === 'low' ? 0.26 : 0.1);
+    const zc = RZ(t - lag) + (style === 'low' ? 0.62 : 0.66);
+    CAMX = RX(t - lag - 0.05) + (style === 'low' ? 0.16 : 0.06);
     const [bxs, bys] = projR(bx, 0, bz, zc);
     const bob = Math.sin(t * Math.PI * 2 * 3.8) * 5, lat = (RX(t - 0.1) - RX(t - 0.2)) / 0.1;
     const bonk = t > BONK ? Math.exp(-(t - BONK) * 9) : 0, pop = rpop(t);
     const end = smooth(36.55, 36.95, t);
-    const cam = clampCam({ x: lerp(960, bxs, 0.7) + (style === 'low' ? 90 : 0), y: bys - (style === 'low' ? 110 : 170) + bob - end * 40,
-      zoom: (style === 'low' ? 1.28 : 1.12) + end * 0.25, rot: lat * 0.08 + Math.sin(t * 3.8 * Math.PI) * 0.004, shake: bonk * 1.6 + pop * 0.8 + (STUCK(t) ? 0.25 : 0), t });
+    const cam = clampCam({ x: lerp(960, bxs, 0.6) + (style === 'low' ? 70 : 0), y: lerp(540, bys - 150, 0.75) + bob - end * 30,
+      zoom: (style === 'low' ? 1.12 : 1.1) + end * 0.15, rot: lat * 0.08 + Math.sin(t * 3.8 * Math.PI) * 0.004, shake: bonk * 1.6 + pop * 0.8 + (STUCK(t) ? 0.25 : 0), t });
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     chaseWorld(ctx, t, zc, { bit: (x, y, sc) => bitRunBack(ctx, x, y, sc, t) });
     if (t > BONK && t < BONK + 0.22) { // BONK star on the LAGTV's back
@@ -609,13 +618,14 @@
   // --- side tracking shot 31.4 to 33.2: parallax past the queue, hop over a LOADING+ that backs into his path
   const sideBg = () => A.layer('s4-side-bg', 1920, 1080, (g, w, h) => {
     g.fillStyle = A.linear(g, 0, 0, 0, h, [[0, '#070a26'], [0.55, '#141046'], [0.8, '#2a0c30'], [1, '#12061a']]); g.fillRect(0, 0, w, h);
-    for (let i = 0; i < 9; i++) { const y = 120 + i * 70; g.strokeStyle = i % 3 ? 'rgba(41,240,255,0.10)' : 'rgba(255,63,164,0.14)'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+    for (let i = 0; i < 9; i++) { const y = 80 + i * 62; g.strokeStyle = i % 3 ? 'rgba(41,240,255,0.10)' : 'rgba(255,63,164,0.14)'; g.lineWidth = 2; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
     g.fillStyle = A.linear(g, 0, 700, 0, 1080, [[0, 'rgba(255,40,70,0)'], [1, 'rgba(255,40,70,0.18)']]); g.fillRect(0, 700, w, 380);
   });
-  const SBX = t => key(t, [[31.4, 0], [32.25, 1150, 'lin'], [32.65, 1650, 'lin'], [33.2, 2500, 'lin']]);
-  const SBY = t => key(t, [[32.22, 0], [32.44, 150, 'out'], [32.66, 0, 'in']]);
+  const LWX = 150 + 6 * 300 + H(46) * 50;
+  const SBX = t => key(t, [[31.4, 0], [32.3, LWX - 330, 'lin'], [32.7, LWX + 330, 'lin'], [33.2, LWX + 1130, 'lin']]);
+  const SBY = t => key(t, [[32.3, 0], [32.5, 200, 'out'], [32.7, 0, 'in']]);
   function sideShot(ctx, t) {
-    const bx = SBX(t), camx = SBX(t - 0.12) + 120, G = 905;
+    const bx = SBX(t), camx = SBX(t - 0.12) + 160, G = 770;
     ctx.drawImage(sideBg(), 0, 0);
     const scr = (wx, par) => 960 + (wx - camx) * par;
     // tunnel ribs (vertical light bands) at two depths
@@ -626,20 +636,20 @@
     }
     ctx.restore();
     // floor strip + lane dashes
-    ctx.fillStyle = '#1a0f35'; ctx.fillRect(0, G - 6, 1920, 200);
-    ctx.fillStyle = 'rgba(41,240,255,0.5)'; const doff = ((camx) % 160 + 160) % 160; for (let x = -doff; x < 1920; x += 160) ctx.fillRect(x, G + 40, 80, 5);
+    ctx.fillStyle = A.linear(ctx, 0, G, 0, 1080, [[0, '#24123f'], [1, '#0c0618']]); ctx.fillRect(0, G - 6, 1920, 400);
+    ctx.fillStyle = 'rgba(41,240,255,0.5)'; const doff = ((camx) % 160 + 160) % 160; for (let x = -doff; x < 1920; x += 160) ctx.fillRect(x, G + 110, 80, 6);
     ctx.fillStyle = 'rgba(255,63,164,0.6)'; ctx.fillRect(0, G - 6, 1920, 3);
     // far lane (small, parallax 0.6)
     for (let i = 0; i < 22; i++) {
-      const wx = i * 190 + H(i) * 60, x = scr(wx, 0.6); if (x < -100 || x > 2020) continue;
+      const wx = i * 230 + H(i) * 60, x = scr(wx, 0.6); if (x < -150 || x > 2070) continue;
       ctx.save(); ctx.globalAlpha = 0.75; A.glow(ctx, x - 30, G - 110, 40, 'rgba(255,40,60,1)', 0.25);
-      if (H(i * 3) < 0.35) drawBrand(ctx, x, G - 70, 0.75, { t, brand: BRANDS[1 + (i % 3)], seed: 60 + i, mood: 'sleepy', mouth: 0, look: [0.8, 0], glow: 0.3 });
-      else A.drawPacket(ctx, x, G - 70, 0.8, { t, seed: 60 + i, mood: H(i * 7) < 0.4 ? 'sleep' : 'bored', look: [0.8, 0], noZ: false });
+      if (H(i * 3) < 0.35) drawBrand(ctx, x, G - 75, 1.0, { t, brand: BRANDS[1 + (i % 3)], seed: 60 + i, mood: 'sleepy', mouth: 0, look: [0.8, 0], glow: 0.3 });
+      else A.drawPacket(ctx, x, G - 75, 1.05, { t, seed: 60 + i, mood: H(i * 7) < 0.4 ? 'sleep' : 'bored', look: [0.8, 0], noZ: false });
       ctx.restore();
     }
     // main lane (the queue Bit runs along)
     for (let i = 0; i < 14; i++) {
-      const wx = 150 + i * 230 + H(i + 40) * 50, x = scr(wx, 1); if (x < -200 || x > 2120) continue;
+      const wx = 150 + i * 300 + H(i + 40) * 50, x = scr(wx, 1); if (x < -250 || x > 2170) continue;
       const rel = bx - wx; // >0 once he's past
       const react = smooth(-260, -80, rel) * (1 - smooth(300, 700, rel));
       const spike = Math.exp(-Math.abs(rel) / 120);
@@ -647,8 +657,8 @@
       const look = react > 0.1 ? [rel < 0 ? -1 : 1, -0.2] : [0.9, 0.05];
       const hk = (i === 3 || i === 8 || i === 11) ? smooth(150, 200, rel) * (1 - smooth(420, 520, rel)) : 0;
       let dx = 0, hop = 0;
-      if (i === 6) dx = -40 * smooth(31.9, 32.1, t); // LOADING+ backs into his path
-      const y = G - 20, sc = 1.35;
+      if (i === 6) continue; // LOADING+ is drawn stepping into Bit's lane below // LOADING+ backs into his path
+      const y = G + 10, sc = 1.9;
       A.glow(ctx, x - 50, y - 60, 70, 'rgba(255,40,60,1)', 0.25);
       ctx.save(); ctx.translate(dx, 0);
       if (brand) drawBrand(ctx, x, y, sc, { t, brand, seed: 80 + i, mood: spike > 0.5 && react > 0.2 ? 'shock' : brand === 'LOADING+' ? 'grumpy' : 'sleepy', spinner: brand === 'LOADING+' ? 1 : 0, mouth: hk * 0.8, look, rot: -0.12 * spike * react });
@@ -659,17 +669,24 @@
       }
       ctx.restore();
     }
+    { // LOADING+ backs out of line right into Bit's path; he vaults it
+      const k = smooth(31.85, 32.15, t), x = scr(LWX, 1), y = lerp(G + 10, G + 64, k), sc = lerp(1.9, 2.05, k);
+      const rel = SBX(t) - LWX, shock = smooth(-200, -60, rel) * (1 - smooth(250, 450, rel));
+      A.glow(ctx, x - 50, y - 60, 70, 'rgba(255,40,60,1)', 0.25);
+      drawBrand(ctx, x, y, sc, { t, brand: 'LOADING+', seed: 86, mood: shock > 0.3 ? 'shock' : 'grumpy', spinner: 1, mouth: 0, look: shock > 0.3 ? [0, -1] : [0.9, 0], rot: -0.1 * shock, squash: -0.15 * shock });
+    }
     // Bit (in the plane in front of the queue)
     const bxS = scr(bx, 1), hop = SBY(t);
-    const pts = []; for (let i = 16; i >= 0; i--) { const tt = t - i * 0.02; pts.push([scr(SBX(tt), 1) - 30, G - 60 - SBY(tt)]); }
+    const pts = []; for (let i = 16; i >= 0; i--) { const tt = t - i * 0.02; pts.push([scr(SBX(tt), 1) - 40, G - 50 - SBY(tt)]); }
     A.drawBinaryTrail(ctx, pts, t, { width: 26, size: 16, alpha: 0.6 });
     const air = hop > 2;
-    A.drawBit(ctx, bxS, G + 10 - hop, 1.45, { t, mood: 'determined', limbs: air ? 'fly' : 'run', runRate: 4.6, phase: t * Math.PI * 2 * 4.6, vel: air ? [1300, (SBY(t - 0.02) - SBY(t + 0.02)) * 25] : [1300, 0], shadow: air ? 0 : 1, glow: 1.4,
-      armR: !air && t > 31.6 && t < 32.15 ? [84, -150 + Math.sin(t * 20) * 8] : undefined, squash: t > 32.64 && t < 32.76 ? 0.2 : 0 });
-    // foreground blurred commuters whipping past (parallax 1.7)
-    ctx.save(); ctx.filter = 'blur(6px) brightness(0.5)';
-    for (let i = 0; i < 8; i++) { const wx = i * 420 + H(i + 9) * 100, x = scr(wx, 1.7); if (x < -300 || x > 2220) continue; A.drawPacket(ctx, x, 1250, 3.4, { t, seed: 120 + i, mood: 'bored', noZ: true, look: [0.9, 0] }); }
-    ctx.restore();
+    A.drawBit(ctx, bxS, G + 70 - hop, 1.9, { t, mood: 'determined', limbs: air ? 'fly' : 'run', runRate: 4.6, phase: t * Math.PI * 2 * 4.6, vel: air ? [1300, (SBY(t - 0.02) - SBY(t + 0.02)) * 25] : [1300, 0], shadow: air ? 0 : 1, glow: 1.4,
+      armR: !air && t > 31.6 && t < 32.2 ? [84, -150 + Math.sin(t * 20) * 8] : undefined, squash: t > 32.68 && t < 32.8 ? 0.2 : 0 });
+    // foreground out-of-focus commuters whipping past (parallax 1.7): soft dark shapes (cheap bokeh)
+    for (let i = 0; i < 8; i++) { const wx = i * 420 + H(i + 9) * 100, x = scr(wx, 1.7); if (x < -400 || x > 2320) continue;
+      const c = A.PACKET_COLORS[KINDS[i % 6]].d;
+      ctx.fillStyle = A.radial(ctx, x, 1150, 60, 260, [[0, A.mixc(c, '#0a0618', 0.55)], [0.7, A.mixc(c, '#0a0618', 0.7)], [1, 'rgba(10,6,24,0)']]);
+      A.ellipse(ctx, x, 1150, 250, 200); ctx.fill(); }
     // horizontal speed streaks
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     for (let i = 0; i < 26; i++) { const y = 100 + H(i) * 900, len = 200 + H(i + 2) * 300, x = 1920 - ((t * (1800 + H(i + 5) * 1200) + H(i + 7) * 3000) % 2600);
@@ -679,7 +696,7 @@
 
   // --- front low-angle vault 33.2 to 33.9: over a snoozer, toward camera
   function vaultShot(ctx, t) {
-    const zc = 13.3, bz = RZ(t), bx = RX(t), by = RY(t);
+    const zc = lerp(13.75, 14.05, inv(33.2, 33.9, t)), bz = RZ(t), bx = RX(t), by = RY(t);
     CAMX = 0.18;
     const [x0, y0] = proj(bx, by, bz, zc);
     const u = inv(33.2, 33.9, t);
@@ -715,23 +732,21 @@
       return {};
     };
     if (t < 38.3) { // C1: over Bit's shoulder, cat at normal size in the crowd
-      const u = inv(36.96, 38.3, t), zc = lerp(5.5, 5.62, ease.inOut(u));
+      const u = inv(36.96, 38.3, t), zc = lerp(5.56, 5.64, ease.inOut(u));
       CAMX = 0.36;
-      const BZC = 6.3, BXC = 0.5;
-      const [cx, cy] = proj(CATX, 0, CATZ, zc);
-      const cam = clampCam({ x: cx + 120, y: cy - 200, zoom: lerp(1.05, 1.12, ease.inOut(u)), rot: 0.01, t });
+      const BZC = 6.06, BXC = 0.64;
+      const cam = clampCam({ x: lerp(1070, 1090, u), y: lerp(770, 750, ease.inOut(u)), zoom: lerp(1.18, 1.26, ease.inOut(u)), rot: 0.012, t });
       ctx.save(); fillBase(ctx); A.camera(ctx, cam);
       jamWorld(ctx, t, zc, {
         jam: 0.9, near: 0.75, sign: true,
-        bit: { X: BXC, Y: 0, Z: BZC, draw: (c, x, y, sc) => drawBitBack(c, x, y, sc, { t, run: 0, phase: 0, squash: 0.03 * Math.sin(t * 3), rot: -0.05 + (t > 37.4 && t < 38.1 ? -0.05 : 0), glow: 1.2, tagLift: -0.3 }) },
+        bit: { X: BXC, Y: 0.12, Z: BZC, draw: (c, x, y, sc) => drawBitBack(c, x, y, sc, { t, noShadow: true, run: 0, phase: 0, squash: 0.03 * Math.sin(t * 3), rot: -0.05 + (t > 37.4 && t < 38.1 ? -0.05 : 0), glow: 1.2, tagLift: -0.3 }) },
         catO, pkO: around,
       });
       ctx.restore();
     } else { // C2: two-shot, Bit looks up at the big guy
-      const u = inv(38.3, 39.6, t), zc = lerp(5.05, 5.2, ease.inOut(u));
+      const u = inv(38.3, 39.6, t), zc = lerp(5.05, 5.15, ease.inOut(u));
       CAMX = 0.3;
-      const [cx, cy] = proj(0.36, 0, CATZ, zc);
-      const cam = clampCam({ x: cx, y: cy - 250, zoom: lerp(1.3, 1.38, ease.inOut(u)), rot: -0.01, t });
+      const cam = clampCam({ x: lerp(975, 990, u), y: 555, zoom: lerp(1.66, 1.76, ease.inOut(u)), rot: -0.01, t });
       ctx.save(); fillBase(ctx); A.camera(ctx, cam);
       jamWorld(ctx, t, zc, {
         jam: 0.9, near: 0.75, sign: true,
