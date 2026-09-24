@@ -123,6 +123,18 @@
     }
   }
 
+  function zoomBlur(ctx, amt) {
+    const b = buf(), g = b.getContext('2d');
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'copy'; g.drawImage(ctx.canvas, 0, 0);
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    for (let i = 1; i <= 3; i++) { const s = 1 + amt * i / 3; ctx.globalAlpha = 0.28 / (i + 0.6); ctx.drawImage(b, 960 - 960 * s, 540 - 540 * s, 1920 * s, 1080 * s); }
+    ctx.restore();
+  }
+  // wide-angle lens feel: darker, slightly cooler corners
+  function lens(ctx) {
+    const v = A.layer('s1-lens', 1920, 1080, (g, w, h) => { g.fillStyle = A.radial(g, w / 2, h / 2, h * 0.55, h * 1.15, [[0, 'rgba(0,0,0,0)'], [1, 'rgba(8,4,30,0.5)']]); g.fillRect(0, 0, w, h); });
+    ctx.drawImage(v, 0, 0);
+  }
   // motion smear: redraw the finished frame shifted along (vx,vy) with decreasing weight
   function smear(ctx, vx, vy, n = 7) {
     const len = Math.hypot(vx, vy); if (len < 2) return;
@@ -358,7 +370,7 @@
         for (let k = 0; k < 14; k++) glowAt(spr.warm, lerp(p[0], p[1], r()), lerp(p[2], p[3], r()), 7, 0.45);
       }
       // stadium precinct: plaza + car parks + tree ring
-      g.fillStyle = '#1e1940'; A.rrect(g, -STAD.hx, -STAD.hy, STAD.hx * 2, STAD.hy * 2, 20); g.fill();
+      g.fillStyle = '#1a1538'; A.rrect(g, -STAD.hx, -STAD.hy, STAD.hx * 2, STAD.hy * 2, 20); g.fill();
       for (const [px0, py0, pw, ph] of [[-146, -120, 36, 70], [110, 40, 36, 78], [110, -120, 36, 62]]) {
         g.fillStyle = '#17122f'; g.fillRect(px0, py0, pw, ph);
         g.strokeStyle = 'rgba(210,200,255,0.3)'; g.lineWidth = 0.25;
@@ -366,6 +378,15 @@
         for (let k = 0; k < 40; k++) { const cx = px0 + 3 + Math.floor(r() * (pw - 6) / 2.6) * 2.6 + 1.3, cy = py0 + 3 + Math.floor(r() * ph / 6) * 6 + 2.2; if (cy > py0 + ph - 3) continue; g.fillStyle = ['#8a88b0', '#3a4a8a', '#b8b0d0', '#7a2a3a', '#2a2a40'][Math.floor(r() * 5)]; A.rrect(g, cx - 0.9, cy - 2, 1.8, 4, 0.5); g.fill(); }
         for (let k = 0; k < 6; k++) glowAt(spr.warm, px0 + (k % 3 + 0.5) * pw / 3, py0 + (Math.floor(k / 3) + 0.5) * ph / 2, 14, 0.4);
       }
+      // plaza paving + fans streaming to the gates + kiosks
+      g.strokeStyle = 'rgba(160,150,220,0.10)'; g.lineWidth = 0.3;
+      for (let x = -STAD.hx; x < STAD.hx; x += 6) { g.beginPath(); g.moveTo(x, -STAD.hy); g.lineTo(x, STAD.hy); g.stroke(); }
+      for (let y = -STAD.hy; y < STAD.hy; y += 6) { g.beginPath(); g.moveTo(-STAD.hx, y); g.lineTo(STAD.hx, y); g.stroke(); }
+      if (s > 2) for (let k = 0; k < 900; k++) {
+        const a = r() * A.TAU, rr = 104 + Math.pow(r(), 2) * 30, x = Math.cos(a) * rr * 1.08, y = Math.sin(a) * rr * 0.9;
+        g.fillStyle = r() < 0.6 ? '#ffd21f' : r() < 0.6 ? '#2a5fd6' : '#e8e4ff'; g.fillRect(x, y, 0.55, 0.55);
+      }
+      for (let k = 0; k < 8; k++) { const a = (k / 8) * A.TAU + 0.3, x = Math.cos(a) * 124, y = Math.sin(a) * 104; g.fillStyle = '#ffe4a6'; g.fillRect(x - 2, y - 1.5, 4, 3); glowAt(spr.warm, x, y, 10, 0.5); }
       for (let k = 0; k < 90; k++) { const a = (k / 90) * A.TAU, x = Math.cos(a) * 118, y = Math.sin(a) * 100; g.fillStyle = k % 2 ? '#10241f' : '#163a2c'; A.ellipse(g, x, y, 3.2, 3.2); g.fill(); g.fillStyle = 'rgba(120,200,150,0.18)'; A.ellipse(g, x - 1, y + 1, 1.3, 1.3); g.fill(); }
       // light spill around the stadium
       g.globalCompositeOperation = 'lighter';
@@ -686,7 +707,7 @@
       for (let s = 0; s < 14; s++) {
         const x0 = -52.5 + s * 7.5, x1 = x0 + 7.5, q = [P(x0, -34, 0), P(x1, -34, 0), P(x1, 34, 0), P(x0, 34, 0)];
         if (q.some(v => !v)) continue;
-        ctx.fillStyle = s % 2 ? '#1f8a3e' : '#279a48'; ctx.beginPath(); q.forEach((v, m) => m ? ctx.lineTo(v[0], v[1]) : ctx.moveTo(v[0], v[1])); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = s % 2 ? '#26a049' : '#33b457'; ctx.beginPath(); q.forEach((v, m) => m ? ctx.lineTo(v[0], v[1]) : ctx.moveTo(v[0], v[1])); ctx.closePath(); ctx.fill();
       }
       // mowing checker (subtle cross stripes)
       for (let s = 0; s < 9; s++) {
@@ -699,7 +720,7 @@
         if (c0) {
           const k = FOC / c0[2];
           ctx.save(); ctx.beginPath(); sur.forEach((v, m) => m ? ctx.lineTo(v[0], v[1]) : ctx.moveTo(v[0], v[1])); ctx.closePath(); ctx.clip();
-          ctx.fillStyle = A.radial(ctx, c0[0], c0[1], 18 * k, 80 * k, [[0, 'rgba(0,0,0,0)'], [1, 'rgba(3,18,12,0.5)']]); ctx.fillRect(-200, -200, 2320, 1480);
+          ctx.fillStyle = A.radial(ctx, c0[0], c0[1], 18 * k, 80 * k, [[0, 'rgba(0,0,0,0)'], [1, 'rgba(3,18,12,0.32)']]); ctx.fillRect(-200, -200, 2320, 1480);
           ctx.globalCompositeOperation = 'lighter';
           for (const T4 of TOWERS) { const h = P(T4.x * 0.33, T4.y * 0.33, 0); if (!h) continue; const kk = FOC / h[2]; ctx.fillStyle = A.radial(ctx, h[0], h[1], 0, 34 * kk, [[0, 'rgba(255,250,215,0.10)'], [1, 'rgba(255,250,215,0)']]); ctx.fillRect(h[0] - 34 * kk, h[1] - 34 * kk, 68 * kk, 68 * kk); }
           ctx.restore();
@@ -735,7 +756,7 @@
     // match state: Maccabi (yellow) attack toward the WEST goal (x = -52.5)
     function matchState(t) {
       const lt = t - 1.5;
-      const ax = 16 - lt * 6.2 - 0.25 * lt * lt, ay = 4 + 2.2 * Math.sin(lt * 0.9);
+      const ax = 16 - lt * 6.2 - 0.25 * lt * lt, ay = -1.2 + 2.2 * Math.sin(lt * 0.9);
       const pl = [];
       pl.push({ x: ax, y: ay, team: 0, dir: [-1, 0.15 * Math.cos(lt * 0.9)], run: 1, num: 10, star: 1 });
       const r = mul(21);
@@ -805,8 +826,8 @@
     function drawPlayer(ctx, p, t) {
       const shirt = p.team === 0 ? '#ffd21f' : p.team === 1 ? '#e0322c' : '#35e07a', shorts = p.team === 0 ? '#1f4fbf' : p.team === 1 ? '#ffffff' : '#1a1330', socks = p.team === 0 ? '#ffd21f' : p.team === 1 ? '#e0322c' : '#1a1330';
       const dl = Math.hypot(p.dir[0], p.dir[1]) || 1, fx = p.dir[0] / dl, fy = p.dir[1] / dl, sx = -fy, sy = fx;
-      const ph = t * (p.star ? 10 : 8) + p.num * 1.3, sw = Math.sin(ph) * 0.42 * p.run, lean = 0.18 * p.run;
-      const pt = (f, s, z) => P(p.x + fx * f + sx * s, p.y + fy * f + sy * s, z);
+      const ph = t * (p.star ? 10 : 8) + p.num * 1.3, sw = Math.sin(ph) * 0.5 * p.run, lean = 0.3 * p.run;
+      const pt = (f, s, z) => P(p.x + fx * f + sx * s, p.y + fy * f + sy * s, z * 0.5); // heights compressed so running direction reads from straight above
       const hip = pt(lean * 0.4, 0, 0.95), sh = pt(lean, 0, 1.45), head = pt(lean * 1.15, 0, 1.72);
       const fL = pt(sw, 0.13, 0.05), fR = pt(-sw, -0.13, 0.05), kL = pt(sw * 0.6 + 0.05, 0.12, 0.5), kR = pt(-sw * 0.6 + 0.05, -0.12, 0.5);
       const hL = pt(-sw * 0.7, 0.32, 1.0), hR = pt(sw * 0.7, -0.32, 1.0), sL = pt(lean, 0.22, 1.42), sR = pt(lean, -0.22, 1.42);
@@ -874,30 +895,34 @@
 
   // ---------------------------------------------------------------- drone camera (metres)
   const DEG = Math.PI / 180;
-  const q2 = p => 1 - (1 - p) * (1 - p) * (1 - p);
-  // Hermite spline through keys; first tangent = secant (already flying), last tangent = 0 (arrives slowly)
+  // Hermite spline through keys with zero tangents at both ends (slow ease-in, long gentle ease-out)
   const spline = (t, K, j) => {
     const n = K.length; if (t <= K[0][0]) return K[0][j]; if (t >= K[n - 1][0]) return K[n - 1][j];
-    const tan = i => i === n - 1 ? 0 : i === 0 ? (K[1][j] - K[0][j]) / (K[1][0] - K[0][0]) : (K[i + 1][j] - K[i - 1][j]) / (K[i + 1][0] - K[i - 1][0]);
+    const tan = i => (i === n - 1 || i === 0) ? 0 : (K[i + 1][j] - K[i - 1][j]) / (K[i + 1][0] - K[i - 1][0]);
     let i = 0; while (K[i + 1][0] < t) i++;
     const h = K[i + 1][0] - K[i][0], u = (t - K[i][0]) / h, u2 = u * u, u3 = u2 * u;
     return (2 * u3 - 3 * u2 + 1) * K[i][j] + (u3 - 2 * u2 + u) * h * tan(i) + (-2 * u3 + 3 * u2) * K[i + 1][j] + (u3 - u2) * h * tan(i + 1);
   };
-  //        t     ln(alt)         look-at y  pitch
-  const DK = [[0, Math.log(780), 430, 50], [1.3, Math.log(480), 235, 55], [2.4, Math.log(235), 62, 63], [3.4, Math.log(80), 9, 73], [4.5, Math.log(23), 1.5, 80]];
+  // one continuous gimbal-stabilised glide.   t     ln(altitude)     look-at y  gimbal tilt (deg below horizon)
+  const DK = [[0, Math.log(760), 430, 55], [1.2, Math.log(540), 268, 60], [2.35, Math.log(235), 70, 70], [3.4, Math.log(72), 8, 83], [4.5, Math.log(22), 0, 90]];
+  const settle = t => { const u = inv(3.75, 4.5, t); return Math.sin(A.TAU * u) * (1 - u) * (1 - u); }; // tiny overshoot + settle
+  const yawAt = t => { const fr = 1 - (spline(Math.min(t, 4.5), DK, 2)) / 430; return lerp(-0.3, 0.0, fr); };      // ~17 deg slow rotation
   const droneCam = t => {
     const tt = Math.min(t, 4.5);
-    const z0 = Math.exp(spline(tt, DK, 1)) * (1 + 0.01 * A.wob(t, 3, 0.5)), Ly0 = spline(tt, DK, 2), fr = 1 - (Ly0 - 1.5) / (430 - 1.5);
-    const fl = 1 - fr; // float amount
-    const Lx = lerp(-40, -2, fr) + A.wob(t, 1, 0.35) * 4 * fl, Ly = Ly0 + A.wob(t, 2, 0.3) * 4 * fl;
-    const pitch0 = spline(tt, DK, 3) * DEG;
-    const yaw = lerp(-0.42, 0.0, fr) + 0.01 * A.wob(t, 4, 0.25);
-    const roll = 0.016 * A.wob(t, 5, 0.3) + lerp(0.03, 0, fr);
+    const z0 = Math.exp(spline(tt, DK, 1) - 0.035 * settle(t));
+    const Ly0 = spline(tt, DK, 2), fr = 1 - Ly0 / 430;
+    const Lx = lerp(-40, -2, fr), Ly = Ly0 - 0.9 * settle(t);
+    const pitch0 = Math.min(90, spline(tt, DK, 3) + 0.25 * A.wob(t, 6, 0.45)) * DEG;
+    const yaw = yawAt(t) + 0.004 * A.wob(t, 4, 0.35);
+    const yawRate = (yawAt(t + 0.05) - yawAt(t - 0.05)) / 0.1;
+    const roll = -yawRate * 0.22 + 0.006 * A.wob(t, 5, 0.3);          // bank into the turn
     const base = z0 / Math.tan(pitch0), hx = Math.sin(yaw), hy = -Math.cos(yaw);
     // 4.5 -> 4.74: tilt up hard toward the horizon (the whip), rising a little; drone position kept
     const w = ease.in(inv(4.5, 4.74, t));
     return { x: Lx - hx * base, y: Ly - hy * base, z: lerp(z0, 40, w), yaw, pitch: lerp(pitch0, 34 * DEG, w), roll };
   };
+  // hover float (two low-frequency channels, a few px) + faint wind micro-jitter, in screen px
+  const hover = t => [3.2 * A.noise1(t * 0.42 + 11) + 1.6 * A.noise1(t * 0.61 + 37) + 0.35 * A.noise1(t * 7.3 + 5), 2.6 * A.noise1(t * 0.37 + 71) + 1.4 * A.noise1(t * 0.55 + 3) + 0.3 * A.noise1(t * 8.1 + 9)];
 
   // ---------------------------------------------------------------- scene
   const CUT = 4.72;
@@ -909,7 +934,14 @@
         // ---- SHOT A: the drone
         const cam = droneCam(t);
         const roar = clamp(0.3 + 0.7 * smooth(2.9, 3.6, t));
+        const [hx, hy] = hover(t);
+        ctx.save(); ctx.translate(960 + hx, 540 + hy); ctx.scale(1.012, 1.012); ctx.translate(-960, -540);
         AER.render(ctx, t, cam, roar);
+        ctx.restore();
+        // motion softness on the fast part of the descent: a light radial (zoom) blur from the altitude rate
+        const c1 = droneCam(t - 1 / 30), zr = Math.log(c1.z / cam.z);
+        if (zr > 0.02 && t < 4.5) zoomBlur(ctx, Math.min(0.018, (zr - 0.02) * 0.6));
+        lens(ctx);
         caption(ctx, t);
         // tilt-up smear
         if (t > 4.5) {
