@@ -8,6 +8,7 @@
  "broadcast_launch": 0.02,
  "snow_wind_window": 0.0,
  "room_tone_cozy": 0.0,
+ "room_tone_tag": 0.0,
  "tv_crowd_live": 0.0,
  "tv_crowd_goal": 0.05,
  "freeze_glitch": 0.0,
@@ -54,5 +55,14 @@
  "cheer_group": 0.04,
  "bit_flop": 0.02,
  "wink_ding": 0.0,
- "title_slam": 0.35
+ "title_slam": 0.35,
+ "buffering_ticks_long": 0.0,
+ "tv_crowd_calm": 0.0,
+ "dice_roll": 0.0,
+ "checker_clack": 0.0,
+ "case_open": 0.02,
+ "gotv_switch": 0.0,
+ "error_bonk": 0.005,
+ "sleepy_tuba_wah": 0.05,
+ "packet_pant": 0.0
 }

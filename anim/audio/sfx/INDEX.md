@@ -16,8 +16,9 @@ All sounds are synthesised procedurally by `audio/tools/sfx.py` (seeded, reprodu
 | `data_whoosh` | st | 1.80 | 0.700 | one-shot, peak -1 dBFS | Digital data whoosh: filtered air sweep with a glassy tonal rise and bit-crushed sparkle. Peak at 0.7 s; 1.8 s. |
 | `broadcast_launch` | st | 2.60 | 0.020 | one-shot, peak -1 dBFS | Packets launch from the IPTV mast: electric zap + a volley of 7 staggered "pew" packet launches spraying L->R, sub thump, data whoosh tail over the sea. Hit at 0.02 s. |
 | `snow_wind_window` | st | 2.60 | 0.000 | bed, RMS -24 dBFS | Snowy Toronto wind heard through a frosted window: soft gusts and a low howl, muffled. Fades out over 2 s as we push inside (6.2 cut). 2.6 s. |
-| `room_tone_cozy` | st | 15.50 | 0.000 | bed, RMS -30 dBFS | Cosy apartment room tone: warm air + faint fridge/electric hum, radiator hiss with an occasional metallic tick, wall clock tick-tock (left), faint muffled wind outside. 15.5 s, 0.8 s fade-in. |
-| `tv_crowd_live` | mono | 8.30 | 0.000 | bed, RMS -22 dBFS | Live match crowd from the living-room TV (small band-limited speaker, mono): excited murmur building to a rising "ooOOH" as the striker breaks away; ends HARD at 8.3 s (= the 14.5 freeze). Cue at 6.2. |
+| `room_tone_cozy` | st | 23.40 | 0.000 | bed, RMS -30 dBFS | Cosy apartment room tone: warm air + faint fridge/electric hum, radiator hiss with an occasional metallic tick, wall clock tick-tock (left), faint muffled wind outside. 23.4 s (S2 v2 6.2-29.2 + tail), 0.8 s fade-in/out. |
+| `room_tone_tag` | st | 19.20 | 0.000 | bed, RMS -30 dBFS | Same cosy room tone, 19.2 s version for S7 v2 (58.9 -> fades out by 78.1 under the end card). |
+| `tv_crowd_live` | mono | 9.10 | 0.000 | bed, RMS -22 dBFS | Live match crowd from the living-room TV (small band-limited speaker, mono): excited murmur building to a rising "ooOOH" as the striker breaks away; ends HARD at 9.1 s (= the 15.3 freeze). Cue at 6.2. |
 | `tv_crowd_goal` | mono | 10.00 | 0.050 | one-shot, peak -1 dBFS | The goal eruption heard through the TV speaker (band-limited, mono, slight breakup). Hit at 0.05 s. 10 s. |
 | `freeze_glitch` | mono | 1.60 | 0.000 | one-shot, peak -1 dBFS | THE FREEZE: the TV sound stutters in shrinking buffer-repeats, bit-crushes into digital garbage and blips, then tape-stops down to a dead thud. Hit (first stutter) at 0.0 s. 1.6 s. Mono-ish, TV side. |
 | `record_scratch` | mono | 0.90 | 0.010 | one-shot, peak -1 dBFS | Vinyl record scratch sting ("wikka-wiiip") -- the comic brake. Hit at 0.01 s. 0.9 s. |
@@ -26,8 +27,8 @@ All sounds are synthesised procedurally by `audio/tools/sfx.py` (seeded, reprodu
 | `router_beeps` | st | 0.90 | 0.000 | one-shot, peak -1 dBFS | Router status beeps: three short square-ish blips + a lower confirm blip, cute and small. First beep at 0.0 s. 0.9 s. |
 | `dive_whoosh` | st | 2.40 | 1.000 | one-shot, peak -1 dBFS | Deep dive INTO the router LED: sub rising from 30 Hz, reversed-air suck and a huge sweeping whoosh that peaks at 1.0 s (= 20.3), then roars away into a tunnel tail. 2.4 s. |
 | `light_shimmer` | st | 2.80 | 0.700 | one-shot, peak -1 dBFS | Into-the-light shimmer: a swelling major chord of glassy partials and twinkling sparkles, blooming at 0.7 s (the white-cyan flash at 21.0), long airy tail. 2.8 s. |
-| `dataworld_ambience` | st | 10.00 | 0.000 | bed, RMS -24 dBFS | Inside the fibre: electric hum with slow beating, flowing data streams (fluttering filtered noise), tiny random digital pips flicking past in stereo, low tunnel air. 10 s bed. |
-| `traffic_jam_grumble` | st | 8.00 | 0.000 | bed, RMS -24 dBFS | Traffic jam of idling packets: low chugging engine rumble (many slow-pulsing sub motors), impatient grumbling murmurs. 8 s bed, fades out over the last 1 s. |
+| `dataworld_ambience` | st | 14.40 | 0.000 | bed, RMS -24 dBFS | Inside the fibre: electric hum with slow beating, flowing data streams (fluttering filtered noise), tiny random digital pips flicking past in stereo, low tunnel air. 14.4 s bed (29.2-43.4 + tail). |
+| `traffic_jam_grumble` | st | 12.60 | 0.000 | bed, RMS -24 dBFS | Traffic jam of idling packets: low chugging engine rumble (many slow-pulsing sub motors), impatient grumbling murmurs. 12.6 s bed (29.2 -> the 41.5 boost), fades out over the last 1 s. |
 | `packet_honk_hi` | st | 0.26 | 0.010 | one-shot, peak -1 dBFS | Little cartoon bulb-horn honk, high (packet annoyance). Hit 0.01 s. |
 | `packet_honk_mid` | st | 0.26 | 0.010 | one-shot, peak -1 dBFS | Cartoon bulb-horn honk, mid pitch. Hit 0.01 s. |
 | `packet_honk_lo` | st | 0.26 | 0.010 | one-shot, peak -1 dBFS | Cartoon honk, low and grumpy. Hit 0.01 s. |
@@ -64,5 +65,14 @@ All sounds are synthesised procedurally by `audio/tools/sfx.py` (seeded, reprodu
 | `bit_flop` | st | 0.70 | 0.020 | one-shot, peak -1 dBFS | Tiny exhausted flop: Bit plops out of the LED port -- soft squishy thud + tiny deflating squeak. Hit 0.02 s. 0.7 s. |
 | `wink_ding` | st | 1.60 | 0.000 | one-shot, peak -1 dBFS | Sparkly wink "ting!": bright high bell + glitter swirl. Hit 0.0 s. 1.6 s. |
 | `title_slam` | st | 3.00 | 0.350 | one-shot, peak -1 dBFS | TITLE CARD SLAM: 0.35 s reverse-cymbal suck, then a cinematic hit (sub boom, punchy mid thump, snare-crack, metallic ring) with a bright major-chord shimmer tail that fades by 2.95 s. Hit at 0.35 s. |
+| `buffering_ticks_long` | mono | 12.00 | 0.000 | bed, RMS -26 dBFS | Buffering spinner ticks, 12.0 s non-looping version (15.55 -> 27.55, stops just before the GOTV switch); same sound as buffering_tick_loop, 0.4 s fade-out. |
+| `tv_crowd_calm` | mono | 5.20 | 0.000 | bed, RMS -22 dBFS | Calm live match crowd on the TV speaker (mono), smooth and relaxed -- the background TV during the backgammon payoff. 5.2 s: 1.5 s fade-in, 0.6 s fade-out. |
+| `dice_roll` | st | 1.30 | 0.000 | one-shot, peak -1 dBFS | Backgammon dice thrown onto the wooden board: two dice bounce with shrinking gaps, tumble-rattle, clack against each other, settle. First landing = hit 0.0 s; settled by ~0.8 s. 1.3 s. |
+| `checker_clack` | st | 0.50 | 0.000 | one-shot, peak -1 dBFS | Backgammon checker slapped down on a point: hard wood-on-wood clack + board knock, tiny settle click. Hit 0.0 s. 0.5 s. |
+| `case_open` | st | 1.80 | 0.020 | one-shot, peak -1 dBFS | Wooden backgammon case opened: two metal latches (click ... click, hit 0.02 / 0.20 s), a short hinge creak, lid lands open with a wooden thunk (0.95 s) and checkers rattle inside. 1.8 s. |
+| `gotv_switch` | st | 2.40 | 0.000 | one-shot, peak -1 dBFS | GOTV "switch activated" success: button click (hit 0.0 s), soft power-up sweep, rising D-major bell arpeggio, confirming chord at 0.34 s with warm low swell and a swirl of gold sparkle. 2.4 s. |
+| `error_bonk` | mono | 0.80 | 0.005 | one-shot, peak -1 dBFS | Old-provider error: dull cheap two-tone "bonk-bonk" (descending buzzy square through the TV speaker) + a dead thunk. Mono. Hit 0.005 s; second bonk at 0.21 s. 0.8 s. |
+| `sleepy_tuba_wah` | st | 2.20 | 0.050 | one-shot, peak -1 dBFS | Comic deflating tuba "wuaaah..." for the sleepy buffering packet: one long low note sagging F2 -> C2 with a lazy widening wobble, closing wah and a deflating hiss/pfft. Hit 0.05 s. 2.2 s. |
+| `packet_pant` | st | 3.60 | 0.000 | one-shot, peak -1 dBFS | Two little exhausted packets panting "hh-hh-hh" (tiny breathy voices, slightly out of step, L/R), arriving late. 3.6 s with fade-in 0.3 / fade-out 0.8. |
 
 See `audio/cues/base.json` for how these are placed on the 60 s timeline; mixing notes are in the header of `audio/tools/preview_mix.py`.
