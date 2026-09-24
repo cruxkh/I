@@ -1049,7 +1049,7 @@
       const c = P(0, 0, 0);
       if (c) { const k = FOC / c[2]; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, c[0], c[1], 0, 70 * k, [[0, 'rgba(255,255,210,0.08)'], [1, 'rgba(255,255,210,0)']]); ctx.fillRect(c[0] - 70 * k, c[1] - 70 * k, 140 * k, 140 * k); ctx.restore(); }
       // lines
-      const line = pts => { let prev = null; for (const [x, y] of pts) { const p = P(x, y, 0); if (!p || p[2] < 2) { prev = null; continue; } if (prev) { ctx.lineWidth = Math.max(1, 0.13 * FOC * 2 / (p[2] + prev[2])); ctx.beginPath(); ctx.moveTo(prev[0], prev[1]); ctx.lineTo(p[0], p[1]); ctx.stroke(); } prev = p; } };
+      const line = pts0 => { const pts = []; for (let i = 0; i < pts0.length; i++) { if (i) { const [x0, y0] = pts0[i - 1], [x1, y1] = pts0[i], n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0) / 4)); for (let j = 1; j <= n; j++) pts.push([lerp(x0, x1, j / n), lerp(y0, y1, j / n)]); } else pts.push(pts0[0]); } let prev = null; for (const [x, y] of pts) { const p = P(x, y, 0); if (!p || p[2] < 2) { prev = null; continue; } if (prev) { ctx.lineWidth = Math.max(1, 0.13 * FOC * 2 / (p[2] + prev[2])); ctx.beginPath(); ctx.moveTo(prev[0], prev[1]); ctx.lineTo(p[0], p[1]); ctx.stroke(); } prev = p; } };
       const arc = (cx, cy, r, a0, a1, n = 40) => { const a = []; for (let i = 0; i <= n; i++) { const th = lerp(a0, a1, i / n); a.push([cx + Math.cos(th) * r, cy + Math.sin(th) * r]); } return a; };
       const kc = c ? FOC / c[2] : 1;
       ctx.strokeStyle = 'rgba(250,255,245,0.92)'; ctx.lineWidth = Math.max(1, 0.14 * kc); ctx.lineJoin = 'round';
