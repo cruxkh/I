@@ -38,12 +38,12 @@
 
   A.post = (ctx, t, f) => {
     ctx.drawImage(vig, 0, 0);
-    ctx.globalAlpha = 0.07; ctx.globalCompositeOperation = 'overlay';
-    ctx.drawImage(grain[f % 6], 0, 0, 1920, 1080);
+    ctx.globalAlpha = 0.045; ctx.globalCompositeOperation = 'overlay';
+    ctx.drawImage(grain[(f >> 1) % 6], 0, 0, 1920, 1080); // lighter grain, held 2 frames: much kinder to the encoder
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     subs(ctx, t);
     // fade from / to black at very start and end
-    const fb = Math.max(1 - A.inv(0, 0.6, t), A.inv(A.DUR - 0.8, A.DUR, t));
+    const fb = Math.max(1 - A.inv(0, 0.6, t), A.inv(A.DUR - 0.3, A.DUR, t));
     if (fb > 0) { ctx.fillStyle = `rgba(0,0,0,${fb})`; ctx.fillRect(0, 0, 1920, 1080); }
   };
 })();

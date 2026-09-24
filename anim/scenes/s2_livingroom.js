@@ -1,7 +1,8 @@
 // ============================================================================
 // S2 v2 · "Buffering" · global 6.2–29.2 · Toronto living room (shift 0).
 // Shots (global t):
-//   A  6.20–7.45  exterior: snowy street, push-in on our lit window, frost dissolve inside   (caption טורונטו · 15:47)
+//   A  6.20–7.00  out of S1's flash: inside the room, close on the window (snow falling outside, warm lamp),
+//                 caption טורונטו · 15:47, then an eased pan onto Saba for "Noa!"
 //   B  7.00–10.20 close on Saba ("Noa!") → pull back to the master; Noa waits with her backgammon case
 //   C 10.20–12.45 two-shot: Noa steps up, lifts the case: "Saba, come play backgammon with me!"
 //   D 12.45–13.90 Saba MCU, eyes on the TV, waves her off: "Not now, motek!" (Noa deflates at frame right)
@@ -358,42 +359,6 @@
     if (n.caseP) drawCase(ctx, n.caseP[0], n.caseP[1], n.caseP[2], t);
     A.glow(ctx, tv.x + tv.w * 0.4, tv.y + tv.h * 0.6, 900, L.color, 0.09 * L.intensity);
   }
-  const frost = () => A.layer('s2:frost', 960, 540, (g, w, h) => {
-    const id = g.createImageData(w, h), d = id.data;
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const u = (x - w / 2) / (w / 2), v = (y - h / 2) / (h / 2), r = Math.sqrt(u * u * 0.8 + v * v);
-      const n = A.fbm(x / 60, y / 60, 4) * 0.5 + 0.5, fine = A.noise2(x / 6, y / 6) * 0.5 + 0.5;
-      const a = cl((r - 0.35) * 1.3 + (n - 0.5) * 0.9) * (0.75 + 0.25 * fine);
-      const i = (y * w + x) * 4; d[i] = 225 + 30 * fine; d[i + 1] = 238 + 17 * fine; d[i + 2] = 255; d[i + 3] = cl(a) * 235;
-    }
-    g.putImageData(id, 0, 0);
-    // fern crystals
-    const r = A.rng(7); g.strokeStyle = 'rgba(255,255,255,0.28)'; g.lineCap = 'round';
-    for (let k = 0; k < 26; k++) {
-      const edge = r() * 4 | 0; let x = edge === 0 ? 0 : edge === 1 ? w : r() * w, y = edge === 2 ? 0 : edge === 3 ? h : r() * h;
-      let a = Math.atan2(h / 2 - y, w / 2 - x) + (r() - 0.5) * 0.9, len = 40 + r() * 90;
-      const branch = (x, y, a, len, dep) => {
-        if (dep > 3 || len < 6) return; const x2 = x + Math.cos(a) * len, y2 = y + Math.sin(a) * len;
-        g.lineWidth = Math.max(0.6, 2.2 - dep * 0.6); g.beginPath(); g.moveTo(x, y); g.lineTo(x2, y2); g.stroke();
-        for (let j = 1; j <= 3; j++) { const q = j / 4, bx = x + (x2 - x) * q, by = y + (y2 - y) * q; branch(bx, by, a + 0.9, len * 0.35, dep + 1); branch(bx, by, a - 0.9, len * 0.35, dep + 1); }
-        branch(x2, y2, a + (r() - 0.5) * 0.5, len * 0.6, dep + 1);
-      };
-      branch(x, y, a, len, 0);
-    }
-  });
-
-  function exterior(ctx, t) {
-    const W = A.STREET.window;
-    const p = inv(6.2, 7.45, t);
-    const e = E.in(p);
-    const cam = { x: lerp(1420, W.cx, E.inOut(p)), y: lerp(470, W.cy, E.inOut(p)), zoom: 1.35 * Math.pow(5.5 / 1.35, e) };
-    A.drawTorontoStreet(ctx, t, { cam, windowGlow: 1.2 });
-    // warm window bloom that grows as we approach
-    ctx.save(); A.camera(ctx, cam);
-    A.glow(ctx, W.cx, W.cy, 90 + 40 * e, '#ffcf8a', 0.35 + 0.4 * e);
-    ctx.restore();
-  }
-
   function caption(ctx, t) {
     const a = sm(6.45, 6.85, t) * (1 - sm(8.9, 9.4, t));
     if (a <= 0) return;
@@ -413,9 +378,9 @@
   }
   function interiorCam0(t) {
     if (t < 10.2) return {
-      x: K(t, [[7.0, 745], [7.55, 740], [8.7, 960], [10.2, 950]]),
-      y: K(t, [[7.0, 470], [7.55, 475], [8.7, 540], [10.2, 530]]),
-      zoom: zkey(t, [[7.0, 1.85], [7.55, 1.7], [8.7, 1.0], [10.2, 1.06]]),
+      x: K(t, [[6.2, 330], [6.45, 350], [7.0, 745, 'inOut'], [7.55, 740], [8.7, 960], [10.2, 950]]),
+      y: K(t, [[6.2, 300], [6.45, 305], [7.0, 470, 'inOut'], [7.55, 475], [8.7, 540], [10.2, 530]]),
+      zoom: zkey(t, [[6.2, 2.25], [6.45, 2.2], [7.0, 1.85, 'inOut'], [7.55, 1.7], [8.7, 1.0], [10.2, 1.06]]),
     };
     if (t < 12.45) return { x: K(t, [[10.2, 870], [12.45, 885]]), y: K(t, [[10.2, 545], [12.45, 540]]), zoom: K(t, [[10.2, 1.5], [12.45, 1.62]], 'lin') };
     if (t < 13.9) return { x: K(t, [[12.45, 800], [13.9, 790]]), y: 472, zoom: K(t, [[12.45, 2.05], [13.9, 2.2]], 'lin') };
@@ -510,27 +475,17 @@
     name: 's2_livingroom', start: 6.2, end: 29.2,
     draw(ctx, s) {
       const t = s.t;
-      if (t < 7.45) exterior(ctx, t);
-      const inside = sm(7.02, 7.42, t);
+      const inside = 1;
       const inInsert = t >= INSERT[0] && t < INSERT[1];
       if (!inInsert && inside > 0) {
         ctx.save(); ctx.globalAlpha = inside;
-        ctx.save(); A.camera(ctx, interiorCam(Math.max(t, 7.0)));
+        ctx.save(); A.camera(ctx, interiorCam(t));
         room(ctx, t, { reflect: t > 15.8 && t < 17.72 ? sm(15.85, 16.2, t) : 0 });
         ctx.restore();
         ctx.restore();
         grade(ctx, t, gradeAmt(t) * (1 - 0.4 * sm(28.0, 28.5, t)));
       }
       if (inInsert) { tvInsert(ctx, t); grade(ctx, t, 0.35 * sm(FREEZE, FREEZE + 0.3, t)); }
-      const fa = sm(6.75, 7.12, t) * (1 - sm(7.2, 7.62, t));
-      if (fa > 0) {
-        const sc = 1 + 0.9 * sm(7.15, 7.62, t);
-        ctx.save(); ctx.globalAlpha = fa; ctx.translate(960, 540); ctx.scale(sc, sc);
-        ctx.drawImage(frost(), -960, -540, 1920, 1080);
-        ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = fa * 0.5;
-        ctx.fillStyle = A.radial(ctx, 0, 0, 0, 900, [[0, 'rgba(255,190,110,0.6)'], [1, 'rgba(255,190,110,0)']]); ctx.fillRect(-960, -540, 1920, 1080);
-        ctx.restore();
-      }
       const f0 = 1 - sm(6.2, 6.5, t);
       if (f0 > 0) {
         ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = f0;
