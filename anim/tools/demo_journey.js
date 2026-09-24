@@ -7,13 +7,13 @@
   // 3-6 zoom to stadium
   seg('stad', 3, 6, (ctx, s) => {
     const k = A.ease.inOut(A.clamp(s.lt / 1.5));
-    const c = { x: A.lerp(1100, 620, k), y: A.lerp(1400, 1650, k), zoom: A.lerp(1.0, 2.2, k) };
+    const c = { x: A.lerp(1100, A.TLV.cams.stadium.x, k), y: A.lerp(1400, A.TLV.cams.stadium.y, k), zoom: A.lerp(1.0, 2.2, k) };
     A.drawTelAviv(ctx, s.t, { cam: c, roar: 0.7 }); lbl(ctx, 'TLV stadium');
   });
   // 6-9 mast + packet stream
   seg('mast', 6, 9, (ctx, s) => {
     const k = A.ease.inOut(A.clamp(s.lt / 2));
-    const c = { x: A.lerp(1090, 1500, k), y: A.lerp(1270, 1050, k), zoom: A.lerp(1.9, 1.1, k) };
+    const m = A.TLV.cams.mast; const c = { x: A.lerp(m.x, 1700, k), y: A.lerp(m.y, 1000, k), zoom: A.lerp(m.zoom, 0.9, k) };
     A.drawTelAviv(ctx, s.t, { cam: c, broadcast: 1 });
     ctx.save(); A.camera(ctx, c); A.drawPacketStream(ctx, A.TLV.launchPath, s.t, { head: A.clamp(s.lt / 1.5), count: 60 }); ctx.restore();
     lbl(ctx, 'TLV mast');

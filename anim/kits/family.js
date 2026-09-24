@@ -321,7 +321,7 @@
     noneSit: { L: [18, -62], R: [14, -58], hL: 'relax', hR: 'relax' },
     fists: { L: [32, -128], R: [28, -125], tL: [-46, -112], tR: [48, -118], hL: 'fist', hR: 'fist' },
     point: { L: [22, -40], R: [100, 6], hL: 'relax', hR: 'point' },
-    headHands: { L: [152, 78], R: [150, 80], tL: [-62, -200], tR: [70, -200], wL: 8, wR: 8, down: 1, front: true, hL: 'open', hR: 'open' },
+    headHands: { L: [152, 78], R: [150, 80], tL: [-112, -272], tR: [116, -274], wL: 18, wR: 18, front: true, hL: 'open', hR: 'open' },
     armsUp: { L: [160, 12], R: [158, 14], hL: 'open', hR: 'open' },
     grip: { L: [30, -18], R: [30, -18], hL: 'grip', hR: 'grip' },
   });

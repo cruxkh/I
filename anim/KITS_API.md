@@ -11,3 +11,13 @@
 - A.STREET: poleBase[492,1080], poleTop[492,150], wireStart[612,214], wireEnd ≈(1786,348), window{cx≈1740,cy≈400,...}, entry, path (polyline from bottom up pole, along wire, into window), at(p)->[x,y,angle] by arc-length fraction, pathLength, lamps, cnTower[1185,70].
 - drawSnow(ctx,t,o): rect,density,count,wind,depth(num|[d0,d1]),size,speed,alpha,seed.
 - Zoom: static layers auto-cached at 2x when zoom>1.15; TV/router/armchair are live vectors (sharp at any zoom).
+
+## datafolk.js
+- drawBit (~122px tall at 1; scales 0.5–1 wide, 1.4–2.2 medium, 3–5 close-up). A.bitCore(x,y,scale) = core point (trail head).
+  o.mood determined|panic|cheeky|joy(o.joyEyes:'open')|exhausted|squeeze|neutral; o.limbs run|fly|flop|arms-up|stand|crouch|push (auto from mood/vel/boost);
+  o.vel [vx,vy] (squash, trail, lean, tag drag); o.boost 0..1; o.wink 0..1 (o.winkEye 'L'|'R'); o.glow 0..2; overrides o.rot,o.squash,o.stretch,o.hop,
+  o.armL/armR/legL/legR [x,y], o.browRaise,o.browL/R,o.lid,o.pupil,o.blink,o.phase,o.runRate,o.trail(0=off),o.trailColor,o.tagAng,o.tagSwing,o.light,o.rim,o.shadow,o.sweat,o.sparkle.
+- drawPacket (~90px; 0.4–2.5): o.kind mail|video|meme|update|shop|photo, o.seed, o.mood bored|annoyed|sleep(o.noZ)|shock, o.honk 0..1 (animate 0→1→0), o.mouth,o.look,o.rot,o.squash,o.glow. Cheap (40 = 1.5ms).
+- drawCatPacket (~265 tall, 290 wide; 1–2.2): o.mood bored|grumpy|shock, o.arms crossed|down|point, o.shades 0..1 (slide sunglasses onto eyes), o.lid,o.browRaise,o.rot,o.squash,o.glow,o.tail.
+- drawShark (~720 long at 1, (x,y)=body centre, faces right; 0.5–1.2): o.bite 0..1, o.mood hungry|dazed (o.stars), o.swim, o.look,o.flip,o.rot,o.bandaid. A.sharkNose(x,y,scale,o), A.sharkJaw(...).
+- drawBinaryTrail(ctx,pts tail→head,t,o): color '#ffc93c', width 30, size 20, alpha, speed, spacing, rows, seed, core, digits:false.
