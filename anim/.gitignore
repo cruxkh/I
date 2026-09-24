@@ -3,3 +3,4 @@ out/
 previews/
 audio/music/sf/
 *.pyc
+audio/master.wav
