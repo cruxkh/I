@@ -359,15 +359,14 @@
       }
       // stadium precinct: plaza + car parks + tree ring
       g.fillStyle = '#1e1940'; A.rrect(g, -STAD.hx, -STAD.hy, STAD.hx * 2, STAD.hy * 2, 20); g.fill();
-      g.fillStyle = '#17122f';
       for (const [px0, py0, pw, ph] of [[-175, -145, 70, 80], [105, 60, 70, 85], [105, -145, 70, 70]]) {
-        g.fillRect(px0, py0, pw, ph);
+        g.fillStyle = '#17122f'; g.fillRect(px0, py0, pw, ph);
         g.strokeStyle = 'rgba(210,200,255,0.3)'; g.lineWidth = 0.25;
         for (let yy = py0 + 3; yy < py0 + ph; yy += 6) { for (let xx = px0 + 2; xx < px0 + pw; xx += 2.6) { g.beginPath(); g.moveTo(xx, yy); g.lineTo(xx, yy + 4.5); g.stroke(); } }
         for (let k = 0; k < 40; k++) { const cx = px0 + 3 + Math.floor(r() * (pw - 6) / 2.6) * 2.6 + 1.3, cy = py0 + 3 + Math.floor(r() * ph / 6) * 6 + 2.2; if (cy > py0 + ph - 3) continue; g.fillStyle = ['#8a88b0', '#3a4a8a', '#b8b0d0', '#7a2a3a', '#2a2a40'][Math.floor(r() * 5)]; A.rrect(g, cx - 0.9, cy - 2, 1.8, 4, 0.5); g.fill(); }
         for (let k = 0; k < 6; k++) glowAt(spr.warm, px0 + (k % 3 + 0.5) * pw / 3, py0 + (Math.floor(k / 3) + 0.5) * ph / 2, 14, 0.4);
       }
-      for (let k = 0; k < 90; k++) { const a = (k / 90) * A.TAU, x = Math.cos(a) * 128, y = Math.sin(a) * 110; g.fillStyle = k % 2 ? '#15302c' : '#1d4636'; A.ellipse(g, x, y, 4, 4); g.fill(); }
+      for (let k = 0; k < 90; k++) { const a = (k / 90) * A.TAU, x = Math.cos(a) * 128, y = Math.sin(a) * 110; g.fillStyle = k % 2 ? '#10241f' : '#163a2c'; A.ellipse(g, x, y, 3.2, 3.2); g.fill(); g.fillStyle = 'rgba(120,200,150,0.18)'; A.ellipse(g, x - 1, y + 1, 1.3, 1.3); g.fill(); }
       // light spill around the stadium
       g.globalCompositeOperation = 'lighter';
       g.fillStyle = A.radial(g, 0, 0, 80, 260, [[0, 'rgba(255,230,170,0.22)'], [1, 'rgba(255,230,170,0)']]); g.fillRect(-270, -270, 540, 540);
@@ -435,9 +434,12 @@
         const a = P(x, y, 0.8), b = P(x - tx * L, y - ty * L, 0.8);
         if (!a || !b) continue;
         const k = FOC / a[2], head = c.dir > 0;
-        ctx.strokeStyle = head ? 'rgba(255,240,200,0.55)' : 'rgba(255,50,70,0.6)'; ctx.lineWidth = Math.max(1, 1.5 * k);
+        const w = Math.min(3, Math.max(1, 0.9 * k));
+        ctx.strokeStyle = head ? 'rgba(255,240,200,0.22)' : 'rgba(255,50,70,0.3)'; ctx.lineWidth = w;
         ctx.beginPath(); ctx.moveTo(b[0], b[1]); ctx.lineTo(a[0], a[1]); ctx.stroke();
-        ctx.fillStyle = head ? 'rgba(255,255,235,0.95)' : 'rgba(255,90,100,0.95)'; const s = Math.max(1.4, 2 * k); ctx.fillRect(a[0] - s / 2, a[1] - s / 2, s, s);
+        const m = [lerp(a[0], b[0], 0.3), lerp(a[1], b[1], 0.3)];
+        ctx.strokeStyle = head ? 'rgba(255,245,215,0.6)' : 'rgba(255,60,80,0.7)'; ctx.beginPath(); ctx.moveTo(m[0], m[1]); ctx.lineTo(a[0], a[1]); ctx.stroke();
+        ctx.fillStyle = head ? 'rgba(255,255,235,0.95)' : 'rgba(255,90,100,0.95)'; const s = Math.min(5, Math.max(1.4, 1.6 * k)); ctx.fillRect(a[0] - s / 2, a[1] - s / 2, s, s);
       }
       ctx.restore();
     }
@@ -680,9 +682,21 @@
         if (s % 2) continue; const y0 = -34 + s * 68 / 9, y1 = y0 + 68 / 9, q = [P(-52.5, y0, 0), P(52.5, y0, 0), P(52.5, y1, 0), P(-52.5, y1, 0)];
         if (q.some(v => !v)) continue; ctx.fillStyle = 'rgba(255,255,220,0.05)'; ctx.beginPath(); q.forEach((v, m) => m ? ctx.lineTo(v[0], v[1]) : ctx.moveTo(v[0], v[1])); ctx.closePath(); ctx.fill();
       }
+      // pitch shading: darker toward the edges, warm hot-spots under each floodlight bank
+      {
+        const c0 = P(0, 0, 0);
+        if (c0) {
+          const k = FOC / c0[2];
+          ctx.save(); ctx.beginPath(); sur.forEach((v, m) => m ? ctx.lineTo(v[0], v[1]) : ctx.moveTo(v[0], v[1])); ctx.closePath(); ctx.clip();
+          ctx.fillStyle = A.radial(ctx, c0[0], c0[1], 18 * k, 80 * k, [[0, 'rgba(0,0,0,0)'], [1, 'rgba(3,18,12,0.5)']]); ctx.fillRect(-200, -200, 2320, 1480);
+          ctx.globalCompositeOperation = 'lighter';
+          for (const T4 of TOWERS) { const h = P(T4.x * 0.33, T4.y * 0.33, 0); if (!h) continue; const kk = FOC / h[2]; ctx.fillStyle = A.radial(ctx, h[0], h[1], 0, 34 * kk, [[0, 'rgba(255,250,215,0.10)'], [1, 'rgba(255,250,215,0)']]); ctx.fillRect(h[0] - 34 * kk, h[1] - 34 * kk, 68 * kk, 68 * kk); }
+          ctx.restore();
+        }
+      }
       // floodlit sheen
       const c = P(0, 0, 0);
-      if (c) { const k = FOC / c[2]; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, c[0], c[1], 0, 70 * k, [[0, 'rgba(255,255,210,0.14)'], [1, 'rgba(255,255,210,0)']]); ctx.fillRect(c[0] - 70 * k, c[1] - 70 * k, 140 * k, 140 * k); ctx.restore(); }
+      if (c) { const k = FOC / c[2]; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, c[0], c[1], 0, 70 * k, [[0, 'rgba(255,255,210,0.08)'], [1, 'rgba(255,255,210,0)']]); ctx.fillRect(c[0] - 70 * k, c[1] - 70 * k, 140 * k, 140 * k); ctx.restore(); }
       // lines
       const line = pts => { ctx.beginPath(); let ok = false; for (const [x, y] of pts) { const p = P(x, y, 0); if (!p) continue; ok ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); ok = true; } ctx.stroke(); };
       const arc = (cx, cy, r, a0, a1, n = 40) => { const a = []; for (let i = 0; i <= n; i++) { const th = lerp(a0, a1, i / n); a.push([cx + Math.cos(th) * r, cy + Math.sin(th) * r]); } return a; };
@@ -742,7 +756,7 @@
         for (const T4 of TOWERS) {
           const dx = p.x - T4.x, dy = p.y - T4.y, l = Math.hypot(dx, dy), sl = (p.ball ? 0.2 : 1.1) * l / (T4.h - 1.8);
           const a = P(p.x, p.y, 0), b = P(p.x + dx / l * sl, p.y + dy / l * sl, 0); if (!a || !b) continue;
-          ctx.strokeStyle = 'rgba(8,40,20,0.13)'; ctx.lineWidth = Math.max(1, (p.ball ? 0.2 : 0.45) * FOC / a[2]);
+          ctx.strokeStyle = 'rgba(8,40,20,0.1)'; ctx.lineWidth = Math.max(1, (p.ball ? 0.2 : 0.45) * FOC / a[2]);
           ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
         }
       }
@@ -826,7 +840,7 @@
 
   // ---------------------------------------------------------------- drone camera (metres)
   const DEG = Math.PI / 180;
-  const q2 = p => 1 - (1 - p) * (1 - p);
+  const q2 = p => 1 - (1 - p) * (1 - p) * (1 - p);
   const droneCam = t => {
     const p = inv(0, 4.5, t), ef = q2(p), ed = p * p * (3 - 2 * p), e3 = ease.inOut(p);
     const Lx = lerp(-40, -2, ef) + A.wob(t, 1, 0.35) * 4 * (1 - ed), Ly = lerp(420, 1.5, ef) + A.wob(t, 2, 0.3) * 4 * (1 - ed);
