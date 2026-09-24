@@ -245,13 +245,13 @@
       const k = ease.inOut(inv(50.0, 50.45, t));
       x = 900 + 20 * k;
       const rock = Math.sin((t - 50.45) * 4.2) * smooth(50.4, 50.7, t) * (1 - smooth(51.1, 51.5, t));
-      Object.assign(o, { gesture: 'none', mood: 'joy', happy: 1, lean: lerp(0.35, 0.05, smooth(50.15, 50.5, t)) + rock * 0.1, headTilt: 8 * k + rock * 4,
+      Object.assign(o, { gesture: 'none', mood: 'joy', happy: 1, lean: lerp(0.35, 0.05, smooth(50.15, 50.5, t)) + rock * 0.1, headTilt: -5 * k + rock * 4,
         handL: [lerp(40, 150, k), lerp(-250, -270, k)], handR: [lerp(90, 190, k), lerp(-300, -330, k)], handShapeL: 'open', handShapeR: 'open', armRBehind: true,
         look: [1, 0.1], scarfWave: 0.4 * (1 - smooth(51, 52, t)), mouth: t < 50.5 ? 0.3 : undefined });
       if (t > 51.2) { // listening, then puzzled look at the router
         const p = smooth(52.35, 52.8, t);
         Object.assign(o, { mood: 'neutral', moodFrom: 'joy', moodK: smooth(51.4, 51.9, t), happy: lerp(0.6, 0, p), look: [lerp(0.7, 0.8, p), lerp(0.0, 0.85, p)],
-          browAngle: 0.7 * p, browL: 0.6 * p, browR: -0.25 * p, headTilt: lerp(6, 14, p), lean: lerp(0.05, 0.12, p), smile: lerp(0.5, -0.2, p) });
+          browAngle: 0.7 * p, browL: 0.6 * p, browR: -0.25 * p, headTilt: lerp(-4, 8, p), lean: lerp(0.05, 0.12, p), smile: lerp(0.5, -0.2, p) });
       }
     }
     return { x, y, o };
@@ -276,11 +276,11 @@
       if (t > 49.6) Object.assign(o, { gesture: 'none', gestureFrom: 'cheer', gestureK: smooth(49.6, 49.95, t), mood: 'joy', squash: 0.06 * spring(t, 49.6, 8, 18) });
     } else { // scooped up into the hug
       const k = ease.inOut(inv(50.05, 50.5, t));
-      x = lerp(1175, 1080, k); y = lerp(900, 745, k) + 12 * Math.sin((t - 50.45) * 4.2) * smooth(50.4, 50.7, t) * (1 - smooth(51.1, 51.5, t));
+      x = lerp(1175, 1112, k); y = lerp(900, 790, k) + 12 * Math.sin((t - 50.45) * 4.2) * smooth(50.4, 50.7, t) * (1 - smooth(51.1, 51.5, t));
       Object.assign(o, { hug: k, gesture: 'none', mood: 'joy', look: [0.9, 0], bounce: 0.6 });
       if (t > 51.2) { // talks: pulls back a little, then glances at the router
         const q = smooth(51.25, 51.6, t), r = smooth(52.2, 52.6, t);
-        Object.assign(o, { hug: lerp(1, 0.55, q), mood: 'proud', moodFrom: 'joy', moodK: q, look: [lerp(0.8, -0.9, r), lerp(0, 0.8, r)], headTilt: lerp(0, -6, r) });
+        Object.assign(o, { hug: lerp(1, 0.3, q), mood: 'proud', moodFrom: 'joy', moodK: q, look: [lerp(0.8, -0.9, r), lerp(0, 0.8, r)], headTilt: lerp(0, -6, r) });
       }
     }
     return { x, y, o };

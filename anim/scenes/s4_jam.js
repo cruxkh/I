@@ -62,7 +62,7 @@
   const proj = (X, Y, Z, zc) => { const d = Z - zc; return [VX + X * F / d, VY + (FL - Y) * F / d, d]; };
 
   // ---------------------------------------------------------------- helpers
-  const clampCam = c => { const hw = 960 / c.zoom, hh = 540 / c.zoom; c.x = clamp(c.x, hw + 8, 1920 - hw - 8); c.y = clamp(c.y, hh + 8, 1080 - hh - 8); return c; };
+  const clampCam = c => { const hw = 960 / c.zoom, hh = 540 / c.zoom; c.x = clamp(c.x, hw + 22 / c.zoom, 1920 - hw - 22 / c.zoom); c.y = clamp(c.y, hh + 22 / c.zoom, 1080 - hh - 22 / c.zoom); return c; };
   const fillBase = ctx => { ctx.fillStyle = '#070a24'; ctx.fillRect(-2000, -2000, 6000, 5000); };
   function drawPk(ctx, p, t, zc, o = {}) {
     const d = p.Z + (o.dz || 0) - zc; if (d < 0.32) return;
@@ -338,20 +338,20 @@
   // --- shot E: BOOST over the jam
   const E0 = 28.6, E1 = 29.85;
   function bitE(t) { // world position of Bit during the boost
-    if (t < E0) return { X: 0.52, Y: 0, Z: CATZ - 0.02 };
+    if (t < E0) return { X: 0.6, Y: 0, Z: 6.92 };
     const u = inv(E0, E1, t);
-    const Z = lerp(CATZ - 0.02, -0.6, ease.in(u) * 0.75 + u * 0.25);
-    const Y = 1.12 * Math.sin(Math.min(1, u * 1.35) * Math.PI * 0.5) - 0.55 * smooth(0.6, 1, u);
-    const X = lerp(0.52, 0.08, ease.inOut(u));
+    const Z = lerp(6.92, 0.55, Math.pow(u, 1.25));
+    const Y = 1.15 * Math.sin(Math.min(1, u * 1.6) * Math.PI * 0.5) - 0.5 * smooth(0.55, 1, u);
+    const X = lerp(0.6, 0.12, ease.inOut(u));
     return { X, Y: Math.max(0, Y), Z };
   }
   function shotE(ctx, t) {
-    const zc = key(t, [[28.5, 4.5], [28.6, 4.5], [29.2, 1.3, 'out'], [29.85, 0.5, 'inOut']]);
+    const zc = key(t, [[28.5, 5.05], [28.62, 5.1], [29.3, 3.0, 'inOut'], [29.85, 1.2, 'in']]);
     const launch = t >= E0;
     const b = bitE(t);
     const sh = launch ? Math.exp(-(t - E0) * 3) * 1.6 + 0.3 : 0;
     const [bx0, by0] = proj(b.X, b.Y, b.Z, zc);
-    const cam = { x: lerp(1060, 960, smooth(28.6, 29.3, t)) + (launch ? (bx0 - 960) * 0.15 : 0), y: key(t, [[28.6, 640], [29.2, 470, 'out'], [29.85, 520]]), zoom: key(t, [[28.5, 1.25], [28.6, 1.28], [29.2, 1.0, 'out'], [29.85, 1.05]]), shake: sh, t };
+    const cam = clampCam({ x: lerp(1080, 960 + (bx0 - 960) * 0.35, smooth(28.6, 29.1, t)), y: lerp(640, by0 + 60, smooth(28.62, 29.0, t) * 0.6), zoom: key(t, [[28.5, 1.3], [28.6, 1.34], [29.1, 1.08, 'out'], [29.85, 1.12]]), shake: sh, t });
     ctx.save(); fillBase(ctx); A.camera(ctx, cam);
     // trail history (pure: re-evaluate the path at earlier times)
     const trail = [];
@@ -372,11 +372,13 @@
       },
       pkO: (p, d) => {
         if (!launch) return shoveO(p, t);
-        if (b.Z > p.Z + 1.3) return {};
+        const delay = 0.06 + Math.abs(p.Z - CATZ) * 0.05 + H(p.seed) * 0.08;
+        const k = smooth(E0 + delay, E0 + delay + 0.08, t);
+        if (k <= 0) return {};
         const [px, py] = proj(p.X, 0.15, p.Z, zc), [qx, qy] = proj(b.X, b.Y, b.Z, zc);
-        const dx = qx - px, dy = qy - py, n = Math.hypot(dx, dy) || 1;
-        const k = smooth(p.Z + 1.3, p.Z + 0.3, b.Z);
-        return { mood: k > 0.3 ? 'shock' : undefined, look: [dx / n, dy / n], squash: -0.08 * k, dz: 0 };
+        const dx = qx - px, dy = qy - py - 200, n = Math.hypot(dx, dy) || 1;
+        const jump = Math.exp(-Math.max(0, t - E0 - delay) * 6) * Math.sin(Math.max(0, t - E0 - delay) * 20);
+        return { mood: 'shock', look: [dx / n, dy / n], squash: -0.1 * k + 0.08 * jump, y: 0.02 * Math.max(0, jump) };
       },
     });
     ctx.restore();
@@ -403,11 +405,12 @@
     A.drawDataTunnel(ctx, t, { z: zc, speed: lerp(4, 9, u), jam: lerp(0.5, 0, smooth(0, 0.35, u)) });
     speedLines(ctx, t, 960, 470, 1, 90);
     // Bit: from over the camera into the distance
-    const d = lerp(0.55, 16, ease.out(Math.pow(u, 0.85)));
+    const dOf = uu => 0.6 * Math.exp(Math.pow(uu, 1.6) * Math.log(28));
+    const d = dOf(u);
     const X = lerp(0.18, 0, u), Y = lerp(1.05, 0.62, ease.out(u));
     const x = VX + X * F / d, y = VY + (FL - Y) * F / d, sc = BTS / d;
     const trail = [];
-    for (let i = 24; i >= 0; i--) { const uu = Math.max(0, u - i * 0.012), dd = lerp(0.55, 16, ease.out(Math.pow(uu, 0.85))), XX = lerp(0.18, 0, uu), YY = lerp(1.05, 0.62, ease.out(uu)); trail.push([VX + XX * F / dd, VY + (FL - YY) * F / dd + 60 * BTS / dd]); }
+    for (let i = 24; i >= 0; i--) { const uu = Math.max(0, u - i * 0.02), dd = dOf(uu), XX = lerp(0.18, 0, uu), YY = lerp(1.05, 0.62, ease.out(uu)); trail.push([VX + XX * F / dd, VY + (FL - YY) * F / dd + 60 * BTS / dd]); }
     trail.unshift([trail[0][0] + 80, 1180]);
     A.drawBinaryTrail(ctx, trail, t, { width: 40, size: 22 });
     const [x2, y2] = [VX, VY];
