@@ -1072,16 +1072,17 @@
     } else heb('הודעה', SX + SW - 46 * s, iy + 34 * s, 26 * s, '#A09A8E', { w: 400, align: 'right' });
     paint(rrPts(X0 + PW / 2 - 50 * s, Y0 + 26 * s, 100 * s, 22 * s, 11 * s), { wash: '#15121C', ink: null });
     flushLetters();
-    // Noa's hand holding it: palm under the phone, thumb over the lower screen, fingertips wrapping the left edge
+    // Noa's hand holding it: palm under the phone's lower-left corner, fingertips wrapping the right edge, thumb
+    // reaching up toward the send button (it taps while she types)
     if (o.hand !== false) {
       boilSeed('phone hand');
-      const tp = Math.sin(t * TAU * 3) * 5 * s * (dtxt ? 1 : 0), by = Y0 + PH;
-      paint(ribbon([[x + PW * .1, by + 420 * s], [x + PW * .05, by + 140 * s], [x, by + 40 * s]], 240 * s, 220 * s), { wash: C.hood, ink: PAL.ink, sw: 1.4 });
-      paint(ribbon([[x, by + 90 * s], [x, by + 40 * s]], 230 * s, 230 * s), { wash: C.hoodLt, ink: PAL.ink, sw: 1 });
-      paint(blob(x + 10 * s, by - 20 * s, 190 * s, 90 * s, 22, .08, 3), { wash: C.nSkin, ink: PAL.ink, sw: 1.3, curv: .4 });
-      for (let i = 0; i < 3; i++) paint(ellPts(X0 + 8 * s, Y0 + PH * (.7 + i * .075), 20 * s, 24 * s, 12), { wash: C.nSkin, ink: PAL.ink, sw: 1 });
-      paint(ribbon([[x + PW * .38, by - 30 * s], [x + PW * .3 + tp, by - 150 * s], [x + PW * .14 + tp, by - 215 * s]], 62 * s, 50 * s), { wash: C.nSkin, ink: PAL.ink, sw: 1.2 });
-      paint(ellPts(x + PW * .16 + tp, by - 212 * s, 14 * s, 10 * s, 10, 0, .6), { wash: '#F3D2BC', ink: PAL.ink, sw: .6 });
+      const tp = Math.abs(Math.sin(t * TAU * 3)) * 8 * s * (dtxt ? 1 : 0), by = Y0 + PH;
+      paint(ribbon([[X0 - 60 * s, by + 460 * s], [X0 - 10 * s, by + 200 * s], [X0 + 40 * s, by + 90 * s]], 250 * s, 230 * s), { wash: C.hood, ink: PAL.ink, sw: 1.4 });
+      paint(ribbon([[X0 + 10 * s, by + 150 * s], [X0 + 40 * s, by + 90 * s]], 240 * s, 240 * s), { wash: C.hoodLt, ink: PAL.ink, sw: 1 });
+      for (let i = 0; i < 3; i++) paint(ellPts(X0 + PW - 6 * s, Y0 + PH * (.74 + i * .07), 20 * s, 24 * s, 12), { wash: C.nSkin, ink: PAL.ink, sw: 1 });
+      paint(blob(X0 + 90 * s, by + 30 * s, 150 * s, 80 * s, 22, .08, 3, 0, -.2), { wash: C.nSkin, ink: PAL.ink, sw: 1.3, curv: .4 });
+      paint(ribbon([[X0 + 40 * s, by - 10 * s], [X0 + 20 * s, by - 90 * s], [X0 + 52 * s + tp * .3, by - 150 * s - tp]], 58 * s, 46 * s), { wash: C.nSkin, ink: PAL.ink, sw: 1.2 });
+      paint(ellPts(X0 + 50 * s + tp * .3, by - 146 * s - tp, 13 * s, 10 * s, 10, 0, -.9), { wash: '#F3D2BC', ink: PAL.ink, sw: .6 });
     }
     boilSeed('phone after');
   }

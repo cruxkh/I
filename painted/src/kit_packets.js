@@ -155,7 +155,7 @@
     paint(E, { ink: INK, sw: sw * .9 });
   }
   // eyebrow over an eye: v = [inner, outer] height in eye radii (− = higher)
-  function brow(cx, cy, rx, ry, side, v, sw, u, w = 2.3) {
+  function brow(cx, cy, rx, ry, side, v, sw, u, w = 2.0) {
     const base = cy - ry - .45 * u, xi = cx - side * rx * .75, xo = cx + side * rx * 1.05;
     const yi = base + v[0] * ry, yo = base + v[1] * ry;
     inkLine([[xo, yo], [(xi + xo) / 2, (yi + yo) / 2 - .22 * u], [xi, yi]], sw * w, INK, 'ink', .5);
@@ -226,7 +226,7 @@
   }
   function blushes(xs, y, u, b) {
     if (b <= .02) return;
-    for (const bx of xs) paint(ellPts(bx, y, .95 * u, .45 * u, 12), { fill: PAL.rose, fillOp: 160 * clamp(b), bleed: .2, tex: .4, ink: null });
+    for (const bx of xs) paint(ellPts(bx, y, .95 * u, .42 * u, 12, u * .03), { wash: '#F4857E', washOp: 190 * clamp(b), ink: null });
   }
   // a limb: tapered ribbon from root through a bend to the end (points in u)
   function limb(root, end, bend, w0, w1, col, sw, u) {
@@ -261,7 +261,7 @@
     panic: { scale: 1.16, pupil: .48, shake: 1, br: [-1.25, -.5], mouth: 'wail', curl: -.35, emote: 'sweat', body: t => ({ dx: .09 * Math.sin(t * TAU * 13), sq: -.05 }) },
     cheeky: { lid: .44, tilt: -.1, lx: .8, ly: .15, br: [[-1.25, -1.0], [-.15, -.05]], mouth: 'smirk', body: t => ({ rot: .05 * Math.sin(t * TAU * .5), dy: -.15 * bp(t) }) },
     joy: { eye: 'happy', br: [-1.05, -.85], mouth: 'big', curl: .6, blush: .75, emote: 'spark', body: t => ({ dy: -1 * bp(t), sq: .1 * pulse(t) - .05 * bp(t) }) },
-    bored: { lid: .56, tilt: -.15, lx: .3, ly: -.95, br: [-.08, -.18], mouth: 'side', body: t => { const f = frac(bpOf(t) / 4), sg = f < .3 ? ease(f / .3) : 1 - ease((f - .3) / .7); return { sq: .06 - .1 * sg, rot: -.03 }; } },
+    bored: { lid: .5, tilt: -.15, lx: .35, ly: -.75, br: [-.08, -.18], mouth: 'side', body: t => { const f = frac(bpOf(t) / 4), sg = f < .3 ? ease(f / .3) : 1 - ease((f - .3) / .7); return { sq: .06 - .1 * sg, rot: -.03 }; } },
     laugh: { eye: 'squeeze', br: [-1, -.7], mouth: 'laugh', curl: .5, blush: .85, tears: 1, body: t => { const c = Math.abs(Math.sin(t * TAU * 5)); return { dy: -.45 * c, sq: .07 * c - .03, rot: .05 * Math.sin(t * TAU * 2.5) }; } },
     exhausted: { lid: .56, tilt: -.75, ly: .75, pupil: .85, br: [-.8, -.12], mouth: 'pant', curl: -.1, emote: 'sweat', body: t => ({ sq: .12 + .05 * Math.sin(t * TAU * 1.1) }) },
     tongue: { eye: ['squeeze', 'open'], lid: .08, lx: .2, br: [[-.95, -.55], [-1.2, -.95]], mouth: 'tongue', blush: .5, body: t => ({ rot: .08 * Math.sin(t * TAU * 1.5), dy: -.3 * Math.abs(Math.sin(t * TAU * 1.5)) }) },
@@ -337,7 +337,7 @@
   }
 
   function bit(x, y, s = 1, o = {}) {
-    const t = o.t ?? T, u = 12 * s, sw = clamp(u / 15, .45, 2.4) * (o.swMul || 1), id = idOf(o, 'bit'), rs = k => boilSeed(`kp ${id} ${k}`);
+    const t = o.t ?? T, u = 12 * s, sw = clamp(u / 16, .45, 1.75) * (o.swMul || 1), id = idOf(o, 'bit'), rs = k => boilSeed(`kp ${id} ${k}`);
     const back = !!o.back, M = BIT_M[o.mood] || BIT_M.determined, idle = M.body ? M.body(t) : {};
     const L = bitLimbs(o.limbs || 'stand', t, o, back), fl = o.flip ? -1 : 1;
     const col = hz(BIT.col, o), dk = hz(BIT.dk, o), lt = hz(BIT.lt, o), lcol = hz(BIT.limb, o);
@@ -376,7 +376,7 @@
       } else {
         const fx = (F[0] + (back ? 0 : .4)) * u, fy = (F[1] - .5) * u;
         paint(ellPts(fx, fy, (back ? .95 : 1.25) * u, .72 * u, 14, u * .03), { wash: hz(BIT.shoe, o), ink: INK, sw: sw * .8 });
-        inkLine([[fx - (back ? .8 : 1.1) * u, fy + .35 * u], [fx + (back ? .8 : 1.1) * u, fy + .35 * u]], sw * .9, BIT.sole, 'ink', 0);
+        inkLine([[fx - (back ? .7 : .95) * u, fy + .3 * u], [fx, fy + .52 * u], [fx + (back ? .7 : 1.0) * u, fy + .28 * u]], sw * .9, BIT.sole, 'ink', .6);
       }
     };
     const drawArm = i => {
@@ -407,14 +407,15 @@
       paint(ellPts(0, -4.95 * u, .68 * u, .62 * u, 12), { ink: mixCol(BIT.seal, INK, .45), sw: sw * .55 });
       paint(starPts(0, -4.95 * u, .42 * u, .45, 5), { wash: mixCol(BIT.seal, '#FFFFFF', .25), ink: null });
     } else {
-      // football stamp, lower right
+      // football badge, lower right (Maccabi-blue ring)
       rs('stamp');
-      xf.push(); xf.T(3.55 * u, -3.35 * u); xf.R(.14);
-      const st = []; for (let i = 0; i < 28; i++) { const k = i / 28 * 4, side = Math.floor(k), f = k - side, r = 1.05 * u * (i % 2 ? .9 : 1);
-        const c = [[-1, -1], [1, -1], [1, 1], [-1, 1]], a = c[side], b = c[(side + 1) % 4]; st.push([lerp(a[0], b[0], f) * r, lerp(a[1], b[1], f) * r]); }
-      paint(st, { wash: '#FBF4E2', ink: INK, sw: sw * .5 });
-      paint(ellPts(0, 0, .72 * u, .72 * u, 14), { wash: '#FFFDF6', ink: INK, sw: sw * .6 });
-      paint(starPts(0, 0, .34 * u, .8, 5, -Math.PI / 2), { wash: INK, ink: null });
+      xf.push(); xf.T(3.6 * u, -3.4 * u); xf.R(.14 + .05 * Math.sin(t * 1.3));
+      paint(ellPts(0, 0, 1.12 * u, 1.12 * u, 16, u * .03), { wash: hz('#2F5DA8', o), ink: INK, sw: sw * .7 });
+      paint(ellPts(0, 0, .8 * u, .8 * u, 16), { wash: '#FFFDF6', ink: INK, sw: sw * .5 });
+      const pg = starPts(0, 0, .32 * u, .81, 5, -Math.PI / 2).filter((_, i) => i % 2 === 0);
+      paint(pg, { wash: INK, ink: null });
+      const sp = []; pg.forEach(([a, b2]) => { sp.push([a, b2], [a * 2.35, b2 * 2.35], [a, b2]); }); sp.push(pg[0]);
+      inkLine(sp, sw * .5, INK, 'inkfine', 0);
       xf.pop();
 
       // face
@@ -448,7 +449,7 @@
       const fwd = back ? 0 : clamp(vx * fl / 1400, -1, 1), sw0 = back ? -1 : 1;
       const th = sw0 * (.35 + .2 * Math.sin(t * 3.3) + .12 * Math.sin(t * 7.1) * vk + .75 * fwd + (o.limbs === 'run' ? .15 * Math.sin((o.phase ?? t * 2.4) * TAU * 2) : 0)) + (o.tagSwing || 0);
       if (back) xf.S(-1, 1);
-      hangTag(xf, u, sw, back ? -th : th, o, [['#5401', 2.75, .62, INK], ['GOAL', 3.75, .66, '#C0392F']], 2.35 * u, 4.4 * u, '#F7E8C6', rs);
+      hangTag(xf, u, sw, back ? -th : th, o, [['#5401', 2.45, .6, INK, '700 #px Rubik'], ['GOAL', 3.35, .62, '#C0392F', '900 #px Rubik']], 2.1 * u, 3.9 * u, '#F7E8C6', rs);
       xf.pop();
     }
     // emote
@@ -503,7 +504,7 @@
   }
 
   function packet(x, y, s = 1, o = {}) {
-    const t = o.t ?? T, u = 12 * s, sw = clamp(u / 15, .45, 2.2), id = idOf(o, 'pk'), rs = k => boilSeed(`kp ${id} ${k}`);
+    const t = o.t ?? T, u = 12 * s, sw = clamp(u / 16, .45, 1.6), id = idOf(o, 'pk'), rs = k => boilSeed(`kp ${id} ${k}`);
     const kind = KINDS[o.kind] ? o.kind : KIND_LIST[Math.floor(hash(o.seed ?? x * .37) * KIND_LIST.length)], K = KINDS[kind];
     const seed = o.seed ?? (x * .173 + KIND_LIST.indexOf(kind) * 3.1), h1 = hash(seed), h2 = hash(seed + 7.3);
     const mood = o.mood || 'bored', back = !!o.back, honk = clamp(o.honk || 0), fl = o.flip ? -1 : 1;
@@ -606,7 +607,7 @@
     }
   }
   function brandPacket(x, y, s = 1, o = {}) {
-    const t = o.t ?? T, u = 12 * s, sw = clamp(u / 15, .45, 2.4), id = idOf(o, 'br'), rs = k => boilSeed(`kp ${id} ${k}`);
+    const t = o.t ?? T, u = 12 * s, sw = clamp(u / 16, .45, 1.75), id = idOf(o, 'br'), rs = k => boilSeed(`kp ${id} ${k}`);
     const name = BRANDS[o.brand] ? o.brand : 'ILVIP', Bd = BRANDS[name], M = BRAND_M[o.mood || Bd.mood] || BRAND_M.grumpy, idle = M.body(t);
     const back = !!o.back, fl = o.flip ? -1 : 1, col = hz(Bd.col, o), dk = mixCol(col, INK, .25), lt = mixCol(col, '#FFFFFF', .35);
     const sq = (o.sq || 0) + (idle.sq || 0), dy = (o.dy || 0) + (idle.dy || 0), rot = (o.rot || 0) + (idle.rot || 0) * fl, x0 = x + ((o.dx || 0) + (idle.dx || 0)) * u;
@@ -667,7 +668,7 @@
     shock: { lid: 0, round: 1, scale: 1.14, mouth: 'O', ears: .35, puff: 1, emote: '!!', body: t => ({ sq: -.1 + .02 * Math.sin(t * 45) }) },
   };
   function catPacket(x, y, s = 1, o = {}) {
-    const t = o.t ?? T, u = 12 * s, sw = clamp(u / 15, .45, 2.4), id = idOf(o, 'cat'), rs = k => boilSeed(`kp ${id} ${k}`);
+    const t = o.t ?? T, u = 12 * s, sw = clamp(u / 16, .45, 1.75), id = idOf(o, 'cat'), rs = k => boilSeed(`kp ${id} ${k}`);
     const M = CAT_M[o.mood] || CAT_M.bored, idle = M.body(t), back = !!o.back, fl = o.flip ? -1 : 1;
     const col = hz(CAT.col, o), dk = hz(CAT.dk, o), lt = hz(CAT.lt, o);
     const sq = (o.sq || 0) + idle.sq, dy = o.dy || 0, rot = o.rot || 0, x0 = x + ((o.dx || 0) + (idle.dx || 0)) * u;
@@ -990,8 +991,13 @@ LOOPS.kp_bench = t => {
   if (v >= 20 && v < 28) bit(960, 800, 3.1, { t, mood: ['determined','panic','cheeky','joy','bored','laugh','exhausted','tongue'][v-20], mouth: 0 });
   if (v >= 30 && v < 36) bit(960, 800, 3.1, { t, mood: ['laugh','exhausted','tongue','determined','determined','determined'][v-30], mouth: ['flat','flat','flat','pant','tongue','laugh'][v-30] });
   if (v >= 40 && v < 44) { window._kpdbg = [{P:1},{noTongue:1},{noTeeth:1},{noTongue:1,noTeeth:1}][v-40]; bit(960, 800, 3.1, { t, mood: 'determined', mouth: 'laugh' }); window._kpdbg = null; }
+  if (v >= 50 && v < 54) for (let i = 0; i < 4; i++) bit(260 + i * 470, 800, 3.1, { t, mood: 'determined', mouth: 0, tag: v === 51 || v === 53 ? false : undefined, glow: v >= 52 ? 0 : undefined });
+  if (v >= 55 && v < 58) for (let k = 0; k < 4; k++) {
+    if (v !== 56) glow(300 + k * 400, 500, 200, '#FFC766', .7);
+    for (let i = 0; i < 5; i++) paint(ellPts(200 + k * 400 + i * 40, 700, 60, 40, 20), v === 57 ? { wash: '#FFC93C', ink: PAL.ink } : { fill: '#FFC93C', fillOp: 120, ink: null });
+  }
   if (v === 5) for (let i = 0; i < 10; i++) paint(ellPts(200 + i * 160, 700, 60, 40, 20), { wash: '#FFC93C', ink: PAL.ink, sw: 1 });
   if (v === 6) for (let i = 0; i < 10; i++) inkLine([[200 + i * 160, 600], [260 + i * 160, 700]], 1, PAL.ink);
   if (v === 7) for (let i = 0; i < 10; i++) paint(ellPts(200 + i * 160, 700, 60, 40, 20), { fill: '#FFC93C', fillOp: 120, ink: null });
 };
-LOOPS.kp_bench.len = 50;
+LOOPS.kp_bench.len = 60;
