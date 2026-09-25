@@ -86,24 +86,24 @@
     boilSeed('tun-bg');
     full(NAVY);
     // wall pigment: big soft blooms, deeper at the edges
-    paint(ellPts(vx, vy + 40, 1100, 760, 30, 20), { fill: mixCol('#2C2F7A', '#4A1E3C', jam), fillOp: 120, bleed: .3, tex: .6, ink: null });
-    paint(ellPts(vx - 520, vy - 260, 620, 420, 24, 14), { fill: mixCol('#3B2A7E', '#5A2436', jam), fillOp: 90, bleed: .3, tex: .7, ink: null });
-    paint(ellPts(vx + 560, vy - 180, 560, 400, 24, 14), { fill: mixCol('#1F4E7A', '#4E2A2A', jam), fillOp: 90, bleed: .3, tex: .7, ink: null });
-    paint(ellPts(vx, vy, 520, 330, 26, 10), { fill: mixCol('#3F5FB0', '#7A3040', jam), fillOp: 90, bleed: .25, tex: .5, ink: null });
+    paint(ellPts(vx, vy + 40, 1100, 760, 30, 20), { wash: mixCol('#2C2F7A', '#4A1E3C', jam), washOp: 120, ink: null });
+    paint(ellPts(vx - 520, vy - 260, 620, 420, 24, 14), { wash: mixCol('#3B2A7E', '#5A2436', jam), washOp: 90, ink: null });
+    paint(ellPts(vx + 560, vy - 180, 560, 400, 24, 14), { wash: mixCol('#1F4E7A', '#4E2A2A', jam), washOp: 90, ink: null });
+    paint(ellPts(vx, vy, 520, 330, 26, 10), { wash: mixCol('#3F5FB0', '#7A3040', jam), washOp: 90, ink: null });
 
     // floor: a flat strip converging on the vanishing point
     boilSeed('tun-floor');
     const far = 60, near = .38;
     const fl = [[vx - TUNNEL.halfW / far, vy + TUNNEL.floorH / far], [vx + TUNNEL.halfW / far, vy + TUNNEL.floorH / far],
                 [vx + TUNNEL.halfW / near, vy + TUNNEL.floorH / near], [vx - TUNNEL.halfW / near, vy + TUNNEL.floorH / near]];
-    paint(fl, { wash: mixCol('#1C2458', '#2C1830', jam), fill: mixCol('#2A3A7A', '#5A2230', jam), fillOp: 110, bleed: .12, tex: .7, ink: null });
+    paint(fl, { wash: mixCol('#2A3A7A', '#5A2230', jam), washOp: 110, ink: null });
     // soft centre sheen down the middle lane (dim, so packets read)
     paint([[vx - 3, vy + 12], [vx + 3, vy + 12], [vx + 150 / near, vy + TUNNEL.floorH / near], [vx - 150 / near, vy + TUNNEL.floorH / near]],
-      { fill: mixCol('#35508E', '#6A3040', jam), fillOp: 70, bleed: .25, tex: .5, ink: null });
+      { wash: mixCol('#35508E', '#6A3040', jam), washOp: 70, ink: null });
 
     // the light at the end
-    glow(vx, vy, 360 + 140 * boost, mixCol('#8FE6F0', '#FF8A5C', jam), .75 + .25 * boost);
-    glow(vx, vy, 120 + 60 * boost, '#FFF3D6', .9);
+    glowQ(vx, vy, 360 + 140 * boost, mixCol('#8FE6F0', '#FF8A5C', jam), .75 + .25 * boost);
+    glowQ(vx, vy, 120 + 60 * boost, '#FFF3D6', .9);
 
     // rushing light rings (far → near)
     const fz = frac(z), NR = 9;
@@ -116,15 +116,15 @@
       boilSeed('ring' + idx);
       // band fill only in the safe range: a fill far bigger than the canvas (d < .65) or thinner than ~12 px (d > 2.8)
       // makes p5.brush take minutes. Near rings are carried by the ink line + glows instead.
-      if (d > .65 && d < 2.8) { const hw = 17 / d; paint(ringPts(vx, vy, r - hw, 16).concat(ringPts(vx, vy, r + hw, 16).reverse()), { fill: col, fillOp: Math.round(150 * a), bleed: .15, tex: .5, ink: null }); }
+      if (d > .65 && d < 2.8) { const hw = 17 / d; paint(ringPts(vx, vy, r - hw, 16).concat(ringPts(vx, vy, r + hw, 16).reverse()), { wash: col, washOp: Math.round(150 * a), ink: null }); }
       else if (d <= .65) inkLine(ringPts(vx, vy, r, 22), 6 * a, col, 'dry', .5);
       inkLine(ringPts(vx, vy, r, 22, .995), clamp(1.4 / d, .3, 2.6), mixCol(col, '#FFF6E0', .55), 'inkfine', .5);
       // lamps on the ring: shoulders and crown
       if (d < 5.5) for (const ang of [-Math.PI / 2, -Math.PI * .15, -Math.PI * .85, PHI - .12, Math.PI - PHI + .12]) {
-        glow(vx + Math.cos(ang) * r, vy + Math.sin(ang) * r, 70 / d, col, a * .9);
+        glowQ(vx + Math.cos(ang) * r, vy + Math.sin(ang) * r, 70 / d, col, a * .9);
       }
       // jam: red warning lamps blink on the ring crown
-      if (jam > .05 && d < 5) { const bl = .5 + .5 * Math.sin(t * 7 + idx * 1.7); glow(vx, vy - r, 120 / d, '#FF3A2E', jam * bl); }
+      if (jam > .05 && d < 5) { const bl = .5 + .5 * Math.sin(t * 7 + idx * 1.7); glowQ(vx, vy - r, 120 / d, '#FF3A2E', jam * bl); }
     }
 
     // fibre streaks along walls and ceiling: radial light lines rushing outward
@@ -140,7 +140,7 @@
       boilSeed('streak' + i);
       const pts = [[vx + Math.cos(ang) * r1, vy + Math.sin(ang) * r1], [vx + Math.cos(ang) * r0, vy + Math.sin(ang) * r0]];
       inkLine(pts, clamp(.8 / d0, .3, 2.2), mixCol(col, '#FFF6E0', .4), 'inkfine', 0);
-      glow(pts[1][0], pts[1][1], 40 / d0, col, a);
+      glowQ(pts[1][0], pts[1][1], 40 / d0, col, a);
     }
 
     // floor lane dashes, rushing toward us
@@ -157,12 +157,12 @@
     for (const s of [-1, 1]) {
       const a = [vx + s * TUNNEL.halfW / 30, vy + TUNNEL.floorH / 30], b = [vx + s * TUNNEL.halfW / .42, vy + TUNNEL.floorH / .42];
       inkLine([a, b], 1.6, mixCol('#8FE6F0', '#FF7A5A', jam), 'ink', 0);
-      glow(lerp(a[0], b[0], .55), lerp(a[1], b[1], .55), 120, CYAN, .35);
+      glowQ(lerp(a[0], b[0], .55), lerp(a[1], b[1], .55), 120, CYAN, .35);
     }
     // jam: brake-light pools on the floor (red, blinking in a stop-go ripple)
     if (jam > .05) for (let i = 0; i < 7; i++) {
       const d = 1.1 + i * .75, [x, y] = tunnelAt((i % 2 ? -1 : 1) * 230, d, o), bl = .55 + .45 * Math.sin(t * 5 - i * .9);
-      glow(x, y, 110 / d, '#FF3A2E', jam * bl * .8);
+      glowQ(x, y, 110 / d, '#FF3A2E', jam * bl * .8);
     }
     // boost: long gold speed lines from the vanishing point
     if (boost > .02) for (let i = 0; i < 16; i++) {
@@ -170,6 +170,7 @@
       const ang = hash(i * 13.3) * TAU, ph = frac(hash(i * 2.9) + t * 2.2), r0 = lerp(80, 1200, easeIn(ph)), r1 = r0 * (1.5 + ph);
       inkLine([[vx + Math.cos(ang) * r0, vy + Math.sin(ang) * r0], [vx + Math.cos(ang) * r1, vy + Math.sin(ang) * r1]], 1.2 + ph * 2, '#FFE9A8', 'inkfine', 0);
     }
+    glowFlush();
     boilSeed('tun-done');
   }
 

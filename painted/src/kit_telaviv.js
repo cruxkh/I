@@ -831,5 +831,5 @@
   };
   LOOPS.kit_telaviv.len = 10;
 
-  Object.assign(window, { tlvCity, tlvDroneCam, stadium, ultras, mast, packetStream });
+  Object.assign(window, { tlvCity, tlvDroneCam, stadium, ultras, mast, packetStream, glowQ, glowFlush });
 })();

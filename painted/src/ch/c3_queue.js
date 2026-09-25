@@ -37,10 +37,10 @@
 
   // ------------------------------------------------------------------ chase-cam world (tunnel perspective)
   // Queue in the middle lane, facing away from the camera (toward the front / the sign). Z = world depth along the tunnel.
-  const TAILZ = 1.0, SPACING = .8, NQ = 18;                  // queue members i = 0 (tail) .. NQ-1
+  const TAILZ = 1.0, SPACING = .62, NQ = 20;                  // queue members i = 0 (tail) .. NQ-1
   const qZ = i => TAILZ + i * SPACING;
   const qX = i => (hash(i * 5.1) - .5) * 70 + (i % 3 === 1 ? -40 : i % 3 === 2 ? 40 : 0);
-  const S0 = 3.4;                                            // packet scale at depth 1
+  const S0 = 3.9;                                            // packet scale at depth 1
   // side-lane stragglers (sparse, far): [X, Z]
   const SIDE = [[-290, 3.3], [300, 4.6], [-300, 6.4], [290, 7.9], [-280, 9.5], [300, 11.0]];
 
@@ -54,7 +54,7 @@
     for (const it of items) {
       const d = it.Z - zc;
       if (it.bit) { drawBit(); continue; }
-      if (d < .42 || d > 11) continue;
+      if (d < Math.max(.8, bitD - .1) || d > 11) continue;   // passed packets leave frame (never occlude Bit)
       const [x, y, s] = tunnelAt(it.X - camX, d, o), h = hit(it.i) || {};
       const haze = clamp((d - 1.5) / 7), sc = S0 * s;
       if (sc < .5) {   // far: a simple painted blob
@@ -104,7 +104,7 @@
   }
 
   // ------------------------------------------------------------------ shot A · chase into the tail
-  function bitRunZ(t) { return kf(t, [[39.2, -3.2], [40.95, TAILZ - 1.25], [41.3, TAILZ - 1.35]], x => x); }
+  function bitRunZ(t) { return kf(t, [[39.2, -3.2], [40.95, TAILZ - .4], [41.3, TAILZ - .45]], x => x); }
   function shotA(t, lt) {
     const zb = bitRunZ(t), zc = zb - 1.35, bump = t >= 40.95;
     const [shx, shy] = bump ? shakeXY(t, 10 * Math.exp(-(t - 40.95) * 8)) : [0, 0];
@@ -251,7 +251,7 @@
     catPacket(820, 860, 2.35, { t, ...cM, lookX: .55, boilKey: 'catG' });
     // Bit's back, big in the right foreground
     const tn = spring(t, 54.2, 5, 12);
-    bit(1540, 1230, 5.4, { t, back: true, limbs: 'stand', boilKey: 'bitG', sq: .05 * wob(t, .6) + .1 * tn, rot: -.05, glow: .5 });
+    bit(1450, 1190, 5.2, { t, back: true, limbs: 'stand', boilKey: 'bitG', sq: .05 * wob(t, .6) + .1 * tn, rot: -.05, glow: .5 });
     camEnd();
   }
 
@@ -265,7 +265,7 @@
     catPacket(1580, 780, 2.2, { t, mood: 'bored', haze: .5, lookX: -.6, mouth: 0, boilKey: 'catH', noShadow: true });
     const m = packMoods(t, [[54.55, 'cheeky', { lookX: -.2 }], [55.95, 'determined', { lookX: 0, lookY: -.3 }]]);
     const cr = seg(t, 56.1, 56.4);
-    bit(960, 1200, 7.2, { t, ...m, sq: m.sq + .18 * ease(cr), limbs: cr > 0 ? 'crouch' : 'stand', boilKey: 'bitH', glow: 1 });
+    bit(960, 1110, 7.0, { t, ...m, sq: m.sq + .18 * ease(cr), limbs: cr > 0 ? 'crouch' : 'stand', boilKey: 'bitH', glow: 1 });
     camEnd();
   }
 

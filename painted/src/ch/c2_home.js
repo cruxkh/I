@@ -34,7 +34,7 @@
     if (t < ERR) return { screen: 'freeze', freezeAt: FREEZE, pct: Math.floor(kf(t, [[19.45, 0], [20.2, 21], [20.9, 34], [21.6, 37]], easeOut)) };
     if (t < YANK + .05) return { screen: 'error' };
     if (t < APP) return { screen: 'off' };
-    return { screen: 'app', p: seg(t, APP, 36.9) };
+    return { screen: 'app', p: goldK(t) > .6 ? 0 : seg(t, APP, 36.9) };   // logo hidden once the light has whited the screen out
   }
   const goldK = t => ease(seg(t, GOLD, 38.3));
 

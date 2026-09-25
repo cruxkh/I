@@ -183,7 +183,10 @@ function centred(pts, draw) {
   push(); translate(cx, cy); draw(pts.map(([x, y]) => [x - cx, y - cy])); pop();
 }
 function paint(pts, o = {}) { centred(pts, (P) => paintAt(P, o)); }
+// NO_FILL: p5.brush fill costs seconds per shape on soft-gl. Render fills as washes (fill-only shapes keep their colour).
+window.NO_FILL = window.NO_FILL ?? true;
 function paintAt(pts, o) {
+  if (window.NO_FILL && o.fill) { o = Object.assign({}, o); if (!o.wash) { o.wash = o.fill; o.washOp = Math.min(255, (o.fillOp ?? 170) * 1.15); } o.fill = null; }
   if (o.wash || o.fill || o.hatch) {
     if (o.wash) brush.wash(o.wash, o.washOp ?? 255); else brush.noWash();
     if (o.fill) { brush.fill(o.fill, o.fillOp ?? 170); brush.fillBleed(o.bleed ?? .1); brush.fillTexture(o.tex ?? .4, o.border ?? .35); } else brush.noFill();

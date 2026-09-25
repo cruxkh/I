@@ -47,7 +47,7 @@
     const sc = 900 * lt, bx = lerp(300, 720, easeOut(seg(lt, 0, 1.6)));
     camBegin(960 + lt * 20, 560, 1.02);
     ocean(t, { scroll: sc, glowX: bx });
-    tubeBit(bx, .42, sc, t, { vel: [1100, 0] });
+    tubeBit(bx, .7, sc, t, { vel: [1100, 0] });
     camEnd();
     map(t, ease(seg(lt, .4, 1.0)));
     flash(1 - seg(lt, 0, .35), GW);
@@ -68,7 +68,7 @@
     camBegin(980, 620, 1.3);
     ocean(t, { scroll: sc, glowX: bx, dark: .35 });
     shark(sx, sy, .62, { flip: true, mood: 'hungry', lookX: -1, lookY: .6, boilKey: 'c4shark' });
-    tubeBit(bx, .5, sc, t, { vel: [700, 0] });
+    tubeBit(bx, .68, sc, t, { vel: [700, 0] });
     camEnd();
   }
 
@@ -114,7 +114,7 @@
     const sx = 1060 + lt * 14, sy = cy - 230 - lt * 10;
     shark(sx, sy, .5, { flip: true, mood: 'dazed', zap: .35 * Math.max(0, 1 - lt * .9), bite: .35, rot: -.12 + .05 * Math.sin(lt * 3), boilKey: 'c4shark' });
     const laugh = t >= 64.22 && t < 65.45, winkK = kf(t, [[66.02, 0], [66.1, 1], [66.42, 1], [66.52, 0]]);
-    tubeBit(bx, .72, sc, t, { bo: { ...(laugh ? { mouth: 'laugh' } : {}), wink: winkK, limbs: laugh ? 'armsUp' : 'fly' } });
+    tubeBit(bx, .9, sc, t, { bo: { ...(laugh ? { mouth: 'laugh' } : {}), wink: winkK, limbs: laugh ? 'armsUp' : 'fly' } });
     [[64.3, -60, -150, 80, -.1], [64.7, 60, -200, 92, .08], [65.05, -20, -250, 104, -.06]].forEach(([t0, dx, dy, sz, r]) =>
       sfx('HA HA!', bx + dx, cy + dy, sz, '#FFD34D', t - t0, { life: .55, rot: r }));
     camEnd();
@@ -124,7 +124,7 @@
     const sc = 90000 + 1150 * lt, bx = lerp(520, 900, ease(seg(lt, 0, 1.6)));
     camBegin(960, 580, 1.08, -.015);
     ocean(t, { scroll: sc, glowX: bx });
-    tubeBit(bx, .44, sc, t, { vel: [1300, 0] });
+    tubeBit(bx, .7, sc, t, { vel: [1300, 0] });
     camEnd();
     map(t, ease(seg(lt, 0, .35)));
   }
@@ -133,16 +133,16 @@
     const sc = 110000 + kf(lt, [[0, 0], [.9, 700], [1.2, 760]], easeOut);
     const bx = 860, [, by] = cablePt(bx, { scroll: sc });
     const up = ease(seg(t, 68.25, 69.1));
-    camBegin(960, lerp(620, 470, up), lerp(1.15, 1.25, up));
+    camBegin(960, lerp(600, 490, up), lerp(1.1, 1.0, up));
     ocean(t, { scroll: sc, glowX: bx, city: ease(seg(t, 68.4, 68.9)), dark: lerp(.2, .05, up) });
-    if (t < 69.2) tubeBit(bx, .44, sc, t, { vel: [600, 0], bo: { limbs: t > 68.9 ? 'crouch' : 'fly' } });
+    if (t < 69.2) tubeBit(bx, .7, sc, t, { vel: [600, 0], bo: { limbs: t > 68.9 ? 'crouch' : 'fly' } });
     else {
       // light streak: Bit rockets up out of the cable to the city lights
       const k = easeIn(seg(t, 69.2, 69.36)), hy = lerp(by, -40, k);
       boilSeed('c4 streak');
       paint(ribbon([[bx, by], [bx + 30, lerp(by, hy, .5)], [bx + 60, hy]], 10, 44), { wash: '#FFE9A8', washOp: 230, ink: null });
       glow(bx + 60, hy, 200, '#FFC24A', 1);
-      bit(bx + 60, hy + 60, .5, { limbs: 'fly', mood: 'joy', vel: [0, -2500], rot: -.1, boilKey: 'c4bit' });
+      bit(bx + 60, hy + 80, .7, { limbs: 'fly', mood: 'joy', vel: [0, -2500], rot: -.1, boilKey: 'c4bit' });
     }
     camEnd();
     map(t, 1 - ease(seg(t, 68.6, 68.9)));

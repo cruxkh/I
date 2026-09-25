@@ -127,7 +127,7 @@
     const w = z, h = w * 286 / 480;
     tvSet(960 - w / 2 + sh[0], 560 - h / 2 + sh[1], w, h, t, { ...tvOpt(t), noStand: true });
     flash(.8 * Math.exp(-(t - UNF) * 9), '#FFFDF6');
-    if (hit > 0) { flash(.4 * Math.exp(-hit * 10), '#FFF4C8'); sfx('GOOOAL!', 960, 250, 150, '#F4C21F', t - 74.5, { life: 1.1, rot: -.06, stroke: '#1E3F96' }); }
+    if (hit > 0) { flash(.4 * Math.exp(-hit * 10), '#FFF4C8'); sfx('GOOOAL!', 960, 430, 150, '#F4C21F', t - 74.5, { life: 1.1, rot: -.06, stroke: '#1E3F96' }); }
   }
   function shotB(t, lt) {        // the LEAP
     const sh = t > LEAP ? shakeXY(t, 14 * Math.exp(-(t - LEAP) * 5)) : [0, 0];
@@ -193,9 +193,9 @@
   function shotH(t, lt) {        // END CARD
     endBg(t);
     const zk = backOut(seg(t, 94.8, 95.1)), z = 1 + 1.9 * zk;
-    const bx = 960, by = 700, fy = 575;           // Bit's feet, his face centre
+    const bx = 960, by = 735, fy = 610;           // Bit's feet, his face centre
     camBegin(960 + (bx - 960) * zk, 540 + (fy - 540) * zk, z);
-    gotvLogo(960, 290, .95, t, { pop: seg(t, END, END + .9) });
+    gotvLogo(960, 245, .85, t, { pop: seg(t, END, END + .9) });
     // Bit pops up between the logo and the text
     const up = backOut(seg(t, 93.35, 93.75));
     if (up > .01) {
@@ -205,9 +205,9 @@
       if (t > 94.45) sfx('נה נה!', bx + 190, fy - 90, 44, '#F4C21F', t - 94.5, { life: 1.4, rot: .12, font: '900 44px Rubik', stroke: NAVY });
     }
     const tk = seg(t, 93.6, 94.1), tk2 = seg(t, 93.9, 94.4), tk3 = seg(t, 94.1, 94.6);
-    letter('הטלוויזיה של ישראל', 960, 815, 92, '#FBF3E3', { pop: tk * 1.2, font: '900 92px Rubik', stroke: NAVY });
-    letter('(התקנת אפליקציה על המסך החכם)', 960, 905, 46, '#F4C21F', { pop: tk2 * 1.2, font: '700 46px Rubik', ink: false });
-    letter('PACKET FROM HOME · חבילה מהבית', 960, 975, 30, '#C9D3F2', { pop: tk3 * 1.2, font: '700 30px Rubik', ink: false });
+    letter('הטלוויזיה של ישראל', 960, 830, 92, '#FBF3E3', { pop: tk * 1.2, font: '900 92px Rubik', stroke: NAVY });
+    letter('(התקנת אפליקציה על המסך החכם)', 960, 915, 46, '#F4C21F', { pop: tk2 * 1.2, font: '700 46px Rubik', ink: false });
+    letter('PACKET FROM HOME · חבילה מהבית', 960, 985, 30, '#C9D3F2', { pop: tk3 * 1.2, font: '700 30px Rubik', ink: false });
     camEnd();
     if (t > 94.8 && t < 95.15) flash(.25 * (1 - seg(t, 94.8, 95.15)), '#FFF4C8');
     if (t > 95.7) { flushLetters(); flash(ease(seg(t, 95.7, 96.0)), '#0E1440'); }
