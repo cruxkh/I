@@ -42,5 +42,33 @@ rewrite the content. Read `anim/BIBLE.md`, `anim/SCENES.md`, `anim/KITS_API.md` 
 - Client text rule: no em/en dashes in on-screen text; avoid repetitive dialogue ("go go go go").
 - If the session hits a usage limit, resume each agent with SendMessage to its id: files on disk are kept.
 
+## Timing and craft (from JohnHeibel/ClaudeAnimationBase ANIMATION_GUIDE.md, adopted by the user)
+- **Model the viewer: write the reads.** For every shot, list in order what the viewer must understand ("reads"), each with
+  a start and end time. Each read needs time for the eye to find it, understand it, and register it before the next starts.
+  One read at a time; cause, then reaction, in sequence. Fast actions, slow meanings: anticipate, act fast, then HOLD.
+  Lead the eye (something moves / lights up / is looked at) before an important read. Reads set the shot length.
+- **Nothing ever still** (idle motion, camera drift), **faces act, never snap**, characters big enough to feel.
+- **Transitions at every seam**, chosen for the story (match cut, cut on action, whip with smear, iris, carry-through
+  camera move). Never a pop; props arrive/leave on arcs. Never "zoom in then immediately zoom out".
+- **Avoid twinning:** offset phases/seeds so crowds, arms and blinks never move in unison.
+- **Rhyme the ending with the opening**; keep screen direction consistent across cuts; props carry over.
+- **Review loop, three zooms:** contact sheet (shape of the piece), STRIP of every frame for each key motion and every
+  seam/transition (catches pops, flashes, 1-frame glitches), and full-res CROPS of faces/text. Count frames per read.
+- Not adopted: the guide's "no text" rule (this client needs Hebrew subtitles, brand, signs) and its p5.brush
+  hand-painted boil look (a different style; would mean redrawing everything).
+
+## Lessons from this client's feedback (GOTV promo, v1 to v7)
+- Anything that flashes for a second before its moment reads as a BUG (a sign visible too early, a location shown
+  out of order, a zoom in/out bounce). Reveal things only when the story reaches them.
+- Cinematic, commercial-grade camera language: chase cam behind the hero, over-the-shoulder two-shots, side tracking;
+  avoid awkward giant close-ups with the hero tiny in a corner.
+- Drone shots must FEEL like a drone: one continuous stabilized glide, slow yaw, gentle float, gimbal tilt change.
+- Crowds (stadium) must be rich and alive: jumping, scarves, flags, tifo, flares; team is Maccabi Tel Aviv (yellow/blue).
+- Scoreboards in RTL: put each team's number next to its own name.
+- Mobile deliverable must be under 30 MB: 2-pass x264 at ~(28.5 MB x 8 / duration) kbps; keep film grain light and held
+  2 frames or busy scenes (ocean particles) turn blocky.
+- Retiming without rewriting: load a scene file after `A.SHIFT = d` (engine.js) and shift its cue file in mix.py.
+- Always explain back to the user what you understood before a big change when they ask; answer in Hebrew.
+
 ## How the user starts a new one
 "תפעיל את שיטת הסטודיו (animated-short) על: <נושא>, <אורך>, <מותג/לוגו לסיום>"
