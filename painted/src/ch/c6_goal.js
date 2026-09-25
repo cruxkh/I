@@ -123,7 +123,7 @@
     const z = kf(t, [[UNF, 1600], [NET, 1650], [NET + .12, 1780], [75.0, 1820]], easeOut);
     boilSeed('c6 tvwall');
     paint(rectPts(-40, -40, W + 80, H + 80), { wash: '#C9A07A', ink: null });
-    paint(ellPts(960, 540, 1100, 700, 24, 6), { fill: '#E7C49A', fillOp: 110, bleed: .25, tex: .5, ink: null });
+    paint(ellPts(960, 540, 1100, 700, 24, 6), { wash: '#E7C49A', washOp: 150, ink: null });
     const w = z, h = w * 286 / 480;
     tvSet(960 - w / 2 + sh[0], 560 - h / 2 + sh[1], w, h, t, { ...tvOpt(t), noStand: true });
     flash(.8 * Math.exp(-(t - UNF) * 9), '#FFFDF6');
@@ -182,8 +182,8 @@
   function endBg(t) {
     boilSeed('c6 end bg');
     paint(rectPts(-60, -60, W + 120, H + 120), { wash: NAVY, ink: null });
-    paint(ellPts(960, 520, 900, 520, 30, 10), { fill: '#2B3C8E', fillOp: 150, bleed: .25, tex: .6, border: .4, ink: null });
-    paint(ellPts(960, 1180, 1300, 330, 26, 10), { fill: '#E7C49A', fillOp: 90, bleed: .3, tex: .7, border: .5, ink: null });
+    paint(ellPts(960, 520, 900, 520, 30, 10), { wash: '#2B3C8E', washOp: 170, ink: null });
+    paint(ellPts(960, 1180, 1300, 330, 26, 10), { wash: '#E7C49A', washOp: 120, ink: null });
     for (let i = 0; i < 14; i++) {        // twinkles
       const x = 80 + hash(i * 3.3) * 1760, y = 60 + hash(i * 1.7 + 4) * 560, k = .5 + .5 * Math.sin(t * 3 + i * 2);
       if (Math.abs(x - 960) < 460 && y > 150 && y < 460) continue;

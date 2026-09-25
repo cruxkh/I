@@ -124,6 +124,17 @@
     for (let i = 0; i < 5; i++) { const ang = -Math.PI / 2 + (i - 2) * .5, r = 50 + 70 * k; paint(ellPts(bx + Math.cos(ang) * r, by - 100 + Math.sin(ang) * r * .7, 22 * (1 - a / .7) + 4, 16 * (1 - a / .7) + 3, 9, 3), { wash: '#E8DCC6', washOp: 220 * (1 - a / .7), ink: null }); }
     if (a < .25) paint(starPts(bx, by - 110, 60 + 60 * k, .42, 7, .3), { wash: '#FFE08A', washOp: 230 * (1 - a / .25), ink: PAL.ink, sw: 1.1 });
   }
+  // 37.0: gold light pours out of the TV (my own cheap version: washes + one glow; tvSet's gold is ~25 glows)
+  function goldPour(t, g) {
+    const [x, y, w, h] = FAM_ROOM.tv, cx = x + w / 2, cy = y + h / 2;
+    boilSeed('c2 gold');
+    paint(rectPts(x + w * .035, y + w * .035, w * .93, h - w * .07), { wash: '#FFF3C8', washOp: 255 * seg(g, .15, .7), ink: null });
+    for (let i = 0; i < 7; i++) {
+      const a = (i + .3) / 7 * TAU + .05 * Math.sin(t * 2 + i), L = (500 + 300 * hash(i)) * g, sp = .09;
+      paint([[cx, cy], [cx + Math.cos(a - sp) * L, cy + Math.sin(a - sp) * L * .8], [cx + Math.cos(a + sp) * L, cy + Math.sin(a + sp) * L * .8]], { wash: '#FFE08A', washOp: 70 * g, ink: null });
+    }
+    glow(cx, cy, w * (.8 + 1.4 * g), '#FFC84A', g);
+  }
   function caseOnPouf(t) {
     if (t < 24.45) return;
     backgammon(1085 + 20, 918, .42, { mode: 'table' });
@@ -132,12 +143,13 @@
   function scene(t, o = {}) {
     const tv = tvOpt(t), g = goldK(t);
     livingRoom(t, {
-      tv, bin: false, shelfEmpty: t >= YANK, gold: g, tvLight: tv.screen === 'off' ? 0 : 1,
+      tv, bin: false, shelfEmpty: t >= YANK, gold: 0, tvLight: tv.screen === 'off' ? 0 : 1,
       box: { shake: t > 29.02 && t < YANK ? 4 : 0, yank: seg(t, 29.1, YANK), led: 'red' },
       lamp: 1 - .35 * g,
     });
-    if (tv.screen === 'app') glow(1540, 547, 500 * backOut(seg(t, APP, APP + .4)), '#FFD36A', .45 * (1 - seg(t, APP + .4, APP + 1.2)) + .15);
+    if (tv.screen === 'app' && t < APP + 1.2) glow(1540, 547, 500 * backOut(seg(t, APP, APP + .4)), '#FFD36A', .45 * (1 - seg(t, APP + .4, APP + 1.2)) + .15);
     if (t > YANK && t < YANK + .25) glow(1540, 547, 260, '#FFFFFF', 1 - seg(t, YANK, YANK + .25));   // TV blinks off
+    if (g > 0) goldPour(t, g);
     boxInBin(t); bin(t); binFront(t);
     caseOnPouf(t);
     // Saba
@@ -152,7 +164,7 @@
     flyingBox(t);
     crashFx(t);
     // gold light washes over the cast
-    if (g > 0) { glow(1540, 547, 1400 * g, '#FFC84A', .5 * g); glow(1290, 620, 300, '#FFE08A', .5 * g); glow(560, 560, 320, '#FFE08A', .45 * g); }
+    if (g > 0) glow(1100, 580, 1300 * g, '#FFC84A', .55 * g);
   }
   // camera with a hand-held drift
   function cam(t, cx, cy, z, sh = [0, 0]) {
@@ -192,7 +204,7 @@
   function tvWall(t, key) {
     boilSeed('c2 tvwall ' + key);
     paint(rectPts(-40, -40, W + 80, H + 80), { wash: '#C9A07A', ink: null });
-    paint(ellPts(960, 540, 1100, 700, 24, 6), { fill: '#E7C49A', fillOp: 110, bleed: .25, tex: .5, ink: null });
+    paint(ellPts(960, 540, 1100, 700, 24, 6), { wash: '#E7C49A', washOp: 110, ink: null });
   }
   function insert(t, lt, opt, push0, push1, sh = [0, 0]) {
     const k = ease(seg(lt, 0, 2)), w = lerp(push0, push1, k), h = w * 286 / 480;
@@ -245,18 +257,15 @@
     scene(t);
     camEnd();
   }
-  function phoneBg(t) {
+  function phoneBg(t) {          // soft out-of-focus room behind the phone: washes only (fills are costly here)
     boilSeed('c2 phone bg');
     paint(rectPts(-40, -40, W + 80, H + 80), { wash: '#D9B78E', ink: null });
-    paint(ellPts(260, 300, 520, 420, 24, 8), { fill: '#F2B25C', fillOp: 120, bleed: .3, tex: .5, ink: null });
-    paint(ellPts(1560, 420, 420, 300, 24, 8), { fill: '#6E6A8C', fillOp: 70, bleed: .3, tex: .5, ink: null });
-    paint(ellPts(1650, 900, 520, 260, 24, 8), { fill: '#9A643F', fillOp: 110, bleed: .3, tex: .5, ink: null });
+    paint(ellPts(260, 300, 520, 420, 24, 8), { wash: '#F2B25C', washOp: 120, ink: null });
+    paint(ellPts(1560, 420, 420, 300, 24, 8), { wash: '#6E6A8C', washOp: 60, ink: null });
+    paint(ellPts(1650, 900, 520, 260, 24, 8), { wash: '#9A643F', washOp: 110, ink: null });
+    for (const [bx, by, r] of [[1400, 250, 60], [1700, 180, 44], [520, 820, 50]]) paint(ellPts(bx, by, r, r, 14), { wash: '#FFE9B8', washOp: 110 + 40 * wob(t, .5, bx), ink: null });
     glow(300, 280, 380, '#FFB85A', .6);
-    glow(1400, 250, 90, '#FFE3A8', .35 + .1 * wob(t, .7));
-    glow(1700, 180, 60, '#FFE3A8', .3 + .1 * wob(t, .5, .4));
-    glow(520, 820, 70, '#FFE3A8', .25);
-    // Noa's teal hoodie shoulder, soft behind the phone
-    paint(ellPts(560, 1180, 520, 330, 22, 6), { fill: '#3FA59C', fillOp: 150, bleed: .2, tex: .4, ink: null });
+    paint(ellPts(560, 1180, 520, 330, 22, 6), { wash: '#3FA59C', washOp: 170, ink: null });   // Noa's hoodie, soft behind
   }
   function shotW(t, lt, dur) {   // WhatsApp close-up: frame the typing, then glide up to the bubbles
     phoneBg(t);

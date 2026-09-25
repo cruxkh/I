@@ -19,7 +19,7 @@
     [58.4, 'determined'], [62.15, 'bored', { lookX: .5, lookY: -.5 }], [63.6, 'panic'], [63.95, 'cheeky'],
     [64.22, 'laugh'], [65.45, 'cheeky', { lookX: .7 }], [66.6, 'determined'], [68.4, 'joy'],
   ]);
-  const mapP = t => kf(t, [[58.4, 0], [60.3, ROUTE_STOPS.marseille], [61.2, ROUTE_STOPS.gibraltar], [64, .55], [66.6, .66], [68.0, ROUTE_STOPS.halifax], [69.3, 1]], x => x);
+  const mapP = t => kf(t, [[58.4, 0], [60.3, .29], [61.2, .40], [64, .55], [66.6, .66], [68.0, .84], [69.3, 1]], x => x);
 
   // Bit inside the cable at screen x (pre-camera coords, same as ocean()): the glass tube bulges around him.
   function tubeBit(bx, s, sc, t, o = {}) {

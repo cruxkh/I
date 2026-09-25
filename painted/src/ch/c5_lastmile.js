@@ -64,13 +64,13 @@
     camBegin(lerp(760, 1180, ease(seg(t, 71.15, 72.1))), lerp(620, 520, ease(seg(t, 71.6, 72.15))), 1.1);
     boilSeed('c5 wall');
     paint(rectPts(-200, -200, W + 400, H + 400), { wash: '#3B2B2E', ink: null });
-    paint(ellPts(1500, 120, 900, 520, 26, 10), { fill: '#8A5A3E', fillOp: 110, bleed: .25, tex: .6, ink: null });
+    paint(ellPts(1500, 120, 900, 520, 26, 10), { wash: '#6A4636', washOp: 150, ink: null });
     glow(1650, 60, 520, '#FFC77A', .7);
     // cabinet back panel (top) and the dusty floor
     boilSeed('c5 cab');
     paint(rectPts(-200, -200, W + 400, 330, 4), { wash: '#5C3E2E', ink: PAL.ink, sw: 1.2 });
     for (let i = 0; i < 4; i++) inkLine([[-100, 60 + i * 60 + 8 * hash(i)], [W + 100, 70 + i * 60]], .5, '#4A3024', 'inkfine', .3);
-    paint(rectPts(-200, 800, W + 400, 500, 6), { wash: '#5A4238', fill: '#6E5244', fillOp: 90, bleed: .2, tex: .7, ink: null });
+    paint(rectPts(-200, 800, W + 400, 500, 6), { wash: '#5A4238', ink: null });
     // wall socket
     boilSeed('c5 socket');
     paint(rrPts(90, 500, 130, 170, 14), { wash: '#E9DFC8', ink: PAL.ink, sw: 1 });

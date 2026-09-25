@@ -23,6 +23,15 @@
 //                   point. Hard cut 58.4.
 (() => {
   const GW = '#FFF4D8';
+  // batched light: glow() flushes p5.brush on every call (slow on soft-gl); queue and flush once, same transform
+  const GQ = [];
+  const gq = (x, y, r, col, a = 1) => { if (a > 0 && r >= 1) GQ.push([x, y, r, col, a]); };
+  function gflush() {
+    if (!GQ.length) return;
+    flushBrush(); push(); blendMode(ADD);
+    for (const [x, y, r, col, a] of GQ) { const c = color(col); tint(red(c), green(c), blue(c), 150 * clamp(a)); image(glowTex, x - r, y - r, 2 * r, 2 * r); }
+    noTint(); blendMode(BLEND); pop(); GQ.length = 0;
+  }
   const KINDS = ['mail', 'video', 'meme', 'update', 'shop', 'photo', 'music'];
   const kindOf = i => KINDS[Math.floor(hash(i * 3.7 + 1) * KINDS.length)];
 
@@ -67,8 +76,8 @@
     paint(rectPts(-80, -80, W + 160, H + 160), { wash: mixCol('#171C4C', '#261634', jam * .5), ink: null });
     const oy = 540 - camY;
     // ceiling glow band + far wall
-    paint(rectPts(-80, 60 + oy * .5, W + 160, 300), { fill: mixCol('#3A3F90', '#5A2A48', jam * .6), fillOp: 90, bleed: .25, tex: .6, ink: null });
-    paint(rectPts(-80, 420 + oy * .7, W + 160, 300), { fill: mixCol('#2C4A8A', '#4A2638', jam * .6), fillOp: 80, bleed: .25, tex: .6, ink: null });
+    paint(rectPts(-80, 60 + oy * .5, W + 160, 300), { wash: mixCol('#2A2F78', '#452240', jam * .6), washOp: 150, ink: null });
+    paint(rectPts(-80, 420 + oy * .7, W + 160, 300), { wash: mixCol('#24407A', '#3E2234', jam * .6), washOp: 140, ink: null });
     // floor
     boilSeed('sfloor');
     paint(rectPts(-80, FLOOR - 10 + oy, W + 160, 520), { wash: mixCol('#1B2358', '#2A1A38', jam * .5), ink: null });
@@ -87,10 +96,11 @@
       boilSeed('rib' + k);
       const col = k & 1 ? mixCol('#5FD8E8', '#F0674E', jam) : mixCol('#E46AC0', '#F2A03A', jam);
       inkLine([[x - 20, -60 + oy], [x, 300 + oy], [x - 10, FLOOR - 10 + oy]], 3, col, 'dry', .6);
-      glow(x, 40 + oy, 140, col, .7);
-      glow(x - 10, FLOOR - 14 + oy, 90, col, .55 + (jam > .3 ? .3 * Math.sin(t * 6 + k) : 0));
+      gq(x, 40 + oy, 140, col, .7);
+      gq(x - 10, FLOOR - 14 + oy, 90, col, .55 + (jam > .3 ? .3 * Math.sin(t * 6 + k) : 0));
     }
-    if (boost > .02) glow(960, 300, 700, '#FFE9A8', .5 * boost);
+    if (boost > .02) gq(960, 300, 700, '#FFE9A8', .5 * boost);
+    gflush();
   }
 
   // ------------------------------------------------------------------ shot A · chase into the tail

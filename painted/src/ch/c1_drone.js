@@ -63,9 +63,9 @@
   // ---------------------------------------------------------------- C/D: mast, launch, flash out
   function tower(t) {
     const lt = t - WHIP;
-    const land = kf(lt, [[0, 700], [.18, -40], [.4, 12], [.7, 0]], easeOut);   // arrive from below, overshoot, settle
+    const land = kf(lt, [[0, 700], [.18, -22], [.4, 8], [.7, 0]], easeOut);   // arrive from below, overshoot, settle
     const push_ = ease(seg(t, 9.0, 10.2));
-    const cx = 960 + 120 * push_ + 8 * wob(t, .2), cy = 560 + land - 60 * push_ + 6 * wob(t, .27, .4);
+    const cx = 960 + 120 * push_ + 8 * wob(t, .2), cy = 500 + land - 30 * push_ + 6 * wob(t, .27, .4);
     camBegin(cx, cy, 1.02 + .12 * push_, .01 * wob(t, .15));
     const m = mast(t, { broadcast: seg(t, 8.7, 9.1) });
     packetStream([m.top, [1180, 120], [1520, 330], [1900, 640], [2400, 860]], t, { t0: 9.0, n: 12, gap: .1, speed: 950, size: 18, gold: 4, glint: 9.6 });
