@@ -49,6 +49,14 @@ watercolor video; offering the menu up front avoids that.
 - Engine: ClaudeAnimationBase (MIT) in `painted/` (p5 + p5.brush + puppeteer). No GPU here: run render.mjs with
   `--soft-gl` and `CHROME_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome` (~30 s/frame; use workers, few-frame sheets).
   PDoomVideo has no licence: use it as style reference only, never copy its code.
+- SPEED on soft GL (measured, painted v1):
+  - `NO_FILL = true` in core.js: paint() turns p5.brush fills into washes. A fill cost 1.5 to 300 s; now a frame takes seconds and the look barely changes.
+  - Batch glows (`glowQ`/`glowFlush`); never loop `glow()`.
+  - Render with `--pd=0.5` (pixelDensity .5, upscaled on composite; grain and subtitles stay full-res): 3.5x faster, same look.
+  - One browser's SwiftShader GPU process is the bottleneck. Run 3 render processes in parallel on split `--range`s (2 workers each) with `--recycle=400`.
+  - Render at 12 fps and encode with `-r 24`, which gives the "on twos" hand-drawn feel.
+  - Sheet "ms/frame" numbers lie (GPU is async). Time real frames with `--stills`.
+  - Never `pkill -f` a pattern that is also in your own shell command (it kills your shell). Use `pgrep -x node`/`pgrep -x chrome`.
 - Look: picture-book watercolour and ink. Characters = flat `wash` colour + boiling ink outline (sw ~0.8–1.6);
   backgrounds = soft watercolour `fill` shapes (bleed ~.05–.3, tex ~.3–.9), usually no outline; light = low-opacity fills
   or `glow()`; texture from fills/occasional hatch, not noise. Soft saturated palette, never pure black/white.

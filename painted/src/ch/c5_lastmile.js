@@ -102,7 +102,7 @@
   // ---------------------------------------------------------------- C / D · the smart TV
   function tvOpt(t) {
     const pct = t < 73.45 ? 99 : 100;
-    return { screen: 'freeze', pct, gold: .35 * Math.exp(-6 * Math.max(0, t - 73.45)) * (t >= 73.45 ? 1 : 0), glow: 1 + .8 * Math.exp(-4 * Math.max(0, t - IMPACT)) * (t >= IMPACT ? 1 : 0) };
+    return { screen: 'freeze', pct, bug: t >= 73.45 ? 'gotv' : 'old', gold: .35 * Math.exp(-6 * Math.max(0, t - 73.45)) * (t >= 73.45 ? 1 : 0), glow: 1 + .8 * Math.exp(-4 * Math.max(0, t - IMPACT)) * (t >= IMPACT ? 1 : 0) };
   }
   function room(t, jolt) {
     const [tx, ty, tw, th] = FAM_ROOM.tv;
