@@ -45,6 +45,24 @@ watercolor video; offering the menu up front avoids that.
 | 13 | Pixel art (פיקסל ארט) | low-res pixel sprites, limited palette, retro game feel | render at 320x180 and nearest-neighbour upscale | medium |
 | 14 | Low-poly 2.5D (לואו-פולי) | faceted geometric shapes with flat shading, parallax depth | triangle meshes with per-face shading, layered parallax | medium |
 
+### Style 1 in practice (hand-painted watercolor), learned from JohnHeibel/PDoomVideo + ClaudeAnimationBase
+- Engine: ClaudeAnimationBase (MIT) in `painted/` (p5 + p5.brush + puppeteer). No GPU here: run render.mjs with
+  `--soft-gl` and `CHROME_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome` (~30 s/frame; use workers, few-frame sheets).
+  PDoomVideo has no licence: use it as style reference only, never copy its code.
+- Look: picture-book watercolour and ink. Characters = flat `wash` colour + boiling ink outline (sw ~0.8–1.6);
+  backgrounds = soft watercolour `fill` shapes (bleed ~.05–.3, tex ~.3–.9), usually no outline; light = low-opacity fills
+  or `glow()`; texture from fills/occasional hatch, not noise. Soft saturated palette, never pure black/white.
+- Keep it SIMPLE: fewer, bigger shapes (hundreds of fills fine, thousands not); one focal action, big silhouettes
+  (lead character ~40% of frame height in key shots); a clear chapter palette arc.
+- Sets, not cards: each chapter lives in one place the camera moves through; recurring set/prop pays off.
+- Motivated transitions: brush wipes at chapter breaks; inside chapters the action carries the cut (chomp to black, zoom
+  through an eye, flash, door slam). Every shot has a push/pan/tilt/whip/zoom or on-beat shake.
+- Everything on the beat (pulse/beat helpers); squash-stretch, anticipation, `backOut`/`elasticOut` overshoot.
+- Mood changes never snap: squint, squash "take", emote pop, then new eyes (`mood()` / `emotions()`).
+- Text-light: a few big comic SFX words at most; the subtitle band (our house subtitle style) is the only running text.
+- Storyboard as tables per chapter (time | line | shot | out-transition) with a palette per chapter; rhyme the ending
+  with the opening (PDoom opens and closes on the same curtain).
+
 ## Pipeline (the director = the main session; up to ~13 agents)
 1. **Director alone:** story (logline + beat table with exact global seconds), dialogue `audio/script.json`,
    run `tools/tts.py` (fix overlaps), write `BIBLE.md` (story, sync table, style, colour script, character designs,
