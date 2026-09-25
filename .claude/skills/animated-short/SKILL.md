@@ -68,6 +68,11 @@ rewrite the content. Read `anim/BIBLE.md`, `anim/SCENES.md`, `anim/KITS_API.md` 
 - Mobile deliverable must be under 30 MB: 2-pass x264 at ~(28.5 MB x 8 / duration) kbps; keep film grain light and held
   2 frames or busy scenes (ocean particles) turn blocky.
 - Retiming without rewriting: load a scene file after `A.SHIFT = d` (engine.js) and shift its cue file in mix.py.
+- **Subtitles: ALWAYS use this production's subtitle style** (the client loves it; implemented in `anim/engine_post.js`
+  `subs()`, copy it as is): big bold Hebrew line (Rubik 700, 50 px, cream `#fff8e6`, dark stroke, rtl) on a rounded
+  translucent dark pill at the bottom centre, with a smaller English line under it (Rubik 500, 26 px) whose words light up
+  yellow `#ffd84a` one by one in sync with the voice (word timings from `tools/tts.py`); soft fade/slide in and out; keep
+  key action out of the bottom ~140 px while someone speaks; `A.noSubs(t)` to hide them on title/end cards.
 - Always explain back to the user what you understood before a big change when they ask; answer in Hebrew.
 
 ## How the user starts a new one
