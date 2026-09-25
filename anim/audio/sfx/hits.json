@@ -84,6 +84,5 @@
  "crowd_ooh_aah": 0.8,
  "tv_ball_kick": 0.003,
  "tv_ref_whistle": 0.01,
- "tv_crowd_ooh_aah": 0.8,
- "tv_commentator_murmur": 0.0
+ "tv_crowd_ooh_aah": 0.8
 }

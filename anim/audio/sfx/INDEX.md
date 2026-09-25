@@ -94,6 +94,5 @@ All sounds are synthesised procedurally by `audio/tools/sfx.py` (seeded, reprodu
 | `tv_ball_kick` | mono | 0.70 | 0.003 | one-shot, peak -1 dBFS | Ball kick heard through the TV speaker (mono, band-limited). Hit 0.003 s. |
 | `tv_ref_whistle` | mono | 1.40 | 0.010 | one-shot, peak -1 dBFS | Referee whistle through the TV speaker (mono). Hit 0.01 s. |
 | `tv_crowd_ooh_aah` | mono | 2.20 | 0.800 | one-shot, peak -1 dBFS | Crowd "ooh-aah" near-miss through the TV speaker (mono). Peak/hit 0.8 s. 2.2 s. |
-| `tv_commentator_murmur` | mono | 9.10 | 0.000 | bed, RMS -24 dBFS | Unintelligible excited TV commentator babble (one male voice, no words) through the TV speaker -- sits under the living-room dialogue at low level, rising with the breakaway. 9.1 s (10.2 -> 19.3), ends hard like tv_crowd_live. |
 
 See `audio/cues/base.json` for how these are placed on the 60 s timeline; mixing notes are in the header of `audio/tools/preview_mix.py`.

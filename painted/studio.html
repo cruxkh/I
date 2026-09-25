@@ -5,6 +5,7 @@
 <title>Clawd studio</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=block">
 <style>
+  @font-face { font-family: "Rubik"; src: url("assets/Rubik.ttf"); font-weight: 300 900; }
   html, body { margin: 0; background: #1b1820; color: #eee; font: 13px system-ui, sans-serif; }
   main { padding: 12px; display: grid; gap: 8px; }
   #out { width: min(100%, 1280px); aspect-ratio: 16 / 9; height: auto; background: #F3EBDC; }
@@ -19,7 +20,7 @@
 <body>
 <main>
   <canvas id="out" width="1920" height="1080"></canvas>
-  <div class="bar"><input id="scrub" type="range" min="0" max="11" step="0.0417" value="0"><span id="tt">loading…</span></div>
+  <div class="bar"><input id="scrub" type="range" min="0" max="96" step="0.0417" value="0"><span id="tt">loading…</span></div>
 </main>
 <!-- engine -->
 <script src="src/config.js"></script>
@@ -29,7 +30,18 @@
 <!-- reference sheets (standalone loops) -->
 
 <!-- your video: add a script per scene file, in order -->
-<script src="src/scenes/demo.js"></script>
+<script src="src/lines.js"></script>
+<script src="src/kit_family.js"></script>
+<script src="src/kit_packets.js"></script>
+<script src="src/kit_telaviv.js"></script>
+<script src="src/kit_journey.js"></script>
+<script src="src/ch/c1_drone.js"></script>
+<script src="src/ch/c2_home.js"></script>
+<script src="src/ch/c3_queue.js"></script>
+<script src="src/ch/c4_ocean.js"></script>
+<script src="src/ch/c5_lastmile.js"></script>
+<script src="src/ch/c6_goal.js"></script>
+<script src="src/subs.js"></script>
 <script>
   // Open studio.html?loop=emotions (or views) to scrub a standalone loop instead of the video.
   const q = new URLSearchParams(location.search).get('loop'); if (q && LOOPS[q]) window.LOOP = LOOPS[q];

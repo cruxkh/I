@@ -99,6 +99,16 @@ for i in range(0, N, 48):  # control rate 1 kHz
 duck_m, duck_s = db(-4.5 * env)[:, None], db(-3 * env)[:, None]
 
 MUS_DB, SFX_DB, DIA_DB = float(os.environ.get('MUS_DB', -3)), float(os.environ.get('SFX_DB', -2)), 0.0
+# music dips so crowd / goal read over the score: (start, end, dB), 0.4 s ramps
+MUSIC_DIPS = [(0.0, 9.6, -4.0), (73.8, 78.5, -4.5)]
+dip = np.zeros(N)
+tt = np.arange(N) / SR
+for a, b, g in MUSIC_DIPS:
+    w = np.clip(np.minimum((tt - a) / 0.4 + 1, (b - tt) / 0.4 + 1), 0, 1)
+    dip = np.minimum(dip, g * w)
+duck_m = duck_m * db(dip)[:, None]
+# dialogue ride over the goal eruption
+dia[int(74.4 * SR):int(78.6 * SR)] *= db(3.0)
 mix = dia * db(DIA_DB) + sfx * db(SFX_DB) * duck_s + mus * db(MUS_DB) * duck_m
 mix = bp(mix, 25, None, 2)
 

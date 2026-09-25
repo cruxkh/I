@@ -218,7 +218,7 @@ function drawLetters(c) {
     const k = L.pop != null ? backOut(L.pop) : 1; if (k <= .01) continue;
     c.save(); c.translate(L.x, L.y); c.rotate(L.rot || 0); c.scale(k, k); c.globalAlpha = L.alpha ?? 1;
     c.font = L.font || `${L.size}px "Permanent Marker", "Comic Sans MS", cursive`;
-    c.textAlign = L.align || 'center'; c.textBaseline = 'middle';
+    c.textAlign = L.align || 'center'; c.textBaseline = 'middle'; c.direction = /[\u0590-\u05FF]/.test(L.txt) ? 'rtl' : 'ltr';
     if (L.stroke) { c.lineJoin = 'round'; c.lineWidth = L.size * .12; c.strokeStyle = L.stroke; c.strokeText(L.txt, 0, 0); }
     if (L.ink !== false) { c.fillStyle = PAL.ink; c.fillText(L.txt, L.size * .045, L.size * .055); }
     c.fillStyle = L.color; c.fillText(L.txt, 0, 0);
@@ -278,6 +278,7 @@ async function setup() {
   paperG = makePaper(); grainC = makeGrain(); glowTex = makeGlowTex(); letG = createGraphics(W, H); letG.pixelDensity(1);
   outC = document.getElementById('out'); outX = outC.getContext('2d');
   await document.fonts.load('100px "Permanent Marker"');
+  await Promise.all(['500 26px Rubik', '700 50px Rubik', '900 50px Rubik'].map(f => document.fonts.load(f, 'אבג abc')));
   window.ready = true;
   if (!location.search.includes('render')) devUI();
 }
@@ -297,6 +298,7 @@ function composite(t) {
   drawLetters(c);
   c.globalCompositeOperation = 'multiply'; c.drawImage(grainC, 0, 0);
   c.globalCompositeOperation = 'source-over';
+  if (window.AFTER_COMPOSITE) window.AFTER_COMPOSITE(c, t); // crisp overlays on top of the grain (subtitles)
 }
 window.renderAt = async (t, type = 'image/png', q = .92) => { T = t; await redraw(); composite(t); return outC.toDataURL(type, q); };
 // Contact sheet of several times, for visual checks: returns { url, ms[] }. crop = [x, y, w, h] fills each cell with just

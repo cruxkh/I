@@ -109,19 +109,19 @@ V5 = SYNC
 JAM_KEEP_AT_FLASH = {'dive_whoosh', 'light_shimmer'}   # the 35.2 flash belongs to S2's end -> 39.2
 V7_OPEN = [
     # v7 client feedback: the v1 crowd is back up front, chant only a sweetener
-    (0.0, 'stadium_crowd_bed', -8, 0.0),       # 9.6 s: builds, ROARS 5.5-8.3 over the home stand
-    (0.0, 'stadium_drums', -10, 0.1),          # ultras drums, full power 5.5-8.3
+    (0.0, 'stadium_crowd_bed', -4, 0.0),       # 9.6 s: builds, ROARS 5.5-8.3 over the home stand
+    (0.0, 'stadium_drums', -8, 0.1),          # ultras drums, full power 5.5-8.3
     (0.0, 'stadium_chant', -17, 0.0),          # quiet sweetener only
     (0.0, 'city_night_telaviv', -20, 0.0),
-    (5.2, 'crowd_swell_ooh', -9, 0.0),         # swell crests as the drone reaches the stand
+    (5.2, 'crowd_swell_ooh', -6, 0.0),         # swell crests as the drone reaches the stand
     (1.0, 'fan_whistles', -16, -0.3),
-    (6.0, 'fan_whistles', -12, 0.3),
+    (6.0, 'fan_whistles', -10, 0.3),
     (1.9, 'ball_kick_far', -12, -0.2),         # players on the pitch below
     (3.3, 'ball_kick_far', -13, 0.1),
     (4.4, 'ball_kick_far', -12, 0.25),
     (3.0, 'crowd_ooh_aah', -16, 0.0),          # near-miss reaction under the announcer
-    (5.3, 'flag_flutter', -12, -0.4),          # tifo flags right by the drone
-    (7.3, 'flag_flutter', -13, 0.4),
+    (5.3, 'flag_flutter', -10, -0.4),          # tifo flags right by the drone
+    (7.3, 'flag_flutter', -11, 0.4),
     (8.5, 'whip_pan', -8, 0.0),                # tilt/whip up to the IPTV mast
     (9.0, 'broadcast_launch', -6, 0.0),        # packets launch (Bit glint)
     (9.6, 'data_whoosh', -13, 0.3),
@@ -141,9 +141,9 @@ V7_TV = [
     (19.0, 'tv_ball_kick', -11, TV),           # last touch before the freeze
     # goal 74.3
     (74.0, 'tv_ball_kick', -9, TV),            # the strike
-    (74.4, 'stadium_goal_eruption', -8, 0.0),  # full power in the room too
+    (74.95, 'stadium_goal_eruption', -8, 0.0), # full power in the room, right after the TV "Goooal!" onset
 ]
-V7_GAIN = {('tv_crowd_live', 10.2): -12, ('tv_crowd_goal', 74.3): -5, ('ball_net_swish', 74.3): -6,
+V7_GAIN = {('tv_crowd_live', 10.2): -12, ('tv_crowd_goal', 74.3): -6, ('ball_net_swish', 74.3): -6,
            ('stadium_goal_eruption', 75.5): None}   # None = drop (moved to 74.4 at full power)
 V7_JAM = [
     (39.2, 'dataworld_ambience', -12, 0.0),    # 19.6 s bed
