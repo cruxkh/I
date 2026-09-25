@@ -13,3 +13,10 @@
 - oldBox(x,y,s,o): rot, cables, to, yank, loose, dust, shake, led.
 - NOTE: props with text (TV, phone, box) must be positioned with their own x,y,s args or the camera (camBegin), not inside your own push/translate (text doesn't follow). They call flushLetters().
 - Model sheet: --loop=kit_family at loop times >= 100 (4 s per page).
+
+## PERFORMANCE (critical on this no-GPU machine)
+- p5.brush `fill` costs 1.5–8 s EACH under load and can hang minutes on thin slivers / huge shapes. Avoid `fill` in
+  chapter code: use layered translucent `wash`, darker edge rims, jittered edges (see kit_telaviv / kit_packets).
+- Every `glow()`, `flushLetters()`, `flushBrush()` hides one fill: batch glows (kit_telaviv exposes glowQ/glowFlush),
+  never call glow() in loops.
+- render.mjs now waits indefinitely for page load/ready and recycles pages every 6 frames in --frames mode.

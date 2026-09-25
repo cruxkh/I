@@ -78,7 +78,7 @@
     ocean(t, { scroll: sc, glowX: bx, dark: .35, jelly: false });
     // the shark's head looming from the upper right: jaws working (nom nom)
     shark(bx + 310 - lt * 12, cy - 175, .62, { flip: true, mood: 'hungry', bite: .25 + .25 * Math.abs(Math.sin(lt * 5)), lookX: -1, lookY: .8, boilKey: 'c4shark' });
-    tubeBit(bx, .62, sc, t, { vel: [300, 0], bo: { mouth: undefined } });
+    tubeBit(bx, .62, sc, t, { vel: [300, 0] });
     camEnd();
   }
 

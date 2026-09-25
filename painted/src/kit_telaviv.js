@@ -129,7 +129,7 @@
   function mottle(x0, y0, x1, y1, ts = 900, k = 1) {
     const T = washTex(); flushBrush(); push();
     const tile = (img, mode, a) => { blendMode(mode); tint(255, 255 * a); for (let x = Math.floor(x0 / ts) * ts; x < x1; x += ts) for (let y = Math.floor(y0 / ts) * ts; y < y1; y += ts) image(img, x, y, ts + 1, ts + 1); };
-    tile(T.D, MULTIPLY, k); tile(T.L, ADD, .8 * k);
+    tile(T.D, MULTIPLY, k); tile(T.L, ADD, .3 * k);
     noTint(); blendMode(BLEND); pop();
   }
   // watercolour-ish shape without an expensive fill: a darker pooled rim, the body inset, a lighter bloom inside
