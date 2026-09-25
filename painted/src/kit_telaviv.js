@@ -738,3 +738,13 @@
 
   Object.assign(window, { tlvCity, tlvDroneCam, stadium, ultras, mast, packetStream });
 })();
+LOOPS.tlv_bench = t => {
+  const mode = Math.floor(t);
+  paint(rectPts(-80, -80, W + 160, H + 160), { wash: '#223355', ink: null });
+  const P = i => [hash(i) * (W - 100) + 50, hash(i + .5) * (H - 100) + 50];
+  if (mode === 0) for (let i = 0; i < 3; i++) paint(ellPts(...P(i), 40, 30, 12, 2), { fill: '#88AACC', fillOp: 90, bleed: .2, tex: .5, ink: null });
+  if (mode === 1) for (let i = 0; i < 3; i++) paint(ellPts(...P(i), 500, 300, 20, 4), { fill: '#88AACC', fillOp: 90, bleed: .2, tex: .5, ink: null });
+  if (mode === 2) for (let i = 0; i < 3; i++) paint(ellPts(...P(i), 500, 300, 20, 4), { fill: '#88AACC', fillOp: 90, bleed: .05, tex: 0, ink: null });
+  if (mode === 3) for (let i = 0; i < 3; i++) paint(ellPts(...P(i), 40, 30, 12, 2), { fill: '#88AACC', fillOp: 90, bleed: .05, tex: 0, ink: null });
+};
+LOOPS.tlv_bench.len = 5;

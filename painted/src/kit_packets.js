@@ -104,6 +104,10 @@
   const ellBot = (cx, cy, rx, ry) => x => cy + ry * Math.sqrt(Math.max(0, 1 - ((x - cx) / rx) ** 2));
   const capAbove = (P, f, top) => P.map(([x, y]) => [x, Math.max(Math.min(y, f(x)), top ? top(x) : -1e9)]);
   const capBelow = (P, f, bot) => P.map(([x, y]) => [x, Math.min(Math.max(y, f(x)), bot ? bot(x) : 1e9)]);
+  // glow() and flushLetters() draw an image(); on soft-gl every watercolour fill painted after that (by anyone) costs
+  // ~2 s unless flushBrush() runs once more right after it. So the kit always follows them with flushBrush().
+  const glw = (...a) => { glow(...a); flushBrush(); };
+  const flushL = () => { flushLetters(); flushBrush(); };
   const idOf = (o, pre) => o.boilKey ?? pre + (++CLAWD_N);
 
   // ---------------------------------------------------------------- acted mood changes
@@ -249,7 +253,7 @@
       queued = true;
     });
     xf.pop();
-    if (queued && o.flush !== false) flushLetters();
+    if (queued && o.flush !== false) flushL();
     rs && rs('after-tag');
   }
 
@@ -289,7 +293,7 @@
           L.H = [[5.4, -8.9 + .2 * w1], [7.3, -7.3 + .2 * w2]]; L.rot = .22; L.dy = -1.2 + .3 * Math.sin(t * 3); L.bendL = [-.4, .3];
         } else {
           L.F = [[-1.5, .9 + .25 * Math.sin(t * 9)], [1.6, 1.2 + .25 * Math.sin(t * 9 + 1.2)]]; L.soles = [1, 1];
-          L.H = [[-4.3, -11.2 + .2 * w1], [4.5, -11.4 + .2 * w2]]; L.dy = -1.5 + .3 * Math.sin(t * 3); L.bendL = [0, 0];
+          L.H = [[-6.2, -10.6 + .2 * w1], [6.4, -10.9 + .2 * w2]]; L.bendA = [1, .3]; L.dy = -1.5 + .3 * Math.sin(t * 3); L.bendL = [0, 0];
         }
         break;
       case 'flop':
@@ -307,13 +311,25 @@
     }
     return L;
   }
-  function bitTrail(C, vx, vy, u, sw, t, id) {
+  function bitTrail(C, vx, vy, u, sw, t, id, back) {
     boilSeed(`kp ${id} trail`);
     const sp = Math.hypot(vx, vy), dx = -vx / sp, dy = -vy / sp, nx = -dy, ny = dx, len = Math.min(sp * .32, 30 * u);
     if (len < u) return;
+    if (back) {   // chase cam: light streams back past the camera from around his body
+      glw(C[0], C[1] + 3 * u, 10 * u, '#FFC766', .6);
+      for (let i = 0; i < 7; i++) {
+        const a = -.2 + (i / 6) * (Math.PI + .4) + (hash(i) - .5) * .25, k = frac(hash(i * 5.3) + t * 2.2);
+        const r0 = (6 + 7 * k) * u, r1 = r0 + (2.5 + 3 * k) * u, ca = Math.cos(a), sa = Math.sin(a) * .8 + .35;
+        inkLine([[C[0] + ca * r0, C[1] + sa * r0], [C[0] + ca * r1, C[1] + sa * r1]], sw * (1 + 1.4 * k), i % 2 ? '#FFE9A8' : CREAM, 'ink', 0);
+      }
+      for (let i = 0; i < 3; i++) {
+        const k = frac(hash(i + 20) + t * 1.6), a = hash(i + 30) * Math.PI, r = (5 + 9 * k) * u;
+        paint(starPts(C[0] + Math.cos(a) * r * 1.2, C[1] + Math.sin(a) * r * .6 + 2 * u, u * (.5 + .8 * k), .35, 4, t * 3), { wash: '#FFF4CE', ink: INK, sw: sw * .35 });
+      }
+      return;
+    }
     const P = []; for (let i = 0; i <= 5; i++) { const k = i / 5, wv = Math.sin(k * 5 - t * 14) * u * .5 * k; P.push([C[0] + dx * len * k + nx * wv, C[1] + dy * len * k + ny * wv]); }
-    glow(lerp(C[0], P[5][0], .3), lerp(C[1], P[5][1], .3), 7 * u, '#FFC766', .7);
-    glow(lerp(C[0], P[5][0], .7), lerp(C[1], P[5][1], .7), 4.5 * u, '#FFB347', .5);
+    glw(lerp(C[0], P[5][0], .4), lerp(C[1], P[5][1], .4), 7 * u, '#FFC766', .7);
     paint(ribbon(P, 6 * u, .3 * u), { wash: '#FFD45E', ink: INK, sw: sw * .5 });
     paint(ribbon(P.slice(0, 5), 3 * u, .2 * u), { wash: '#FFF4CE', ink: null });
     for (let i = 0; i < 4; i++) {   // speed dashes + sparkles drifting off the trail
@@ -323,15 +339,19 @@
       else paint(starPts(bx, by, u * (.9 - .5 * k), .35, 4, t * 3), { wash: '#FFF4CE', ink: INK, sw: sw * .35 });
     }
   }
-  function bitBoost(C, u, sw, t, k, id) {
+  function bitBoost(C, u, sw, t, k, id, vx, vy) {
     boilSeed(`kp ${id} boost`);
-    glow(C[0], C[1], 16 * u * k, '#FFC04A', 1);
-    glow(C[0], C[1], 9 * u * k, '#FFF1C0', .8);
-    const fl = f => { const P = []; for (let i = 0; i < 32; i++) { const a = i / 32 * TAU + t * 1.3, r = (i % 2 ? .72 : 1) * f * (1 + .1 * Math.sin(t * 23 + i * 1.7)); P.push([C[0] + Math.cos(a) * r * 1.1, C[1] + Math.sin(a) * r - (Math.sin(a) < 0 ? -Math.sin(a) * f * .25 : 0)]); } return P; };
-    paint(fl(9.5 * u * k), { wash: '#FFB53A', ink: INK, sw: sw * .6 });
-    paint(fl(7.6 * u * k), { wash: '#FFE58A', ink: null });
-    for (let i = 0; i < 8; i++) {
-      const a = i / 8 * TAU + hash(i) * .5, r0 = 11 * u * k, r1 = r0 + (2.5 + 2 * frac(t * 3 + hash(i + 4))) * u;
+    const sp = Math.hypot(vx, vy), bx = sp > 1 ? -vx / sp : 0, by = sp > 1 ? -vy / sp : .3;
+    glw(C[0], C[1], 16 * u * k, '#FFC04A', 1);
+    glw(C[0], C[1], 9 * u * k, '#FFF1C0', .8);
+    const fl = (f, n) => { const P = []; for (let i = 0; i < n * 2; i++) {
+      const a = i / (n * 2) * TAU + t * .7, lick = i % 2 ? .78 : 1 + .16 * Math.sin(t * 19 + i * 2.3), ca = Math.cos(a), sa = Math.sin(a);
+      const back = Math.max(0, ca * bx + sa * by), r = f * lick * (1 + .9 * back * back);
+      P.push([C[0] + ca * r * 1.15, C[1] + sa * r]); } return P; };
+    paint(fl(8.6 * u * k, 9), { wash: '#FFB53A', ink: INK, sw: sw * .6, curv: .6 });
+    paint(fl(7.0 * u * k, 9), { wash: '#FFE58A', ink: null, curv: .6 });
+    for (let i = 0; i < 6; i++) {
+      const a = Math.atan2(by, bx) + (i - 2.5) * .35, q = frac(t * 2.5 + hash(i + 4)), r0 = (10 + 4 * q) * u * k, r1 = r0 + 3 * u;
       inkLine([[C[0] + Math.cos(a) * r0, C[1] + Math.sin(a) * r0], [C[0] + Math.cos(a) * r1, C[1] + Math.sin(a) * r1]], sw * .9, '#FFF1C0', 'ink', 0);
     }
   }
@@ -347,9 +367,9 @@
     const C = [x0 + Math.sin(rot) * 5.4 * u, y + dy * u - 5.4 * u * (1 - sq) * Math.cos(rot)];
     const talk = typeof o.mouth === 'number' ? o.mouth : typeof o.mouth === 'string' ? 0 : mouthOf('BIT', t);
 
-    if (vk > .04) bitTrail(C, vx, vy, u, sw, t, id);
-    if (o.boost > .02) bitBoost(C, u, sw, t, clamp(o.boost), id);
-    rs('glow'); glow(C[0], C[1], 9 * u * (1 + .3 * (o.boost || 0)), '#FFC766', o.glow ?? .75);
+    if (vk > .04) bitTrail(C, vx, vy, u, sw, t, id, back);
+    if (o.boost > .02) bitBoost(C, u, sw, t, clamp(o.boost), id, vx, vy);
+    rs('glow'); glw(C[0], C[1], 9 * u * (1 + .3 * (o.boost || 0)), '#FFC766', o.glow ?? .75);
     rs('shadow');
     if (!o.noShadow && L.dy + (o.dy || 0) > -6) {
       const f = 1 - Math.min(.6, Math.abs(dy) * .07);
@@ -357,7 +377,7 @@
     }
 
     const xf = Xf(); xf.push(); xf.T(x0, y + dy * u); xf.R(rot);
-    if (vk > .04) { const a = Math.atan2(vy, vx) - rot; xf.T(0, -5.4 * u); xf.R(a); xf.S(1 + .32 * vk, 1 / (1 + .22 * vk)); xf.R(-a); xf.T(0, 5.4 * u); }
+    if (vk > .04 && !back) { const a = Math.atan2(vy, vx) - rot; xf.T(0, -5.4 * u); xf.R(a); xf.S(1 + .32 * vk, 1 / (1 + .22 * vk)); xf.R(-a); xf.T(0, 5.4 * u); }
     xf.S(fl * (1 + sq * .6), 1 - sq);
     const sh = M.shake ? .06 * u * Math.sin(t * 71) : 0;
 
@@ -531,7 +551,7 @@
     if (back) {
       rs('back');
       inkLine(U([[-aw + .15, cy - bh + .35], [0, cy + .5], [aw - .15, cy - bh + .35]], u), sw * .9, INK, 'ink', .1);
-      if (o.lights !== false) glow(0, -2.6 * u, (3.4 + 2 * honk) * u, '#FF5A3C', .55 + .45 * honk);
+      if (o.lights !== false) glw(0, -2.6 * u, (3.4 + 2 * honk) * u, '#FF5A3C', .55 + .45 * honk);
       for (const side of [-1, 1]) paint(ellPts(side * (aw - 1.1) * u, -2.55 * u, .6 * u, .38 * u, 10), { wash: honk > .3 ? '#FF8A5C' : '#D8413A', ink: INK, sw: sw * .5 });
     } else {
       if (o.icon !== false) {
@@ -745,7 +765,7 @@
       if (px >= 6) letter('cat_video_FINAL(3).mp4', lx0, ly0, px, '#3B3350', { rot: xf.rot(), ink: false, font: `600 ${px.toFixed(1)}px Rubik` });
       else inkLine([[-2.8 * u, 0], [3.8 * u, 0]], sw * .5, '#3B3350', 'inkfine', 0);
       xf.pop();
-      if (px >= 6 && o.flush !== false) flushLetters();
+      if (px >= 6 && o.flush !== false) flushL();
     }
     // paws
     rs('paws');
@@ -771,7 +791,7 @@
     const B = pts => pts.map(([a, b2]) => [a * u, (b2 + wig(a)) * u]);
     const rot = (o.rot || 0) + (dazed ? .08 * Math.sin(t * 2.1) : .03 * Math.sin(sp)) * fl;
 
-    if (zap > .05) { rs('zapglow'); glow(x, y, 30 * u * zap, '#FFE45C', .8 * zap); }
+    if (zap > .05) { rs('zapglow'); glw(x, y, 30 * u * zap, '#FFE45C', .8 * zap); }
     push(); translate(x, y); rotate(rot); scale(fl, 1);
     // tail fin + dorsal (behind the body)
     rs('fins');
@@ -863,7 +883,7 @@
     paint(face, { wash: mixCol('#6E6A78', '#FFF1CC', on), ink: INK, sw: sw * .6 });
     paint(ellPts(-60 * s, -40 * s, 200 * s, 26 * s, 16, 2 * s), { fill: '#FFFFFF', fillOp: 90 * on, bleed: .2, tex: .6, ink: null });
     const [gx, gy] = xf.P(0, 0);
-    if (on > .1) { flushBrush(); glow(gx, gy, 420 * s, '#FFE2A0', .55 * on); }
+    if (on > .1) glw(gx, gy, 420 * s, '#FFE2A0', .55 * on);
     let queued = false;
     const txt = (s0, px, py, size, col, font) => { const [wx, wy] = xf.P(px * s, py * s); letter(s0, wx, wy, size * s, col, { rot: xf.rot(), ink: false, font: font.replace('#', (size * s).toFixed(1)) }); queued = true; };
     txt('ממתין בתור', 0, -22, 70, '#2B2440', '900 #px Rubik');
@@ -875,13 +895,13 @@
       paint(rrPts(215 * s, 115 * s, 200 * s, 92 * s, 18 * s, 1.5 * s), { wash: '#2E3152', ink: INK, sw });
       paint(rrPts(230 * s, 128 * s, 170 * s, 66 * s, 10 * s, 1 * s), { wash: '#1B1A2C', ink: null });
       const [cx, cy] = xf.P(315 * s, 161 * s);
-      glow(cx, cy, 110 * s, '#FF6B4A', .6 * on);
+      glw(cx, cy, 110 * s, '#FF6B4A', .6 * on);
       const n = String(o.num ?? 17).padStart(3, '0');
       const [wx, wy] = xf.P(315 * s, 163 * s);
       letter(n, wx, wy, 50 * s, mixCol('#5A2A2A', '#FF7A55', on), { rot: xf.rot(), ink: false, font: `900 ${(50 * s).toFixed(1)}px Rubik` }); queued = true;
     }
     xf.pop();
-    if (queued && o.flush !== false) flushLetters();
+    if (queued && o.flush !== false) flushL();
     rs('after');
   }
 
@@ -973,31 +993,3 @@
 
   Object.assign(window, { bit, packet, brandPacket, catPacket, shark, queueSign, packMoods, PACKET_KINDS: KIND_LIST, PACKET_BRANDS: Object.keys(BRANDS) });
 })();
-// TEMP BENCH
-LOOPS.kp_bench = t => {
-  const v = Math.floor(t);
-  paint(rectPts(-40, -40, W + 80, H + 80), { wash: '#262A58', ink: null });
-  if (v === 1) bit(960, 800, 3, { t, tag: false, glow: 0, noShadow: true });
-  if (v === 2) bit(960, 800, 3, { t });
-  if (v === 3) for (let i = 0; i < 10; i++) packet(200 + i * 160, 700, 1.2, { t, kind: PACKET_KINDS[i % 7] });
-  if (v === 4) for (let i = 0; i < 10; i++) packet(200 + i * 160, 700, 1.2, { t, back: true, seed: i });
-  if (v === 8) bit(960, 800, 3, { t, tag: false, noShadow: true });
-  if (v === 9) bit(960, 800, 3, { t, glow: 0, noShadow: true });
-  if (v === 10) bit(960, 800, 3, { t, glow: 0, tag: false });
-  if (v === 11) { LOOPS.kit_packets(1); }
-  if (v === 12) { paint(ellPts(960, 470, 1100, 380, 30, 12), { fill: '#3E4486', fillOp: 120, bleed: .25, tex: .5, ink: null }); }
-  if (v === 13) { paint(rectPts(-40, 900, W + 80, 220), { fill: '#1B1E42', fillOp: 150, bleed: .1, tex: .5, ink: null }); }
-  if (v === 14) { letter('determined', 300, 900, 26, '#F3E6C4', { ink: false, font: '700 26px Rubik' }); letter('panic', 600, 900, 26, '#F3E6C4', { ink: false, font: '700 26px Rubik' }); }
-  if (v >= 20 && v < 28) bit(960, 800, 3.1, { t, mood: ['determined','panic','cheeky','joy','bored','laugh','exhausted','tongue'][v-20], mouth: 0 });
-  if (v >= 30 && v < 36) bit(960, 800, 3.1, { t, mood: ['laugh','exhausted','tongue','determined','determined','determined'][v-30], mouth: ['flat','flat','flat','pant','tongue','laugh'][v-30] });
-  if (v >= 40 && v < 44) { window._kpdbg = [{P:1},{noTongue:1},{noTeeth:1},{noTongue:1,noTeeth:1}][v-40]; bit(960, 800, 3.1, { t, mood: 'determined', mouth: 'laugh' }); window._kpdbg = null; }
-  if (v >= 50 && v < 54) for (let i = 0; i < 4; i++) bit(260 + i * 470, 800, 3.1, { t, mood: 'determined', mouth: 0, tag: v === 51 || v === 53 ? false : undefined, glow: v >= 52 ? 0 : undefined });
-  if (v >= 55 && v < 58) for (let k = 0; k < 4; k++) {
-    if (v !== 56) glow(300 + k * 400, 500, 200, '#FFC766', .7);
-    for (let i = 0; i < 5; i++) paint(ellPts(200 + k * 400 + i * 40, 700, 60, 40, 20), v === 57 ? { wash: '#FFC93C', ink: PAL.ink } : { fill: '#FFC93C', fillOp: 120, ink: null });
-  }
-  if (v === 5) for (let i = 0; i < 10; i++) paint(ellPts(200 + i * 160, 700, 60, 40, 20), { wash: '#FFC93C', ink: PAL.ink, sw: 1 });
-  if (v === 6) for (let i = 0; i < 10; i++) inkLine([[200 + i * 160, 600], [260 + i * 160, 700]], 1, PAL.ink);
-  if (v === 7) for (let i = 0; i < 10; i++) paint(ellPts(200 + i * 160, 700, 60, 40, 20), { fill: '#FFC93C', fillOp: 120, ink: null });
-};
-LOOPS.kp_bench.len = 60;
