@@ -45,6 +45,10 @@ watercolor video; offering the menu up front avoids that.
 | 13 | Pixel art (פיקסל ארט) | low-res pixel sprites, limited palette, retro game feel | render at 320x180 and nearest-neighbour upscale | medium |
 | 14 | Low-poly 2.5D (לואו-פולי) | faceted geometric shapes with flat shading, parallax depth | triangle meshes with per-face shading, layered parallax | medium |
 
+### CLIENT VERDICT (GOTV client): the painted remake was rejected ("גרוע ממש"); the client prefers the regular digital
+vector look (`anim/`, v7). For this client, default to the vector engine. Before any full style remake, show a short
+test clip first. Never skip the test even when the client asks for the full film.
+
 ### Style 1 in practice (hand-painted watercolor), learned from JohnHeibel/PDoomVideo + ClaudeAnimationBase
 - Engine: ClaudeAnimationBase (MIT) in `painted/` (p5 + p5.brush + puppeteer). No GPU here: run render.mjs with
   `--soft-gl` and `CHROME_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome` (~30 s/frame; use workers, few-frame sheets).
