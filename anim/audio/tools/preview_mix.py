@@ -38,6 +38,8 @@ def main():
     ap.add_argument('--dlg-gain', type=float, default=-4.0)
     ap.add_argument('--no-dlg', action='store_true')
     ap.add_argument('--png', default=None)
+    ap.add_argument('--music', default=None, help='score wav to include (e.g. audio/music/score.wav)')
+    ap.add_argument('--music-gain', type=float, default=0.0)
     ap.add_argument('--out', default=os.path.join(ROOT, 'sfx_preview.wav'))
     a = ap.parse_args()
     tl = json.load(open(os.path.join(ROOT, 'timeline.json')))
@@ -60,16 +62,24 @@ def main():
             x, _ = sf.read(os.path.join(ROOT, 'dialogue', l['id'] + '.wav'))
             place(dlg, x, l['t'], a.dlg_gain, 0.0)
     mix += dlg
+    mus = np.zeros((n, 2))
+    if a.music:
+        m, _ = sf.read(a.music)
+        m = m if m.ndim == 2 else np.stack([m, m], 1)
+        L = min(n, len(m))
+        mus[:L] = m[:L] * 10 ** (a.music_gain / 20)
+    mix += mus
     # engine fade to black over the last 0.8 s
     k = int(0.8 * SR)
     mix[-k:] *= np.linspace(1, 0, k)[:, None]
     sf.write(a.out, mix.astype(np.float32), SR, subtype='PCM_24')
     f = lambda v: 20 * np.log10(v + 1e-9)
-    print(' sec | mix pk  rms | sfx rms | dlg rms')
+    print(' sec | mix pk  rms | sfx rms | dlg rms | mus rms')
     for s in range(int(DUR)):
         seg = mix[s * SR:(s + 1) * SR]
         print('%4d | %6.1f %6.1f | %6.1f | %6.1f' % (s, f(np.abs(seg).max()), f(np.sqrt((seg ** 2).mean())),
-              f(np.sqrt((sfxbus[s * SR:(s + 1) * SR] ** 2).mean())), f(np.sqrt((dlg[s * SR:(s + 1) * SR] ** 2).mean()))))
+              f(np.sqrt((sfxbus[s * SR:(s + 1) * SR] ** 2).mean())), f(np.sqrt((dlg[s * SR:(s + 1) * SR] ** 2).mean())))
+              + ' | %6.1f' % f(np.sqrt((mus[s * SR:(s + 1) * SR] ** 2).mean())))
     print('overall peak %.2f dBFS, clipped samples: %d' % (f(np.abs(mix).max()), int((np.abs(mix) > 1).sum())))
     if a.png:
         import matplotlib; matplotlib.use('Agg')

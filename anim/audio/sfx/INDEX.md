@@ -8,7 +8,7 @@ All sounds are synthesised procedurally by `audio/tools/sfx.py` (seeded, reprodu
 
 | name | ch | dur (s) | hit (s) | kind / level | description |
 |---|---|---|---|---|---|
-| `stadium_crowd_bed` | st | 7.20 | 0.000 | bed, RMS -22 dBFS | Packed floodlit stadium heard from the wide Tel Aviv shot: dense murmur/walla, distant ultras drum, open-air slap echoes. Energy lifts over the 7 s. Stereo bed. |
+| `stadium_crowd_bed` | st | 9.60 | 0.000 | bed, RMS -20 dBFS | Packed floodlit Maccabi stadium (the v1 crowd, extended for the v7 drone opening): dense murmur/walla of thousands, ultras drum, open-air slap echoes. Energy builds as the drone approaches and ROARS 5.5-8.3 s (over the home stand), then eases as the camera whips away; fade-out 8.7-9.6 s. 9.6 s stereo bed. |
 | `crowd_swell_ooh` | st | 4.20 | 2.200 | one-shot, peak -1 dBFS | Crowd "ooOOH" rising-excitement swell: thousands of voices gliding u->o->a and up in pitch, roar underneath. Peak at 2.2 s, then settles. |
 | `stadium_goal_eruption` | st | 11.00 | 0.050 | one-shot, peak -1 dBFS | HUGE goal eruption: instant roar of the whole stadium (screaming voices + roar walla), fans' two-finger whistles, air horns, then from ~3.4 s the rhythmic "Ma-cca-BI! (clap clap clap)" chant. Hit at 0.05 s. 11 s, fades out over the last 1.5 s. |
 | `city_night_telaviv` | st | 7.00 | 0.000 | bed, RMS -26 dBFS | Tel Aviv night ambience: slow Mediterranean waves washing the promenade, distant traffic hum + a passing car and a far-off moped, crickets in stereo. 7 s bed. |
@@ -84,5 +84,16 @@ All sounds are synthesised procedurally by `audio/tools/sfx.py` (seeded, reprodu
 | `stadium_chant` | st | 10.40 | 0.000 | one-shot, peak -1 dBFS | Maccabi home stand, ultras in full voice (S1 v7 drone approach): thousands singing a rhythmic "oh-OH, Ma-cca-BI!" style chant on vowels (no real lyrics, 120 bpm), bass drums + snare on the chant rhythm, claps, flare hiss and sputter (right), whistles, crowd roar. Distance-shaped: dark and reverberant at 0 s, close, bright and loudest 5.5-8.3 s, whips away/darker after 8.5 s. 10.4 s, fade-out from 9.9. |
 | `bit_run_steps` | st | 2.00 | 0.000 | bed, RMS -24 dBFS | Bit running (chase cam): quick light cartoon footsteps -- rubbery-plastic little taps with a soft tunnel ring, ~9 steps/s, slight L/R alternation. 2.0 s, even and loopable-ish; place back to back. |
 | `packet_bump` | st | 0.50 | 0.005 | one-shot, peak -1 dBFS | Bit bumps/shoves between packets: squishy rubbery body bump -- soft low "bwomp" + tiny squeak. Hit 0.005 s. 0.5 s. |
+| `stadium_drums` | st | 9.60 | 0.000 | bed, RMS -20 dBFS | Big ultras drums in the stand: three bass drums + floor tom on a driving 132-bpm pattern with accents, open-air stadium slap echo. Builds to full power 5.5-8.3 s, eases after; fade-out 8.8-9.6 s. 9.6 s. |
+| `fan_whistles` | st | 2.60 | 0.020 | one-shot, peak -1 dBFS | Cluster of fans' two-finger whistles and a trilled pea-whistle across the stand, open-air echo. First whistle 0.02 s. 2.6 s. |
+| `flag_flutter` | st | 3.00 | 0.000 | bed, RMS -20 dBFS | Huge tifo flags and scarves flapping in the wind close to the drone: heavy cloth flaps and whips with fabric rustle, stereo. 3.0 s, fades in/out. |
+| `ball_kick` | st | 0.60 | 0.003 | one-shot, peak -1 dBFS | Football kick: leather "thwack" + boot thud, close and punchy, small outdoor echo. Hit 0.003 s. 0.6 s. |
+| `ball_kick_far` | st | 0.90 | 0.003 | one-shot, peak -1 dBFS | Football kick heard from the stands/drone: softer, darker thud with big stadium echo. Hit 0.003 s. 0.9 s. |
+| `ref_whistle` | st | 1.40 | 0.010 | one-shot, peak -1 dBFS | Referee pea-whistle: short-short-LONG blast ("pip-pip-peeeep") with trill, on the pitch. Hit 0.01 s. 1.4 s. |
+| `crowd_ooh_aah` | st | 2.20 | 0.800 | one-shot, peak -1 dBFS | Crowd near-miss reaction: quick rising "ooOOH" (peak = hit 0.8 s) snapping into a falling "aaahh". 2.2 s stereo. |
+| `tv_ball_kick` | mono | 0.70 | 0.003 | one-shot, peak -1 dBFS | Ball kick heard through the TV speaker (mono, band-limited). Hit 0.003 s. |
+| `tv_ref_whistle` | mono | 1.40 | 0.010 | one-shot, peak -1 dBFS | Referee whistle through the TV speaker (mono). Hit 0.01 s. |
+| `tv_crowd_ooh_aah` | mono | 2.20 | 0.800 | one-shot, peak -1 dBFS | Crowd "ooh-aah" near-miss through the TV speaker (mono). Peak/hit 0.8 s. 2.2 s. |
+| `tv_commentator_murmur` | mono | 9.10 | 0.000 | bed, RMS -24 dBFS | Unintelligible excited TV commentator babble (one male voice, no words) through the TV speaker -- sits under the living-room dialogue at low level, rising with the breakaway. 9.1 s (10.2 -> 19.3), ends hard like tv_crowd_live. |
 
 See `audio/cues/base.json` for how these are placed on the 60 s timeline; mixing notes are in the header of `audio/tools/preview_mix.py`.

@@ -630,14 +630,17 @@ def _stadium_bed(dur, r, excite_env=None, count=48):
     return hp(y, 70)
 
 
-@sfx('stadium_crowd_bed', 'Packed floodlit stadium heard from the wide Tel Aviv shot: dense murmur/walla, '
-     'distant ultras drum, open-air slap echoes. Energy lifts over the 7 s. Stereo bed.', 0.0, 'bed', -22)
+@sfx('stadium_crowd_bed', 'Packed floodlit Maccabi stadium (the v1 crowd, extended for the v7 drone opening): dense '
+     'murmur/walla of thousands, ultras drum, open-air slap echoes. Energy builds as the drone approaches and ROARS '
+     '5.5-8.3 s (over the home stand), then eases as the camera whips away; fade-out 8.7-9.6 s. 9.6 s stereo bed.',
+     0.0, 'bed', -20)
 def _(r):
-    dur = 7.2
+    dur = 9.6
     n = N(dur)
-    ex = env(n, [(0, 0.35), (3, 0.5), (6, 0.65), (7.2, 0.6)])
-    y = _stadium_bed(dur, r, ex)
-    return fade(y, 0.3, 0.9)
+    ex = env(n, [(0, 0.4), (2.5, 0.5), (4.6, 0.7), (5.5, 1.0), (8.3, 1.0), (9.0, 0.7), (9.6, 0.6)])
+    y = _stadium_bed(dur, r, ex, count=56)
+    y *= env(n, [(0, 0.55), (3, 0.62), (5.0, 0.85), (5.5, 1.0), (8.3, 1.0), (9.0, 0.75), (9.6, 0.7)])
+    return fade(y, 0.25, 0.9)
 
 
 @sfx('crowd_swell_ooh', 'Crowd "ooOOH" rising-excitement swell: thousands of voices gliding u->o->a and up in pitch, '
@@ -2329,6 +2332,152 @@ def _(r):
     sq = np.sin(phase_of(np.interp(t, [0.05, 0.15], [1100, 1500]))) * env(n, [(0, 0), (0.05, 0), (0.07, 0.15), (0.16, 0)])
     y = sat((b + sq) * 1.2, 1.4)
     return reverb(y, IR_tunnel(), 0.2, tail=False)
+
+
+# ---------------------------------------------------------------- v7 feedback: football match sounds
+
+@sfx('stadium_drums', 'Big ultras drums in the stand: three bass drums + floor tom on a driving 132-bpm pattern with '
+     'accents, open-air stadium slap echo. Builds to full power 5.5-8.3 s, eases after; fade-out 8.8-9.6 s. 9.6 s.',
+     0.0, 'bed', -20)
+def _(r):
+    dur = 9.6
+    n = N(dur)
+    y = np.zeros((2, n))
+    beat = 60 / 132
+    k = 0
+    while k * beat < dur:
+        tt = k * beat
+        acc = 1.0 if k % 4 == 0 else (0.8 if k % 2 == 0 else 0.62)
+        for d, p in enumerate([-0.55, 0.0, 0.5]):
+            h = thump(0.6, 110 - 12 * d, 48, 0.2, 0.0, r) * 1.0 + lp(white(N(0.6), r), 1800) * expdec(N(0.6), 0.025) * 0.45
+            add_at(y, pan(h, p), tt + r.normal(0, 0.007), acc * 0.5)
+        if k % 4 == 3:  # tom pickup on the off-beat
+            for j in range(2):
+                tom = thump(0.4, 190, 120, 0.1, 0.0, r) + bp(white(N(0.4), r), 300, 3000) * expdec(N(0.4), 0.02) * 0.4
+                add_at(y, pan(tom, 0.3), tt + beat * (0.5 + 0.25 * j), 0.35)
+        k += 1
+    y = sat(y * 1.3, 1.4)
+    y = reverb(y, IR_stadium(), 0.45, tail=False)
+    y *= env(n, [(0, 0.5), (3.0, 0.6), (5.0, 0.85), (5.5, 1.0), (8.3, 1.0), (9.0, 0.6), (9.6, 0.5)])
+    return fade(hp(y, 30), 0.1, 0.8)
+
+
+@sfx('fan_whistles', 'Cluster of fans\' two-finger whistles and a trilled pea-whistle across the stand, open-air '
+     'echo. First whistle 0.02 s. 2.6 s.', 0.02)
+def _(r):
+    dur = 2.6
+    n = N(dur)
+    y = np.zeros((2, n))
+    for k in range(7):
+        w = _whistle(r.uniform(0.35, 0.9), r, f=r.uniform(2200, 3400), slide=k % 3 != 2, trill=r.uniform(26, 36))
+        add_at(y, pan(w, r.uniform(-0.9, 0.9)), 0.02 + k * 0.28 + r.uniform(0, 0.12), r.uniform(0.4, 1.0))
+    return reverb(y, IR_stadium(), 0.4, tail=False)
+
+
+@sfx('flag_flutter', 'Huge tifo flags and scarves flapping in the wind close to the drone: heavy cloth flaps and '
+     'whips with fabric rustle, stereo. 3.0 s, fades in/out.', 0.0, 'bed', -20)
+def _(r):
+    dur = 3.0
+    n = N(dur)
+    t = tax(n)
+    ch = []
+    for c in range(2):
+        rate = 7 + 3 * slow_noise(n, r, 1.5)
+        ph = np.cumsum(rate / SR)
+        flap = np.abs(np.sin(np.pi * ph)) ** 6
+        cloth = bp(pink(n, r), 150, 2500) * flap * 1.2 + bp(white(n, r), 2000, 7000) * flap ** 2 * 0.4
+        snaps = np.zeros(n)
+        for tm in r.uniform(0.2, dur - 0.2, 6):
+            L = N(0.05)
+            add_at(snaps, bp(white(L, r), 400, 5000) * np.exp(-tax(L) / 0.008), tm, r.uniform(0.4, 1))
+        ch.append(cloth + snaps + 0.3 * lp(pink(n, r), 400) * slow_noise(n, r, 2, 0.3, 1))
+    y = np.vstack(ch)
+    return fade(reverb(y, IR_stadium(), 0.2, tail=False), 0.4, 0.8)
+
+
+def _kick(r, dist=0.0):
+    n = N(0.5)
+    t = tax(n)
+    thud = np.sin(phase_of(np.interp(t, [0, 0.02, 0.12], [160, 95, 70]))) * expdec(n, 0.045) * attack(n, 0.0008)
+    slap = bp(white(n, r), 700, 3500) * expdec(n, 0.004) * 0.9
+    leather = reson(white(n, r) * expdec(n, 0.002), 1100, 5) * 1.5
+    y = thud + slap + leather
+    if dist > 0:
+        y = lp(y, 4000 - 2500 * dist)
+    return y
+
+
+@sfx('ball_kick', 'Football kick: leather "thwack" + boot thud, close and punchy, small outdoor echo. Hit 0.003 s. 0.6 s.',
+     0.003)
+def _(r):
+    y = _kick(r)
+    return fit(reverb(y, IR_stadium(), 0.12, tail=True), N(0.6))
+
+
+@sfx('ball_kick_far', 'Football kick heard from the stands/drone: softer, darker thud with big stadium echo. '
+     'Hit 0.003 s. 0.9 s.', 0.003)
+def _(r):
+    y = _kick(r, dist=0.8)
+    return fit(reverb(y, IR_stadium(), 0.5, tail=True), N(0.9))
+
+
+@sfx('ref_whistle', 'Referee pea-whistle: short-short-LONG blast ("pip-pip-peeeep") with trill, on the pitch. '
+     'Hit 0.01 s. 1.4 s.', 0.01)
+def _(r):
+    n = N(1.4)
+    y = np.zeros(n)
+    for (tm, L) in [(0.01, 0.12), (0.2, 0.12), (0.4, 0.75)]:
+        add_at(y, _whistle(L, r, f=2950, trill=34), tm)
+    return fit(reverb(y, IR_stadium(), 0.3, tail=True), N(1.4))
+
+
+def _ooh_aah(r, dur=2.2, count=40):
+    """near-miss reaction: rising 'ooOOH' snapping to a falling 'aaahh'"""
+    n = N(dur)
+    out = np.zeros((2, n))
+    pk = 0.8
+    for k in range(count):
+        rr = np.random.default_rng(r.integers(1 << 31))
+        female = rr.uniform() < 0.35
+        f0 = rr.uniform(120, 200) * (1.7 if female else 1)
+        sh = 1.15 if female else 1.0
+        j = rr.normal(0, 0.04)
+        pitch = f0 * env(n, [(0, 1.0), (pk + j, 1.45), (pk + 0.15 + j, 1.35), (dur, 0.9)])
+        src = glottal(pitch, n, rr, breath=0.25, jitter=0.02)
+        wu = env(n, [(0, 1), (pk - 0.2 + j, 1), (pk + 0.1 + j, 0), (dur, 0)])
+        y = formant(src, 'u', sh) * wu + formant(src, 'a', sh) * (1 - wu)
+        a = env(n, [(0, 0), (0.1 + abs(j), 0.3), (pk + j, 1.0), (pk + 0.5, 0.7), (dur, 0)])
+        out += pan(lp(y * a, rr.uniform(2500, 6000)), rr.uniform(-1, 1)) * rr.uniform(0.4, 1)
+    out /= np.sqrt(count)
+    ex = env(n, [(0, 0.2), (pk, 1.0), (pk + 0.5, 0.6), (dur, 0.1)])
+    roar = np.vstack([roar_layer(n, r, ex, ('o', 'a')), roar_layer(n, r, ex, ('a', 'o'))]) * 0.45
+    y = reverb(out + roar, IR_stadium(), 0.45, tail=False)
+    return fade(hp(y, 80), 0.05, 0.5)
+
+
+@sfx('crowd_ooh_aah', 'Crowd near-miss reaction: quick rising "ooOOH" (peak = hit 0.8 s) snapping into a falling '
+     '"aaahh". 2.2 s stereo.', 0.8)
+def _(r):
+    return _ooh_aah(r)
+
+
+def _tv(x, r, drive=1.3):
+    return tv_speaker(x, r, drive)
+
+
+@sfx('tv_ball_kick', 'Ball kick heard through the TV speaker (mono, band-limited). Hit 0.003 s.', 0.003)
+def _(r):
+    return _tv(fit(reverb(_kick(r, 0.3), IR_stadium(), 0.3, tail=True), N(0.7)), r, 1.6)
+
+
+@sfx('tv_ref_whistle', 'Referee whistle through the TV speaker (mono). Hit 0.01 s.', 0.01)
+def _(r):
+    return _tv(build('ref_whistle', write=False), r, 1.2)
+
+
+@sfx('tv_crowd_ooh_aah', 'Crowd "ooh-aah" near-miss through the TV speaker (mono). Peak/hit 0.8 s. 2.2 s.', 0.8)
+def _(r):
+    return _tv(_ooh_aah(r), r, 1.3)
 
 
 # ----------------------------------------------------------------------------------------

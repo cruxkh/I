@@ -74,5 +74,16 @@
  "bit_laugh": 0.02,
  "stadium_chant": 0.0,
  "bit_run_steps": 0.0,
- "packet_bump": 0.005
+ "packet_bump": 0.005,
+ "stadium_drums": 0.0,
+ "fan_whistles": 0.02,
+ "flag_flutter": 0.0,
+ "ball_kick": 0.003,
+ "ball_kick_far": 0.003,
+ "ref_whistle": 0.01,
+ "crowd_ooh_aah": 0.8,
+ "tv_ball_kick": 0.003,
+ "tv_ref_whistle": 0.01,
+ "tv_crowd_ooh_aah": 0.8,
+ "tv_commentator_murmur": 0.0
 }

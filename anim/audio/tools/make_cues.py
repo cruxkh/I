@@ -108,13 +108,43 @@ SYNC = [(ts + 6.0 if ts >= 29.2 else ts, nm, g, p) for (ts, nm, g, p) in SYNC if
 V5 = SYNC
 JAM_KEEP_AT_FLASH = {'dive_whoosh', 'light_shimmer'}   # the 35.2 flash belongs to S2's end -> 39.2
 V7_OPEN = [
-    (0.0, 'city_night_telaviv', -18, 0.0),     # city under the drone, masked as the stand takes over
-    (0.0, 'stadium_chant', -6, 0.0),           # ultras: builds, loudest 5.5-8.3, whips away after 8.5
+    # v7 client feedback: the v1 crowd is back up front, chant only a sweetener
+    (0.0, 'stadium_crowd_bed', -8, 0.0),       # 9.6 s: builds, ROARS 5.5-8.3 over the home stand
+    (0.0, 'stadium_drums', -10, 0.1),          # ultras drums, full power 5.5-8.3
+    (0.0, 'stadium_chant', -17, 0.0),          # quiet sweetener only
+    (0.0, 'city_night_telaviv', -20, 0.0),
+    (5.2, 'crowd_swell_ooh', -9, 0.0),         # swell crests as the drone reaches the stand
+    (1.0, 'fan_whistles', -16, -0.3),
+    (6.0, 'fan_whistles', -12, 0.3),
+    (1.9, 'ball_kick_far', -12, -0.2),         # players on the pitch below
+    (3.3, 'ball_kick_far', -13, 0.1),
+    (4.4, 'ball_kick_far', -12, 0.25),
+    (3.0, 'crowd_ooh_aah', -16, 0.0),          # near-miss reaction under the announcer
+    (5.3, 'flag_flutter', -12, -0.4),          # tifo flags right by the drone
+    (7.3, 'flag_flutter', -13, 0.4),
     (8.5, 'whip_pan', -8, 0.0),                # tilt/whip up to the IPTV mast
     (9.0, 'broadcast_launch', -6, 0.0),        # packets launch (Bit glint)
     (9.6, 'data_whoosh', -13, 0.3),
     (10.15, 'whip_pan', -9, 0.0),              # flash out 10.0-10.2 -> Toronto
 ]
+V7_TV = [
+    # the match on the living-room TV (mono, TV speaker) 10.2-19.3
+    (10.6, 'tv_ref_whistle', -19, TV),
+    (11.3, 'tv_ball_kick', -13, TV),
+    (12.6, 'tv_ball_kick', -14, TV),
+    (13.4, 'tv_ball_kick', -13, TV),
+    (13.8, 'tv_crowd_ooh_aah', -18, TV),
+    (15.0, 'tv_ball_kick', -13, TV),
+    (16.6, 'tv_ball_kick', -12, TV),           # breakaway
+    (17.5, 'tv_ball_kick', -12, TV),
+    (18.4, 'tv_ball_kick', -12, TV),
+    (19.0, 'tv_ball_kick', -11, TV),           # last touch before the freeze
+    # goal 74.3
+    (74.0, 'tv_ball_kick', -9, TV),            # the strike
+    (74.4, 'stadium_goal_eruption', -8, 0.0),  # full power in the room too
+]
+V7_GAIN = {('tv_crowd_live', 10.2): -12, ('tv_crowd_goal', 74.3): -5, ('ball_net_swish', 74.3): -6,
+           ('stadium_goal_eruption', 75.5): None}   # None = drop (moved to 74.4 at full power)
 V7_JAM = [
     (39.2, 'dataworld_ambience', -12, 0.0),    # 19.6 s bed
     (39.2, 'traffic_jam_grumble', -12, 0.0),   # 17.6 s, fades after the boost
@@ -156,7 +186,9 @@ for (ts, nm, g, p) in V5:
         continue
     else:
         SYNC.append((ts + 9.0, nm, g, p))
-SYNC += V7_OPEN + V7_JAM
+SYNC = [(ts, nm, V7_GAIN.get((nm, round(ts, 2)), g), p) for (ts, nm, g, p) in SYNC]
+SYNC = [c for c in SYNC if not ((c[1], round(c[0], 2)) in V7_GAIN and c[2] is None)]
+SYNC += V7_OPEN + V7_JAM + V7_TV
 
 cues = []
 for (ts, name, g, p) in SYNC:
