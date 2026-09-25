@@ -205,11 +205,13 @@
     const ww = shape === 'laugh' ? w * 1.2 : shape === 'O' ? w * .55 : shape === 'talk' ? w * (.95 - .15 * open) : shape === 'pant' ? w * .75 : w;
     const P = shape === 'O' ? ellPts(mx, my + hh * .45, ww, hh * .55, 16) : mouthPts(mx, my, ww, hh, shape === 'wail' ? -.35 * u : shape === 'laugh' ? .55 * u : curl, shape === 'wail' ? .07 * u : 0, t);
     paint(P, { wash: MOUTH, ink: null });
-    if (hh > .55 * u) {   // tongue, kept inside the mouth
+    const DBG = window._kpdbg || {};
+    if (DBG.P) { paint(P, { wash: MOUTH, ink: null }); return; }
+    if (hh > .55 * u && !DBG.noTongue) {   // tongue, kept inside the mouth
       const bot = shape === 'O' ? ellBot(mx, my + hh * .45, ww, hh * .55) : x => { const k = clamp((x - mx) / ww, -1, 1); return my - (shape === 'laugh' ? .55 * u : shape === 'wail' ? -.35 * u : curl) * k * k + hh * Math.pow(Math.max(0, 1 - k * k), .6); };
       paint(capBelow(ellPts(mx + ww * .12, my + hh * .85, ww * .55, hh * .42, 14), () => -1e9, x => bot(x) - sw * .4).map(([x, y]) => [x, Math.min(y, bot(x) - sw * .4)]), { wash: TONGUE, ink: null });
     }
-    if ((shape === 'big' || shape === 'laugh' || (shape === 'talk' && open > .3)) && hh > .7 * u) {   // top teeth
+    if ((shape === 'big' || shape === 'laugh' || (shape === 'talk' && open > .3)) && hh > .7 * u && !DBG.noTeeth) {   // top teeth
       const th = Math.min(.34 * u, hh * .22), T2 = [], c0 = shape === 'laugh' ? .55 * u : curl;
       for (let i = 0; i <= 6; i++) { const k = (i / 6 * 2 - 1) * .82; T2.push([mx + k * ww, my - c0 * k * k - hh * .1 * (1 - k * k) + sw * .3]); }
       for (let i = 6; i >= 0; i--) { const k = (i / 6 * 2 - 1) * .82; T2.push([mx + k * ww, my - c0 * k * k - hh * .1 * (1 - k * k) + th]); }
@@ -970,3 +972,26 @@
 
   Object.assign(window, { bit, packet, brandPacket, catPacket, shark, queueSign, packMoods, PACKET_KINDS: KIND_LIST, PACKET_BRANDS: Object.keys(BRANDS) });
 })();
+// TEMP BENCH
+LOOPS.kp_bench = t => {
+  const v = Math.floor(t);
+  paint(rectPts(-40, -40, W + 80, H + 80), { wash: '#262A58', ink: null });
+  if (v === 1) bit(960, 800, 3, { t, tag: false, glow: 0, noShadow: true });
+  if (v === 2) bit(960, 800, 3, { t });
+  if (v === 3) for (let i = 0; i < 10; i++) packet(200 + i * 160, 700, 1.2, { t, kind: PACKET_KINDS[i % 7] });
+  if (v === 4) for (let i = 0; i < 10; i++) packet(200 + i * 160, 700, 1.2, { t, back: true, seed: i });
+  if (v === 8) bit(960, 800, 3, { t, tag: false, noShadow: true });
+  if (v === 9) bit(960, 800, 3, { t, glow: 0, noShadow: true });
+  if (v === 10) bit(960, 800, 3, { t, glow: 0, tag: false });
+  if (v === 11) { LOOPS.kit_packets(1); }
+  if (v === 12) { paint(ellPts(960, 470, 1100, 380, 30, 12), { fill: '#3E4486', fillOp: 120, bleed: .25, tex: .5, ink: null }); }
+  if (v === 13) { paint(rectPts(-40, 900, W + 80, 220), { fill: '#1B1E42', fillOp: 150, bleed: .1, tex: .5, ink: null }); }
+  if (v === 14) { letter('determined', 300, 900, 26, '#F3E6C4', { ink: false, font: '700 26px Rubik' }); letter('panic', 600, 900, 26, '#F3E6C4', { ink: false, font: '700 26px Rubik' }); }
+  if (v >= 20 && v < 28) bit(960, 800, 3.1, { t, mood: ['determined','panic','cheeky','joy','bored','laugh','exhausted','tongue'][v-20], mouth: 0 });
+  if (v >= 30 && v < 36) bit(960, 800, 3.1, { t, mood: ['laugh','exhausted','tongue','determined','determined','determined'][v-30], mouth: ['flat','flat','flat','pant','tongue','laugh'][v-30] });
+  if (v >= 40 && v < 44) { window._kpdbg = [{P:1},{noTongue:1},{noTeeth:1},{noTongue:1,noTeeth:1}][v-40]; bit(960, 800, 3.1, { t, mood: 'determined', mouth: 'laugh' }); window._kpdbg = null; }
+  if (v === 5) for (let i = 0; i < 10; i++) paint(ellPts(200 + i * 160, 700, 60, 40, 20), { wash: '#FFC93C', ink: PAL.ink, sw: 1 });
+  if (v === 6) for (let i = 0; i < 10; i++) inkLine([[200 + i * 160, 600], [260 + i * 160, 700]], 1, PAL.ink);
+  if (v === 7) for (let i = 0; i < 10; i++) paint(ellPts(200 + i * 160, 700, 60, 40, 20), { fill: '#FFC93C', fillOp: 120, ink: null });
+};
+LOOPS.kp_bench.len = 50;

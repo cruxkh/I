@@ -132,19 +132,19 @@
 
   // drone lean of a point at height h (world px) under cam
   const lean = (x, y, h, cam) => {
-    const k = Math.min(.55, h * cam.zoom / 1100);
-    return [(x - cam.cx) * k, (y - cam.cy) * k - h * (cam.tilt ?? .4)];
+    const k = Math.min(.4, h * cam.zoom / 1500);
+    return [(x - cam.cx) * k * .6, (y - cam.cy) * k * .4 - h * (cam.tilt ?? .7)];
   };
 
   function tlvDroneCam(k, o = {}) {
     const end = o.end || [STAD[0], STAD[1] + 60, 1.45];
     const keys = [[0, [1750, 1250, Math.log(.4)]], [.45, [2050, 1650, Math.log(.75)]], [1, [end[0], end[1], Math.log(end[2])]]];
     const v = kf(clamp(k), keys, ease);
-    return { cx: v[0], cy: v[1], zoom: Math.exp(v[2]), tilt: .4 };
+    return { cx: v[0], cy: v[1], zoom: Math.exp(v[2]), tilt: .7 };
   }
 
   function tlvCity(t, cam = tlvDroneCam(0), o = {}) {
-    cam = { rot: 0, tilt: .4, ...cam };
+    cam = { rot: 0, tilt: .7, ...cam };
     const z = cam.zoom, hw = W / 2 / z * 1.15 + 120, hh = H / 2 / z * 1.15 + 120;
     const vx0 = cam.cx - hw, vx1 = cam.cx + hw, vy0 = cam.cy - hh, vy1 = cam.cy + hh;
     const inView = (x, y, m = 0) => x > vx0 - m && x < vx1 + m && y > vy0 - m && y < vy1 + m;
@@ -216,23 +216,26 @@
       const L = lean(b.x + b.w / 2, b.y + b.d / 2, b.h, cam);
       const foot = b.r ? rrPts(b.x, b.y, b.w, b.d, b.r) : rectPts(b.x, b.y, b.w, b.d);
       const top = mv(foot, L[0], L[1]);
-      paint(hull(foot.concat(top)), { wash: b.wall, ink: null });
-      if (z > .3) { // lit windows on the south face
-        const n = Math.min(3, 1 + Math.floor(b.h / 40));
-        for (let k = 0; k < n + (b.tall ? 3 : 0); k++) {
-          if (hash(b.id * 3 + k) < .45) continue;
-          const u = .2 + .6 * hash(b.id + k * 1.3), v = .2 + .6 * hash(b.id * 7 + k);
-          const x = b.x + b.w * u + L[0] * v, y = b.y + b.d + L[1] * v;
-          paint(rectPts(x - 4, y - 3, 8, 6), { wash: C.win, ink: null });
-        }
+      paint(hull(foot.concat(top)), { wash: mixCol(b.wall, '#1E1A45', .35), ink: null });
+      // the south facade (faces the drone): warmer, with rows of windows
+      const fy = b.y + b.d, F = [[b.x + (b.r ? b.r * .5 : 0), fy], [b.x + b.w - (b.r ? b.r * .5 : 0), fy], [b.x + b.w + L[0], fy + L[1]], [b.x + L[0], fy + L[1]]];
+      if (L[1] < -4) paint(F, { wash: b.wall, ink: null });
+      const floors = Math.max(1, Math.round(b.h / (b.tall ? 26 : 16))), cols = z > .55 ? (b.tall ? 5 : 3) : 2;
+      if (L[1] < -10) for (let f = 0; f < floors; f++) for (let c = 0; c < cols; c++) {
+        const hh = hash(b.id * 13 + f * 5 + c * 1.7); if (hh < (z > .55 ? .35 : .6)) continue;
+        const u = (c + .5) / cols, v = (f + .35) / floors, ww = b.w / cols * .42, wh = Math.min(9, -L[1] / floors * .45);
+        const x = b.x + b.w * u + L[0] * v, y = fy + L[1] * v;
+        paint(rectPts(x - ww / 2, y - wh, ww, wh), { wash: hh > .85 ? '#FFF0C8' : C.win, ink: null });
       }
-      paint(top, { wash: b.roof, ink: z > .55 ? mixCol(b.roof, '#2E2860', .6) : null, sw: .5 / z });
+      paint(top, { wash: b.roof, ink: z > .5 ? mixCol(b.roof, '#2E2860', .55) : null, sw: .45 / z });
+      // moonlight catching the roof: a lighter second layer
+      paint(mv(top.map(([x, y]) => [lerp(x, b.x + L[0] + b.w / 2, .28), lerp(y, b.y + L[1] + b.d / 2, .3)]), -b.w * .06, -b.d * .08), { wash: '#FFF8EE', washOp: 70, ink: null });
       if (z > .5) {
         if (b.tall) paint(rectPts(b.x + L[0] + b.w * .3, b.y + L[1] + b.d * .3, b.w * .4, b.d * .35), { wash: '#8C92B8', ink: null });
         else if (b.solar) { // solar water heater: a tilted blue panel + a white tank
-          const sx = b.x + L[0] + b.w * (.2 + .4 * hash(b.id + 2.2)), sy = b.y + L[1] + b.d * (.25 + .3 * hash(b.id + 3.3));
-          paint([[sx, sy], [sx + 22, sy], [sx + 26, sy + 14], [sx + 4, sy + 14]], { wash: '#3B5A9A', ink: null });
-          paint(rrPts(sx + 2, sy - 7, 22, 6, 3), { wash: '#F2EDE6', ink: null });
+          const sx = b.x + L[0] + b.w * (.15 + .4 * hash(b.id + 2.2)), sy = b.y + L[1] + b.d * (.3 + .3 * hash(b.id + 3.3));
+          paint([[sx, sy], [sx + 26, sy], [sx + 31, sy + 16], [sx + 5, sy + 16]], { wash: '#3B5A9A', ink: '#26305A', sw: .35 / z });
+          paint(rrPts(sx + 2, sy - 9, 26, 8, 4), { wash: '#F4EFE8', ink: '#6A6488', sw: .35 / z });
         }
       }
     }
@@ -278,7 +281,7 @@
     push(); translate(x, y); scale(s);
     boilSeed('st-bowl');
     // outer wall (seen a little from the south), rim and stands
-    paint(ellPts(0, 34, 560, 420, 40, 2), { wash: C.concreteDk, ink: null });
+    paint(ellPts(0, 60, 560, 420, 40, 2), { wash: C.concreteDk, ink: null });
     paint(ellPts(0, 0, 560, 420, 40, 2), { wash: C.concrete, ink: null });
     paint(ellPts(0, 6, 520, 385, 40, 2), { wash: '#5A4C7E', ink: null });
     paint(ellPts(0, 6, 470, 345, 40, 2), { wash: '#665890', ink: null });
@@ -367,7 +370,7 @@
     { y: 150, r: 13, d: 0, f: .35 }, { y: 215, r: 15, d: .15, f: .42 }, { y: 290, r: 17, d: .3, f: .5 }, { y: 370, r: 19, d: .42, f: .58 },
     { y: 600, r: 24, d: .62, f: .8 }, { y: 690, r: 28, d: .78, f: .95 }];
   function crowdBand(bd, t, roar, pan, key) {
-    const { y, r, d, f } = bd, off = -pan * 1400 * f, sp = r * 2.05, x0 = -200 - off, n = Math.ceil((W + 400) / sp) + 2;
+    const { y, r, d, f } = bd, off = -pan * 1000 * f, sp = r * 2.05, x0 = -200 - off, n = Math.ceil((W + 400) / sp) + 2;
     const fade = k => mixCol(k, '#2A2C62', .5 * (1 - d));
     const k0 = Math.floor(x0 / sp);
     // sections of alternating colour (yellow / blue / yellow-with-blue shirts)
@@ -524,7 +527,7 @@
     boilSeed('ul-bg'); paint(rectPts(-80, -80, W + 160, H + 160), { wash: '#1D2152', ink: null });
     push(); translate(W / 2, H / 2); scale(zoom); translate(-W / 2, -H / 2 - dy);
     // roof underside + floodlights
-    const roofOff = -pan * 1400 * .3;
+    const roofOff = -pan * 1000 * .3;
     boilSeed('ul-roof');
     paint([[-100, -100], [W + 100, -100], [W + 100, 70], [-100, 110]], { wash: '#2A2750', ink: null });
     inkLine([[-100, 112], [W + 100, 72]], 2, '#6D6399', 'ink', 0);
@@ -532,10 +535,10 @@
     // upper tier
     for (let b = 0; b < 4; b++) crowdBand(BANDS[b], t, roar * (.7 + .1 * b), pan, 'ul-band' + b);
     // flare in the upper tier (right)
-    const fx1 = 1500 - pan * 1400 * .55;
+    const fx1 = 1500 - pan * 1000 * .55;
     if (o.flares !== false) smokeCloud(fx1, 380, t, .5 + .5 * roar, 'ul-smoke1');
     // balcony front + tifo
-    const tOff = -pan * 1400 * .68;
+    const tOff = -pan * 1000 * .68;
     boilSeed('ul-balcony');
     paint([[-100, 440], [W + 100, 430], [W + 100, 600], [-100, 610]], { wash: '#2B3470', ink: null, hatch: { d: 16, a: .1, o: { rand: .5 }, b: 'HB', c: '#1B2250', w: 1 } });
     inkLine([[-100, 442], [W + 100, 432]], 2.2, C.yellow, 'ink', 0);
@@ -554,18 +557,18 @@
     }
     // lower tier
     for (let b = 4; b < 6; b++) crowdBand(BANDS[b], t, roar, pan, 'ul-band' + b);
-    const fx2 = 260 - pan * 1400 * .85;
+    const fx2 = 260 - pan * 1000 * .85;
     if (o.flares !== false) smokeCloud(fx2, 700, t + 2, .45 + .55 * roar, 'ul-smoke2', '#FBE08A');
     // giant flags on poles, waved from the lower tier
     if (o.flags !== false) {
-      const sp = 3 + 5 * roar, fOff = -pan * 1400 * .9;
+      const sp = 3 + 5 * roar, fOff = -pan * 1000 * .9;
       const sway = a => .2 * Math.sin(t * (1.5 + roar) + a);
       flag(150 + fOff + 60 * sway(0), 250, 420, 260, t, sp, 'yellow', 'ul-flag1', 520);
       flag(1560 + fOff + 60 * sway(2), 230, 400, 250, t + .7, sp, 'blue', 'ul-flag2', 540);
       flag(2700 + fOff + 60 * sway(4), 250, 420, 260, t + 1.3, sp, 'yellow', 'ul-flag3', 520);
     }
     // front row: big fans and two drummers
-    const fOff2 = -pan * 1400 * 1.25, sF = 1.25;
+    const fOff2 = -pan * 1000 * 1.25, sF = 1.25;
     for (let i = 0; i < 12; i++) {
       const x = -60 + i * 300 + fOff2 + (hash(i * 3.3) - .5) * 60;
       if (x < -250 || x > W + 250) continue;
@@ -719,7 +722,7 @@
       tlvCity(t, { ...cam, cx: cam.cx + 20 * Math.sin(t * .7) }, { stadiumO: { attack: .4 } });
     } else if (t < 5) {
       const k = seg(t, 3.6, 5);
-      tlvCity(t, { cx: STAD[0] + lerp(40, -40, k), cy: STAD[1] + 20, zoom: lerp(2.2, 2.6, ease(k)), tilt: .28 }, { stadiumO: { attack: .4 + .3 * k, roar: .5 } });
+      tlvCity(t, { cx: STAD[0] + lerp(40, -40, k), cy: STAD[1] + 20, zoom: lerp(2.0, 2.4, ease(k)) }, { stadiumO: { attack: .4 + .3 * k, roar: .5 } });
     } else if (t < 7.8) {
       const k = seg(t, 5, 7.8);
       ultras(t, { pan: ease(k), roar: kf(t, [[5, .25], [5.6, .35], [6.2, 1]]), zoom: 1 + .04 * k });
@@ -735,10 +738,3 @@
 
   Object.assign(window, { tlvCity, tlvDroneCam, stadium, ultras, mast, packetStream });
 })();
-LOOPS.tlv_bench = t => {
-  const mode = Math.floor(t);
-  paint(rectPts(-80, -80, W + 160, H + 160), { wash: '#223355', ink: null });
-  const r = [60, 150, 250, 350, 450][mode];
-  for (let i = 0; i < 4; i++) paint(ellPts(300 + i * 400, 500, r, r * .7, 16), { fill: '#88AACC', fillOp: 90, bleed: .2, tex: .5, ink: null });
-};
-LOOPS.tlv_bench.len = 5;

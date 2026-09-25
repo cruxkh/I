@@ -1,6 +1,9 @@
 // kit_journey.js: the journey sets, hand-painted (watercolour fills, ink, glow). All pure functions of t.
 // Every function paints in SCREEN space unless it says otherwise; wrap it in your own camBegin/camEnd for pushes.
 //
+// PERF NOTE (p5.brush on soft-gl): a watercolour `fill` on a long sliver narrower than ~12 px can take MINUTES;
+// thin things here are wash, inkLine or glow only.
+//
 // ── fibreTunnel(t, o) ── inside the internet: glowing fibre tunnel in one-point perspective (whole frame).
 //    o.speed  1     how fast the light rings / fibre streaks rush past (0 = parked, 3 = boost)
 //    o.z      t*speed*1.4   travel distance (override for exact control; rings are 1 unit apart)
@@ -103,7 +106,7 @@
     glow(vx, vy, 120 + 60 * boost, '#FFF3D6', .9);
 
     // rushing light rings (far → near)
-    const fz = frac(z), NR = (window.JDBG & 1) ? -1 : 9;
+    const fz = frac(z), NR = 9;
     for (let k = NR; k >= 0; k--) {
       const d = (k + 1 - fz) * .9 + .25;              // .25 .. 9.3
       if (d < .3) continue;
@@ -111,7 +114,7 @@
       if (a < .03) continue;
       const idx = Math.floor(z) - k, col = (idx & 1) ? CYAN : MAG;
       boilSeed('ring' + idx);
-      paint(ribbon(ringPts(vx, vy, r, 22), 34 / d, 34 / d), { fill: col, fillOp: 150 * a, bleed: .2, tex: .5, ink: null });
+      if (d < 2.8) paint(ribbon(ringPts(vx, vy, r, 22), 34 / d, 34 / d), { fill: col, fillOp: Math.round(150 * a), bleed: .2, tex: .5, ink: null });
       inkLine(ringPts(vx, vy, r, 22, .995), clamp(1.4 / d, .3, 2.6), mixCol(col, '#FFF6E0', .55), 'inkfine', .5);
       // lamps on the ring: shoulders and crown
       if (d < 5.5) for (const ang of [-Math.PI / 2, -Math.PI * .15, -Math.PI * .85, PHI - .12, Math.PI - PHI + .12]) {
@@ -122,7 +125,7 @@
     }
 
     // fibre streaks along walls and ceiling: radial light lines rushing outward
-    const NS = (window.JDBG & 2) ? 0 : 22, streakSpeed = speed * (1 - .7 * jam) + boost * 2.5;
+    const NS = 22, streakSpeed = speed * (1 - .7 * jam) + boost * 2.5;
     for (let i = 0; i < NS; i++) {
       const ang = lerp(Math.PI - PHI + .08, 2 * Math.PI + PHI - .08, hash(i * 3.1 + 5));
       const ph = frac(hash(i * 7.7) + t * .45 * streakSpeed * (.7 + .6 * hash(i + 40)));
@@ -139,7 +142,7 @@
 
     // floor lane dashes, rushing toward us
     const lanesZ = z * 1.0;
-    if (!(window.JDBG & 4)) for (const X of [-140, 140]) for (let k = 0; k < 9; k++) {
+    for (const X of [-140, 140]) for (let k = 0; k < 9; k++) {
       const d = (k + 1 - frac(lanesZ)) * .8 + .2, d2 = d + .28;
       if (d < .35 || d > 7) continue;
       boilSeed('dash' + X + '_' + (Math.floor(lanesZ) - k));
@@ -235,7 +238,7 @@
         boilSeed('kelp' + gx + '_' + j);
         const x0 = bx + j * 36, pts = [];
         for (let k = 0; k <= 6; k++) { const q = k / 6; pts.push([x0 + Math.sin(t * .9 + q * 2.6 + gx + j) * 34 * q, 830 - q * (h - j * 60)]); }
-        paint(ribbon(pts, 22, 6), { wash: j ? '#2F7A5A' : '#3D8C5E', fill: '#6FB56A', fillOp: 60, bleed: .1, tex: .5, ink: '#173A3A', sw: .7 });
+        paint(ribbon(pts, 24, 7), { wash: j ? '#2F7A5A' : '#3D8C5E', ink: '#173A3A', sw: .7 });
       }
     }
     // near jellyfish
@@ -307,10 +310,10 @@
     boilSeed('map-card');
     // card: parchment sea with a painted border
     paint(rrPts(x + 8, y + 10, w, h, 22), { wash: '#0C1638', washOp: 110 * A, ink: null });
-    paint(rrPts(x, y, w, h, 22, 1.5), { wash: '#BFE0E4', washOp: 255 * A, fill: '#8EC3E6', fillOp: 110 * A, bleed: .15, tex: .6, ink: '#27304F', sw: 1.2 });
+    paint(rrPts(x, y, w, h, 22, 1.5), { wash: '#BFE0E4', washOp: 255 * A, fill: '#8EC3E6', fillOp: Math.round(110 * A), bleed: .15, tex: .6, ink: '#27304F', sw: 1.2 });
     boilSeed('map-land');
     for (const [poly, col] of [[AMERICA, '#9CC47E'], [EUROPE, '#D8C07A'], [AFRICA, '#E2B16A']])
-      paint(clip(poly.map(mp)), { wash: col, washOp: 255 * A, fill: mixCol(col, '#6E7F4A', .4), fillOp: 90 * A, bleed: .1, tex: .6, ink: '#4A4A3A', sw: .6, curv: .4 });
+      paint(clip(poly.map(mp)), { wash: col, washOp: 255 * A, ink: '#4A4A3A', sw: .6, curv: .4 });
     paint(LAKES.map(mp), { wash: '#8EC3E6', washOp: 255 * A, ink: '#3A5A7A', sw: .5, curv: .5 });
     // route: faint whole route, then the travelled part bright
     const R = ROUTE_LL.map(mp), cum = [0];
@@ -457,7 +460,7 @@
     boilSeed('st-ground');
     paint(rectPts(-900, STREET.ground - 10, 3800, 90, 4), { wash: '#B9C0E2', fill: '#E8ECF8', fillOp: 90, bleed: .1, tex: .5, ink: null });
     paint(rectPts(-900, STREET.ground + 70, 3800, 500, 4), { wash: '#43487A', fill: '#5A5F8E', fillOp: 90, bleed: .15, tex: .7, ink: null });
-    paint(rectPts(-900, STREET.ground + 110, 3800, 20, 2), { fill: '#8A90BE', fillOp: 90, bleed: .2, tex: .6, ink: null });
+    paint(rectPts(-900, STREET.ground + 110, 3800, 20, 2), { wash: '#6A6F9E', washOp: 160, ink: null });
     // street lamps (sodium)
     STREET.lamps.forEach(([lx, ly], i) => {
       boilSeed('lamp' + i);
@@ -471,7 +474,7 @@
     // utility pole + crossarm + insulators, the wire into our window
     boilSeed('st-pole');
     const Pl = STREET.pole;
-    paint([[Pl.x - 13, Pl.base], [Pl.x - 9, Pl.top], [Pl.x + 9, Pl.top], [Pl.x + 13, Pl.base]], { wash: '#5A4032', fill: '#7A5A44', fillOp: 70, bleed: .05, tex: .7, ink: '#1B1A33', sw: .9 });
+    paint([[Pl.x - 13, Pl.base], [Pl.x - 9, Pl.top], [Pl.x + 9, Pl.top], [Pl.x + 13, Pl.base]], { wash: '#5A4032', ink: '#1B1A33', sw: .9 });
     paint(rectPts(Pl.x - 90, Pl.top + 22, 180, 14, 1), { wash: '#5A4032', ink: '#1B1A33', sw: .8 });
     for (const dx of [-70, 70]) paint(rrPts(Pl.x + dx - 5, Pl.top + 8, 10, 16, 4), { wash: '#6FA8A0', ink: '#1B1A33', sw: .5 });
     paint(rectPts(Pl.x - 16, Pl.top - 8, 32, 12, 2), { wash: '#DDE3F4', ink: null });
@@ -539,14 +542,14 @@
       if (ch === 'O') {
         const R = 108;
         if (!small) paint(ellPts(10, 12, R, R, 30), { wash: BLD, washOp: wop, ink: null });
-        paint(ellPts(0, 0, R, R, 30, .5), { wash: Y1, washOp: wop, fill: Y2, fillOp: 90 * alpha * al, bleed: .08, tex: .5, ...ink });
-        paint(ellPts(0, 0, R * .56, R * .56, 24, .5), { wash: '#2F63E0', washOp: wop, fill: BL, fillOp: 110 * alpha * al, bleed: .1, tex: .5, ...ink });
+        paint(ellPts(0, 0, R, R, 30, .5), { wash: Y1, washOp: wop, ...(small ? {} : { fill: Y2, fillOp: Math.round(90 * alpha * al), bleed: .06, tex: .5 }), ...ink });
+        paint(ellPts(0, 0, R * .56, R * .56, 24, .5), { wash: '#2F63E0', washOp: wop, ...(small ? {} : { fill: BL, fillOp: Math.round(110 * alpha * al), bleed: .08, tex: .5 }), ...ink });
         paint([[-R * .18, -R * .3], [R * .34, 0], [-R * .18, R * .3]], { wash: '#FFF3C8', washOp: wop, ...ink, curv: .15 });
         if (!small) inkLine(ellPts(-4, -4, R * .8, R * .8, 12).slice(6, 10), 1.4 / (s * sc), '#FFF6D8', 'inkfine', .6);
       } else {
         const g = ch === 'G' ? glyphG() : ch === 'T' ? glyphT() : glyphV();
         if (!small) paint(g.map(([a, b]) => [a + 10, b + 12]), { wash: BLD, washOp: wop, ink: null });
-        paint(g, { wash: Y1, washOp: wop, fill: Y2, fillOp: 90 * alpha * al, bleed: .08, tex: .5, ...ink });
+        paint(g, { wash: Y1, washOp: wop, ...(small ? {} : { fill: Y2, fillOp: Math.round(90 * alpha * al), bleed: .06, tex: .5 }), ...ink });
         if (!small) { // a cream highlight stroke along the top-left of each letter
           const hl = ch === 'G' ? ellPts(0, 0, 82, 82, 16).slice(9, 13) : ch === 'T' ? [[-66, -86], [60, -86]] : [[-80, -86], [-44, -86]];
           inkLine(hl, 1.2 / (s * sc), '#FFF6D8', 'inkfine', .6);
@@ -599,16 +602,3 @@
 
   Object.assign(window, { fibreTunnel, tunnelAt, TUNNEL, ocean, cableY, cablePt, routeMap, ROUTE_STOPS, torontoStreet, STREET, streetPath, streetPathK, gotvLogo });
 })();
-// __BENCH__
-LOOPS.jbench = t => {
-  const v = Math.floor(t);
-  if (v === 1) for (let i = 0; i < 4; i++) { boilSeed('b' + i); paint(rectPts(-80, -80, W + 160, H + 160), { fill: '#3040A0', fillOp: 120, bleed: .3, tex: .6, ink: null }); }
-  if (v === 2) for (let i = 0; i < 4; i++) { boilSeed('b' + i); paint(rectPts(-80, -80, W + 160, H + 160), { wash: '#3040A0', washOp: 200, ink: null }); }
-  if (v === 3) for (let i = 0; i < 40; i++) glow(100 + i * 40, 500, 200, '#FFC766', 1);
-  if (v === 4) for (let i = 0; i < 40; i++) { boilSeed('l' + i); inkLine([[100 + i * 40, 100], [120 + i * 40, 900]], 1.5, '#FFC766', 'inkfine', 0); }
-  if (v === 5) for (let i = 0; i < 4; i++) { boilSeed('b' + i); paint(ellPts(960, 540, 200, 150, 24), { fill: '#3040A0', fillOp: 120, bleed: .3, tex: .6, ink: null }); }
-  if (v === 6) for (let i = 0; i < 40; i++) { boilSeed('w' + i); paint(ellPts(100 + i * 40, 540, 30, 30, 12), { wash: '#FFC766', ink: PAL.ink, sw: .7 }); }
-};
-LOOPS.jbench.len = 10;
-LOOPS.jb2 = t => { window.JDBG = Math.floor(t / 10); const u = 3.3 + (t % 10) * 0; fibreTunnel(u, { speed: .3, jam: 1, z: 1.386 }); window.JDBG = 0; };
-LOOPS.jb2.len = 100;
