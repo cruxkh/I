@@ -21,6 +21,30 @@ rewrite the content. Read `anim/BIBLE.md`, `anim/SCENES.md`, `anim/KITS_API.md` 
 - **Mix:** `tools/mix.py`: per-location voice FX (room / PA / TV / data / underwater), sidechain ducking, glue comp,
   -15 LUFS, look-ahead limiter. **Encode:** ffmpeg (from `imageio-ffmpeg`) x264 CRF 17 + AAC.
 
+## STEP 0, ALWAYS: offer the visual style menu (before any story or code)
+At the start of EVERY new video project, remind the user (in Hebrew) that the look is a choice, present this menu with a
+one-line description each, recommend 2 that fit their topic, and let them pick (or mix). Then render 2–3 style-test
+frames of a key moment in the chosen style and get approval BEFORE production. Record the choice in BIBLE.md.
+Lesson: the client's first film used "glossy digital vector" and later felt it looked artificial next to a hand-painted
+watercolor video; offering the menu up front avoids that.
+
+| # | Style (Hebrew name) | Look | How to build it here | Effort |
+|---|---|---|---|---|
+| 1 | Hand-painted watercolor (ציור ידני בצבעי מים) | brush strokes, soft pigment washes, paper texture, 12 fps "boiling" ink lines, soft muted palette, no pure black/white, simple staging | p5.brush (`paint()`/`inkLine()` style) per JohnHeibel/ClaudeAnimationBase ANIMATION_GUIDE.md; boil seeds reset 12x/s; paper grain multiplied on top; `glow()` for light only | high (all art in brush) |
+| 2 | Glossy digital vector (דיגיטלי מבריק), this repo's default | clean vector shapes, gradients, rim light, neon glows, dense detail | Canvas2D kits as in `anim/` | medium |
+| 3 | Painterly filter over vector (שכבת ציור על וקטור) | vector art made to feel hand-made: paper, edge wobble, watercolor bleed, desaturated palette | post-pass in `engine_post.js`: paper texture multiply, noise displacement at 12 fps, edge darkening, palette grading | low (filter only) |
+| 4 | Flat motion graphics (מושן גרפיקס שטוח / אינפוגרפיקה) | flat colors, geometric shapes, bold type, smooth eased moves; corporate/explainer | Canvas2D, no gradients, strict grid, kinetic typography | low-medium |
+| 5 | Paper cut-out / collage (גזרי נייר / קולאז') | layered paper with drop shadows, torn edges, stop-motion stutter at 12 fps | textured shapes with torn-edge masks, soft shadows, hold every 2 frames | medium |
+| 6 | Anime cel-shaded (אנימה) | clean ink lines, 2-tone cel shading, speed lines, dramatic skies and light | Canvas2D with hard shadow shapes, painted BG layers, bloom | high |
+| 7 | Comic / Spider-Verse (קומיקס) | halftone dots, bold ink, offset color print, onomatopoeia panels, frame-rate on 2s | halftone pattern fills, misregistration offset, panels | medium-high |
+| 8 | Retro rubber-hose 1930s (קרטון רטרו, בסגנון Cuphead) | black-and-white or sepia, bouncy limbs, film scratches, vignette, jazz | noodle limbs, pie eyes, sepia grade, scratch/flicker overlay | medium |
+| 9 | Pencil / chalk sketch (סקיצה בעיפרון / גיר על לוח) | graphite or chalk lines, hatching, eraser marks, drawn-on reveal | stroked noisy lines, hatch fills, progressive stroke reveal | medium |
+| 10 | Children's book crayon (ספר ילדים בצבעי פנדה) | crayon texture, wobbly outlines, warm pastel | crayon texture brushes, pastel palette | medium |
+| 11 | Claymation look (פלסטלינה) | soft rounded 3D-ish blobs, fingerprints texture, stop-motion stutter | radial shading, noise texture, hold frames on 2s | medium-high |
+| 12 | Neon synthwave (ניאון רטרו שנות ה-80) | dark background, glowing neon lines, grid horizon, chrome text | additive glows, grid perspective, scanlines | low-medium |
+| 13 | Pixel art (פיקסל ארט) | low-res pixel sprites, limited palette, retro game feel | render at 320x180 and nearest-neighbour upscale | medium |
+| 14 | Low-poly 2.5D (לואו-פולי) | faceted geometric shapes with flat shading, parallax depth | triangle meshes with per-face shading, layered parallax | medium |
+
 ## Pipeline (the director = the main session; up to ~13 agents)
 1. **Director alone:** story (logline + beat table with exact global seconds), dialogue `audio/script.json`,
    run `tools/tts.py` (fix overlaps), write `BIBLE.md` (story, sync table, style, colour script, character designs,
