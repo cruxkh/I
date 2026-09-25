@@ -86,7 +86,7 @@
     boilSeed('tun-bg');
     full(NAVY);
     // wall pigment: big soft blooms, deeper at the edges
-    paint(ellPts(vx, vy + 40, 1300, 900, 30, 20), { fill: mixCol('#2C2F7A', '#4A1E3C', jam), fillOp: 120, bleed: .3, tex: .6, ink: null });
+    paint(ellPts(vx, vy + 40, 1100, 760, 30, 20), { fill: mixCol('#2C2F7A', '#4A1E3C', jam), fillOp: 120, bleed: .3, tex: .6, ink: null });
     paint(ellPts(vx - 520, vy - 260, 620, 420, 24, 14), { fill: mixCol('#3B2A7E', '#5A2436', jam), fillOp: 90, bleed: .3, tex: .7, ink: null });
     paint(ellPts(vx + 560, vy - 180, 560, 400, 24, 14), { fill: mixCol('#1F4E7A', '#4E2A2A', jam), fillOp: 90, bleed: .3, tex: .7, ink: null });
     paint(ellPts(vx, vy, 520, 330, 26, 10), { fill: mixCol('#3F5FB0', '#7A3040', jam), fillOp: 90, bleed: .25, tex: .5, ink: null });
@@ -114,7 +114,10 @@
       if (a < .03) continue;
       const idx = Math.floor(z) - k, col = (idx & 1) ? CYAN : MAG;
       boilSeed('ring' + idx);
-      if (d < 2.8) paint(ribbon(ringPts(vx, vy, r, 22), 34 / d, 34 / d), { fill: col, fillOp: Math.round(150 * a), bleed: .2, tex: .5, ink: null });
+      // band fill only in the safe range: a fill far bigger than the canvas (d < .65) or thinner than ~12 px (d > 2.8)
+      // makes p5.brush take minutes. Near rings are carried by the ink line + glows instead.
+      if (d > .65 && d < 2.8) { const hw = 17 / d; paint(ringPts(vx, vy, r - hw, 16).concat(ringPts(vx, vy, r + hw, 16).reverse()), { fill: col, fillOp: Math.round(150 * a), bleed: .15, tex: .5, ink: null }); }
+      else if (d <= .65) inkLine(ringPts(vx, vy, r, 22), 6 * a, col, 'dry', .5);
       inkLine(ringPts(vx, vy, r, 22, .995), clamp(1.4 / d, .3, 2.6), mixCol(col, '#FFF6E0', .55), 'inkfine', .5);
       // lamps on the ring: shoulders and crown
       if (d < 5.5) for (const ang of [-Math.PI / 2, -Math.PI * .15, -Math.PI * .85, PHI - .12, Math.PI - PHI + .12]) {
@@ -401,12 +404,13 @@
     // sky
     boilSeed('st-sky');
     paint(rectPts(-900, -700, 3800, 2600), { wash: '#1E2352', ink: null });
-    paint(ellPts(1000, 820, 2200, 460, 30, 20), { fill: '#6A4A7A', fillOp: 110, bleed: .3, tex: .6, ink: null });
+    // (fills stay under ~2300 px: bigger ones make p5.brush crawl on soft-gl)
+    for (const cx of [300, 1600]) paint(ellPts(cx, 800, 1100, 420, 26, 20), { fill: '#6A4A7A', fillOp: 100, bleed: .3, tex: .6, ink: null });
     paint(ellPts(400, 60, 900, 260, 24, 20), { fill: '#2F3C7A', fillOp: 90, bleed: .3, tex: .6, ink: null });
     // CN tower + skyline, far back
     layer(.12, () => {
       boilSeed('st-cn');
-      const cx = 1560, bot = 700;
+      const cx = 990, bot = 700;   // in the sky gap between the pole and our building
       paint([[cx - 34, bot], [cx - 9, 330], [cx - 5, 150], [cx + 5, 150], [cx + 9, 330], [cx + 34, bot]], { wash: '#3A3F76', ink: null });
       paint(ellPts(cx, 345, 44, 20, 16), { wash: '#434A86', ink: '#2A2C58', sw: .5 });
       paint(ellPts(cx, 270, 16, 8, 12), { wash: '#434A86', ink: null });
@@ -419,7 +423,7 @@
       const sk = [[-800, 760]]; let sx = -800;
       for (let i = 0; sx < 2800; i++) { const bw = 70 + 90 * hash(i * 2.1), bh = 80 + 170 * hash(i * 1.3 + 4); sk.push([sx, 700 - bh], [sx + bw, 700 - bh]); sx += bw; }
       sk.push([2800, 760]);
-      paint(sk, { wash: '#2C3066', fill: '#3C3F7A', fillOp: 60, bleed: .1, tex: .5, ink: null });
+      paint(sk, { wash: '#2C3066', ink: null });
       for (let i = 0; i < 26; i++) glow(-400 + hash(i * 3.7) * 2800, 560 + hash(i * 5.3) * 130, 8, '#FFC878', .7);
     });
     // row houses (left), our brick apartment, one more house (right)
@@ -458,8 +462,9 @@
 
     // ground: sidewalk + road + snowbanks
     boilSeed('st-ground');
-    paint(rectPts(-900, STREET.ground - 10, 3800, 90, 4), { wash: '#B9C0E2', fill: '#E8ECF8', fillOp: 90, bleed: .1, tex: .5, ink: null });
-    paint(rectPts(-900, STREET.ground + 70, 3800, 500, 4), { wash: '#43487A', fill: '#5A5F8E', fillOp: 90, bleed: .15, tex: .7, ink: null });
+    paint(rectPts(-900, STREET.ground - 10, 3800, 90, 4), { wash: '#C3C9E8', ink: null });
+    paint(rectPts(-900, STREET.ground + 70, 3800, 500, 4), { wash: '#43487A', ink: null });
+    for (const cx of [100, 1300, 2300]) paint(ellPts(cx, STREET.ground + 190, 700, 90, 20, 8), { fill: '#6A6F9E', fillOp: 80, bleed: .2, tex: .7, ink: null });
     paint(rectPts(-900, STREET.ground + 110, 3800, 20, 2), { wash: '#6A6F9E', washOp: 160, ink: null });
     // street lamps (sodium)
     STREET.lamps.forEach(([lx, ly], i) => {

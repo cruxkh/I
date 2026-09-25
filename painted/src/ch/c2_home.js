@@ -178,8 +178,8 @@
     flash(inK, GW);
   }
   function shotB(t, lt) {        // Noa offers the backgammon case
-    const z = 1.55 + .05 * ease(seg(lt, 0, 2.1));
-    cam(t, 800 + 30 * ease(seg(lt, 0, 2.1)), 690, z);
+    const z = 1.8 + .07 * ease(seg(lt, 0, 2.1));
+    cam(t, 790 + 40 * ease(seg(lt, 0, 2.1)), 675, z);
     scene(t);
     camEnd();
   }
@@ -213,8 +213,8 @@
     camEnd();
   }
   function shotF(t, lt) {        // "Again?!" Saba vs the error screen
-    const z = 1.18 + .06 * ease(seg(lt, 0, 1.3));
-    cam(t, 1050, 575, z, shakeXY(t, 6 * Math.exp(-Math.max(0, t - 21.8) * 5)));
+    const z = 1.3 + .06 * ease(seg(lt, 0, 1.3));
+    cam(t, 1060, 560, z, shakeXY(t, 6 * Math.exp(-Math.max(0, t - 21.8) * 5)));
     scene(t);
     if (t > ERR && t < ERR + .2) glow(1540, 547, 300, '#FFFFFF', 1 - seg(t, ERR, ERR + .2));
     camEnd();
@@ -228,15 +228,15 @@
   function shotH(t, lt) {        // Noa's knowing look
     const wx = lt < .22 ? -(1 - easeOut(lt / .22)) * 700 : 0;
     const k = ease(seg(t, 24.8, 28.3));
-    cam(t, lerp(800, 880, k) + wx, lerp(650, 630, k), lerp(1.45, 1.62, k));
+    cam(t, lerp(800, 880, k) + wx, lerp(650, 630, k), lerp(1.45, 1.75, k));
     scene(t);
     camEnd();
     if (lt < .22) streaks(1 - lt / .22, 'h');
   }
   function shotJ(t, lt) {        // yank + toss
     const sh = [shakeXY(t, t > YANK ? 10 * Math.exp(-(t - YANK) * 7) : 0), shakeXY(t + 3, t > CRASH ? 16 * Math.exp(-(t - CRASH) * 7) : 0)];
-    const cx = kf(t, [[28.75, 1180], [29.2, 1250], [30.1, 1215]], ease);
-    cam(t, cx, 690, 1.36, [sh[0][0] + sh[1][0], sh[0][1] + sh[1][1]]);
+    const cx = kf(t, [[28.75, 1150], [29.2, 1300], [29.95, 1300], [30.35, 1240]], ease);
+    cam(t, cx, 700, 1.7, [sh[0][0] + sh[1][0], sh[0][1] + sh[1][1]]);
     scene(t);
     camEnd();
   }
@@ -258,17 +258,20 @@
     // Noa's teal hoodie shoulder, soft behind the phone
     paint(ellPts(560, 1180, 520, 330, 22, 6), { fill: '#3FA59C', fillOp: 150, bleed: .2, tex: .4, ink: null });
   }
-  function shotW(t, lt, dur) {   // WhatsApp close-up
+  function shotW(t, lt, dur) {   // WhatsApp close-up: frame the typing, then glide up to the bubbles
     phoneBg(t);
-    const up = backOut(seg(lt, 0, .38)), down = easeIn(seg(lt, dur - .28, dur));
-    const y = lerp(1500, 545, up) + 1700 * down + 6 * wob(t, .4);
+    const up = backOut(seg(lt, 0, .38)), down = easeIn(seg(lt, dur - .28, dur)), PH = 931;
+    const y = lerp(1700, 545, up) + 1500 * down + 5 * wob(t, .4);
     const x = 1010 + 4 * wob(t, .31, .2) + (t > 34.2 ? 8 * spring(t, 34.2, 6, 20) : 0);
-    if (t > 34.2) glow(x, y - 40, 520, '#8CE0A0', .45 * Math.exp(-(t - 34.2) * 1.5) + .1);
+    const cy = kf(t, [[31.3, 545 + .24 * PH], [32.3, 545 + .22 * PH], [32.8, 545 - .1 * PH]], ease), z = kf(t, [[31.3, 1.3], [32.3, 1.4], [32.8, 1.62], [35.2, 1.7]], ease);
+    camBegin(1010 + 5 * wob(t, .2), cy, z);
+    if (t > 34.2) glow(x, y - 200, 420, '#8CE0A0', .45 * Math.exp(-(t - 34.2) * 1.5) + .1);
     phoneChat(x, y, .95, t);
     if (t > 34.25 && t < 35.1) {
       boilSeed('c2 sparkles');
-      for (let i = 0; i < 5; i++) { const a = t - 34.25 - i * .06, k = backOut(seg(a, 0, .25)) * (1 - seg(a, .5, .8)); if (k > .02) paint(starPts(x - 280 + hash(i) * 560, y - 220 + hash(i + 5) * 260 - a * 60, 18 * k, .35, 4), { wash: '#FFE08A', ink: PAL.ink, sw: .7 }); }
+      for (let i = 0; i < 6; i++) { const a = t - 34.25 - i * .06, k = backOut(seg(a, 0, .25)) * (1 - seg(a, .5, .8)); if (k > .02) paint(starPts(x - 250 + hash(i) * 500, y - 330 + hash(i + 5) * 200 - a * 50, 16 * k, .35, 4), { wash: '#FFE08A', ink: PAL.ink, sw: .6 }); }
     }
+    camEnd();
     if (lt > dur - .28) streaks(seg(lt, dur - .2, dur) * .6, 'w');
   }
   function shotL(t, lt) {        // "Activated! Look, Saba!"
@@ -291,6 +294,7 @@
     scene(t);
     camEnd();
     if (lt < .15) flash(.5 * (1 - lt / .15), '#FFE9A8');
+    flash(ease(seg(t, 38.15, 38.6)), '#FFF0C0');     // the screen's light fills the frame (the zoomed screen wash can drop out)
     flash(ease(seg(t, 38.55, 38.95)) * .85 + ease(seg(t, 38.95, 39.15)) * .15, GW);
   }
 

@@ -13,14 +13,15 @@
 //     moon glints    on the sea, placed relative to the camera (a real specular glint follows the viewer)
 //
 // tlvCity(t, cam, o)  paints the WHOLE frame (background included) and handles camBegin/camEnd itself.
-//     cam  {cx, cy, zoom, rot, tilt}: camera centre (world), zoom, roll; tilt (default .28) = how much the drone looks
+//     cam  {cx, cy, zoom, rot, tilt}: camera centre (world), zoom, roll; tilt (default .7) = how much the drone looks
 //          forward (north): roofs shift up by h·tilt so south facades show. Use tlvDroneCam(k) for the standard path.
 //     o.cars (1)     0..1 amount of moving car-light dabs     o.lamps (1) street-light strength
 //     o.stadium (true) draw the stadium inside the city          o.stadiumO {} extra options passed to stadium()
 //     o.after(cam)   callback run inside the camera, after everything (to add your own props in world coords)
 //
 // tlvDroneCam(k, o)   standard drone path, k 0..1: 0 = high over the coast (whole city, sea, Azrieli, stadium small),
-//     .5 = mid descent over the rooftops, 1 = low over the stadium (bowl fills the frame). Returns {cx, cy, zoom, tilt}.
+//     .5 = mid descent over the rooftops (zoom .75), 1 = over the stadium (zoom 1.45, bowl ~80% of the frame); for a
+//     closer pass call tlvCity with {cx: TLV_W.stadium[0], cy: TLV_W.stadium[1] + 20, zoom: 2..2.6}. Returns {cx, cy, zoom, tilt}.
 //     Eased and log-zoomed; add your own drift/shake to the result. o.end = [x, y, zoom] overrides the final key.
 //
 // stadium(t, o)       the floodlit bowl, drawn in the CURRENT space (inside a camera or not), centred at (o.x, o.y).
@@ -31,7 +32,8 @@
 //     returns { home: [x, y] } the centre of the home (Maccabi) stand in the current space
 //
 // ultras(t, o)        the MACCABI TEL AVIV home stand at a low oblique angle, full frame (paints everything, screen px).
-//     o.pan (0)   0..1 drone travel along the stand (layers slide with parallax, ~1400 px for the front row)
+//     o.pan (0)   0..1 drone travel along the stand (layers slide with parallax: roof .3, far bands .35–.58, tifo .68, lower
+//                 tier .8–.95, flags .9, front row 1.25 × 1000 px)
 //     o.roar (.5) 0..1 energy: jump height, arms up, wave speed, flag speed, flare/smoke amount, drum hits
 //     o.zoom (1)  push-in about the frame centre;  o.dy (0) vertical camera offset (+ = look lower)
 //     o.flares (true) yellow flare smoke;  o.tifo (true) banner `מכבי תל אביב`;  o.flags (true) giant flags
@@ -49,12 +51,15 @@
 //     o.spread (14) px sideways scatter; o.col ('#BFE9FF'); o.gold (-1) index of the gold GOTV packet (Bit) and
 //     o.glint (t of the gold glint sparkle, default launch+.6); o.loop (false) packets re-launch forever.
 //
+// PERF (soft-gl): p5.brush `fill` costs ~1–8 s per shape here, so this kit uses NO fills: watercolour comes from layered
+//   translucent washes, darker pooled rims (wet()), jittered edges and a static pigment texture (mottle()). Lights are
+//   queued and flushed in batches (glowQ/glowFlush), because every core glow() call flushes the brush.
 // LOOPS.kit_telaviv (len 10): 0–3.6 drone descent, 3.6–5 stadium low pass, 5–7.8 ultras pass with roar, 7.8–10 mast
 //     + broadcast + packet launch.
 // ---------------------------------------------------------------------------------------------------------------------
 (() => {
   const C = {
-    ground: '#2A3150', street: '#4B416B', streetLt: '#5E4F78', tree: '#2E5550', treeLt: '#3F6E5E',
+    ink: PAL.ink, ground: '#2A3150', street: '#4B416B', streetLt: '#5E4F78', tree: '#2E5550', treeLt: '#3F6E5E',
     wall: '#5E5382', wallDk: '#4A4170', win: '#FFD27A', lamp: '#FFB65A',
     sea: '#1D3C6C', seaDk: '#152B55', seaLt: '#3C6B9E', foam: '#C7DBEA', sand: '#B59B7C', sandDk: '#8C7867',
     moon: '#FFF1CC', sky: '#1C2050', skyLo: '#35306A', yellow: '#F4C63F', yellowDk: '#D99E1E', blue: '#2F5CB8',
@@ -93,31 +98,80 @@
     for (let i = 0; i < 4; i++) { const y0 = H * (.3 + i * .14); paint([[-80, y0 + 30 * Math.sin(i * 2)], [W / 2, y0 - 20], [W + 80, y0 + 25 * Math.cos(i)], [W + 80, H + 80], [-80, H + 80]], { wash: bot, washOp: 55, ink: null }); }
   };
 
+  // ---------------------------------------------------------------- batched light
+  // core glow() flushes p5.brush on every call, and on soft-gl each flush with shapes pending is slow. Queue lights and
+  // flush them in one go (same look: same texture, same additive blend). Flush under the SAME transform they were queued in.
+  const GQ = [];
+  const glowQ = (x, y, r, col, a = 1) => { if (a > 0 && r >= 1) GQ.push([x, y, r, col, a]); };
+  function glowFlush() {
+    if (!GQ.length) return;
+    flushBrush(); push(); blendMode(ADD);
+    for (const [x, y, r, col, a] of GQ) { const c = color(col), rr = r * (1 + jit(.03)); tint(red(c), green(c), blue(c), 150 * clamp(a)); image(glowTex, x - rr, y - rr, 2 * rr, 2 * rr); }
+    noTint(); blendMode(BLEND); pop(); GQ.length = 0;
+  }
+  // pigment mottling: a static watercolour texture (granulation + soft darker/lighter blooms), made once, laid over a
+  // painted layer with MULTIPLY (darks) and ADD (blooms). Cheap on soft-gl, and it breaks every flat wash like real pigment.
+  let WT = null;
+  function washTex() {
+    if (WT) return WT;
+    const n = 768, mk = () => { const g = createGraphics(n, n); g.pixelDensity(1); return g; }, D = mk(), L = mk(), rnd = lcg(29);
+    const dc = D.drawingContext, lc = L.drawingContext;
+    dc.fillStyle = '#FFFFFF'; dc.fillRect(0, 0, n, n); lc.fillStyle = '#000000'; lc.fillRect(0, 0, n, n);
+    const blob = (c, x, y, r, rgba) => { for (const ox of [-n, 0, n]) for (const oy of [-n, 0, n]) { const g = c.createRadialGradient(x + ox, y + oy, 0, x + ox, y + oy, r); g.addColorStop(0, rgba(1)); g.addColorStop(.7, rgba(.55)); g.addColorStop(.92, rgba(.9)); g.addColorStop(1, rgba(0)); c.fillStyle = g; c.fillRect(x + ox - r, y + oy - r, 2 * r, 2 * r); } };
+    for (let i = 0; i < 38; i++) { const a = .05 + .09 * rnd(); blob(dc, rnd() * n, rnd() * n, 40 + rnd() * 170, k => `rgba(${90 + rnd() * 0 | 0},70,120,${a * k})`); }
+    for (let i = 0; i < 26; i++) { const a = .05 + .07 * rnd(); blob(lc, rnd() * n, rnd() * n, 30 + rnd() * 130, k => `rgba(255,236,210,${a * k})`); }
+    const id = dc.getImageData(0, 0, n, n), d = id.data;
+    for (let i = 0; i < d.length; i += 4) { if (rnd() < .35) { const v = rnd() * 26; d[i] -= v; d[i + 1] -= v * 1.1; d[i + 2] -= v * .7; } }
+    dc.putImageData(id, 0, 0);
+    return (WT = { D, L, n });
+  }
+  // lay the texture over [x0, y0, x1, y1] (current space), tile size ts, strength k (0..1)
+  function mottle(x0, y0, x1, y1, ts = 900, k = 1) {
+    const T = washTex(); flushBrush(); push();
+    const tile = (img, mode, a) => { blendMode(mode); tint(255, 255 * a); for (let x = Math.floor(x0 / ts) * ts; x < x1; x += ts) for (let y = Math.floor(y0 / ts) * ts; y < y1; y += ts) image(img, x, y, ts + 1, ts + 1); };
+    tile(T.D, MULTIPLY, k); tile(T.L, ADD, .8 * k);
+    noTint(); blendMode(BLEND); pop();
+  }
+  // watercolour-ish shape without an expensive fill: a darker pooled rim, the body inset, a lighter bloom inside
+  function wet(P, col, o = {}) {
+    let cx = 0, cy = 0; for (const p of P) { cx += p[0]; cy += p[1]; } cx /= P.length; cy /= P.length;
+    const ins = (k, dx = 0, dy = 0) => P.map(([x, y]) => [lerp(x, cx, k) + dx, lerp(y, cy, k) + dy]);
+    paint(P, { wash: o.rim || mixCol(col, '#2A2350', .28), ink: o.ink ?? null, sw: o.sw });
+    paint(ins(o.k ?? .07), { wash: col, ink: null });
+    if (o.bloom !== false) paint(ins(o.kb ?? .38, o.bx ?? 0, o.by ?? 0), { wash: o.bloomCol || '#FFF6EA', washOp: o.bloomOp ?? 60, ink: null });
+  }
+  const wobble = (P, id, a) => P.map(([x, y], i) => [x + (hash(id * 3.7 + i * 1.3) - .5) * a, y + (hash(id * 5.1 + i * 2.9) - .5) * a]);
+
   // ---------------------------------------------------------------- the city (static layout, derived from hash only)
   const coast = y => 640 + .1 * (y - 1500) + 34 * Math.sin(y * .0037 + 1) + 14 * Math.sin(y * .011);
   const STAD = [2350, 2150], AZR = [3450, 1060];
-  const BX = 300, BY = 240, ST = 46, GX0 = 820, GY0 = -500, NI = 12, NJ = 17;
+  const BX = 300, BY = 240, ST = 50, GX0 = 820, GY0 = -500, NI = 12, NJ = 17;
   const BLD = [], TREES = [];
   for (let i = 0; i < NI; i++) for (let j = 0; j < NJ; j++) {
     const bx = GX0 + i * BX + ST / 2, by = GY0 + j * BY + ST / 2, bw = BX - ST, bd = BY - ST, cx = bx + bw / 2, cy = by + bd / 2;
     if (bx < coast(cy) + 175) continue;
     if (((cx - STAD[0]) / 720) ** 2 + ((cy - STAD[1]) / 560) ** 2 < 1) continue;
-    const az = Math.hypot(cx - AZR[0], cy - AZR[1]) < 200, id = i * 31 + j * 7;
-    if (az) continue;
-    if (hash(id + .3) < .5) TREES.push([cx + (hash(id + .7) - .5) * 60, cy + (hash(id + .9) - .5) * 40, 34 + hash(id) * 30]);
-    const east = clamp((cx - 2600) / 1200), tallBlock = hash(id + 5.1) < .08 + .22 * east;
-    if (tallBlock) { // one modern tower block
-      const w = 110 + hash(id + 1) * 60, d = 90 + hash(id + 2) * 40;
-      BLD.push({ x: cx - w / 2, y: cy - d / 2, w, d, h: 150 + hash(id + 3) * 170, roof: '#B7BCD8', wall: '#58608E', r: 0, solar: false, id, tall: true });
+    const id = i * 31 + j * 7;
+    if (Math.hypot(cx - AZR[0], cy - AZR[1]) < 230) continue;
+    const east = clamp((cx - 2600) / 1200), roofOf = k => ROOFS[Math.floor(hash(k) * ROOFS.length)];
+    const add = (x, y, w, d, h, k, extra = {}) => { const roof = roofOf(k + .7); BLD.push({ x, y, w, d, h, roof, wall: mixCol(roof, '#2E2860', .5 + .14 * hash(k + .8)), r: hash(k + .9) < .4 ? 16 + hash(k) * 12 : 0, solar: hash(k + 1.3) < .7, id: k, ...extra }); };
+    if (hash(id + 5.1) < .07 + .25 * east) { // one modern tower block
+      const w = 120 + hash(id + 1) * 70, d = 100 + hash(id + 2) * 40;
+      add(cx - w / 2, cy - d / 2 - 10, w, d, 160 + hash(id + 3) * 180, id * 4, { roof: '#BFC3DD', wall: '#5A6192', r: 0, solar: false, tall: true });
+      TREES.push([cx + 70, cy + 70, 26]);
       continue;
     }
-    for (let a = 0; a < 2; a++) for (let b = 0; b < 2; b++) {
-      const lid = id * 4 + a * 2 + b; if (hash(lid + .11) < .16) continue;
-      const lw = bw / 2, ld = bd / 2, w = 92 + hash(lid + .2) * 28, d = 70 + hash(lid + .3) * 20;
-      const x = bx + a * lw + (lw - w) * hash(lid + .4), y = by + b * ld + (ld - d) * hash(lid + .5);
-      const roof = ROOFS[Math.floor(hash(lid + .7) * ROOFS.length)];
-      BLD.push({ x, y, w, d, h: 26 + hash(lid + .6) * 40, roof, wall: mixCol(roof, '#2E2860', .52 + .12 * hash(lid + .8)),
-        r: hash(lid + .9) < .35 ? 14 + hash(lid) * 10 : 0, solar: hash(lid + 1.3) < .6, id: lid });
+    const ty = hash(id + .2);
+    if (ty < .62) { // two Bauhaus blocks side by side, a garden strip in front
+      for (let a = 0; a < 2; a++) {
+        const k = id * 4 + a, w = bw / 2 - 10 - hash(k + .2) * 18, d = bd - 34 - hash(k + .3) * 36;
+        add(bx + a * (bw / 2 + 6) + hash(k + .4) * 8, by + 4 + hash(k + .5) * 8, w, d, 32 + hash(k + .6) * 38, k);
+      }
+      if (hash(id + .3) < .7) TREES.push([bx + bw * (.25 + .5 * hash(id + .7)), by + bd - 14, 22 + hash(id) * 12]);
+    } else { // one long building + courtyard trees
+      const k = id * 4 + 2, w = bw - 16 - hash(k + .2) * 40, d = bd * (.5 + .2 * hash(k + .3));
+      add(bx + 8, by + 6, w, d, 30 + hash(k + .6) * 44, k);
+      TREES.push([bx + bw * .3, by + bd - 30, 30 + hash(id + 1) * 10], [bx + bw * .72, by + bd - 24, 24 + hash(id + 2) * 10]);
     }
   }
   BLD.sort((p, q) => (p.y + p.d) - (q.y + q.d));
@@ -151,62 +205,76 @@
     boilSeed('tlv-bg'); paint(rectPts(-80, -80, W + 160, H + 160), { wash: C.ground, ink: null });
     camBegin(cam.cx, cam.cy, z, cam.rot);
     const lw = 1 / Math.max(.5, z);
+    // --- ground mottling (big soft washes: the city floor is never one flat colour)
+    boilSeed('tlv-mottle');
+    for (let i = 0; i < 9; i++) {
+      const mx = 900 + hash(i * 3.1) * 3300, my = -300 + hash(i * 4.7) * 3600, r = 500 + 400 * hash(i);
+      if (!inView(mx, my, r)) continue;
+      paint(ellPts(mx, my, r, r * .7, 14, 30), { wash: ['#3A3563', '#2D3D5A', '#40365E'][i % 3], washOp: 120, ink: null });
+    }
     // --- sea, beach, promenade (coast sampled over the view)
     const ys = []; for (let y = Math.floor(vy0 / 160) * 160 - 160; y <= vy1 + 320; y += 160) ys.push(y);
-    const cmin = Math.min(...ys.map(coast));
+    const cmin = Math.min(...ys.map(coast)), far = vx0 - 400, Y0 = ys[0], Y1 = ys[ys.length - 1];
     if (vx0 < cmin + 300) {
       boilSeed('tlv-sea');
-      paint([[vx0 - 400, ys[0]], ...ys.map(y => [coast(y), y]), [vx0 - 400, ys[ys.length - 1]]], { wash: C.sea, ink: null });
-      paint([[vx0 - 400, ys[0]], ...ys.map(y => [coast(y) - 300 - 60 * Math.sin(y * .004), y]), [vx0 - 400, ys[ys.length - 1]]], { wash: C.seaDk, washOp: 150, ink: null, hatch: { d: 30, a: .04, o: { rand: .5 }, b: 'HB', c: '#5B86B8', w: .8 / Math.max(.4, z) } });
-      // shallow water band + swell dashes
-      paint([...ys.map(y => [coast(y) + 4, y]), ...ys.slice().reverse().map(y => [coast(y) - 110 - 30 * Math.sin(y * .01), y])], { wash: C.seaLt, washOp: 120, ink: null });
-      for (let i = 0; i < 26; i++) {
-        const y = Math.floor(vy0 / 90) * 90 + i * 90, row = Math.floor(y / 90), xx = coast(y) - 60 - hash(row * 3.1) * 900 - ((t * 14 + hash(row) * 50) % 50);
-        if (y > vy1 || xx < vx0) continue;
-        inkLine([[xx - 70, y + 4], [xx - 30, y - 3], [xx + 20, y + 2]], .7 * lw, C.seaLt, 'dry', .6);
+      paint([[far, Y0], ...ys.map(y => [coast(y), y]), [far, Y1]], { wash: C.sea, ink: null });
+      // layered translucent swathes: deep water far out, lighter shallows at the shore
+      for (let q = 0; q < 3; q++) paint([[far, Y0], ...ys.map(y => [coast(y) - 260 - q * 260 - 70 * Math.sin(y * .003 + q * 2), y]), [far, Y1]], { wash: C.seaDk, washOp: 70, ink: null });
+      paint([...ys.map(y => [coast(y) + 4, y]), ...ys.slice().reverse().map(y => [coast(y) - 120 - 40 * Math.sin(y * .008), y])], { wash: C.seaLt, washOp: 110, ink: null });
+      paint([...ys.map(y => [coast(y) + 4, y]), ...ys.slice().reverse().map(y => [coast(y) - 45 - 15 * Math.sin(y * .02), y])], { wash: '#6FA0C8', washOp: 90, ink: null });
+      // long lazy swell strokes
+      for (let i = 0; i < 14; i++) {
+        const y = Math.floor(vy0 / 150) * 150 + i * 150 + ((t * 10) % 150), row = Math.round((y - (t * 10) % 150) / 150);
+        const xx = coast(y) - 150 - hash(row * 3.1) * 700;
+        if (y > vy1 || xx < vx0 - 200) continue;
+        inkLine([[xx - 160, y + 6], [xx - 60, y - 4], [xx + 60, y + 3], [xx + 140, y - 2]], 1.1 * lw, '#4F7DAE', 'dry', .6);
       }
-      // surf line
-      inkLine(ys.map(y => [coast(y) - 8 + 5 * Math.sin(y * .02 + t * 1.2), y]), 1.2 * lw, C.foam, 'dry', .5);
-      // moon glint: a column of broken light dashes, following the viewer
-      const gx = Math.min(cam.cx - 300 / z, coast(cam.cy) - 360), gy = cam.cy - 180 / z;
-      glow(gx, gy, 380 / z, '#8FA8D8', .55);
+      inkLine(ys.map(y => [coast(y) - 10 + 6 * Math.sin(y * .02 + t * 1.2), y]), 1.5 * lw, C.foam, 'dry', .5);
+      // moon glint: a column of broken light dashes on a pale pool, following the viewer
+      const gx = Math.min(cam.cx - 350 / z, coast(cam.cy) - 380), gy = cam.cy - 150 / z;
       boilSeed('tlv-glint');
-      for (let i = 0; i < 16; i++) {
-        const k = hash(i * 1.7), y = gy + (i - 8) * 42 / z, w = (22 + 46 * hash(i + .3)) / z * (1 - Math.abs(i - 8) / 10);
-        const tw = .5 + .5 * Math.sin(t * 5 + i * 2.1);
-        if (tw < .25) continue;
-        const x = gx + (k - .5) * 110 / z;
-        paint(rrPts(x - w / 2, y, w, 5 / z, 2 / z), { wash: C.moon, washOp: 150 + 100 * tw, ink: null });
+      paint(ellPts(gx, gy, 230 / z, 380 / z, 16, 20 / z), { wash: '#6E8FC4', washOp: 70, ink: null });
+      for (let i = 0; i < 18; i++) {
+        const y = gy + (i - 9) * 40 / z, w = (30 + 60 * hash(i + .3)) / z * (1 - Math.abs(i - 9) / 11), tw = .5 + .5 * Math.sin(t * 5 + i * 2.1);
+        if (tw < .2) continue;
+        paint(rrPts(gx + (hash(i * 1.7) - .5) * 120 / z - w / 2, y, w, 6 / z, 3 / z), { wash: C.moon, washOp: 140 + 110 * tw, ink: null });
       }
+      glowQ(gx, gy, 420 / z, '#8FA8D8', .5);
     }
     boilSeed('tlv-beach');
-    const B = ys.map(y => [coast(y), y]), B2 = ys.map(y => [coast(y) + 110, y]).reverse();
-    paint(B.concat(B2), { wash: C.sand, ink: null });
-    paint(ys.map(y => [coast(y) + 118, y]).concat(ys.map(y => [coast(y) + 160, y]).reverse()), { wash: C.streetLt, ink: null });
+    paint(ys.map(y => [coast(y), y]).concat(ys.map(y => [coast(y) + 112, y]).reverse()), { wash: C.sand, ink: null });
+    paint(ys.map(y => [coast(y) + 50 + 20 * Math.sin(y * .01), y]).concat(ys.map(y => [coast(y) + 112, y]).reverse()), { wash: '#C9B08C', washOp: 120, ink: null });
+    paint(ys.map(y => [coast(y) + 118, y]).concat(ys.map(y => [coast(y) + 162, y]).reverse()), { wash: C.streetLt, ink: null });
     // --- streets
     boilSeed('tlv-streets');
     for (let i = 0; i <= NI; i++) {
       const x = GX0 + i * BX; if (x < vx0 - 60 || x > vx1 + 60) continue;
       const ya = Math.max(vy0, GY0), yb = Math.min(vy1, GY0 + NJ * BY); if (yb <= ya) continue;
-      paint(rectPts(x - ST / 2, ya, ST, yb - ya), { wash: C.street, ink: null });
+      paint(rectPts(x - ST / 2, ya, ST, yb - ya, 3), { wash: C.street, ink: null });
     }
     for (let j = 0; j <= NJ; j++) {
       const y = GY0 + j * BY; if (y < vy0 - 60 || y > vy1 + 60) continue;
       const xa = Math.max(vx0, coast(y) + 150), xb = vx1; if (xb <= xa) continue;
-      paint(rectPts(xa, y - ST / 2, xb - xa, ST), { wash: C.street, ink: null });
+      paint(rectPts(xa, y - ST / 2, xb - xa, ST, 3), { wash: C.street, ink: null });
     }
-    // trees in courtyards
+    // trees in the gardens
     boilSeed('tlv-trees');
-    for (const [x, y, r] of TREES) if (inView(x, y, r)) { paint(ellPts(x, y, r, r * .8, 10, 3), { wash: C.tree, ink: null }); paint(ellPts(x - r * .2, y - r * .25, r * .55, r * .4, 8, 2), { wash: C.treeLt, ink: null }); }
-    // --- light pools at the crossings + promenade lamps
+    for (const [x, y, r] of TREES) if (inView(x, y, r)) {
+      paint(ellPts(x + r * .2, y + r * .25, r, r * .7, 10, 3), { wash: '#1E2A40', washOp: 150, ink: null });
+      paint(ellPts(x, y, r, r * .85, 11, r * .12), { wash: C.tree, ink: null });
+      paint(ellPts(x - r * .25, y - r * .25, r * .5, r * .4, 8, 2), { wash: C.treeLt, ink: null });
+    }
+    // --- light pools at the crossings + promenade lamps (soft, big, warm)
     const la = o.lamps ?? 1;
     for (let i = 0; i <= NI; i++) for (let j = 0; j <= NJ; j++) {
       const x = GX0 + i * BX, y = GY0 + j * BY;
-      if (x < coast(y) + 150 || !inView(x, y, 80)) continue;
+      if (x < coast(y) + 150 || !inView(x, y, 120)) continue;
       if (((x - STAD[0]) / 640) ** 2 + ((y - STAD[1]) / 480) ** 2 < 1) continue;
-      glow(x, y, 70 + 25 * hash(i * 9 + j), C.lamp, .75 * la);
+      glowQ(x, y, 110 + 30 * hash(i * 9 + j), C.lamp, .5 * la);
+      glowQ(x, y, 24, '#FFE3A8', .7 * la);
     }
-    for (let y = Math.floor(vy0 / 120) * 120; y < vy1; y += 120) glow(coast(y) + 140, y, 48, '#FFC978', .8 * la);
+    for (let y = Math.floor(vy0 / 120) * 120; y < vy1; y += 120) glowQ(coast(y) + 140, y, 60, '#FFC978', .7 * la);
+    glowFlush();
     // --- stadium
     if (o.stadium !== false && inView(STAD[0], STAD[1], 700)) stadium(t, { x: STAD[0], y: STAD[1], s: 1, zoom: z, ...(o.stadiumO || {}) });
     // --- buildings (sorted south-most last)
@@ -214,61 +282,65 @@
       if (!inView(b.x + b.w / 2, b.y + b.d / 2, 260)) continue;
       boilSeed('b' + b.id);
       const L = lean(b.x + b.w / 2, b.y + b.d / 2, b.h, cam);
-      const foot = b.r ? rrPts(b.x, b.y, b.w, b.d, b.r) : rectPts(b.x, b.y, b.w, b.d);
-      const top = mv(foot, L[0], L[1]);
+      const foot = wobble(b.r ? rrPts(b.x, b.y, b.w, b.d, b.r) : rectPts(b.x, b.y, b.w, b.d), b.id, 5), top = mv(foot, L[0], L[1]);
       paint(hull(foot.concat(top)), { wash: mixCol(b.wall, '#1E1A45', .35), ink: null });
       // the south facade (faces the drone): warmer, with rows of windows
       const fy = b.y + b.d, F = [[b.x + (b.r ? b.r * .5 : 0), fy], [b.x + b.w - (b.r ? b.r * .5 : 0), fy], [b.x + b.w + L[0], fy + L[1]], [b.x + L[0], fy + L[1]]];
       if (L[1] < -4) paint(F, { wash: b.wall, ink: null });
-      const floors = Math.max(1, Math.round(b.h / (b.tall ? 26 : 16))), cols = z > .55 ? (b.tall ? 5 : 3) : 2;
-      if (L[1] < -10) for (let f = 0; f < floors; f++) for (let c = 0; c < cols; c++) {
-        const hh = hash(b.id * 13 + f * 5 + c * 1.7); if (hh < (z > .55 ? .35 : .6)) continue;
-        const u = (c + .5) / cols, v = (f + .35) / floors, ww = b.w / cols * .42, wh = Math.min(9, -L[1] / floors * .45);
-        const x = b.x + b.w * u + L[0] * v, y = fy + L[1] * v;
-        paint(rectPts(x - ww / 2, y - wh, ww, wh), { wash: hh > .85 ? '#FFF0C8' : C.win, ink: null });
+      const floors = Math.max(1, Math.round(b.h / (b.tall ? 26 : 17))), cols = b.tall ? 5 : Math.max(2, Math.round(b.w / 34));
+      if (L[1] < -10) for (let f = 0; f < floors; f++) {
+        const v = (f + .35) / floors, wh = Math.min(10, -L[1] / floors * .45);
+        if (!b.tall && hash(b.id * 3 + f) < .3) { // a balcony strip across the floor (Bauhaus ribbon)
+          const y = fy + L[1] * v; paint([[b.x + L[0] * v + 4, y + 2], [b.x + b.w + L[0] * v - 4, y + 2], [b.x + b.w + L[0] * v - 4, y + 2 + wh * .5], [b.x + L[0] * v + 4, y + 2 + wh * .5]], { wash: mixCol(b.roof, b.wall, .4), ink: null });
+        }
+        for (let c = 0; c < cols; c++) {
+          const hh = hash(b.id * 13 + f * 5 + c * 1.7); if (hh < .45) continue;
+          const u = (c + .5) / cols, ww = b.w / cols * .42, x = b.x + b.w * u + L[0] * v, y = fy + L[1] * v;
+          paint(rrPts(x - ww / 2, y - wh, ww, wh, 1.5), { wash: hh > .85 ? '#FFF0C8' : C.win, ink: null });
+        }
       }
-      paint(top, { wash: b.roof, ink: z > .5 ? mixCol(b.roof, '#2E2860', .55) : null, sw: .45 / z });
-      // moonlight catching the roof: a lighter second layer
-      paint(mv(top.map(([x, y]) => [lerp(x, b.x + L[0] + b.w / 2, .28), lerp(y, b.y + L[1] + b.d / 2, .3)]), -b.w * .06, -b.d * .08), { wash: '#FFF8EE', washOp: 70, ink: null });
+      wet(top, b.roof, { k: 3 / Math.min(b.w, b.d), kb: .45, bx: -b.w * .08, by: -b.d * .1, bloomOp: 70 });
       if (z > .5) {
         if (b.tall) paint(rectPts(b.x + L[0] + b.w * .3, b.y + L[1] + b.d * .3, b.w * .4, b.d * .35), { wash: '#8C92B8', ink: null });
-        else if (b.solar) { // solar water heater: a tilted blue panel + a white tank
-          const sx = b.x + L[0] + b.w * (.15 + .4 * hash(b.id + 2.2)), sy = b.y + L[1] + b.d * (.3 + .3 * hash(b.id + 3.3));
-          paint([[sx, sy], [sx + 26, sy], [sx + 31, sy + 16], [sx + 5, sy + 16]], { wash: '#3B5A9A', ink: '#26305A', sw: .35 / z });
-          paint(rrPts(sx + 2, sy - 9, 26, 8, 4), { wash: '#F4EFE8', ink: '#6A6488', sw: .35 / z });
+        else if (b.solar) { // solar water heaters: tilted blue panels + white tanks
+          const n = b.w > 110 ? 2 : 1;
+          for (let q = 0; q < n; q++) {
+            const sx = b.x + L[0] + b.w * (.12 + .45 * q + .15 * hash(b.id + 2.2 + q)), sy = b.y + L[1] + b.d * (.3 + .3 * hash(b.id + 3.3 + q));
+            paint([[sx, sy], [sx + 26, sy], [sx + 31, sy + 16], [sx + 5, sy + 16]], { wash: '#3B5A9A', ink: '#26305A', sw: .35 / z });
+            paint(rrPts(sx + 2, sy - 9, 26, 8, 4), { wash: '#F4EFE8', ink: '#6A6488', sw: .35 / z });
+          }
         }
       }
     }
     // --- moving car lights along the streets
-    const cars = Math.round(40 * (o.cars ?? 1));
+    const cars = Math.round(44 * (o.cars ?? 1));
     for (let i = 0; i < cars; i++) {
       const vert = hash(i * 2.3) < .5, line = Math.floor(hash(i * 5.7) * (vert ? NI : NJ)) + 1, dir = hash(i * 1.9) < .5 ? 1 : -1;
       const sp = 70 + 60 * hash(i * 3.3), span = vert ? NJ * BY : NI * BX, s = frac(hash(i) + dir * t * sp / span) * span;
-      const x = vert ? GX0 + line * BX + dir * 10 : GX0 + s, y = vert ? GY0 + s : GY0 + line * BY + dir * 10;
+      const x = vert ? GX0 + line * BX + dir * 11 : GX0 + s, y = vert ? GY0 + s : GY0 + line * BY + dir * 11;
       if (x < coast(y) + 170 || !inView(x, y, 30)) continue;
       if (((x - STAD[0]) / 600) ** 2 + ((y - STAD[1]) / 450) ** 2 < 1) continue;
-      glow(x, y, 26, dir > 0 ? '#FFF0C8' : '#FF6A5A', .9);
+      glowQ(x, y, 30, dir > 0 ? '#FFF0C8' : '#FF6A5A', .9);
+      glowQ(x, y, 8, '#FFFFFF', .9);
     }
-    // --- Azrieli towers
+    glowFlush();
+    mottle(vx0, vy0, vx1, vy1, 1100, .9);
+    // --- Azrieli towers (the key shapes: ink outline)
     for (const tw of AZT) {
       const L = lean(tw.x, tw.y, tw.h, cam), foot = footOf(tw), top = mv(foot, L[0], L[1]);
       const all = foot.concat(top); if (!all.some(([x, y]) => inView(x, y, 40))) continue;
       boilSeed('az' + tw.kind);
-      paint(hull(all), { wash: C.glass, ink: null });
-      // lit side: the hull of the east half, lighter
+      paint(hull(all), { wash: C.glass, ink: C.ink, sw: .8 * lw });
       const east = foot.filter(p => p[0] >= tw.x - 2);
-      paint(hull(east.concat(mv(east, L[0], L[1]))), { wash: C.glassLt, washOp: 150, ink: null });
-      // window rows: short warm dashes climbing the tower
-      for (let k = 1; k < 9; k++) {
-        const f = k / 9, cx = tw.x + L[0] * f, cy = tw.y + tw.s * .55 + L[1] * f;
-        inkLine([[cx - tw.s * .55, cy], [cx + tw.s * .3, cy]], .6 * lw, C.win, 'inkfine', 0);
+      paint(hull(east.concat(mv(east, L[0], L[1]))), { wash: C.glassLt, washOp: 140, ink: null });
+      for (let k = 1; k < 14; k++) {
+        const f = k / 14, cx = tw.x + L[0] * f, cy = tw.y + tw.s * .6 + L[1] * f;
+        inkLine([[cx - tw.s * .7, cy], [cx + tw.s * .5, cy + 1]], .7 * lw, hash(k + tw.h) < .6 ? C.win : '#9FA8D6', 'inkfine', 0);
       }
-      paint(top, { wash: '#C9D1EE', ink: C.wallDk, sw: .6 * lw });
+      paint(top, { wash: '#D5DBF2', ink: C.ink, sw: .7 * lw });
+      glowQ(tw.x + L[0], tw.y + L[1], 50 / Math.sqrt(z), '#FF4A3A', .5 + .5 * Math.sin(t * 4 + tw.h));
     }
-    for (const tw of AZT) {
-      const L = lean(tw.x, tw.y, tw.h, cam), blink = .5 + .5 * Math.sin(t * 4 + tw.h);
-      glow(tw.x + L[0], tw.y + L[1], 40 / Math.sqrt(z), '#FF4A3A', .5 + .5 * blink);
-    }
+    glowFlush();
     if (o.after) o.after(cam);
     camEnd();
   }
@@ -280,18 +352,20 @@
     if (o.bg) { boilSeed('st-bg'); skyBg(C.sky, C.skyLo); }
     push(); translate(x, y); scale(s);
     boilSeed('st-bowl');
-    // outer wall (seen a little from the south), rim and stands
-    paint(ellPts(0, 60, 560, 420, 40, 2), { wash: C.concreteDk, ink: null });
-    paint(ellPts(0, 0, 560, 420, 40, 2), { wash: C.concrete, ink: null });
-    paint(ellPts(0, 6, 520, 385, 40, 2), { wash: '#5A4C7E', ink: null });
-    paint(ellPts(0, 6, 470, 345, 40, 2), { wash: '#665890', ink: null });
+    // outer wall (seen from the south), rim with ink (key shape), stands in tiers
+    paint(ellPts(0, 60, 560, 420, 40, 3), { wash: C.concreteDk, ink: C.ink, sw: 1.1 * lw });
+    for (let k = 0; k < 7; k++) paint(rectPts(-470 + k * 150, 380 + 20 * Math.sin(k), 16, 50), { wash: '#FFD890', washOp: 180, ink: null }); // entrance lights
+    wet(ellPts(0, 0, 560, 420, 40, 3), C.concrete, { ink: C.ink, sw: 1.1 * lw, bloom: false });
+    paint(ellPts(0, 6, 520, 385, 40, 3), { wash: '#56497C', ink: null });
+    paint(ellPts(0, 6, 470, 345, 40, 3), { wash: '#65578F', ink: null });
+    paint(ellPts(-60, -40, 380, 250, 20, 20), { wash: '#7A6BA4', washOp: 70, ink: null });
     // crowd: a stable scatter of colour dabs on the side stands (the ends are painted as blocks below)
     boilSeed('st-crowd');
-    for (let i = 0; i < 170; i++) {
+    for (let i = 0; i < 190; i++) {
       const a = hash(i * 1.37) * TAU, rr = .8 + .19 * hash(i * 2.71);
       if (Math.abs(Math.cos(a)) > .8) continue;
       const cx = Math.cos(a) * 515 * rr, cy = 6 + Math.sin(a) * 380 * rr, hh = hash(i * 5.3);
-      paint(ellPts(cx, cy, 7, 5, 6), { wash: hh < .45 ? C.yellow : hh < .7 ? C.blue : hh < .85 ? '#E9DCE8' : C.red, washOp: 200, ink: null });
+      paint(ellPts(cx, cy, 8, 6, 6, 1), { wash: hh < .4 ? C.yellow : hh < .65 ? C.blue : hh < .85 ? '#E9DCE8' : C.red, washOp: 210, ink: null });
     }
     // home end (right): yellow crowd with blue stripes; away end (left): a red corner
     const wedge = (a0, a1, r0, r1, col, op = 255) => {
@@ -301,20 +375,22 @@
     };
     const sh = (o.roar ?? .4) * (.5 + .5 * Math.sin(t * 9));
     wedge(-.62, .62, .78, .99, mixCol(C.yellow, C.cream, .15 * sh));
+    wedge(-.55, .55, .8, .97, C.yellowDk, 90);
     wedge(-.5, .5, .83, .86, C.blue); wedge(-.5, .5, .92, .95, C.blue);
     wedge(Math.PI - .32, Math.PI + .32, .8, .98, C.red);
-    // pitch surround + pitch
-    paint(rrPts(-420, -262, 840, 536, 150), { wash: C.grassDk, ink: null });
+    // pitch surround + striped pitch + a lighter bloom where the lights meet
+    paint(rrPts(-420, -262, 840, 536, 150, 3), { wash: C.grassDk, ink: null });
     const px0 = -345, py0 = -210, pw = 690, ph = 420;
-    for (let i = 0; i < 12; i++) paint(rectPts(px0 + pw * i / 12, py0, pw / 12 + 1, ph), { wash: i % 2 ? C.grass : C.grassLt, ink: null });
-    // light cones from the four floodlights + floodlight wash on the grass
+    for (let i = 0; i < 12; i++) paint(rectPts(px0 + pw * i / 12, py0, pw / 12 + 1, ph, 1.5), { wash: i % 2 ? C.grass : C.grassLt, ink: null });
+    paint(ellPts(-40, -30, 300, 170, 18, 20), { wash: '#9AD28A', washOp: 60, ink: null });
+    paint(ellPts(120, 60, 200, 110, 14, 16), { wash: '#DDF2B8', washOp: 40, ink: null });
+    // light cones from the four floodlights
     const towers = [[-590, -420], [590, -420], [-590, 470], [590, 470]];
     boilSeed('st-cones');
     for (const [tx, ty] of towers) {
       const hx = tx * .96, hy = ty - 150;
-      paint([[hx - 30, hy], [hx + 30, hy], [tx * .25 + 120, ty * .12 + 60], [tx * .25 - 120, ty * .12 - 60]], { wash: '#FFF4D2', washOp: 30 * li, ink: null });
+      paint([[hx - 30, hy], [hx + 30, hy], [tx * .25 + 140, ty * .12 + 70], [tx * .25 - 140, ty * .12 - 70]], { wash: '#FFF4D2', washOp: 34 * li, ink: null });
     }
-    glow(0, 0, 520, '#FFF3CF', .55 * li);
     // markings
     boilSeed('st-lines');
     const lc = '#F4F1E6', ls = .9 * lw;
@@ -327,6 +403,8 @@
       inkLine([[gx, -45], [gx - sd * 36, -45], [gx - sd * 36, 45], [gx, 45]], ls, lc, 'inkfine', 0);
       paint(rectPts(gx + sd * 2 - (sd > 0 ? 0 : 14), -26, 14, 52), { wash: '#E9E6F0', washOp: 200, ink: C.concreteDk, sw: .5 * lw });
     }
+    glowQ(0, 0, 560, '#FFF3CF', .5 * li);
+    glowFlush();
     // players
     if (o.players !== false) {
       const att = o.attack ?? .3, pl = [];
@@ -343,24 +421,25 @@
       boilSeed('st-players');
       for (const p of pl) {
         const run = Math.sin(t * 12 + p.i), shirt = p.home ? C.yellow : C.red, shorts = p.home ? C.blue : '#F1EBE4';
-        paint(ellPts(p.x + 4, p.y + 2, 9, 4, 8), { wash: '#2C4A30', washOp: 120, ink: null });
-        inkLine([[p.x - 2, p.y - 6], [p.x - 3 - 3 * run, p.y + 1]], .8 * lw, C.cream, 'inkfine', 0);
-        inkLine([[p.x + 2, p.y - 6], [p.x + 3 + 3 * run, p.y + 1]], .8 * lw, C.cream, 'inkfine', 0);
-        paint(ellPts(p.x, p.y - 8, 4.4, 3, 8), { wash: shorts, ink: null });
-        paint(ellPts(p.x, p.y - 14, 5.5, 6.5, 10), { wash: shirt, ink: C.ink, sw: .45 * lw });
-        paint(ellPts(p.x, p.y - 23, 3.6, 3.6, 8), { wash: SKIN[p.i % SKIN.length], ink: C.ink, sw: .4 * lw });
+        paint(ellPts(p.x + 5, p.y + 2, 10, 4, 8), { wash: '#2C4A30', washOp: 120, ink: null });
+        inkLine([[p.x - 2, p.y - 6], [p.x - 3 - 3 * run, p.y + 1]], .9 * lw, C.cream, 'inkfine', 0);
+        inkLine([[p.x + 2, p.y - 6], [p.x + 3 + 3 * run, p.y + 1]], .9 * lw, C.cream, 'inkfine', 0);
+        paint(ellPts(p.x, p.y - 8, 5, 3.4, 8), { wash: shorts, ink: null });
+        paint(ellPts(p.x, p.y - 15, 6.2, 7.2, 10), { wash: shirt, ink: C.ink, sw: .5 * lw });
+        paint(ellPts(p.x, p.y - 25, 4, 4, 8), { wash: SKIN[p.i % SKIN.length], ink: C.ink, sw: .45 * lw });
       }
-      glow(bp[0], bp[1] - 4, 22, '#FFFFFF', .7);
-      paint(ellPts(bp[0], bp[1] - 4, 3.4, 3.4, 8), { wash: C.cream, ink: C.ink, sw: .35 * lw });
+      paint(ellPts(bp[0], bp[1] - 4, 3.6, 3.6, 8), { wash: C.cream, ink: C.ink, sw: .35 * lw });
+      glowQ(bp[0], bp[1] - 4, 20, '#FFFFFF', .6);
     }
     // floodlight towers (poles + lamp heads) and their light
     boilSeed('st-towers');
     for (const [tx, ty] of towers) {
       const hx = tx * .96, hy = ty - 150;
-      inkLine([[tx, ty], [hx, hy + 14]], 2.2 * lw, '#3E3760', 'ink', 0);
-      paint(rrPts(hx - 34, hy - 16, 68, 30, 6), { wash: '#FFF6DC', ink: '#3E3760', sw: .9 * lw });
+      inkLine([[tx, ty], [hx, hy + 14]], 2.4 * lw, '#3E3760', 'ink', 0);
+      paint(rrPts(hx - 36, hy - 17, 72, 32, 6), { wash: '#FFF6DC', ink: '#3E3760', sw: .9 * lw });
+      glowQ(hx, hy, 230, '#FFE9B0', li); glowQ(hx, hy, 70, '#FFFFFF', li);
     }
-    for (const [tx, ty] of towers) { const hx = tx * .96, hy = ty - 150; glow(hx, hy, 190, '#FFF0C0', li); glow(hx, hy, 60, '#FFFFFF', li); }
+    glowFlush();
     pop();
     return { home: [x + 450 * s, y + 6 * s] };
   }
@@ -396,6 +475,7 @@
       P.push([kb * sp + off + sp / 2, bot], [ka * sp + off - sp / 2, bot]);
       const col = cols[((s % cols.length) + cols.length) % cols.length];
       paint(P, { wash: fade(col), ink: null });
+      paint([[ka * sp + off - sp / 2, y + r * 2.4], [(ka + kb) / 2 * sp + off, y + r * (2 + hash(s) * .8)], [kb * sp + off + sp / 2, y + r * 2.6], [kb * sp + off + sp / 2, bot], [ka * sp + off - sp / 2, bot]], { wash: fade(mixCol(col, '#1E2250', .55)), washOp: 150, ink: null });
     }
     // faces + raised arms/scarves on the nearer bands
     if (d > .25) {
@@ -406,7 +486,7 @@
         paint(ellPts(hx, hy + r * .15, r * .52, r * .5, 7), { wash: fade(SKIN[Math.floor(hash(k * 3.9) * SKIN.length)]), washOp: 230, ink: null });
         if (hash(k * 5.3 + d) < .25 + .5 * roar) { // arm(s) up
           const side = hash(k * 1.1) < .5 ? -1 : 1, sw = Math.sin(t * 7 + k) * .25;
-          inkLine([[hx + side * r * .8, hy + r * .6], [hx + side * r * (1.1 + sw), hy - r * 1.6]], r * .09, fade(SKIN[k % SKIN.length]), 'ink', 0);
+          inkLine([[hx + side * r * .8, hy + r * .6], [hx + side * r * (1.1 + sw), hy - r * 1.6]], r * .09, fade(SKIN[((k % 6) + 6) % 6]), 'ink', 0);
         }
       }
       // a few scarves stretched overhead
@@ -517,9 +597,10 @@
       puffs.push([x + 170 * age * (1 + hash(i) * .6) + 30 * Math.sin(t + i), y - 300 * age - 20 * hash(i + 2), r, age]);
     }
     for (const [cx, cy, r, age] of puffs) paint(ellPts(cx, cy, r, r * .78, 16, r * .06), { wash: col, washOp: 70 * amt * (1 - age * .85), ink: null });
-    for (const [cx, cy, r, age] of puffs) glow(cx, cy, r * 1.4, '#FFB84A', .35 * amt * (1 - age));
-    glow(x, y, 130 * amt, '#FF8A2A', amt);
-    glow(x, y, 40, '#FFF0B0', amt);
+    for (const [cx, cy, r, age] of puffs) glowQ(cx, cy, r * 1.4, '#FFB84A', .35 * amt * (1 - age));
+    glowQ(x, y, 130 * amt, '#FF8A2A', amt);
+    glowQ(x, y, 40, '#FFF0B0', amt);
+    glowFlush();
   }
 
   function ultras(t, o = {}) {
@@ -531,7 +612,8 @@
     boilSeed('ul-roof');
     paint([[-100, -100], [W + 100, -100], [W + 100, 70], [-100, 110]], { wash: '#2A2750', ink: null });
     inkLine([[-100, 112], [W + 100, 72]], 2, '#6D6399', 'ink', 0);
-    for (let k = -2; k < 9; k++) { const lx = 120 + k * 380 + roofOff % 380; glow(lx, 96 - lx * .02, 170, '#FFF1C8', .7); glow(lx, 96 - lx * .02, 36, '#FFFFFF', .9); }
+    for (let k = -2; k < 9; k++) { const lx = 120 + k * 380 + roofOff % 380; glowQ(lx, 96 - lx * .02, 170, '#FFF1C8', .7); glowQ(lx, 96 - lx * .02, 36, '#FFFFFF', .9); }
+    glowFlush();
     // upper tier
     for (let b = 0; b < 4; b++) crowdBand(BANDS[b], t, roar * (.7 + .1 * b), pan, 'ul-band' + b);
     // flare in the upper tier (right)
@@ -559,6 +641,7 @@
     for (let b = 4; b < 6; b++) crowdBand(BANDS[b], t, roar, pan, 'ul-band' + b);
     const fx2 = 260 - pan * 1000 * .85;
     if (o.flares !== false) smokeCloud(fx2, 700, t + 2, .45 + .55 * roar, 'ul-smoke2', '#FBE08A');
+    mottle(-100, -100, W + 100, H + 100, 1000, .8);
     // giant flags on poles, waved from the lower tier
     if (o.flags !== false) {
       const sp = 3 + 5 * roar, fOff = -pan * 1000 * .9;
@@ -575,6 +658,7 @@
       if (i === 3 || i === 8) { drummer(x, 990, sF, t, i, roar); continue; }
       fan(x, 1000 + 20 * hash(i), sF * (.95 + .1 * hash(i + 1)), t, i, roar);
     }
+    glowFlush();
     // front wall
     boilSeed('ul-wall');
     paint([[-100, 950], [W + 100, 940], [W + 100, H + 100], [-100, H + 100]], { wash: C.blueDk, ink: C.ink, sw: 1.4 });
@@ -597,7 +681,7 @@
       const tip = [dx + sd * 30 * s, dy - 60 * s - (1 - hit) * 70 * s * (sd > 0 ? 1 : .4)];
       inkLine([h, tip], 3 * s, '#8A6440', 'ink', 0);
     }
-    if (hit > .5) glow(dx, dy - 60 * s, 60 * s, '#FFE6A0', (hit - .5) * roar);
+    if (hit > .5) glowQ(dx, dy - 60 * s, 60 * s, '#FFE6A0', (hit - .5) * roar);
   }
 
   // ---------------------------------------------------------------- mast
@@ -608,7 +692,7 @@
     if (o.bg !== false) {
       boilSeed('m-sky');
       skyBg(C.sky, '#3D3777');
-      glow(360 + ox * .3, 200, 260, '#9FB2E0', .6);
+      glowQ(360 + ox * .3, 200, 260, '#9FB2E0', .6);
       paint(ellPts(360 + ox * .3, 200, 58, 58, 20), { wash: C.moon, ink: null });
       paint(ellPts(380 + ox * .3, 188, 50, 52, 18), { wash: '#F1E3BD', washOp: 120, ink: null });
       for (let i = 0; i < 26; i++) { const sx = hash(i * 3.3) * W, sy = hash(i * 7.1) * 560, tw = .5 + .5 * Math.sin(t * 3 + i); if (tw > .3) paint(starPts(sx + ox * .2, sy, 3 + 4 * hash(i) * tw, .35, 4), { wash: C.cream, ink: null }); }
@@ -616,12 +700,13 @@
       boilSeed('m-far');
       paint([[1250 + ox * .5, 800], [W + 100, 790], [W + 100, H + 100], [1250 + ox * .5, H + 100]], { wash: C.sea, ink: null });
       for (let i = 0; i < 7; i++) inkLine([[1350 + i * 90 + ox * .5, 830 + i * 30], [1420 + i * 90 + ox * .5, 830 + i * 30]], .8, C.seaLt, 'dry', 0);
-      glow(1600 + ox * .5, 820, 200, '#7F95C8', .4);
+      glowQ(1600 + ox * .5, 820, 200, '#7F95C8', .4);
       const P = [[-100, H + 100], [-100, 820]];
       for (let i = 0; i < 16; i++) { const bx = -100 + i * 95 + ox * .5, hh = 40 + 110 * hash(i * 1.9); P.push([bx, 820 - hh], [bx + 80, 820 - hh]); }
       P.push([1420 + ox * .5, 830], [1420 + ox * .5, H + 100]);
+      glowFlush();
       paint(P, { wash: '#2C2A5C', ink: null });
-      for (let i = 0; i < 30; i++) glow(-60 + hash(i * 4.4) * 1450 + ox * .5, 730 + hash(i * 2.2) * 120, 14, C.win, .7);
+      for (let i = 0; i < 30; i++) glowQ(-60 + hash(i * 4.4) * 1450 + ox * .5, 730 + hash(i * 2.2) * 120, 14, C.win, .7);
     }
     // the building (bottom left-centre)
     boilSeed('m-bld');
@@ -631,16 +716,18 @@
     for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) {
       const lit = hash(r * 13 + c * 3.1) < .6, wx = bx + 10 + c * 92, wy = by + 190 + r * 90;
       paint(rrPts(wx, wy, 58, 48, 6), { wash: lit ? C.win : '#3C3462', ink: null });
-      if (lit) glow(wx + 29, wy + 24, 60, '#FFC870', .35);
+      if (lit) glowQ(wx + 29, wy + 24, 60, '#FFC870', .35);
     }
+    glowFlush();
     // sign IPTV · ISRAEL on the fascia, red neon שידור חי on the roof
     letter('IPTV · ISRAEL', X - 10, by + 35, 40, C.cream, { font: '700 44px Rubik', ink: false });
     const nx = X + 250, ny = by - 45, flick = Math.sin(t * 23) > -.92 ? 1 : .4;
     paint(rrPts(nx - 150, ny - 42, 300, 84, 12), { wash: '#2A1D3A', ink: C.ink, sw: 1.3 });
     inkLine([[nx - 110, ny + 42], [nx - 110, ny + 60]], 2, C.ink, 'ink', 0); inkLine([[nx + 110, ny + 42], [nx + 110, ny + 60]], 2, C.ink, 'ink', 0);
-    glow(nx, ny, 200, '#FF3A3A', .8 * flick); glow(nx, ny, 90, '#FF7060', .6 * flick);
+    glowQ(nx, ny, 200, '#FF3A3A', .8 * flick); glowQ(nx, ny, 90, '#FF7060', .6 * flick);
     letter('שידור חי', nx, ny + 2, 56, '#FFD9D2', { font: '900 58px Rubik', ink: false, stroke: '#FF3B3B' });
     letter('●', nx + 118, ny + 2, 24, '#FF4A4A', { font: '900 24px Rubik', ink: false, alpha: .5 + .5 * Math.sin(t * 6) });
+    glowFlush();
     // dishes on the roof
     boilSeed('m-dish');
     for (const [dx, sc] of [[X - 330, 1], [X - 200, .75]]) {
@@ -648,6 +735,7 @@
       paint(ellPts(dx + 10 * sc, by - 62 * sc, 44 * sc, 28 * sc, 16, 0, -.6), { wash: '#DCD6E6', ink: C.ink, sw: 1.1 });
       inkLine([[dx + 10 * sc, by - 62 * sc], [dx + 44 * sc, by - 96 * sc]], 1.6, C.ink, 'ink', 0);
     }
+    mottle(-100, -100, W + 100, H + 100, 1000, .8);
     // lattice mast
     boilSeed('m-mast');
     const lg = (sd, y) => X + sd * lerp(95, 12, (MB - y) / (MB - MT));
@@ -666,7 +754,7 @@
     // broadcast rings from the tip
     const top = [X, MT - 70];
     if (bc > 0) {
-      glow(top[0], top[1], 160 + 60 * pulse(t, 4), '#8FE3FF', bc * .8);
+      glowQ(top[0], top[1], 160 + 60 * pulse(t, 4), '#8FE3FF', bc * .8);
       boilSeed('m-rings');
       for (let k = 0; k < 4; k++) {
         const age = frac(t * 1.4 + k / 4), r = 40 + age * 420, A = [];
@@ -678,28 +766,34 @@
     for (const [lx, ly] of [[top[0], top[1]], [lg(-1, 330), 330], [lg(1, 330), 330], [lg(-1, 560), 560], [lg(1, 560), 560]]) {
       const on = .5 + .5 * Math.sin(t * 3.5 + ly * .01);
       paint(ellPts(lx, ly, 6, 6, 8), { wash: '#FF5A4A', ink: null });
-      glow(lx, ly, 70, '#FF3A2A', .4 + .6 * on);
+      glowQ(lx, ly, 70, '#FF3A2A', .4 + .6 * on);
     }
+    glowFlush();
     return { top };
   }
 
   // ---------------------------------------------------------------- packets
   function packetStream(pts, t, o = {}) {
     const n = o.n ?? 10, gap = o.gap ?? .12, sp = o.speed ?? 900, size = o.size ?? 16, spread = o.spread ?? 14, t0 = o.t0 ?? 0;
-    const P = through(pts, 8), L = pathLen(P), col = o.col || '#BFE9FF';
+    const P = through(pts, 8), L = pathLen(P), col = o.col || '#BFE9FF', K = [];
     for (let i = 0; i < n; i++) {
       let age = t - (t0 + i * gap);
-      if (o.loop) age = ((age % (L / sp + gap * n)) + (L / sp + gap * n)) % (L / sp + gap * n);
+      if (o.loop) { const per = L / sp + gap * n; age = ((age % per) + per) % per; }
       if (age < 0) continue;
       const d = age * sp * (.9 + .2 * hash(i * 2.9)); if (d > L) continue;
       const { p, a } = pathAt(P, d), nx = -Math.sin(a), ny = Math.cos(a), off = (hash(i * 5.1) - .5) * 2 * spread + 4 * Math.sin(t * 8 + i);
-      const x = p[0] + nx * off, y = p[1] + ny * off, gold = i === o.gold, s = size * (gold ? 1.35 : 1) * (.85 + .3 * hash(i));
-      const c = gold ? '#FFD34A' : col;
-      boilSeed('pk' + i);
-      // tail
+      const gold = i === o.gold;
+      K.push({ i, x: p[0] + nx * off, y: p[1] + ny * off, a, gold, s: size * (gold ? 1.35 : 1) * (.85 + .3 * hash(i)), c: gold ? '#FFD34A' : col });
+    }
+    boilSeed('pk-tails');
+    for (const { x, y, a, s, c, gold } of K) {
       const tl = s * 4, tx = x - Math.cos(a) * tl, ty = y - Math.sin(a) * tl;
       paint(ribbon([[tx, ty], [(x + tx) / 2, (y + ty) / 2], [x, y]], 1, s * .7), { wash: c, washOp: 110, ink: null });
-      glow(x, y, s * 3, gold ? '#FFC23A' : '#7FD8FF', .9);
+      glowQ(x, y, s * 3, gold ? '#FFC23A' : '#7FD8FF', .9);
+    }
+    glowFlush();
+    for (const { i, x, y, a, s, gold } of K) {
+      boilSeed('pk' + i);
       push(); translate(x, y); rotate(a * .25);
       paint(rrPts(-s * .75, -s * .5, s * 1.5, s, s * .18), { wash: gold ? '#FFE07A' : '#E6F7FF', ink: C.ink, sw: .6 });
       inkLine([[-s * .7, -s * .45], [0, s * .1], [s * .7, -s * .45]], .5, C.ink, 'inkfine', 0);
@@ -708,11 +802,12 @@
         const g = o.glint ?? t0 + i * gap + .6, k = t - g;
         if (k > 0 && k < .6) {
           const pop_ = backOut(k / .25) * (1 - seg(k, .35, .6));
-          glow(x, y, s * 6 * pop_, '#FFF2B0', 1);
+          glowQ(x, y, s * 6 * pop_, '#FFF2B0', 1);
           paint(starPts(x + s * .4, y - s * .4, s * 2.2 * pop_, .18, 4, t * 2), { wash: '#FFF7D6', ink: null });
         }
       }
     }
+    glowFlush();
   }
 
   // ---------------------------------------------------------------- model sheet over time
@@ -738,13 +833,3 @@
 
   Object.assign(window, { tlvCity, tlvDroneCam, stadium, ultras, mast, packetStream });
 })();
-LOOPS.tlv_bench = t => {
-  const mode = Math.floor(t);
-  paint(rectPts(-80, -80, W + 160, H + 160), { wash: '#223355', ink: null });
-  const P = i => [hash(i) * (W - 100) + 50, hash(i + .5) * (H - 100) + 50];
-  if (mode === 0) for (let i = 0; i < 3; i++) paint(ellPts(...P(i), 40, 30, 12, 2), { fill: '#88AACC', fillOp: 90, bleed: .2, tex: .5, ink: null });
-  if (mode === 1) for (let i = 0; i < 3; i++) paint(ellPts(...P(i), 500, 300, 20, 4), { fill: '#88AACC', fillOp: 90, bleed: .2, tex: .5, ink: null });
-  if (mode === 2) for (let i = 0; i < 3; i++) paint(ellPts(...P(i), 500, 300, 20, 4), { fill: '#88AACC', fillOp: 90, bleed: .05, tex: 0, ink: null });
-  if (mode === 3) for (let i = 0; i < 3; i++) paint(ellPts(...P(i), 40, 30, 12, 2), { fill: '#88AACC', fillOp: 90, bleed: .05, tex: 0, ink: null });
-};
-LOOPS.tlv_bench.len = 5;
