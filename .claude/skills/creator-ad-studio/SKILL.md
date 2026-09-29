@@ -16,4 +16,5 @@ Order of work (details and exact commands in the playbook):
 5. Launch agents in parallel: 7-8 scene agents, 1 host agent, 1 composer, 1 SFX/voices/mix agent.
 6. Review a contact sheet of the whole film, fix, render, encode, send (web < 25 MB), commit + push.
 7. Landscape: copy, switch shared files to 1920x1080, re-send the SAME agents to re-compose their own scenes.
+Music: the genre may change with a new design, but the quality bar in playbook section 7.1 is fixed for every film (original composed score, real samples, tempo map, no cheap synth-only or childish tracks).
 Always: send progress images, give time estimates, report honestly what was not heard/seen.

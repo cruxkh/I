@@ -186,6 +186,13 @@ Brief template for a scene agent (worked well):
 6. **Real samples are mandatory** for strings, brass, timpani and percussion (VSCO-2-CE + Virtuosity Drums, CC0, sparse clone from GitHub, ~1.2 GB, numpy sampler). GM soundfont only for choir, ney, glock, celesta.
 7. **Tempo map** so every key visual moment falls on a downbeat.
 
+**The quality bar is fixed for every film, even when the style changes.** A new design or a new business may call for a different genre (not a trailer), but the music must reach the same production quality as this score:
+- An original, composed piece with a clear melodic hook, real harmony and a build, not loops or a generic bed.
+- Real recorded samples for the lead instruments. GM soundfont only for colour parts. Synth-only tracks were rejected as "muddy" and "cheap".
+- A tempo map that puts the key visual moments on downbeats, and a final hit that lands on the logo.
+- The hold and continuity rules of section 8.2.
+- Not childish (no marimba or ukulele "cute"), unless the client asks for it.
+
 ### 7.2 Smooth motion (v8, client: "the video lags, it is not smooth")
 - `CL.SMOOTH = true` in `cl.js`: `CL.q(t)` returns continuous time, `CL.j` is a slow continuous noise drift (not a random jump every 1/12 s), `CL.pop` is a continuous `outBack` pop. `CL.qs(t, fps)` keeps discrete steps ONLY for random seeds (sparks, flicker) so nothing flickers per frame.
 - `main.js` renders every frame as 3 temporal samples over a 0.5 shutter (`scenePass` x3, averaged) = natural motion blur. Captions, bubbles and overlays are drawn once on top (sharp). The host footage (23.976 fps) is blended by the samples, which removes the 24-to-30 fps judder.
