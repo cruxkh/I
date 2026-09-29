@@ -51,7 +51,7 @@ class Sampler:
             if r is None:
                 continue
             nt, layer, rr = r
-            midi = (name2midi(nt) if isinstance(nt, str) else int(nt)) + offset
+            midi = (name2midi(nt) if isinstance(nt, str) else float(nt)) + offset
             x = load48(f)
             if trim:
                 x = trim_onset(x)
@@ -70,7 +70,7 @@ class Sampler:
 
     def pick(self, note, vel):
         i = np.argmin(np.abs(self.keys - note) + 0.01 * (self.keys > note))   # prefer shifting up (less dulling)
-        k = int(self.keys[i])
+        k = self.keys[i]
         layers = sorted(self.zones[k])
         li = min(len(layers) - 1, int(vel / 128 * len(layers)))
         lay = layers[li]

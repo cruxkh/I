@@ -6,7 +6,7 @@ timeline: every v-time (words.js, // CUE comments, the v6 cue sheet) is converte
 T = v + sum(d of holds with hold.v < v)  (v6/timeline_v7.json).
 Buses: narrator (voices/narrator_48k.wav: VO split at the holds + cinema voice) + cinema_fx + genre voices
 (voices/genre_voices.wav) + score_v7.wav + SFX (v6 library re-placed at T + the v7 hold SFX from sfx_v7.py).
-Music: 8 dB under the narrator, +4 dB and forward inside the holds, 4 dB under the genre voices.
+Music: 8 dB under the narrator, +6 dB and forward inside the holds, 6 dB under the genre voices.
 Digital silence T 31.52 -> 31.84, big hit on 31.84.
 (v6 notes, still valid for the engine)
 GOTV v6 final mix -> master_v6.wav (40.000 s, 48 kHz stereo, 24-bit, -14 LUFS integrated, <= -1 dBTP)
@@ -57,15 +57,16 @@ def db(x):
     return 10 ** (x / 20)
 
 
-def T(v):
-    return v + sum(h['d'] for h in HOLDS if h['v'] < v)
+def T(v, start=False):
+    """v -> T.  A word that STARTS exactly at a hold's v (e.g. 'ועוד' at 14.53) is after the pause: start=True."""
+    return v + sum(h['d'] for h in HOLDS if (h['v'] <= v + 1e-9 if start else h['v'] < v))
 
 
 def words():
     s = open('/home/user/I/gotv5/words.js').read()
     W = json.loads(s[s.index('['):s.rindex(']') + 1])
     for w in W:
-        w['t0'], w['t1'] = T(w['t0']), T(w['t1'])
+        w['t0'], w['t1'] = T(w['t0'], True), T(w['t1'])
     return W
 
 
@@ -402,7 +403,7 @@ def main():
             m = np.vstack([m[0], m[0]])
         MU[:, :min(NS, m.shape[1])] = m[:, :NS]
         mono = MU.mean(0)
-        gk, gq = best_triad(chroma(mono, 0, DUR))
+        gk, gq = 5, 'maj'     # score_v7.py header: D minor verse / F major chorus (chroma of the drum-heavy mix misreads it)
         dia = [((gk + d) % 12, qq) for d, qq in (((0, 'maj'), (2, 'min'), (4, 'min'), (5, 'maj'), (7, 'maj'), (9, 'min'))
                                                if gq == 'maj' else ((0, 'min'), (3, 'maj'), (5, 'min'), (7, 'min'), (8, 'maj'), (10, 'maj')))]
         loc = lambda t: best_triad(chroma(mono, t - 0.05, t + 0.9), dia)     # diatonic chords of the score's key only
@@ -562,13 +563,13 @@ def main():
     MUSIC_DB = -6.0
     hold = np.zeros(NS)
     for h in HOLDS:
-        hold = np.maximum(hold, np.interp(t, [h['T0'] - 0.06, h['T0'] + 0.02, h['T0'] + h['d'] - 0.02, h['T0'] + h['d'] + 0.06],
+        hold = np.maximum(hold, np.interp(t, [h['T0'] + 0.03, h['T0'] + 0.15, h['T0'] + h['d'] - 0.25, h['T0'] + h['d'] - 0.05],
                                           [0, 1, 1, 0], left=0, right=0))
     gd = np.zeros(NS)
     for _, a, b in GENRE:
         gd = np.maximum(gd, np.interp(t, [a - 0.15, a, b, b + 0.4], [0, 1, 1, 0], left=0, right=0))
     gd = 0.5 - 0.5 * np.cos(np.pi * gd)
-    MU = MU * db(MUSIC_DB - 8.0 * duck * (1 - hold) + 4.0 * hold - 4.0 * gd)
+    MU = MU * db(MUSIC_DB - 8.0 * duck * (1 - hold) + 6.0 * hold - 6.0 * gd)
 
     # ---- silence window
     mask = np.ones(NS)
@@ -650,6 +651,8 @@ def main():
             vm = vl[wa_:wb_].max()
             for j, X in enumerate((bl, sl, sh_, ml)):
                 mins[j] = min(mins[j], vm - X[wa_:wb_].max())
+            if vm - ml[wa_:wb_].max() < 4.0:
+                lowwords.append('%s@%.2f(music %.1f)' % (w['w'], w['t0'], vm - ml[wa_:wb_].max()))
             if vm - sh_[wa_:wb_].max() < 4.0 or vm - sl[wa_:wb_].max() < 4.0:
                 lowwords.append('%s@%.2f(SFX %.1f, >200Hz %.1f at %.2f)' % (w['w'], w['t0'], vm - sl[wa_:wb_].max(),
                                 vm - sh_[wa_:wb_].max(), (wa_ + np.argmax(sh_[wa_:wb_])) / SR))
@@ -658,10 +661,21 @@ def main():
               '|                                                            %5.1f %5.1f  %5.1f     %5.1f   %s'
               % (k_, a, b, v, v - bb, v - ss, v - mm, *mins, ' '.join(x['w'] for x in ws)[:24]))
     W_all = np.array(W_all)
+    gvl = loud_curve(GV * gm * mask, 0.4)
+    for nm_, a_, b_ in GENRE:
+        ia_, ib_ = int(a_ * SR), int(b_ * SR)
+        print('genre voice %-10s %.2f-%.2f: voice max M %.1f LUFS, music max %.1f, SFX max %.1f, voice-bed %.1f dB'
+              % (nm_, a_, b_, gvl[ia_:ib_].max(), ml[ia_:ib_].max(), sl[ia_:ib_].max(), gvl[ia_:ib_].max() - bl[ia_:ib_].max()))
+    for h in HOLDS:
+        ia_, ib_ = int(h['T0'] * SR), int((h['T0'] + h['d']) * SR)
+        print('hold %-4s %.2f-%.2f: mix %.1f LUFS (music %.1f, SFX %.1f)' % (h['k'], h['T0'], h['T0'] + h['d'],
+              meter.integrated_loudness(chk[:, ia_:ib_].T), meter.integrated_loudness((MU * gm * mask)[:, ia_:ib_].T),
+              meter.integrated_loudness((SFX * gm * mask)[:, ia_:ib_].T)))
     print('words under 4 dB:', ', '.join(lowwords) or 'none')
     print('worst word over the whole ad: VO-bed %.1f | VO-SFX %.1f | VO-SFX speech band %.1f | VO-music %.1f dB'
           % tuple(W_all.min(0)))
-    np.save(os.path.join(HERE, '.stems_check.npy'), np.vstack([VOf.mean(0), (SFX * gm * mask).mean(0), (MU * gm * mask).mean(0)]).astype(np.float32))
+    if os.environ.get('SAVE_STEMS'):
+      np.save(os.path.join(HERE, '.stems_check.npy'), np.vstack([VOf.mean(0), (SFX * gm * mask).mean(0), (MU * gm * mask).mean(0)]).astype(np.float32))
     spectro(chk, cues)
     return cues
 
