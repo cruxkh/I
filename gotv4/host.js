@@ -41,7 +41,7 @@
     const fx = it.flip ? -1 : 1;
     const xf = cx => { cx.setTransform(1, 0, 0, 1, 0, 0); cx.translate(it.cx + dx, it.cy + dy); cx.rotate(rot); cx.scale(z * fx, z); cx.translate(-PIV[0], -PIV[1]); };
     tctx.setTransform(1, 0, 0, 1, 0, 0); tctx.clearRect(0, 0, W, H); tctx.globalCompositeOperation = 'source-over';
-    tctx.save(); xf(tctx); tctx.filter = 'contrast(1.14) saturate(1.5) brightness(1.08)'; tctx.drawImage(c.im, 0, 0, W, H); tctx.restore();
+    tctx.save(); xf(tctx); if (window.ANIMEFX && ANIMEFX.hostAnime) ANIMEFX.gradeHost(tctx, c.im, W, H); else { tctx.filter = 'contrast(1.14) saturate(1.5) brightness(1.08)'; tctx.drawImage(c.im, 0, 0, W, H); } tctx.restore();
     tctx.save(); tctx.globalCompositeOperation = 'destination-in'; xf(tctx); tctx.drawImage(c.mk, 0, 0, W, H); tctx.restore();
     rctx.setTransform(1, 0, 0, 1, 0, 0); rctx.clearRect(0, 0, W, H); rctx.globalCompositeOperation = 'source-over'; rctx.drawImage(TC, 0, 0); rctx.globalCompositeOperation = 'source-in'; rctx.fillStyle = '#fff'; rctx.fillRect(0, 0, W, H); rctx.globalCompositeOperation = 'source-over';
     for (const k in tintCache) delete tintCache[k];

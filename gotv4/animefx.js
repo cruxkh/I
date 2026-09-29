@@ -16,8 +16,8 @@
   // ---------------------------------------------------------------- schedule (built lazily: needs TLF)
   let S = null;
   function build() {
-    const Tv = v => TLF.TofV(v), holds = TL.holds, an = holds.find(h => /ANIME/i.test(h.label)), logo = holds.find(h => /GOTV logo/i.test(h.label));
-    const a = window.V.anime;
+    const Tv = v => TLF.TofV(v), holds = TL.holds, an = holds.find(h => /^ANIME interlude/.test(h.label)), logo = holds.find(h => /GOTV logo/i.test(h.label));
+    const a = V.anime;
     S = { impacts: [], kana: [], wipes: [], marks: [] };
     // impact frames (3 frames each)
     [3.05, 14.0, 25.61, 29.28].forEach(v => S.impacts.push({ T: Tv(v), mode: 'invert', cx: 540, cy: 900 }));
@@ -37,7 +37,7 @@
 
   // ---------------------------------------------------------------- overlay
   function overlay(ctx, T, v) {
-    if (!window.V || !V.anime || !window.TLF) return;
+    if (typeof V === "undefined" || !V.anime || typeof TLF === "undefined") return;
     if (!S) build();
     const a = V.anime, hd = (A.H && typeof A.H === 'object') ? A.H : null, inter = hd && hd.kind === 'interlude';
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
@@ -83,14 +83,14 @@
     if (!hit) {
       const o = Object.assign({ levels: 5, sat: 1.5, ink: 1, dots: 1, blur: 1.4, inkLo: .2, inkHi: .55 }, ANIMEFX.hostOpts || {});
       sx.setTransform(1, 0, 0, 1, 0, 0); sx.globalCompositeOperation = 'source-over'; sx.clearRect(0, 0, GW, GH);
-      sx.filter = `blur(${o.blur}px) contrast(1.1) saturate(1.15)`; sx.drawImage(img, 0, 0, GW, GH); sx.filter = 'none';
+      sx.filter = `blur(${o.blur}px) brightness(1.3) contrast(1.05) saturate(1.2)`; sx.drawImage(img, 0, 0, GW, GH); sx.filter = 'none';
       const id = sx.getImageData(0, 0, GW, GH), d = id.data, N = GW * GH;
       for (let i = 0, p = 0; i < N; i++, p += 4) LUM[i] = (d[p] * .299 + d[p + 1] * .587 + d[p + 2] * .114) / 255;
       const hist = new Uint32Array(256); for (let i = 0; i < N; i += 3) hist[(LUM[i] * 255) | 0]++;
       let acc = 0, lo = 0, hi = 255; const tot = N / 3; for (let k = 0; k < 256; k++) { acc += hist[k]; if (acc > tot * .02) { lo = k; break; } } acc = 0; for (let k = 255; k >= 0; k--) { acc += hist[k]; if (acc > tot * .03) { hi = k; break; } }
       const l0 = lo / 255, l1 = Math.max(l0 + .1, hi / 255), NL = o.levels, INK = [26, 19, 52];
       for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) {
-        const i = y * GW + x, p = i * 4, L0 = LUM[i], L = Math.pow(clamp((L0 - l0) / (l1 - l0)), .88);
+        const i = y * GW + x, p = i * 4, L0 = LUM[i], L = Math.pow(clamp((L0 - l0) / (l1 - l0)), .62);
         // edge (sobel on luma)
         let ink = 0;
         if (o.ink && x > 0 && y > 0 && x < GW - 1 && y < GH - 1) {
@@ -119,5 +119,5 @@
     ctx.save(); ctx.imageSmoothingQuality = 'high'; ctx.drawImage(hit, 0, 0, Wd, Hd); ctx.restore();
   }
 
-  window.ANIMEFX = { overlay, gradeHost, hostAnime: true, hostOpts: null, cfg };
+  window.ANIMEFX = { get _S() { return S; }, overlay, gradeHost, hostAnime: true, hostOpts: null, cfg };
 })();
