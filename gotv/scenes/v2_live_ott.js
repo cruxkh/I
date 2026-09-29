@@ -610,13 +610,13 @@
     const T = [], id = (i, j) => j * (cols + 1) + i; for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const a = P[id(i, j)], b = P[id(i + 1, j)], c = P[id(i + 1, j + 1)], d = P[id(i, j + 1)]; if (hash(i + j * 9) > .5) { T.push([a, b, c]); T.push([a, c, d]); } else { T.push([a, b, d]); T.push([b, c, d]); } } return T; })();
   function shatter(ctx, snap, k, ix, iy) {
     SH.forEach((tri, n) => {
-      const cx = (tri[0][0] + tri[1][0] + tri[2][0]) / 3, cy = (tri[0][1] + tri[1][1] + tri[2][1]) / 3, dx = cx - ix, dy = cy - iy, d = Math.hypot(dx, dy) + 1, dl = clamp((k - d / 4200) / (.95 - d / 4200)), e = ease.in(dl);
+      const cx = (tri[0][0] + tri[1][0] + tri[2][0]) / 3, cy = (tri[0][1] + tri[1][1] + tri[2][1]) / 3, dx = cx - ix, dy = cy - iy, d = Math.hypot(dx, dy) + 1, dl = clamp((k - d / 12000) / (.9 - d / 12000)), e = Math.pow(dl, 1.4);
       const vx = dx / d * (400 + hash(n) * 1400) * e, vy = dy / d * (400 + hash(n) * 1400) * e + 1400 * e * e * .6, rot = (hash(n + 3) - .5) * 3.4 * e, sc = 1 + e * (.2 + hash(n + 9) * .5), al = 1 - clamp((dl - .5) / .5);
       if (al <= 0) return; ctx.save(); ctx.globalAlpha = al; ctx.translate(cx + vx, cy + vy); ctx.rotate(rot); ctx.scale(sc, sc); ctx.translate(-cx, -cy);
       ctx.beginPath(); ctx.moveTo(tri[0][0], tri[0][1]); ctx.lineTo(tri[1][0], tri[1][1]); ctx.lineTo(tri[2][0], tri[2][1]); ctx.closePath(); ctx.clip();
       const x0 = Math.min(tri[0][0], tri[1][0], tri[2][0]) - 2, y0 = Math.min(tri[0][1], tri[1][1], tri[2][1]) - 2, x1 = Math.max(tri[0][0], tri[1][0], tri[2][0]) + 2, y1 = Math.max(tri[0][1], tri[1][1], tri[2][1]) + 2;
       ctx.drawImage(snap, x0, y0, x1 - x0, y1 - y0, x0, y0, x1 - x0, y1 - y0);
-      ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
     });
   }
   const snapCanvas = () => scratch('snap', W, H);
@@ -653,7 +653,7 @@
       const zi = inv(T_S3 - .04, T_S3 + .1, t);
       ctx.save(); if (zi > 0) { ctx.globalAlpha = 1 - ease.in(inv(T_S3 + .02, T_S3 + .1, t)); ctx.translate(540, 700); const zs = 1 + ein(zi) * 5; ctx.scale(zs, zs); ctx.translate(-540, -700); }
       shot3(ctx, t); ctx.restore();
-      const kk = (t - T_S2) / .5; if (kk < 1) { const [sc, sg] = snapCanvas(); shot2(sg, Math.min(t, 5.999)); ctx.save(); shatter(ctx, sc, kk, 540, 640); ctx.restore(); V.flash(ctx, t, T_S2, .12, '#fff', .8); }
+      const kk = (t - T_S2) / .4; if (kk < 1) { const [sc, sg] = snapCanvas(); shot2(sg, Math.min(t, 5.999)); ctx.save(); shatter(ctx, sc, kk, 540, 640); ctx.restore(); V.flash(ctx, t, T_S2, .12, '#fff', .8); }
     }
     // ---- DISNEY+ under comet iris
     if (t >= T_DS) {

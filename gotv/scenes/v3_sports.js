@@ -397,7 +397,7 @@ const FLY = .09, HEROY = 985;
 function plates(ctx, t) {
   // landed chips (the lineup bar)
   BEATS.forEach((b, j) => {
-    const k = t - b.t; if (k < 0) return; const d = pdim(b.n), hs = j === 5 ? .85 : (d.wide ? .86 : .85), cs = chipScale(b.n);
+    const k = t - b.t; if (k < 0) return; const d = pdim(b.n), hs = j === 5 ? .9 : 1.04, cs = chipScale(b.n);
     if (k < b.hold + FLY) {   // hero: pop, hold, fly down to the slot
       const u = eio((k - b.hold) / FLY), x = lerp(540, SLOTX[j], u), y = lerp(HEROY, CHIPY, u), sc = lerp(hs, cs, u);
       plate(ctx, b.n, x, y, sc, k, { rot: (j % 2 ? .05 : -.05) * (1 - u) });
@@ -414,10 +414,10 @@ function montage(ctx, t) {
   ctx.restore();
   ctx.save(); ctx.fillStyle = LIN(ctx, 0, 1000, 0, 1240, [[0, 'rgba(2,4,20,0)'], [1, 'rgba(2,4,20,.65)']]); ctx.fillRect(0, 1000, W, 300); ctx.restore();
   const imp = [.17, .15, .16, .15][i], kc = k - imp;
-  speedLines(ctx, 540, 760, t, kc > 0 && kc < .1 ? 60 : 34, i === 3 ? '#ffd2a8' : '#cfe4ff', 380, 1300, kc > 0 && kc < .1 ? .5 : .3, 6);
+  speedLines(ctx, 540, 760, t, kc > 0 && kc < .1 ? 60 : 34, i === 3 ? '#ffd2a8' : '#cfe4ff', 380, 1300, kc > 0 && kc < .1 ? .3 : .16, 6);
   if (i > 0 && k < .07) { ctx.save(); ctx.translate(0, 0); whipBand(ctx, i % 2 ? W * (1 - k / .07 * .8) : W * (k / .07 * .8), i % 2 ? 1 : -1, .8 * (1 - k / .07)); ctx.restore(); }
-  V.flash(ctx, t, B[i], .07, '#ffffff', i === 0 ? .0 : .9);
-  if (kc > 0 && kc < .08) V.flash(ctx, t, B[i] + imp, .08, '#fff8e0', .5);
+  V.flash(ctx, t, B[i], .06, '#ffffff', i === 0 ? .0 : .55);
+  if (kc > 0 && kc < .08) V.flash(ctx, t, B[i] + imp, .06, '#fff8e0', .22);
   if (k < .09) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k / .09) * .55; ctx.fillStyle = 'rgba(255,60,90,1)'; ctx.fillRect(0, 0, 16, H); ctx.fillStyle = 'rgba(60,170,255,1)'; ctx.fillRect(W - 16, 0, 16, H); ctx.restore(); }
   plates(ctx, t);
   // bar backing plate
@@ -568,7 +568,7 @@ function sport5(ctx, t) {
   [['#FF2D3D', 1000, 90, .34], ['#FFFFFF', 1120, 42, .26], ['#2F6BFF', 1220, 130, .4], ['#FF2D3D', 700, 50, .25]].forEach(([c, y, hh, a], i) => { const off = fmod(t * (1100 + i * 300) + i * 500, 2800) - 800; ctx.globalAlpha = a; ctx.fillStyle = LIN(ctx, off - 900, 0, off + 300, 0, [[0, 'rgba(0,0,0,0)'], [.7, c], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(off - 900, y - hh / 2 - 500 + i * 60, 1200, hh); });
   ctx.restore();
   V.bokeh(ctx, t, { seed: 12, alpha: .8, cols: ['#6CC8FF', '#FFFFFF', '#FF5A64', '#3D7BFF'] });
-  V.flash(ctx, t, LT.s5, .1, '#CFE4FF', 1);
+  V.flash(ctx, t, LT.s5, .07, '#CFE4FF', .6);
   // ---- ball racing through with energy trails
   const rk = inv(.0, .3, k);
   if (k < .34) {
