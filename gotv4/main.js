@@ -18,32 +18,45 @@
     flush(); out.forEach(c => { c.t0 = c[0].t0; c.t1 = c[c.length - 1].t1; }); return out;
   })();
   const NOCAP = [[36.2, 99], [25.5, 25.61]];   // end line is drawn by the host/end-card scenes
-  function captions(c, t, T) {
+  function captions(c, t, T) { if (window.DBG) console.log("cap", t.toFixed(2), T.toFixed(2));
     if (NOCAP.some(([a, b]) => t >= a && t < b)) return;
     const hd = TLF.holdAt(T); if (hd && hd.kind === 'interlude') return;
     let ci = chunks.findIndex(k => t >= k.t0 - 0.02 && t < k.t1 + 0.08);
     if (hd) { ci = -1; chunks.forEach((k, i) => { if (k.t0 <= t + 0.01) ci = i; }); }   // during a hold the last spoken chunk stays on screen
     if (ci < 0) return;
     const heroType = t >= 25.61 && t < 27.2;   // the impact scene draws the giant words itself: keep only the English gloss
-    const ch = chunks[ci], age = t - ch.t0, big = ch.some(w => /^(תקיעות|נקודה)/.test(w.w)), size = big ? 168 : 100, YB = big ? 1300 : 1320;
+    const ch = chunks[ci], age = hd ? 9 : t - ch.t0, big = ch.some(w => /^(תקיעות|נקודה)/.test(w.w)), size = big ? 172 : 104, YB = big ? 1300 : 1320;
     if (!heroType) {
-    c.save(); c.direction = 'rtl'; c.font = `900 ${size}px Rubik`;
-    const words = ch.map(w => w.w.replace(/[,?]/g, '')), gap = size * 0.34, widths = words.map(s => c.measureText(s).width);
-    let total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1); const fit = Math.min(1, 940 / total);
-    const pop = eob(age / 0.2); const sc0 = lerp(0.6, 1, pop) * fit, tilt = (hash(ci * 3.1) - .5) * .05 * (1 - eo(age / .3));
-    c.translate(540, YB); c.rotate(tilt); c.scale(sc0, sc0);
-    let x = total / 2;
-    words.forEach((s, i) => {
-      const w = ch[i], wp = widths[i], cx = x - wp / 2, active = t >= w.t0 - 0.03 && t < w.t1 - 0.01, k = clamp((t - w.t0) / .14), scl = active ? 1 + .14 * Math.sin(k * Math.PI) : 1, em = EMPH[s] || EMPH[s.replace(/^ו/, '')];
-      c.save(); c.translate(cx, 0); c.scale(scl, scl); c.font = `900 ${size}px Rubik`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
-      if (active && !big) { c.save(); c.shadowColor = 'rgba(255,190,60,.55)'; c.shadowBlur = 40; c.fillStyle = V.lin(c, 0, -size * .62, 0, size * .62, [[0, '#FFE9A8'], [1, '#FFB021']]); V.rr(c, -wp / 2 - 26, -size * .62, wp + 52, size * 1.24, size * .34); c.fill(); c.restore(); }
-      c.shadowColor = 'rgba(0,8,40,.65)'; c.shadowBlur = 22; c.shadowOffsetY = 12;
-      if (!(active && !big)) { c.lineWidth = size * .16; c.strokeStyle = '#060A1E'; c.strokeText(s, 0, 0); }
-      c.shadowColor = 'transparent';
-      c.fillStyle = (active && !big) ? '#101440' : big ? V.lin(c, 0, -size * .5, 0, size * .5, V.GOLD_GRAD) : em ? em : V.lin(c, 0, -size * .5, 0, size * .5, V.WHITE_GRAD);
-      c.fillText(s, 0, 0); c.restore(); x -= wp + gap;
-    });
-    c.restore(); }
+      c.save(); c.direction = 'rtl'; c.font = `900 ${size}px Rubik`;
+      const words = ch.map(w => w.w.replace(/[,?]/g, '')), gap = size * 0.36, widths = words.map(s => c.measureText(s).width);
+      let total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1); const fit = Math.min(1, 930 / total);
+      const pop = eob(age / 0.2), slide = (1 - pop) * 70, sc0 = lerp(0.72, 1, pop) * fit;
+      c.translate(540 + slide * (ci % 2 ? 1 : -1) * (1 - Math.min(1, age / .2)), YB); c.transform(1, 0, -0.10, 1, 0, 0); c.scale(sc0, sc0);   // manga-style italic skew
+      // slanted caption band (manga box): dark glass parallelogram + white/gold rules + halftone corner
+      const bw = total + size * 0.9, bh = size * 1.42; c.save(); c.globalAlpha = Math.min(1, age / .12);
+      const bg = c.createLinearGradient(-bw / 2, 0, bw / 2, 0); bg.addColorStop(0, 'rgba(6,10,40,0)'); bg.addColorStop(.12, 'rgba(6,10,40,.66)'); bg.addColorStop(.88, 'rgba(6,10,40,.66)'); bg.addColorStop(1, 'rgba(6,10,40,0)'); c.fillStyle = bg; c.fillRect(-bw / 2, -bh / 2, bw, bh);
+      c.fillStyle = V.lin(c, -bw / 2, 0, bw / 2, 0, [[0, 'rgba(255,194,74,0)'], [.2, '#FFC24A'], [.8, '#FFC24A'], [1, 'rgba(255,194,74,0)']]); c.fillRect(-bw / 2, -bh / 2, bw, 5); c.fillRect(-bw / 2, bh / 2 - 5, bw, 5);
+      c.fillStyle = 'rgba(255,255,255,.10)'; for (let yy = -bh / 2 + 10; yy < bh / 2; yy += 12) for (let xx = -bw / 2 + 12 + (((yy / 12) | 0) % 2) * 6; xx < -bw / 2 + bw * .18; xx += 12) { c.beginPath(); c.arc(xx, yy, 2.2 * (1 - (xx + bw / 2) / (bw * .18)), 0, A.TAU); c.fill(); }
+      c.restore();
+      let x = total / 2;
+      words.forEach((s, i) => {
+        const w = ch[i], wp = widths[i], cx = x - wp / 2, active = !hd && t >= w.t0 - 0.03 && t < w.t1 - 0.01, k = clamp((t - w.t0) / .16), scl = active ? 1 + .16 * Math.sin(k * Math.PI) : 1, em = EMPH[s] || EMPH[s.replace(/^ו/, '')];
+        c.save(); c.translate(cx, 0); c.scale(scl, scl); c.font = `900 ${size}px Rubik`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round'; c.miterLimit = 2;
+        if (active) { c.save(); c.globalCompositeOperation = 'lighter'; for (let r = 0; r < 12; r++) { const an = r / 12 * A.TAU + s.length; c.strokeStyle = 'rgba(255,225,140,.55)'; c.lineWidth = 4; c.beginPath(); c.moveTo(Math.cos(an) * (wp * .5 + 30), Math.sin(an) * size * .62); c.lineTo(Math.cos(an) * (wp * .5 + 30 + 40 * Math.sin(k * Math.PI)), Math.sin(an) * (size * .62 + 40 * Math.sin(k * Math.PI))); c.stroke(); } c.restore(); }
+        c.shadowColor = 'rgba(0,4,30,.7)'; c.shadowBlur = 20; c.shadowOffsetY = 12;
+        c.lineWidth = size * .22; c.strokeStyle = '#05061c'; c.strokeText(s, 0, 0); c.shadowColor = 'transparent';
+        c.lineWidth = size * .08; c.strokeStyle = active ? '#FF4FA8' : (em || '#5AD1FF'); c.strokeText(s, 5, 6);                      // colour offset shadow (anime title style)
+        c.lineWidth = size * .22; c.strokeStyle = '#05061c'; c.strokeText(s, 0, 0);
+        const fg = c.createLinearGradient(0, -size * .5, 0, size * .5);
+        if (big) { fg.addColorStop(0, '#FFF6C2'); fg.addColorStop(.5, '#FFC24A'); fg.addColorStop(1, '#E48A12'); }
+        else if (active) { fg.addColorStop(0, '#FFFBD6'); fg.addColorStop(.55, '#FFD84A'); fg.addColorStop(1, '#FFA51A'); }
+        else if (em) { fg.addColorStop(0, '#FFFFFF'); fg.addColorStop(.3, em); fg.addColorStop(1, em); }
+        else { fg.addColorStop(0, '#FFFFFF'); fg.addColorStop(1, '#BFD6FF'); }
+        c.fillStyle = fg; c.fillText(s, 0, 0);
+        c.restore(); x -= wp + gap;
+      });
+      c.restore();
+    }
     let L = A.LINES.find(l => t >= l.t - 0.05 && t <= l.end + 0.3);
     if (!L && hd) { for (const l of A.LINES) if (l.t <= t + 0.01) L = l; }
     if (L) {
@@ -89,9 +102,10 @@
   async function draw(f, opt = {}) {
     if (!sorted) { sortScenes(); sorted = true; }
     const N = opt.fast ? 1 : (opt.n || 3), shutter = 0.55, T0 = f / FPS, t = TLF.vOf(T0);
-    acx.setTransform(1, 0, 0, 1, 0, 0); acx.globalAlpha = 1; acx.globalCompositeOperation = 'source-over'; acx.fillStyle = '#000'; acx.fillRect(0, 0, W, H);
+    ACC.width = W; acx.fillStyle = '#000'; acx.fillRect(0, 0, W, H);
     for (let k = 0; k < N; k++) {
       const ff = f + (N === 1 ? 0 : ((k + .5) / N - .5) * shutter);
+      cv.width = W;   // reset ALL canvas state (clips, filters, stacks) so nothing leaks between frames
       const vv = TLF.vOf(ff / FPS);
       if (window.HOST) await HOST.prepare(vv);
       A.renderFrame(ff); if (window.HOST) HOST.overlay(ctx, vv); if (window.FXL) FXL.overlay(ctx, vv); if (window.ANIMEFX) ANIMEFX.overlay(ctx, ff / FPS, vv);

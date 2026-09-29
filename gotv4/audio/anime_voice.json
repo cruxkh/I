@@ -1,0 +1,36 @@
+{
+ "file": "anime_voice.wav",
+ "duration": 3.8,
+ "lines": [
+  {
+   "text": "おおっ！",
+   "start": 0.053,
+   "end": 0.51,
+   "kind": "gasp"
+  },
+  {
+   "text": "すごい…！",
+   "start": 0.593,
+   "end": 1.34,
+   "kind": "awe"
+  },
+  {
+   "text": "ぜんぶ、ここにある！",
+   "start": 1.353,
+   "end": 2.27,
+   "kind": "shout"
+  },
+  {
+   "text": "うおおおおお！",
+   "start": 2.372,
+   "end": 3.303,
+   "kind": "scream"
+  },
+  {
+   "text": "いくぞーっ！",
+   "start": 3.322,
+   "end": 3.752,
+   "kind": "shout"
+  }
+ ]
+}
