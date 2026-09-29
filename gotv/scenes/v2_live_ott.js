@@ -158,7 +158,7 @@
     for (let k = 0; k < 2; k++) { g.beginPath(); for (let i = 0; i < 3; i++) { const a = -Math.PI / 2 + i * TAU / 3 + k * Math.PI; g.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); } g.closePath(); g.stroke(); }
   });
   function drawFlag(ctx, t, x0, y0, amp, sx = 1) {
-    const tex = flagTex(), N = 72, sw = FW / N;
+    const tex = flagTex(), N = 150, sw = FW / N;
     for (let i = 0; i < N; i++) {
       const u = i / N, ramp = .12 + .88 * u, ph = u * 6.4 - t * 5.4, ph2 = u * 12.5 - t * 8.3 + 1.3;
       const off = (Math.sin(ph) * amp + Math.sin(ph2) * amp * .28) * ramp;
@@ -272,7 +272,7 @@
     streaks(ctx, t, 7, '#ffd9a0', .35, 8);
     // flag
     const fu = eo(inv(4.95, 5.5, t)), fl = (1 - fu);
-    ctx.save(); ctx.translate(-70 + dx * 1.5 - fl * 260, 130 + dy * 1.4 - fl * 300); ctx.rotate(-.05 + fl * .1);
+    ctx.save(); ctx.translate(-30 + dx * 1.5 - fl * 260, 110 + dy * 1.4 - fl * 300); ctx.rotate(-.05 + fl * .1); ctx.scale(.82, .82);
     ctx.shadowColor = 'rgba(0,0,40,.55)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 30; ctx.fillStyle = 'rgba(0,0,0,.01)'; ctx.fillRect(0, 0, FW, FH); ctx.shadowColor = 'transparent';
     drawFlag(ctx, t, 0, 0, 34 + fl * 40, 1);
     // pole
@@ -316,7 +316,7 @@
   // ------------------------------------------------------------------ SCENE B: NETFLIX
   const curtain = () => L('curtain', 1080, 1920, g => {
     const side = (dir) => { g.save(); if (dir) { g.translate(W, 0); g.scale(-1, 1); }
-      g.beginPath(); g.moveTo(0, 0); g.lineTo(240, 0); g.bezierCurveTo(200, 500, 160, 1000, 60, 1920); g.lineTo(0, 1920); g.closePath(); g.clip();
+      g.beginPath(); g.moveTo(0, 0); g.lineTo(170, 0); g.bezierCurveTo(140, 500, 110, 1000, 40, 1920); g.lineTo(0, 1920); g.closePath(); g.clip();
       const N = 26; for (let i = 0; i < N; i++) { const x0 = i * 10, k = .5 + .5 * Math.sin(i * 1.3 + .4); g.fillStyle = lin(g, x0, 0, x0 + 10, 0, [[0, `rgb(${40 + k * 130 | 0},${2 + k * 8 | 0},${8 + k * 14 | 0})`], [1, `rgb(${20 + k * 60 | 0},1,4)`]]); g.fillRect(x0, 0, 11, 1920); }
       g.fillStyle = lin(g, 0, 0, 260, 0, [[0, 'rgba(0,0,0,.35)'], [.6, 'rgba(0,0,0,0)'], [1, 'rgba(255,60,60,.25)']]); g.fillRect(0, 0, 260, 1920);
       g.fillStyle = lin(g, 0, 0, 0, 300, [[0, 'rgba(0,0,0,.7)'], [1, 'rgba(0,0,0,0)']]); g.fillRect(0, 0, 260, 300); g.restore(); };
@@ -333,7 +333,7 @@
     const [c, g] = scratch('nf', 980, 320); g.translate(490, 160);
     g.shadowColor = 'rgba(255,20,40,.7)'; g.shadowBlur = 40; g.fillStyle = 'rgba(8,0,3,.86)'; g.beginPath(); g.roundRect(-460, -130, 920, 260, 56); g.fill(); g.shadowBlur = 0;
     g.lineWidth = 6; g.strokeStyle = lin(g, -460, -130, 460, 130, [[0, '#ff6a6a'], [.5, '#a0101e'], [1, '#ff4a5a']]); g.beginPath(); g.roundRect(-458, -128, 916, 256, 55); g.stroke();
-    g.save(); g.scale(.74, 1); g.font = '900 215px Rubik'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.letterSpacing = '4px';
+    g.save(); g.scale(.86, 1); g.font = '900 170px Rubik'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.letterSpacing = '4px';
     for (let d = 18; d >= 1; d--) { g.fillStyle = A.mixc('#7a0610', '#3a0208', d / 18); g.fillText('NETFLIX', 0, 6 + d); }
     g.fillStyle = lin(g, 0, -110, 0, 110, [[0, '#FF5A66'], [.45, '#E50914'], [1, '#A70611']]); g.fillText('NETFLIX', 0, 6);
     g.strokeStyle = 'rgba(255,200,200,.55)'; g.lineWidth = 2; g.strokeText('NETFLIX', 0, 6); g.restore();
@@ -353,20 +353,20 @@
     ctx.fillStyle = lin(ctx, 0, 1150, 0, 1500, [[0, 'rgba(255,60,60,.0)'], [.3, 'rgba(255,60,60,.22)'], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(0, 1150, W, 350);
     // posters
     const P = ['midnight', 'neon', 'forever', 'orbit', 'hunted'].map(k => POSTER[k]()), ang = [-.66, -.33, 0, .33, .66], order = [0, 4, 1, 3, 2], t0s = [6.80, 6.86, 6.74, 6.83, 6.77];
-    const pv = { x: 540, y: 1250 }, arm = 500;
+    const pv = { x: 540, y: 1290 }, arm = 520;
     order.forEach(i => {
       const u = inv(t0s[i], t0s[i] + .34, t); if (u <= 0) return; const e = eob(u), fan = lerp(.2, 1, eo(inv(t0s[i], t0s[i] + .5, t)));
-      const a = ang[i] * fan + Math.sin(t * 1.2 + i) * .012, sc = i === 2 ? 1.16 : 1, flip = lerp(1.5, 0, e);
+      const a = ang[i] * fan + Math.sin(t * 1.2 + i) * .012, sc = i === 2 ? 1.1 : 1, flip = lerp(1.5, 0, e);
       ctx.save(); ctx.translate(pv.x, pv.y); ctx.rotate(a); ctx.translate(0, -arm * (i === 2 ? 1.02 : 1) + (1 - eo(u)) * 250);
       ctx.globalAlpha = clamp(u * 3); glow(ctx, 0, 0, 260, i === 2 ? '#ff3040' : '#a01020', .28);
-      V.card3d(ctx, P[i], 0, 0, 300 * sc, 450 * sc, flip + (i - 2) * -.06, -.05, 1500, 6, 8);
-      if (u >= 1) { ctx.save(); ctx.beginPath(); ctx.roundRect(-150 * sc, -225 * sc, 300 * sc, 450 * sc, 20); ctx.clip(); ctx.globalCompositeOperation = 'lighter'; const sw = ((t * .5 + i * .27) % 1.6) - .3; ctx.fillStyle = lin(ctx, (sw * 500 - 250) - 60, 0, (sw * 500 - 250) + 60, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.28)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-200, -260, 400, 520); ctx.restore(); }
+      V.card3d(ctx, P[i], 0, 0, 336 * sc, 504 * sc, flip + (i - 2) * -.06, -.05, 1500, 6, 8);
+      if (u >= 1) { ctx.save(); ctx.beginPath(); ctx.roundRect(-168 * sc, -252 * sc, 336 * sc, 504 * sc, 22); ctx.clip(); ctx.globalCompositeOperation = 'lighter'; const sw = ((t * .5 + i * .27) % 1.6) - .3; ctx.fillStyle = lin(ctx, (sw * 500 - 250) - 60, 0, (sw * 500 - 250) + 60, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.28)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-200, -260, 400, 520); ctx.restore(); }
       ctx.restore();
     });
     // NETFLIX chip slam
     const th = 7.12, cu = inv(th, th + .22, t);
-    if (cu > 0) { const e = eob(cu), s2 = lerp(2.6, 1, e), shake = t < th + .35 ? Math.sin((t - th) * 90) * 8 * (1 - (t - th) / .35) : 0; glow(ctx, 540, 340, 700 + 150 * (.5 + .5 * Math.sin(t * 6)), '#ff1a2a', .55 * clamp(cu * 2)); ctx.save(); ctx.globalAlpha = clamp(cu * 4); nfChip(ctx, 540 + shake, 340, s2 * (1 + .015 * Math.sin(t * 3)), t, th); ctx.restore();
-      V.ring(ctx, 540, 340, 100 + (t - th) * 2400, 30 * (1 - clamp((t - th) / .5)) + 2, '#ff5a5a', .8 * (1 - clamp((t - th) / .5))); }
+    if (cu > 0) { const e = eob(cu), s2 = lerp(2.6, 1, e), shake = t < th + .35 ? Math.sin((t - th) * 90) * 8 * (1 - (t - th) / .35) : 0; glow(ctx, 540, 320, 700 + 150 * (.5 + .5 * Math.sin(t * 6)), '#ff1a2a', .55 * clamp(cu * 2)); ctx.save(); ctx.globalAlpha = clamp(cu * 4); nfChip(ctx, 540 + shake, 320, s2 * (1 + .015 * Math.sin(t * 3)), t, th); ctx.restore();
+      V.ring(ctx, 540, 320, 100 + (t - th) * 2400, 30 * (1 - clamp((t - th) / .5)) + 2, '#ff5a5a', .8 * (1 - clamp((t - th) / .5))); }
     ctx.restore();
     ctx.drawImage(curtain(), 0, 0);
     // popcorn burst from bottom corners
@@ -424,23 +424,24 @@
     ctx.drawImage(skyC(), 0, -60 + Math.sin(t * .5) * 6);
     // twinkle field
     for (let i = 0; i < 70; i++) { const p = .5 + .5 * Math.sin(t * (2 + hash(i) * 3) + i * 5); V.sparkle(ctx, hash(i * 2.3) * W, 60 + hash(i * 5.1) * 900, 3 + p * (6 + hash(i + 2) * 12), hash(i) > .7 ? '#ffe9a8' : '#fff', hash(i) * 3, .3 + .7 * p); }
-    glow(ctx, 540, 1000, 800, '#8ab8ff', .4); glow(ctx, 540, 900, 500, '#ffd9a0', .3);
-    ctx.drawImage(castle(), -100 + sx * .3, 300 - Math.sin(t * .5) * 3);
+    glow(ctx, 540, 1040, 800, '#8ab8ff', .22); glow(ctx, 540, 960, 400, '#ffd9a0', .22);
+    ctx.save(); ctx.translate(540 + sx * .3, 1085); ctx.scale(1.05, 1.05); ctx.drawImage(castle(), -640, -700); ctx.restore();
+    ctx.save(); ctx.translate(540, 1085); ctx.scale(1.05, -.5); ctx.globalAlpha = .22; ctx.drawImage(castle(), -640, -700 + 60); ctx.restore();
     // mist
-    ctx.fillStyle = lin(ctx, 0, 960, 0, 1200, [[0, 'rgba(180,210,255,0)'], [.5, 'rgba(180,210,255,.35)'], [1, 'rgba(10,20,110,.9)']]); ctx.fillRect(0, 960, W, 400);
-    ctx.fillStyle = lin(ctx, 0, 1150, 0, 1920, [[0, '#0a1466'], [1, '#050a3a']]); ctx.fillRect(0, 1150, W, 800);
-    glow(ctx, 540, 1150, 700, '#5a8aff', .2);
+    ctx.fillStyle = lin(ctx, 0, 1000, 0, 1500, [[0, 'rgba(160,200,255,0)'], [.22, 'rgba(160,200,255,.28)'], [.3, 'rgba(20,40,150,.85)'], [1, '#050a3a']]); ctx.fillRect(0, 1000, W, 950);
+    for (let i = 0; i < 40; i++) { const p = Math.max(0, Math.sin(t * 3 + i * 2.1)); ctx.globalAlpha = .6 * p; ctx.fillStyle = '#cfe0ff'; ctx.fillRect(hash(i * 3) * W, 1120 + hash(i * 7) * 500, 20 + hash(i) * 60, 2); } ctx.globalAlpha = 1;
+    
     // cards
-    const P = ['balloons', 'voyage', 'royal', 'happy'].map(k => POSTER[k]()), cfg = [[150, 790, -.55, 8.10, -.14], [370, 860, -.28, 8.16, -.06], [710, 860, .28, 8.13, .06], [930, 790, .55, 8.07, .14]];
+    const P = ['balloons', 'voyage', 'royal', 'happy'].map(k => POSTER[k]()), cfg = [[125, 830, -.55, 8.10, -.12], [335, 900, -.28, 8.16, -.05], [745, 900, .28, 8.13, .05], [955, 830, .55, 8.07, .12]];
     cfg.forEach(([x, y, ry, t0, rz], i) => { const u = inv(t0, t0 + .4, t); if (u <= 0) return; const e = eob(u), fy = Math.sin(t * 1.8 + i * 1.7) * 14; ctx.save(); ctx.translate(x, y + fy + (1 - e) * 500); ctx.rotate(rz + Math.sin(t + i) * .02); ctx.globalAlpha = clamp(u * 3); glow(ctx, 0, 0, 260, '#8ab8ff', .3);
-      V.card3d(ctx, P[i], 0, 0, 260, 390, ry, -.05, 1400, 6, 8);
-      if (u >= 1) { ctx.save(); ctx.beginPath(); ctx.roundRect(-130, -195, 260, 390, 18); ctx.clip(); ctx.globalCompositeOperation = 'lighter'; const sw = ((t * .45 + i * .3) % 1.7) - .35; ctx.fillStyle = lin(ctx, sw * 430 - 215 - 50, 0, sw * 430 - 215 + 50, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.3)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-150, -210, 300, 420); ctx.restore(); }
+      V.card3d(ctx, P[i], 0, 0, 240, 360, ry, -.05, 1400, 6, 8);
+      if (u >= 1) { ctx.save(); ctx.beginPath(); ctx.roundRect(-120, -180, 240, 360, 18); ctx.clip(); ctx.globalCompositeOperation = 'lighter'; const sw = ((t * .45 + i * .3) % 1.7) - .35; ctx.fillStyle = lin(ctx, sw * 430 - 215 - 50, 0, sw * 430 - 215 + 50, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.3)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-150, -210, 300, 420); ctx.restore(); }
       ctx.restore(); });
     // chip
     const th = 8.40, cu = inv(th, th + .24, t);
-    if (cu > 0) { const e = eob(cu), s2 = lerp(2.2, 1, e); glow(ctx, 540, 480, 800, '#8ab8ff', .55 * clamp(cu * 2)); glow(ctx, 540, 480, 420, '#ffc24a', .3 * clamp(cu * 2)); ctx.save(); ctx.globalAlpha = clamp(cu * 4); dpChip(ctx, 540, 480, s2 * (1 + .012 * Math.sin(t * 3)), t, th); ctx.restore();
-      V.ring(ctx, 540, 480, 60 + (t - th) * 2200, 26 * (1 - clamp((t - th) / .5)) + 2, '#fff', .7 * (1 - clamp((t - th) / .5)));
-      for (let i = 0; i < 26; i++) { const a = hash(i) * TAU, sp = 300 + hash(i + 3) * 700, k = t - th; if (k < 0 || k > .9) continue; const x = 540 + Math.cos(a) * sp * k, y = 480 + Math.sin(a) * sp * k + 500 * k * k; V.sparkle(ctx, x, y, 22 * (1 - k / .9) + 3, i % 3 ? '#ffe9a8' : '#fff', k * 5, 1 - k / .9); } }
+    if (cu > 0) { const e = eob(cu), s2 = lerp(2.2, 1, e); glow(ctx, 540, 420, 800, '#8ab8ff', .55 * clamp(cu * 2)); glow(ctx, 540, 420, 420, '#ffc24a', .3 * clamp(cu * 2)); ctx.save(); ctx.globalAlpha = clamp(cu * 4); dpChip(ctx, 540, 420, s2 * (1 + .012 * Math.sin(t * 3)), t, th); ctx.restore();
+      V.ring(ctx, 540, 420, 60 + (t - th) * 2200, 26 * (1 - clamp((t - th) / .5)) + 2, '#fff', .7 * (1 - clamp((t - th) / .5)));
+      for (let i = 0; i < 26; i++) { const a = hash(i) * TAU, sp = 300 + hash(i + 3) * 700, k = t - th; if (k < 0 || k > .9) continue; const x = 540 + Math.cos(a) * sp * k, y = 420 + Math.sin(a) * sp * k + 500 * k * k; V.sparkle(ctx, x, y, 22 * (1 - k / .9) + 3, i % 3 ? '#ffe9a8' : '#fff', k * 5, 1 - k / .9); } }
     // comet
     const cu2 = inv(8.0, 8.85, t);
     if (cu2 > 0 && cu2 < 1.2) {

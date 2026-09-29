@@ -450,23 +450,211 @@ function segTurk(ctx, t) {
   V.flash(ctx, t, 13.72, .1, '#ff8a70', .25);
 }
 //@@PART_C
+// =====================================================================================================
+// B) KOREAN  neon rainy Seoul night
+// =====================================================================================================
+const PINK = '#ff5fb0', CYAN = '#4fe6ff', VIO = '#9b6bff', STREET = 1010;
+// hangul as vector strokes in a 0..1 cell.  {p:[[x,y]...]} polyline, {c:[cx,cy,r]} circle
+const HG = {
+  '사': [{ p: [[.30, .28], [.06, .74]] }, { p: [[.24, .48], [.44, .74]] }, { p: [[.74, .04], [.74, .96]] }, { p: [[.74, .46], [.96, .46]] }],
+  '랑': [{ p: [[.08, .06], [.46, .06], [.46, .22], [.08, .22], [.08, .38], [.46, .38]] }, { p: [[.76, .02], [.76, .56]] }, { p: [[.76, .27], [.97, .27]] }, { c: [.5, .79, .16] }],
+  '안': [{ c: [.28, .24, .17] }, { p: [[.76, .02], [.76, .56]] }, { p: [[.76, .27], [.97, .27]] }, { p: [[.2, .66], [.2, .94], [.84, .94]] }],
+  '녕': [{ p: [[.12, .08], [.12, .42], [.46, .42]] }, { p: [[.76, .02], [.76, .58]] }, { p: [[.76, .2], [.97, .2]] }, { p: [[.76, .38], [.97, .38]] }, { c: [.5, .8, .15] }],
+};
+function hangulPath(g, ch, x, y, w, h) {
+  g.beginPath();
+  HG[ch].forEach(s => {
+    if (s.c) { g.moveTo(x + (s.c[0] + s.c[2]) * w, y + s.c[1] * h); g.ellipse(x + s.c[0] * w, y + s.c[1] * h, s.c[2] * w, s.c[2] * h, 0, 0, TAU); }
+    else s.p.forEach(([px, py], i) => i ? g.lineTo(x + px * w, y + py * h) : g.moveTo(x + px * w, y + py * h));
+  });
+}
+function neonText(g, str, x, y, cw, ch, col, a = 1, gap = 1.1) {
+  g.save(); g.lineCap = 'round'; g.lineJoin = 'round';
+  [...str].forEach((c, i) => {
+    const px = x + i * cw * gap;
+    g.globalCompositeOperation = 'lighter';
+    g.strokeStyle = col; g.globalAlpha = .10 * a; g.lineWidth = cw * .26; hangulPath(g, c, px, y, cw, ch); g.stroke();
+    g.globalAlpha = .28 * a; g.lineWidth = cw * .13; g.stroke();
+    g.globalAlpha = .9 * a; g.lineWidth = cw * .06; g.stroke();
+    g.globalCompositeOperation = 'source-over'; g.strokeStyle = '#fff'; g.globalAlpha = a; g.lineWidth = cw * .022; g.stroke();
+  });
+  g.restore();
+}
+function seoulCity() {
+  return A.layer('v4_seoul', W, H, g => {
+    g.fillStyle = lin(g, 0, 0, 0, STREET, [[0, '#07051c'], [.55, '#1a0d45'], [.85, '#3a1466'], [1, '#5a1c78']]); g.fillRect(0, 0, W, H);
+    V.glow(g, 540, 940, 700, 'rgba(255,90,190,.5)', 1); V.glow(g, 200, 700, 500, 'rgba(70,200,255,.32)', 1);
+    const r = rng(77);
+    // far towers
+    for (let i = 0; i < 16; i++) { const x = i * 70 - 20, h = 250 + r() * 520, w = 60 + r() * 30; g.fillStyle = lin(g, 0, STREET - h, 0, STREET, [[0, '#1a1050'], [1, '#2a1560']]); g.fillRect(x, STREET - h, w, h); for (let k = 0; k < 40; k++) { if (r() < .5) { g.fillStyle = r() < .5 ? 'rgba(255,120,200,.6)' : 'rgba(110,220,255,.55)'; g.fillRect(x + 6 + (r() * (w - 14)) | 0, STREET - h + 10 + r() * (h - 20), 5, 7); } } }
+    // near buildings with lit window grids
+    [[-30, 330, 260], [250, 200, 380], [520, 240, 300], [780, 350, 430]].forEach(([x, w, h], i) => {
+      g.fillStyle = lin(g, 0, STREET - h, 0, STREET, [[0, '#120a34'], [1, '#0a0620']]); g.fillRect(x, STREET - h, w, h);
+      g.strokeStyle = i % 2 ? 'rgba(255,95,176,.55)' : 'rgba(79,230,255,.5)'; g.lineWidth = 3; g.strokeRect(x, STREET - h, w, h);
+      for (let yy = STREET - h + 30; yy < STREET - 30; yy += 34) for (let xx = x + 16; xx < x + w - 24; xx += 30) if (r() < .45) { g.fillStyle = r() < .5 ? 'rgba(255,190,230,.75)' : r() < .5 ? 'rgba(160,240,255,.7)' : 'rgba(255,235,170,.7)'; g.fillRect(xx, yy, 16, 20); }
+    });
+    // sign boards (frames) behind neon text
+    g.fillStyle = 'rgba(10,4,30,.9)'; A.rrect(g, 20, 400, 610, 300, 26); g.fill(); g.strokeStyle = 'rgba(255,95,176,.9)'; g.lineWidth = 6; g.stroke();
+    g.fillStyle = 'rgba(10,4,30,.9)'; A.rrect(g, 660, 430, 380, 210, 22); g.fill(); g.strokeStyle = 'rgba(79,230,255,.9)'; g.lineWidth = 6; g.stroke();
+    // small vertical signs
+    [[70, 720, PINK, '랑'], [960, 700, VIO, '사']].forEach(([x, y, c, ch]) => { g.fillStyle = 'rgba(10,4,30,.95)'; A.rrect(g, x - 34, y - 8, 90, 130, 12); g.fill(); g.strokeStyle = c; g.lineWidth = 4; g.stroke(); });
+    // street
+    g.fillStyle = lin(g, 0, STREET, 0, H, [[0, '#1c0f3f'], [.3, '#0e0824'], [1, '#05030f']]); g.fillRect(0, STREET, W, H - STREET);
+    g.fillStyle = 'rgba(255,255,255,.05)'; g.fillRect(0, STREET, W, 3);
+  });
+}
+function seoulSigns(g, t, a = 1) {
+  const fl = k => .78 + .22 * Math.sin(t * 31 + k * 5) * (hash(Math.floor(t * 14) + k) > .82 ? 1.6 : .25);
+  neonText(g, '사랑', 62, 448, 250, 200, PINK, fl(1), 1.03);
+  neonText(g, '안녕', 690, 470, 158, 150, CYAN, fl(2), 1.04);
+  neonText(g, '랑', 82, 734, 50, 90, PINK, fl(3), 1); neonText(g, '사', 972, 714, 50, 90, VIO, fl(4), 1);
+}
+function umbrella(ctx, cx, cy, t) {
+  const rx = 320, ry = 130;
+  ctx.save(); ctx.translate(cx, cy);
+  // pole
+  ctx.strokeStyle = '#2a1a4a'; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(0, -ry); ctx.lineTo(0, 150); ctx.stroke();
+  // canopy
+  const scallop = () => { ctx.beginPath(); ctx.moveTo(-rx, 0); ctx.ellipse(0, 0, rx, ry, 0, Math.PI, TAU); for (let i = 5; i >= 0; i--) { const x0 = -rx + (i + 1) * rx * 2 / 6, x1 = x0 - rx * 2 / 6; ctx.quadraticCurveTo((x0 + x1) / 2, 34, x1, 0); } ctx.closePath(); };
+  scallop(); ctx.fillStyle = lin(ctx, -rx, -ry, rx, ry, [[0, 'rgba(255,140,205,.85)'], [.5, 'rgba(160,110,255,.8)'], [1, 'rgba(80,190,255,.85)']]); ctx.fill();
+  ctx.save(); scallop(); ctx.clip();
+  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 3; for (let i = 0; i <= 6; i++) { const x1 = -rx + i * rx * 2 / 6; ctx.beginPath(); ctx.moveTo(0, -ry); ctx.quadraticCurveTo(x1 * .7, -ry * .3, x1, 4); ctx.stroke(); }
+  ctx.fillStyle = lin(ctx, 0, -ry, 0, 0, [[0, 'rgba(255,255,255,.55)'], [1, 'rgba(255,255,255,0)']]); ctx.beginPath(); ctx.ellipse(-80, -70, 170, 44, -.15, 0, TAU); ctx.fill();
+  ctx.restore();
+  scallop(); ctx.strokeStyle = 'rgba(255,240,250,.9)'; ctx.lineWidth = 4; ctx.shadowColor = PINK; ctx.shadowBlur = 24; ctx.stroke(); ctx.shadowBlur = 0;
+  // rain splashes on canopy
+  ctx.strokeStyle = 'rgba(220,240,255,.8)'; ctx.lineWidth = 2.5;
+  for (let i = 0; i < 16; i++) { const k = (t * 4 + hash(i)) % 1, x = (hash(i * 5) - .5) * rx * 1.5, y = -ry * Math.sqrt(Math.max(0, 1 - (x / rx) ** 2)) * .96; ctx.globalAlpha = (1 - k); ctx.beginPath(); ctx.arc(x, y, 3 + k * 14, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }
+  ctx.globalAlpha = 1; ctx.restore();
+}
+function couple(ctx, t, mirror) {
+  ctx.save(); ctx.translate(540, 0);
+  const rim = lin(ctx, -140, 0, 140, 0, [[0, 'rgba(255,110,190,.95)'], [.5, 'rgba(255,255,255,.2)'], [1, 'rgba(90,220,255,.95)']]);
+  const sway = Math.sin(t * 2.2) * 2;
+  const body = (x0, x1, top, w, col, headR, hx, hy, hair, ponytail) => {
+    ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x0, 1200); ctx.bezierCurveTo(x0 - 6, top + 90, x0 + 4, top + 10, x0 + 40, top); ctx.lineTo(x1 - 40, top); ctx.bezierCurveTo(x1 - 4, top + 10, x1 + 6, top + 90, x1, 1200); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = rim; ctx.lineWidth = 4; ctx.stroke();
+    ctx.fillStyle = col; ctx.fillRect(hx - 15, top - 22, 30, 32);
+    ctx.fillStyle = hair; ctx.beginPath(); ctx.arc(hx, hy, headR, 0, TAU); ctx.fill(); ctx.strokeStyle = rim; ctx.lineWidth = 3; ctx.stroke();
+    if (ponytail) { ctx.beginPath(); ctx.moveTo(hx - headR * .6, hy - headR * .6); ctx.bezierCurveTo(hx - headR * 2.2, hy - headR * .4, hx - headR * 2.0, hy + headR * 2.2, hx - headR * .8, hy + headR * 2.4); ctx.bezierCurveTo(hx - headR * 1.2, hy + headR * 1.0, hx - headR * 1.2, hy, hx - headR * .4, hy + headR * .3); ctx.fill(); ctx.stroke(); }
+    V.glow(ctx, hx + 8, hy - headR * .6, headR * 1.4, 'rgba(255,255,255,.35)', .5);
+  };
+  body(-160, -20, 980, 140, lin(ctx, 0, 980, 0, 1200, [[0, '#f3a8d8'], [1, '#6a4a9a']]), 42, -92 + sway * .3, 928, '#1a0d2a', true);
+  body(-10, 150, 950, 160, lin(ctx, 0, 950, 0, 1200, [[0, '#2a3a7a'], [1, '#0d1030']]), 46, 62 + sway * .3, 902, '#0b0a18', false);
+  // arm to pole
+  ctx.strokeStyle = '#1c2456'; ctx.lineCap = 'round'; ctx.lineWidth = 34; ctx.beginPath(); ctx.moveTo(30, 1000); ctx.quadraticCurveTo(10, 940, 0, 890); ctx.stroke();
+  ctx.strokeStyle = rim; ctx.lineWidth = 3; ctx.stroke();
+  ctx.fillStyle = '#e9b59c'; ctx.beginPath(); ctx.arc(0, 884, 16, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+function fingerHeart(ctx, x, y, t0, t) {
+  const u = t - t0; if (u < 0) return;
+  const pop = ease.outElastic(clamp(u / .42)), s = pop;
+  ctx.save(); ctx.translate(x, y);
+  // hand (rises in)
+  const hy = (1 - eo(u / .16)) * 160;
+  ctx.save(); ctx.translate(0, hy);
+  const sk = lin(ctx, -50, -80, 60, 80, [[0, '#ffdcc8'], [1, '#e7a58c']]);
+  ctx.fillStyle = sk; ctx.strokeStyle = 'rgba(120,50,60,.5)'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.ellipse(0, 80, 66, 84, .1, 0, TAU); ctx.fill(); ctx.stroke();
+  ctx.lineCap = 'round';
+  const cap = (x0, y0, x1, y1, w) => { ctx.strokeStyle = 'rgba(110,40,50,.5)'; ctx.lineWidth = w + 5; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.strokeStyle = sk; ctx.lineWidth = w; ctx.stroke(); };
+  cap(-10, 40, 40, -74, 34); cap(26, 60, -14, -70, 32);  // index + thumb crossing
+  ctx.fillStyle = '#ff9fc4'; ctx.beginPath(); ctx.ellipse(41, -78, 12, 15, .4, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.ellipse(-14, -74, 12, 15, -.3, 0, TAU); ctx.fill();
+  for (let i = 0; i < 3; i++) { ctx.fillStyle = 'rgba(200,120,110,.55)'; ctx.beginPath(); ctx.ellipse(-30 + i * 24, 40, 12, 20, 0, 0, TAU); ctx.fill(); }
+  ctx.restore();
+  // big glossy heart
+  ctx.translate(-4, -140 + hy * .4); ctx.scale(s * 1.9, s * 1.9);
+  ctx.rotate(Math.sin(u * 8) * .06 * (1 - clamp(u / .6)));
+  const hp = () => { ctx.beginPath(); ctx.moveTo(0, 46); ctx.bezierCurveTo(-78, -6, -38, -62, 0, -22); ctx.bezierCurveTo(38, -62, 78, -6, 0, 46); ctx.closePath(); };
+  V.glow(ctx, 0, 0, 120, 'rgba(255,80,170,.9)', .9);
+  hp(); ctx.fillStyle = lin(ctx, 0, -50, 0, 50, [[0, '#ff9ad0'], [.5, '#ff3f9c'], [1, '#c0106a']]); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 2.5; ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.beginPath(); ctx.ellipse(-30, -26, 15, 7, -.7, 0, TAU); ctx.fill();
+  ctx.restore();
+  // shockwave ring + tiny hearts + sparkles
+  const k = clamp(u / .5);
+  ctx.save(); ctx.translate(x, y - 140); V.ring(ctx, 0, 0, 30 + k * 260, 10 * (1 - k) + 1, 'rgba(255,170,220,.9)', 1 - k);
+  add(ctx, () => { for (let i = 0; i < 10; i++) { const a = i / 10 * TAU + .3, d = 60 + eo(k) * (150 + hash(i) * 90); const sz = (10 + hash(i + 4) * 14) * (1 - k * .7); ctx.globalAlpha = 1 - k; ctx.fillStyle = i % 2 ? '#ffb2d8' : '#9ff0ff'; if (i % 3 === 0) V.sparkle(ctx, Math.cos(a) * d, Math.sin(a) * d, sz * 1.4, '#fff', a); else { ctx.save(); ctx.translate(Math.cos(a) * d, Math.sin(a) * d); ctx.scale(sz / 46, sz / 46); ctx.beginPath(); ctx.moveTo(0, 46); ctx.bezierCurveTo(-78, -6, -38, -62, 0, -22); ctx.bezierCurveTo(38, -62, 78, -6, 0, 46); ctx.fill(); ctx.restore(); } } });
+  ctx.restore();
+}
+function neonTitle(ctx, t, str, t0, cy, col1, col2) {
+  const u = t - t0; if (u < 0) return;
+  const fl = u < .16 ? (hash(Math.floor(u * 60)) > .35 ? 1 : .25) : 1;
+  const s = 1 + .08 * (1 - eo(u / .18));
+  const fs = fitSize(ctx, str, 122, 860);
+  ctx.save(); ctx.translate(540, cy); ctx.scale(s, s); ctx.globalAlpha = clamp(u / .05) * fl;
+  ctx.fillStyle = 'rgba(10,4,34,.72)'; A.rrect(ctx, -470, -fs * .85, 940, fs * 1.7, 40); ctx.fill();
+  ctx.strokeStyle = col2; ctx.lineWidth = 6; ctx.shadowColor = col2; ctx.shadowBlur = 34; ctx.stroke(); ctx.shadowBlur = 0;
+  ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.font = `900 ${fs}px ${FONT}`; ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+  ctx.shadowColor = col1; ctx.shadowBlur = 40; ctx.lineWidth = fs * .1; ctx.strokeStyle = col1; ctx.strokeText(str, 0, 6); ctx.shadowBlur = 14; ctx.strokeText(str, 0, 6); ctx.shadowBlur = 0;
+  ctx.fillStyle = lin(ctx, 0, -fs * .5, 0, fs * .5, [[0, '#ffffff'], [1, '#ffd6f0']]); ctx.fillText(str, 0, 6);
+  ctx.restore();
+}
+function segKor(ctx, t) {
+  const u = t - T_KOR;
+  const z = 1 + .05 * eo(u / .6);
+  ctx.save(); ctx.translate(540, 900); ctx.scale(z, z); ctx.translate(-540, -900);
+  ctx.drawImage(seoulCity(), 0, 0);
+  seoulSigns(ctx, t);
+  // sign reflections on wet street: mirrored city + neon, ripple strips
+  const city = A.layer('v4_seoulref', W, 1010, g => { g.drawImage(seoulCity(), 0, 0, W, 1010, 0, 0, W, 1010); seoulSigns(g, 14.2); });
+  for (let i = 0; i < 40; i++) {
+    const y = STREET + i * 20, wob = Math.sin(i * .8 + t * 4) * (2 + i * .5);
+    ctx.save(); ctx.globalAlpha = .5 * (1 - i / 40) ** 1.3; ctx.beginPath(); ctx.rect(0, y, W, 20); ctx.clip(); ctx.translate(wob, 0); ctx.transform(1, 0, 0, -1, 0, 2 * STREET); ctx.drawImage(city, 0, 0); ctx.restore();
+  }
+  // wet sheen streaks
+  add(ctx, () => { for (let i = 0; i < 30; i++) { const x = hash(i * 2.2) * 1080, y = STREET + 20 + hash(i * 5) * 700, w = 40 + hash(i) * 200; ctx.globalAlpha = .1 + .1 * Math.sin(t * 5 + i); ctx.fillStyle = i % 2 ? PINK : CYAN; ctx.fillRect(x, y, w, 2); } });
+  ctx.restore();
+  // couple + reflection
+  const cyc = 900;
+  ctx.save(); ctx.globalAlpha = .28; ctx.translate(0, 2 * 1190); ctx.scale(1, -1); couple(ctx, t); ctx.restore();
+  couple(ctx, t); umbrella(ctx, 540, cyc, t);
+  // pink/cyan bokeh, depth layers
+  add(ctx, () => { for (let i = 0; i < 26; i++) { const near = i > 16, r = (near ? 70 : 34) + hash(i * 3) * (near ? 90 : 50), x = (hash(i) * 1300 - 110 + Math.sin(t * .7 + i) * (near ? 40 : 14) + (near ? -u * 120 : u * 30)), y = 300 + hash(i * 9) * 1200 + Math.cos(t * .6 + i) * 20; ctx.globalAlpha = near ? .16 : .24; ctx.fillStyle = rad(ctx, x, y, r * .3, r, [[0, i % 3 === 0 ? 'rgba(90,230,255,.9)' : 'rgba(255,110,190,.9)'], [.85, 'rgba(255,110,190,.25)'], [1, 'rgba(0,0,0,0)']]); ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); } });
+  // rain
+  ctx.save(); ctx.lineCap = 'round';
+  for (let i = 0; i < 170; i++) {
+    const sp = 2400 + hash(i) * 1400, x0 = hash(i * 1.7) * 1300 - 100, y = ((hash(i * 4.1) * 2200 + t * sp) % 2200) - 150, l = 70 + hash(i + 1) * 90, near = hash(i + 7) > .8;
+    ctx.strokeStyle = `rgba(210,230,255,${near ? .42 : .22})`; ctx.lineWidth = near ? 3 : 1.6; ctx.beginPath(); ctx.moveTo(x0 - y * .1, y); ctx.lineTo(x0 - y * .1 - l * .1, y + l); ctx.stroke();
+  }
+  ctx.restore();
+  // ground splash rings
+  for (let i = 0; i < 14; i++) { const k = (t * 2.2 + hash(i)) % 1, x = hash(i * 3) * 1080, y = STREET + 60 + hash(i * 6) * 800; ctx.strokeStyle = `rgba(220,240,255,${.5 * (1 - k)})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(x, y, 8 + k * 46, 3 + k * 14, 0, 0, TAU); ctx.stroke(); }
+  fingerHeart(ctx, 905, 950, 14.20, t);
+  neonTitle(ctx, t, 'סדרות קוריאניות', 14.04, 300, PINK, CYAN);
+  // vignette
+  ctx.fillStyle = rad(ctx, 540, 900, 520, 1300, [[0, 'rgba(5,2,20,0)'], [1, 'rgba(5,2,20,.6)']]); ctx.fillRect(0, 0, W, H);
+  V.flash(ctx, t, 14.20, .12, '#ffb0e0', .3);
+}
+//@@PART_D
+
 //@@REGISTER
 A.scene({ name: 'v4_series', start: S0, end: T_LIB, draw(ctx, s) {
   const t = s.t;
   let seg = segTurk;
+  const wipe = t >= T_KOR && t < T_KOR + .14 ? (t - T_KOR) / .14 : -1;
   if (typeof segKor !== 'undefined' && t >= T_KOR) seg = segKor;
   if (typeof segAni !== 'undefined' && t >= T_ANI) seg = segAni;
   if (typeof segMore !== 'undefined' && t >= T_MORE) seg = segMore;
+  const run = (c, tt) => {
+    if (wipe >= 0) {
+      segTurk(c, tt);
+      const e = lerp(1350, -350, eo(wipe));
+      c.save(); c.beginPath(); c.moveTo(e + 170, 0); c.lineTo(W + 10, 0); c.lineTo(W + 10, H); c.lineTo(e - 170, H); c.closePath(); c.clip(); seg(c, tt); c.restore();
+      add(c, () => { c.fillStyle = 'rgba(255,120,200,.85)'; c.beginPath(); c.moveTo(e + 170, 0); c.lineTo(e + 215, 0); c.lineTo(e - 125, H); c.lineTo(e - 170, H); c.fill(); c.fillStyle = 'rgba(120,235,255,.9)'; c.beginPath(); c.moveTo(e + 150, 0); c.lineTo(e + 165, 0); c.lineTo(e - 185, H); c.lineTo(e - 190, H); c.fill(); });
+    } else seg(c, tt);
+  };
   // whip-in from the right
   const wu = clamp((t - S0) / .30);
   if (wu < 1) {
     const p = eo(wu), dx = (1 - p) * 1180;
     ctx.save(); ctx.beginPath(); ctx.rect(dx, 0, W, H); ctx.clip();
     ctx.transform(1, 0, -(1 - p) * .18, 1, dx + (1 - p) * 90, 0);
-    seg(ctx, t); ctx.restore();
+    run(ctx, t); ctx.restore();
     // leading edge light streak + speed lines
     add(ctx, () => { const g = lin(ctx, dx - 160, 0, dx + 20, 0, [[0, 'rgba(255,200,120,0)'], [1, `rgba(255,220,160,${.75 * (1 - p)})`]]); ctx.fillStyle = g; ctx.fillRect(dx - 160, 0, 180, H);
       for (let i = 0; i < 22; i++) { const y = hash(i * 3.3) * H, l = 200 + hash(i) * 500; ctx.fillStyle = `rgba(255,230,190,${.3 * (1 - p)})`; ctx.fillRect(dx - l * .3, y, l, 3 + hash(i + 2) * 6); } });
-  } else seg(ctx, t);
+  } else run(ctx, t);
 } });
 })();
