@@ -86,8 +86,8 @@ const KIT = {
   red: { shirt: '#E5322D', shirt2: '#A81616', short: '#F4F4F8', sock: '#E5322D', skin: '#B5764A', hair: '#140e0b', shoe: '#F4F7FF', glove: '#fff' },
   bb: { shirt: '#3D7BFF', shirt2: '#1C46C8', short: '#2249C9', sock: '#F4F7FF', skin: '#7A4A2E', hair: '#120c0a', shoe: '#FFC24A', glove: '#fff' },
   tn: { shirt: '#F4F7FF', shirt2: '#B7C4E8', short: '#1a2352', sock: '#F4F7FF', skin: '#E8A57C', hair: '#8a5a1a', shoe: '#38D9F5', glove: '#fff' },
-  bx1: { shirt: '#E8A57C', shirt2: '#E8A57C', short: '#FFC24A', sock: '#F4F7FF', skin: '#E8A57C', hair: '#20120c', shoe: '#E5322D', glove: '#E5322D' },
-  bx2: { shirt: '#9A6440', shirt2: '#9A6440', short: '#3D7BFF', sock: '#F4F7FF', skin: '#9A6440', hair: '#0c0806', shoe: '#3D7BFF', glove: '#3D7BFF' },
+  bx1: { shirt: '#F4F7FF', shirt2: '#C9D3EE', short: '#FFC24A', sock: '#F4F7FF', skin: '#E8A57C', hair: '#20120c', shoe: '#E5322D', glove: '#E5322D' },
+  bx2: { shirt: '#20232E', shirt2: '#0E1018', short: '#3D7BFF', sock: '#F4F7FF', skin: '#9A6440', hair: '#0c0806', shoe: '#3D7BFF', glove: '#3D7BFF' },
 };
 const POSE = {
   volA: [-10, -238, -4, -180, 0, 0, 55, -150, 105, -178, -55, -140, -100, -105, -30, 85, -105, 45, 15, 95, 8, 200],
@@ -117,12 +117,12 @@ function bodyParts(c, P, K, flat, o) {
   const hd = pt(0), nk = pt(1), hp = pt(2), e1 = pt(3), h1 = pt(4), e2 = pt(5), h2 = pt(6), k1 = pt(7), f1 = pt(8), k2 = pt(9), f2 = pt(10);
   const sh = [lerp(nk[0], hp[0], .1), lerp(nk[1], hp[1], .1)];
   const arm = (e, h, sleeve) => {
-    limb(c, sh, e, 28, 21, 0, 1, F(sleeve ? K.shirt : K.skin)); limb(c, e, h, 20, 15, 0, 1, F(K.skin));
-    if (o.glove) { c.fillStyle = F(K.glove); c.beginPath(); c.arc(h[0] + (h[0] - e[0]) * .12, h[1] + (h[1] - e[1]) * .12, 30, 0, TAU); c.fill(); limb(c, e, h, 27, 26, .62, 1, F(K.glove)); }
+    limb(c, sh, e, 40, 27, 0, 1, F(sleeve && !o.glove ? K.shirt : K.skin)); limb(c, e, h, 25, 18, 0, 1, F(K.skin));
+    if (o.glove) { c.fillStyle = F(K.glove); c.beginPath(); c.arc(h[0] + (h[0] - e[0]) * .12, h[1] + (h[1] - e[1]) * .12, 34, 0, TAU); c.fill(); limb(c, e, h, 27, 26, .62, 1, F(K.glove)); }
   };
   const leg = (k, f) => {
-    limb(c, hp, k, 50, 34, 0, 1, F(K.short)); limb(c, hp, k, 50, 34, .55, 1, F(K.skin)); limb(c, k, f, 30, 20, 0, 1, F(K.skin));
-    if (o.sock !== false) limb(c, k, f, 30, 20, .45, .9, F(K.sock));
+    limb(c, hp, k, 66, 42, 0, 1, F(K.short)); limb(c, hp, k, 66, 42, .55, 1, F(K.skin)); limb(c, k, f, 38, 24, 0, 1, F(K.skin));
+    if (o.sock !== false) limb(c, k, f, 38, 24, .45, .9, F(K.sock));
     const d = [f[0] - k[0], f[1] - k[1]], l = Math.hypot(d[0], d[1]) || 1, ax = f[0] + d[0] / l * 4, ay = f[1] + d[1] / l * 4, dir = [-d[1] / l, d[0] / l], sd = dir[0] >= 0 ? 1 : -1;
     limb(c, [ax, ay], [ax + dir[0] * sd * 46, ay + dir[1] * sd * 46], 24, 17, 0, 1, F(K.shoe));
   };
@@ -130,18 +130,18 @@ function bodyParts(c, P, K, flat, o) {
   arm(e2, h2, true); leg(k2, f2);
   if (!flat && o.dim) { c.globalCompositeOperation = 'source-atop'; c.fillStyle = 'rgba(4,8,30,.5)'; c.fillRect(-700, -1000, 1400, 1400); c.globalCompositeOperation = 'source-over'; }
   // torso
-  limb(c, nk, hp, 64, 48, 0, 1, F(K.shirt)); limb(c, nk, hp, 64, 48, .55, 1, F(K.shirt2));
+  limb(c, nk, hp, 92, 58, 0, 1, F(K.shirt)); limb(c, nk, hp, 92, 58, .55, 1, F(K.shirt2));
   if (o.stripe && !flat) { c.fillStyle = o.stripe; c.beginPath(); c.moveTo(nk[0] - 30, nk[1] + 40); c.lineTo(nk[0] + 30, nk[1] + 28); c.lineTo(nk[0] + 30, nk[1] + 48); c.lineTo(nk[0] - 30, nk[1] + 60); c.fill(); }
-  limb(c, nk, [lerp(nk[0], hd[0], 1), lerp(nk[1], hd[1], 1)], 22, 20, 0, 1, F(K.skin));
+  limb(c, nk, hd, 28, 26, 0, 1, F(K.skin));
   // head
-  c.fillStyle = F(K.skin); c.beginPath(); c.ellipse(hd[0], hd[1], 27, 32, 0, 0, TAU); c.fill();
-  c.fillStyle = F(K.hair); c.beginPath(); c.ellipse(hd[0] - 4, hd[1] - 9, 29, 26, -.15, Math.PI * .95, TAU * 1.02); c.fill();
+  c.fillStyle = F(K.skin); c.beginPath(); c.ellipse(hd[0], hd[1], 31, 37, 0, 0, TAU); c.fill();
+  c.fillStyle = F(K.hair); c.beginPath(); c.ellipse(hd[0] - 4, hd[1] - 10, 33, 30, -.15, Math.PI * .95, TAU * 1.02); c.fill();
   if (o.band) { c.fillStyle = F(o.band); c.fillRect(hd[0] - 28, hd[1] - 12, 56, 8); }
   leg(k1, f1); arm(e1, h1, true);
 }
 // draw a figure at (x,y) (hip position), scale s, flip = -1 mirrors; rim lights from key (world dir) cool, and warm from the other side
 function figure(ctx, P, K, x, y, s, flip = 1, o = {}) {
-  const CW = 1400, CH = 1500, OX = 700, OY = 1000;
+  const CW = 1100, CH = 1250, OX = 550, OY = 900;
   const tc = tmp('fig', CW, CH), sc = tmp('sil', CW, CH), rc = tmp('rim', CW, CH), g = tc.getContext('2d'), gs = sc.getContext('2d'), gr = rc.getContext('2d');
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, CW, CH); g.globalCompositeOperation = 'source-over'; g.setTransform(s, 0, 0, s, OX, OY); bodyParts(g, P, K, false, o);
   gs.setTransform(1, 0, 0, 1, 0, 0); gs.clearRect(0, 0, CW, CH); gs.setTransform(s, 0, 0, s, OX, OY); bodyParts(gs, P, K, true, o);
@@ -163,6 +163,10 @@ const feet = (P, s, y) => y + Math.max(P[15], P[21]) * s;
 
 // ================================================================ MONTAGE SHOTS (k = seconds since the beat start, 0..0.3)
 // slow-mo time warp around the impact instant ti
+function bgWord(ctx, y) {
+  if (!CURW) return; const { i, k } = CURW, [txt, dir, size] = WORDS[i];
+  slam(ctx, txt, 540, y, size * 1.12, k - .01, { dir, grad: WCOL[i], stroke: WSTK[i], glowCol: 'rgba(0,0,0,.55)', rot: i % 2 ? .05 : -.05, sw: .17, back: 'rgba(255,255,255,.9)' });
+}
 const warp = (k, ti) => k < ti - .06 ? k : k < ti + .06 ? ti - .06 + (k - ti + .06) * .28 : ti - .06 + .034 + (k - ti - .06) * 1.35;
 function cam(ctx, k, o) {
   const z = lerp(o.z0 ?? 1.04, o.z1 ?? 1.24, eo(k / .3)) * (1 + (o.pop || 0) * Math.exp(-Math.max(0, k - o.ti) * 18) * (k > o.ti ? 1 : 0));
@@ -189,7 +193,7 @@ const bgFootball = () => A.layer('bgFb', W, H, g => {
 function shotFootball(ctx, k, t) {
   const ti = .17, kw = warp(k, ti);
   ctx.save(); cam(ctx, k, { z0: 1.02, z1: 1.22, cx: 500, cy: 760, ti, shake: 1.4, rot0: -.03, rot1: .02, pop: .04 });
-  ctx.drawImage(bgFootball(), 0, 0);
+  ctx.drawImage(bgFootball(), 0, 0); bgWord(ctx, 520);
   // floodlights + flares
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
   for (const [x, y] of [[190, 200], [880, 170]]) { lightBank(ctx, x, y, 170, 120, '#fff', .95); }
@@ -204,7 +208,7 @@ function shotFootball(ctx, k, t) {
   const m = eio(kw / ti), pB = mixArr(POSE.volA, POSE.volB, m), pose = kw > ti ? mixArr(POSE.volB, POSE.volC, eo((kw - ti) / .1)) : pB;
   const jump = -60 * Math.sin(cl(kw / .27) * Math.PI) - 18, FX = 400, FY = 900 + jump;
   // motion streak behind striker
-  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .28; ctx.fillStyle = LIN(ctx, FX - 380, 0, FX, 0, [[0, 'rgba(90,209,255,0)'], [1, 'rgba(90,209,255,1)']]); ctx.fillRect(FX - 380, FY - 380, 380, 520); ctx.restore();
+  glow(ctx, FX, FY - 150, 520, '#5AD1FF', .2);
   figure(ctx, pose, KIT.yb, FX, FY, 2.0, 1, { band: '#1743C9', stripe: '#1743C9' });
   // ball
   const s = 2.0, C = [FX + 175 * s, FY - 112 * s];
@@ -231,7 +235,7 @@ const bgArena = () => A.layer('bgBb', W, H, g => {
 function shotDunk(ctx, k, t) {
   const ti = .15, kw = warp(k, ti);
   ctx.save(); cam(ctx, k, { z0: 1.03, z1: 1.2, cx: 560, cy: 640, ti, shake: 1.5, rot0: .025, rot1: -.02, pop: .05 });
-  ctx.drawImage(bgArena(), 0, 0);
+  ctx.drawImage(bgArena(), 0, 0); bgWord(ctx, 560);
   for (let i = 0; i < 3; i++) V.beams(ctx, 200 + i * 340, 40, t + i, i === 1 ? 'rgba(255,180,90,1)' : 'rgba(150,170,255,1)', 3, 1500, .35, .14);
   const R = rng(9); ctx.save(); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 26; i++) { const x = R() * W, y = 400 + R() * 500, ph = R() * 4; const a = Math.max(0, Math.sin(t * 22 + ph * 9)); if (a > .8) { ctx.globalAlpha = a; ctx.fillStyle = '#fff'; V.sparkle(ctx, x, y, 26 + R() * 20, '#fff', 0, .9); } } ctx.restore();
   // hoop (rim shake after impact)
@@ -249,7 +253,7 @@ function shotDunk(ctx, k, t) {
   ctx.restore();
   // player
   const m = eio(kw / ti), pose = mixArr(POSE.dunkA, POSE.dunkB, m), FX = 430, FY = 930 - 70 * Math.sin(cl(kw / .3) * Math.PI * .9) + 10, s = 1.9;
-  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .22; ctx.fillStyle = LIN(ctx, 0, FY - 700, 0, FY + 300, [[0, 'rgba(255,255,255,0)'], [1, 'rgba(255,190,110,1)']]); ctx.fillRect(FX - 200, FY - 700, 360, 1000); ctx.restore();
+  glow(ctx, FX + 40, FY - 200, 420, '#FFB05A', .22);
   figure(ctx, pose, KIT.bb, FX, FY, s, 1, { band: '#fff', stripe: '#fff', rim1: '#9FD4FF', rim2: '#FFB05A', lightX: -1 });
   // ball
   const hx = FX + pose[8] * s, hy = FY + pose[9] * s;
@@ -275,7 +279,7 @@ const bgTennis = () => A.layer('bgTn', W, H, g => {
 function shotTennis(ctx, k, t) {
   const ti = .16, kw = warp(k, ti);
   ctx.save(); cam(ctx, k, { z0: 1.02, z1: 1.24, cx: 570, cy: 620, ti, shake: 1.1, rot0: -.02, rot1: .03, pop: .05 });
-  ctx.drawImage(bgTennis(), 0, 0);
+  ctx.drawImage(bgTennis(), 0, 0); bgWord(ctx, 560);
   for (const [x, y] of [[170, 190], [910, 150]]) lightBank(ctx, x, y, 170, 120, '#fff', .95);
   V.beams(ctx, 170, 210, t, 'rgba(170,205,255,1)', 4, 1800, .5, .10); V.beams(ctx, 910, 170, t, 'rgba(170,205,255,1)', 4, 1800, .5, .10);
   const m = eio(kw / ti), pose = mixArr(POSE.serA, POSE.serB, m), FX = 470, FY = 1010 - 24 * Math.sin(cl(kw / .3) * Math.PI), s = 1.9;
@@ -319,20 +323,20 @@ const bgRing = () => A.layer('bgBx', W, H, g => {
 });
 function shotBox(ctx, k, t) {
   const ti = .15, kw = warp(k, ti);
-  ctx.save(); cam(ctx, k, { z0: 1.03, z1: 1.26, cx: 620, cy: 640, ti, shake: 2.2, rot0: .03, rot1: -.015, pop: .07 });
-  ctx.drawImage(bgRing(), 0, 0);
+  ctx.save(); cam(ctx, k, { z0: 1.03, z1: 1.26, cx: 640, cy: 660, ti, shake: 2.2, rot0: .03, rot1: -.015, pop: .07 });
+  ctx.drawImage(bgRing(), 0, 0); bgWord(ctx, 470);
   V.beams(ctx, 540, 0, t, 'rgba(255,200,150,1)', 3, 1500, .5, .18); glow(ctx, 540, 520, 700, '#FF8A4A', .16);
   // haze
   ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .1; for (let i = 0; i < 6; i++) { glow(ctx, 200 + i * 160 + Math.sin(t * 2 + i) * 40, 850 + Math.cos(t + i) * 60, 300, '#ffb98a', 1); } ctx.restore();
   const s = 1.9, m = eio(kw / ti);
   const dPose = kw > ti ? mixArr(POSE.bxDa, POSE.bxDb, eo((kw - ti) / .1)) : POSE.bxDa;
   const dx = kw > ti ? 26 * eo((kw - ti) / .2) : 0;
-  figure(ctx, dPose, KIT.bx2, 655 + dx, 935, s, -1, { glove: true, dim: true, rim1: '#FFB07A', rim2: '#7FB6FF', band: '#3D7BFF', sock: false });
+  figure(ctx, dPose, KIT.bx2, 740 + dx, 900, s, -1, { glove: true, dim: true, rim1: '#FFB07A', rim2: '#7FB6FF', band: '#3D7BFF', sock: false });
   const aPose = mixArr(POSE.bxA, POSE.bxB, m);
-  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .3; ctx.fillStyle = LIN(ctx, 330 - 300, 0, 330, 0, [[0, 'rgba(255,120,60,0)'], [1, 'rgba(255,120,60,1)']]); ctx.fillRect(30, 500, 320, 500); ctx.restore();
-  figure(ctx, aPose, KIT.bx1, 330 + 40 * m, 935, s, 1, { glove: true, rim1: '#FFB07A', rim2: '#7FB6FF', sock: false });
+  glow(ctx, 380, 700, 500, '#FF7A3C', .22);
+  figure(ctx, aPose, KIT.bx1, 300 + 40 * m, 900, s, 1, { glove: true, rim1: '#FFB07A', rim2: '#7FB6FF', sock: false });
   // impact
-  const IX = 720 + dx * .5, IY = 590;
+  const IX = 790 + dx * .5, IY = 560;
   burst(ctx, IX, IY, (k - ti) / .15, '#FFC078', 640, 22, 12);
   if (k > ti) { const R = rng(31), u = (k - ti); ctx.save(); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 22; i++) { const a = -.6 + R() * 1.6 + (R() < .5 ? 0 : 0), d = u * (800 + R() * 1400); ctx.globalAlpha = Math.max(0, 1 - u / .14); ctx.fillStyle = '#cfeaff'; ctx.beginPath(); ctx.ellipse(IX + Math.cos(a) * d, IY - 30 + Math.sin(a) * d * .8 + u * u * 4000, 7, 12, a, 0, TAU); ctx.fill(); } ctx.restore(); }
   ring(ctx, IX, IY, 40 + (k - ti) * 3600, 20, 'rgba(255,230,190,.9)', k > ti ? Math.max(0, 1 - (k - ti) / .1) : 0);
@@ -340,18 +344,17 @@ function shotBox(ctx, k, t) {
 }
 
 // ================================================================ MONTAGE controller
-const WORDS = [['ספורט', 'rtl', 250], ['SPORT', 'ltr', 218], ['ספורט', 'rtl', 250], ['SPORT', 'ltr', 218]];
+let CURW = null;
+const WORDS = [['ספורט', 'rtl', 215], ['SPORT', 'ltr', 184], ['ספורט', 'rtl', 215], ['SPORT', 'ltr', 184]];
 const WCOL = [[[0, '#FFF3C4'], [.5, '#FFC24A'], [1, '#E48A12']], [[0, '#FFFFFF'], [.5, '#BFE3FF'], [1, '#5AA8FF']], [[0, '#F4FFB0'], [.5, '#B8F03A'], [1, '#4FA80F']], [[0, '#FFFFFF'], [.5, '#FFB37A'], [1, '#FF4A2A']]];
 const WSTK = ['#3A1A00', '#06124a', '#0b3a10', '#4a0a08'];
 function montage(ctx, t) {
   const B = LT.b; let i = B.findIndex((b, j) => j < 4 && t >= b && t < B[j + 1]); if (i < 0) return;
-  const k = t - B[i], fn = [shotFootball, shotDunk, shotTennis, shotBox][i];
+  const k = t - B[i]; CURW = { i, k }; const fn = [shotFootball, shotDunk, shotTennis, shotBox][i];
   fn(ctx, k, t);
   // cinematic grade: vignette + bottom shade for word legibility
   ctx.save(); ctx.fillStyle = LIN(ctx, 0, 1000, 0, 1240, [[0, 'rgba(2,4,20,0)'], [1, 'rgba(2,4,20,.6)']]); ctx.fillRect(0, 1000, W, 300); ctx.restore();
   speedLines(ctx, 540, 800, t, 34, i === 3 ? '#ffd2a8' : '#cfe4ff', 380, 1300, .32, 6);
-  const [txt, dir, size] = WORDS[i];
-  slam(ctx, txt, 540, 1042, size, k - .03, { dir, grad: WCOL[i], stroke: WSTK[i], glowCol: 'rgba(0,0,0,.55)', rot: i % 2 ? .05 : -.05, sw: .17, back: 'rgba(255,255,255,.9)' });
   // cut flash + chroma kick on the first frames of each beat
   V.flash(ctx, t, B[i], .07, '#ffffff', i === 0 ? .0 : .9);
   if (k < .09) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k / .09) * .5; ctx.fillStyle = 'rgba(255,60,90,1)'; ctx.fillRect(0, 0, 14, H); ctx.fillStyle = 'rgba(60,170,255,1)'; ctx.fillRect(W - 14, 0, 14, H); ctx.restore(); }
@@ -368,28 +371,28 @@ function badge(ctx, cx, cy, R, o = {}) {
   const sw = o.shine ?? 0; ctx.save(); ctx.translate(cx, cy); ctx.scale(R / 100, R / 100);
   glow(ctx, 0, 0, 200, '#3D7BFF', .5);
   // orbit swooshes behind
-  ribbon(ctx, 0, 0, 132, 44, -.5, Math.PI * 1.02, Math.PI * 2.02, 26, LIN(ctx, -140, 0, 140, 0, [[0, '#FF2D3D'], [1, '#FF7A85']]));
+  ribbon(ctx, 0, 0, 132, 44, -.5, Math.PI * 1.02, Math.PI * 2.02, 18, LIN(ctx, -140, 0, 140, 0, [[0, '#FF2D3D'], [1, '#FF7A85']]));
   ctx.save(); ctx.shadowColor = 'rgba(0,10,80,.7)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18;
-  ctx.fillStyle = LIN(ctx, -100, -100, 100, 100, [[0, '#FFFFFF'], [.5, '#C9D6F5'], [1, '#8EA3D8']]); ctx.beginPath(); ctx.arc(0, 0, 100, 0, TAU); ctx.fill(); ctx.restore();
-  ctx.fillStyle = RAD(ctx, -30, -50, 10, 110, [[0, '#3E80FF'], [.55, '#1743D6'], [1, '#0A1F86']]); ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.fill();
+  ctx.fillStyle = LIN(ctx, -100, -100, 100, 100, [[0, '#E6EEFF'], [.5, '#9FB4E8'], [1, '#5E78C4']]); ctx.beginPath(); ctx.arc(0, 0, 100, 0, TAU); ctx.fill(); ctx.restore();
+  ctx.fillStyle = RAD(ctx, -30, -50, 10, 110, [[0, '#2A5FE8'], [.5, '#0B2AA8'], [1, '#040F4E']]); ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.fill();
   ctx.save(); ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.clip();
   // inner swooshes: white + red sweep
-  ctx.fillStyle = LIN(ctx, -90, 60, 90, -40, [[0, '#FFFFFF'], [1, '#B8D2FF']]); ctx.beginPath(); ctx.moveTo(-100, 34); ctx.bezierCurveTo(-40, 76, 46, 40, 100, -34); ctx.bezierCurveTo(50, 8, -40, 28, -100, 34); ctx.fill();
+  ctx.fillStyle = LIN(ctx, -90, 60, 90, -40, [[0, '#9FD0FF'], [1, '#3D86FF']]); ctx.beginPath(); ctx.moveTo(-100, 46); ctx.bezierCurveTo(-40, 76, 46, 44, 100, -30); ctx.bezierCurveTo(50, 30, -40, 44, -100, 46); ctx.fill();
   ctx.fillStyle = LIN(ctx, -90, 60, 90, -40, [[0, '#FF2D3D'], [1, '#FF6470']]); ctx.beginPath(); ctx.moveTo(-100, 58); ctx.bezierCurveTo(-30, 104, 60, 64, 100, -6); ctx.bezierCurveTo(56, 40, -40, 70, -100, 58); ctx.fill();
   // stadium light streaks
-  ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .18; ctx.fillStyle = '#9FD4FF'; for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(-90 + i * 40, -90); ctx.lineTo(-60 + i * 40, -90); ctx.lineTo(-20 + i * 60, 90); ctx.lineTo(-40 + i * 60, 90); ctx.fill(); }
+  ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .07; ctx.fillStyle = '#9FD4FF'; for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(-90 + i * 40, -90); ctx.lineTo(-60 + i * 40, -90); ctx.lineTo(-20 + i * 60, 90); ctx.lineTo(-40 + i * 60, 90); ctx.fill(); }
   ctx.restore();
   // numeral 5
-  ctx.save(); ctx.transform(1, 0, -.16, 1, 0, 0); ctx.font = '900 150px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.lineJoin = 'round';
-  ctx.shadowColor = 'rgba(0,10,90,.7)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 8; ctx.strokeStyle = '#0A1F86'; ctx.lineWidth = 16; ctx.strokeText('5', 4, -12); ctx.shadowColor = 'transparent';
-  ctx.fillStyle = LIN(ctx, 0, -70, 0, 50, [[0, '#FFFFFF'], [1, '#CFE0FF']]); ctx.fillText('5', 4, -12); ctx.restore();
+  ctx.save(); ctx.transform(1, 0, -.16, 1, 0, 0); ctx.font = '900 132px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.lineJoin = 'round';
+  ctx.shadowColor = 'rgba(0,10,90,.7)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 8; ctx.strokeStyle = '#03104A'; ctx.lineWidth = 26; ctx.strokeText('5', 4, -12); ctx.shadowColor = 'transparent';
+  ctx.fillStyle = LIN(ctx, 0, -70, 0, 50, [[0, '#FFFFFF'], [1, '#A8C4FF']]); ctx.fillText('5', 4, -12); ctx.restore();
   // gloss
-  ctx.save(); ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.clip(); ctx.fillStyle = LIN(ctx, 0, -90, 0, 10, [[0, 'rgba(255,255,255,.55)'], [1, 'rgba(255,255,255,0)']]); ctx.beginPath(); ctx.ellipse(0, -52, 82, 46, 0, 0, TAU); ctx.fill();
-  if (sw > 0 && sw < 1) { ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = LIN(ctx, -120 + sw * 260, -100, -60 + sw * 260, 100, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.85)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-100, -100, 200, 200); }
+  ctx.save(); ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.clip(); ctx.fillStyle = LIN(ctx, 0, -90, 0, 10, [[0, 'rgba(255,255,255,.16)'], [1, 'rgba(255,255,255,0)']]); ctx.beginPath(); ctx.ellipse(0, -60, 78, 34, 0, 0, TAU); ctx.fill();
+  if (sw > 0 && sw < 1) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.rotate(.5); const bx = lerp(-190, 190, sw); ctx.fillStyle = LIN(ctx, bx - 26, 0, bx + 26, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.7)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(bx - 26, -200, 52, 400); ctx.restore(); }
   ctx.restore();
   ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.stroke();
   // front orbit swoosh (white) over badge
-  ribbon(ctx, 0, 0, 132, 44, -.5, Math.PI * .02, Math.PI * 1.02, 22, LIN(ctx, -140, 0, 140, 0, [[0, '#FFFFFF'], [1, '#9FD0FF']]));
+  ribbon(ctx, 0, 0, 132, 44, -.5, Math.PI * .02, Math.PI * 1.02, 13, LIN(ctx, -140, 0, 140, 0, [[0, '#E8F4FF'], [1, '#7FC0FF']]));
   ctx.restore();
 }
 function wordmark5(ctx, x, y, size, k) {   // "ספורט 5"
@@ -412,7 +415,7 @@ function confetti(ctx, k, orig, n, seed, cols, spd = 1300, life = 1.6) {
   }
 }
 function net(ctx, k, imp, S) {   // goal + net with ripple. imp=[x,y] on back plane. k = seconds since impact (<0 none)
-  const FR = { x0: 120, x1: 960, y0: 780, y1: 1170 }, BK = { x0: 250, x1: 830, y0: 830, y1: 1140 };
+  const FR = { x0: 120, x1: 960, y0: 880, y1: 1170 }, BK = { x0: 250, x1: 830, y0: 915, y1: 1140 };
   const nx = 16, ny = 9, pts = [];
   const disp = (x, y) => { if (k < 0) return [0, 0]; const dx = x - imp[0], dy = y - imp[1], d = Math.hypot(dx, dy), a = Math.exp(-k * 3.6) * Math.exp(-d / 420) * 46 * (k < .02 ? k / .02 : 1), ph = Math.sin(d * .045 - k * 46) * a; return [dx / (d + 40) * ph * .5, ph + a * .8 * Math.exp(-d / 160)]; };
   for (let j = 0; j <= ny; j++) { pts[j] = []; for (let i = 0; i <= nx; i++) { const x = lerp(BK.x0, BK.x1, i / nx), y = lerp(BK.y0, BK.y1, j / ny), d = disp(x, y); pts[j][i] = [x + d[0], y + d[1]]; } }
@@ -459,7 +462,7 @@ function sport5(ctx, t) {
   // background
   ctx.fillStyle = RAD(ctx, 540, 640, 60, 1500, [[0, '#2358FF'], [.35, '#0B2BB0'], [1, '#040B3A']]); ctx.fillRect(0, 0, W, H);
   ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(540, lerp(600, 380, HERO));
-  for (let i = 0; i < 14; i++) { const an = i * TAU / 14 + t * .25; ctx.rotate(0); ctx.save(); ctx.rotate(an); ctx.fillStyle = LIN(ctx, 0, 0, 0, -1900, [[0, 'rgba(140,190,255,.30)'], [1, 'rgba(140,190,255,0)']]); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-70, -1900); ctx.lineTo(70, -1900); ctx.fill(); ctx.restore(); }
+  for (let i = 0; i < 14; i++) { const an = i * TAU / 14 + t * .25; ctx.rotate(0); ctx.save(); ctx.rotate(an); ctx.fillStyle = LIN(ctx, 0, 0, 0, -1900, [[0, 'rgba(120,170,255,.16)'], [1, 'rgba(140,190,255,0)']]); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-70, -1900); ctx.lineTo(70, -1900); ctx.fill(); ctx.restore(); }
   ctx.restore();
   // diagonal energy bands
   ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.rotate(-.42);
@@ -471,28 +474,28 @@ function sport5(ctx, t) {
   // ---- racing ball reveal (0.02 .. 0.30)
   const rk = inv(.02, .3, k);
   if (k < .34) {
-    const P0 = [-160, 1420], P1 = [120, 520], P2 = [980, 1000], P3 = [540, 590], u = ein(rk * .75 + .25 * rk), bez = (u, a, b, c, d) => Math.pow(1 - u, 3) * a + 3 * Math.pow(1 - u, 2) * u * b + 3 * (1 - u) * u * u * c + u * u * u * d;
+    const P0 = [-160, 1420], P1 = [120, 520], P2 = [980, 1000], P3 = [540, 590], u = E.inOut(rk) * .75 + rk * .25, bez = (u, a, b, c, d) => Math.pow(1 - u, 3) * a + 3 * Math.pow(1 - u, 2) * u * b + 3 * (1 - u) * u * u * c + u * u * u * d;
     const pos = u2 => [bez(u2, P0[0], P1[0], P2[0], P3[0]), bez(u2, P0[1], P1[1], P2[1], P3[1])];
     const cols = [['#FF2D3D', 26], ['#FFFFFF', 18], ['#2F6BFF', 30]];
     cols.forEach(([c, wdt], ci) => { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = c; ctx.lineCap = 'round'; const n = 26; for (let i = 0; i < n; i++) { const a = u * (i / n) * .0 + Math.max(0, u - .55 * (1 - i / n) * Math.min(1, u * 2.2)), b = Math.max(0, u - .55 * (1 - (i + 1) / n) * Math.min(1, u * 2.2)); if (b <= a) continue; const p = pos(a), q = pos(b); ctx.globalAlpha = (i / n) * .95 * (1 - cl((k - .3) / .06)); ctx.lineWidth = wdt * (i / n) * (1 + .3 * Math.sin(k * 60 + ci)); ctx.beginPath(); ctx.moveTo(p[0] + (ci - 1) * 14, p[1] + (ci - 1) * 8); ctx.lineTo(q[0] + (ci - 1) * 14, q[1] + (ci - 1) * 8); ctx.stroke(); } ctx.restore(); });
-    const bp = pos(u); if (u < 1) { ball(ctx, bp[0], bp[1], 46 + 30 * u, k * 60); glow(ctx, bp[0], bp[1], 200, '#9FD4FF', .5); }
+    const bp = pos(u); if (u < 1) { ball(ctx, bp[0], bp[1], 56 + 40 * u, k * 60); glow(ctx, bp[0], bp[1], 260, '#9FD4FF', .6); }
   }
   // badge pop @ .30
   const bk = k - .30;
   if (bk >= 0) {
-    const pos = lerp(1, 0, HERO), cy = lerp(600, 350, HERO), R = lerp(300, 168, HERO) * (bk < .3 ? eob(bk / .3) : 1);
+    const pos = lerp(1, 0, HERO), cy = lerp(600, 350, HERO), R = lerp(270, 168, HERO) * (bk < .3 ? eob(bk / .3) : 1);
     ctx.save(); ctx.translate(540, cy); ctx.rotate((1 - eo(bk / .4)) * -.35); ctx.translate(-540, -cy);
     badge(ctx, 540, cy, R, { shine: cl((bk - .12) / .35) }); ctx.restore(); void pos;
     ring(ctx, 540, cy, 200 + bk * 2400, 16, 'rgba(255,255,255,.9)', Math.max(0, 1 - bk / .16));
     ring(ctx, 540, cy, 120 + bk * 1600, 30, 'rgba(255,45,61,.8)', Math.max(0, 1 - bk / .2));
-    wordmark5(ctx, 540, lerp(1000, 610, HERO), lerp(210, 130, HERO), k - .40);
+    wordmark5(ctx, 540, lerp(1000, 590, HERO), lerp(210, 120, HERO), k - .40);
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 6; i++) { const R2 = rng(i + 30), ax = 540 + (R2() - .5) * 700, ay = cy + (R2() - .5) * 500, kk = (k * 2 + i * .37) % 1; V.sparkle(ctx, ax, ay, 26 * Math.sin(kk * Math.PI), '#fff', kk * 2, .9 * (bk > .1 ? 1 : 0)); } ctx.restore();
   }
   // scoreboard + goal
-  const kS = k - .86, kI = k - 1.14, IMP = [560, 990];
+  const kS = k - .86, kI = k - 1.14, IMP = [560, 1030];
   const ny = eo((k - .85) / .3);
   if (k > .82) { ctx.save(); ctx.globalAlpha = ny; ctx.translate(0, (1 - ny) * 400); net(ctx, kI, IMP); ctx.restore(); }
-  scoreboard(ctx, 0, 740, kS, kI);
+  scoreboard(ctx, 0, 800, kS, kI);
   // ball into net
   if (k > .95 && k < 1.32) {
     const u = cl((k - .95) / .19), e = ein(u * .9 + .1), sx = 1240, sy = 1500, pos = [lerp(sx, IMP[0], e), lerp(sy, IMP[1] + 30, e) - Math.sin(u * Math.PI) * 220];
@@ -501,9 +504,9 @@ function sport5(ctx, t) {
     else { const dd = k - 1.14; ball(ctx, IMP[0] + dd * 60, IMP[1] + 30 + Math.min(dd * 260, 40) + 60 * dd * dd * 8, 42, k * 20); }
   }
   if (kI >= 0) {
-    burst(ctx, IMP[0], IMP[1], kI / .22, '#BFE0FF', 700, 20, 22); V.flash(ctx, t, LT.s5 + 1.14, .16, '#ffffff', .9);
+    burst(ctx, IMP[0], IMP[1], kI / .22, '#BFE0FF', 700, 20, 22); V.flash(ctx, t, LT.s5 + 1.14, .12, '#ffffff', .55);
     // GOAL slam
-    slam(ctx, 'GOAL', 540, 1000, 330, kI - .0, { dir: 'ltr', grad: [[0, '#FFFFFF'], [.5, '#FFF3C4'], [1, '#FFC24A']], stroke: '#E01E2E', sw: .2, back: '#071A6B', rot: -.07, glowCol: 'rgba(255,45,61,.6)', weight: 900, font: 'Rubik' });
+    if (kI > .1) slam(ctx, 'GOAL', 540, 1010, 290, kI - .1, { dir: 'ltr', grad: [[0, '#FFFFFF'], [.5, '#FFF3C4'], [1, '#FFC24A']], stroke: '#E01E2E', sw: .2, back: '#071A6B', rot: -.07, glowCol: 'rgba(255,45,61,.6)', weight: 900, font: 'Rubik' });
   }
   confetti(ctx, kI, [[60, 1500, -1.15, .7], [1020, 1500, -2.0, .7], [540, 1240, -1.57, 1.2]], 130, 5, ['#2F6BFF', '#FFFFFF', '#FF2D3D', '#FFC24A', '#6CC8FF'], 1700, 1.5);
   // exit flash into Charlton
@@ -591,10 +594,10 @@ function charlton(ctx, t) {
     speedLines(ctx, 540, 860, t, 40, CH.or2, 260, 1300, .5, 8);
     if (q === 0) { stopwatch(ctx, 540, 830, 330 * lerp(.75, 1.08, eo(kq / .12)), k * 1.4); }
     else if (q === 1) { const cx = lerp(1500, -300, eo(kq / .12)); for (let i = 0; i < 12; i++) { ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(cx + 180 + i * 60, 820 + (i % 4) * 30 - 40, 420 + hash(i) * 400, 8); } raceCar(ctx, cx, 860, 1.5, t); }
-    else { glove(ctx, 540, 860, lerp(.5, 1.55, ein(kq / .12)) * 1.4, -.4); burst(ctx, 540, 820, kq / .12, '#FF9A2E', 700, 18, 5); }
+    else { glove(ctx, 540, 860, lerp(.55, 1.05, ein(kq / .12)), -.4); burst(ctx, 540, 820, kq / .12, '#FF9A2E', 420, 18, 5); }
     ctx.restore();
     ctx.fillStyle = CH.or; ctx.fillRect(0, 150, W, 14); ctx.fillRect(0, 1160, W, 14);
-    V.flash(ctx, t, LT.ch + .27 + q * .12, .05, '#FFE0C0', .8);
+    V.flash(ctx, t, LT.ch + .27 + q * .12, .05, '#FFE0C0', .5);
     ctx.save(); ctx.font = '900 60px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff'; ctx.direction = 'ltr'; ctx.transform(1, 0, -.2, 1, 0, 0); ctx.fillText('CHARLTON', 540 + 90, 240); ctx.restore();
   } else {   // C: lockup + glitch out
     const kk = k - .63;
@@ -609,7 +612,7 @@ function charlton(ctx, t) {
       ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, 1920); ctx.clip(); const y1 = R() * 1000 + 300; ctx.globalAlpha = .9; ctx.fillStyle = '#fff'; ctx.fillRect(0, y1, W, 5); ctx.restore();
     } else chLockup(ctx, kk);
     burst(ctx, 540, 900, kk / .2, '#FF9A2E', 760, 24, 3);
-    V.flash(ctx, t, LT.ch + .63, .1, '#fff', 1);
+    V.flash(ctx, t, LT.ch + .63, .08, '#fff', .7);
     if (kk < .3) speedLines(ctx, 540, 900, t, 26, '#FFB060', 400, 1400, .35 * (1 - kk / .3), 8);
   }
 }
@@ -631,5 +634,5 @@ A.scene({
     if (edge === -1) { ctx.save(); ctx.translate(dx + W, 0); whipBand(ctx, 0, 1, 1); ctx.restore(); }
   }
 });
-A.V3 = { flare, burst, ball, trail, slam, speedLines, figure, POSE, KIT, whipBand, lightBank, feet };
+A.V3 = { badge, flare, burst, ball, trail, slam, speedLines, figure, POSE, KIT, whipBand, lightBank, feet };
 })();

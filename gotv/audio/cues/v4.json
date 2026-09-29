@@ -1,0 +1,198 @@
+[
+ {
+  "t": 13.1,
+  "sound": "whip_in_right",
+  "desc": "fast whoosh, scene whips in from the right",
+  "gain_db": -8,
+  "pan": 0.3
+ },
+ {
+  "t": 13.24,
+  "sound": "seagull_call",
+  "desc": "two gull cries over the Bosphorus",
+  "gain_db": -18,
+  "pan": -0.4
+ },
+ {
+  "t": 13.3,
+  "sound": "title_pop_ribbon",
+  "desc": "ornate gold title plaque pops with shimmer",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 13.62,
+  "sound": "soap_sting",
+  "desc": "dramatic soap-opera orchestral sting + flash",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 13.72,
+  "sound": "heartbeat_thump",
+  "desc": "deep heartbeat lub",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 13.8,
+  "sound": "tear_glint",
+  "desc": "tear droplet glint",
+  "gain_db": -14,
+  "pan": -0.3
+ },
+ {
+  "t": 13.84,
+  "sound": "heartbeat_thump",
+  "desc": "heartbeat dub",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 13.945,
+  "sound": "heartbeat_thump",
+  "desc": "heartbeat lub, louder",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 14.0,
+  "sound": "wipe_whoosh_pink",
+  "desc": "neon wipe whoosh into Seoul",
+  "gain_db": -9,
+  "pan": 0.2
+ },
+ {
+  "t": 14.04,
+  "sound": "neon_buzz_on",
+  "desc": "neon sign flickers on with buzz",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 14.1,
+  "sound": "rain_bed",
+  "desc": "soft rain ambience under scene",
+  "gain_db": -24,
+  "pan": 0
+ },
+ {
+  "t": 14.2,
+  "sound": "heart_pop",
+  "desc": "finger heart pop with cute sparkle",
+  "gain_db": -8,
+  "pan": 0.3
+ },
+ {
+  "t": 14.24,
+  "sound": "chime_sparkle",
+  "desc": "pastel chime and sparkle",
+  "gain_db": -12,
+  "pan": 0.3
+ },
+ {
+  "t": 14.6,
+  "sound": "anime_flash",
+  "desc": "white flash cut with sharp anime whoosh",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 14.66,
+  "sound": "label_slam",
+  "desc": "manga burst label slam",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 14.72,
+  "sound": "aura_charge_rise",
+  "desc": "energy aura charging riser",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 14.72,
+  "sound": "sakura_shimmer",
+  "desc": "sakura petal burst shimmer",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 14.9,
+  "sound": "cut_flash_tick",
+  "desc": "black frame flash tick",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 14.94,
+  "sound": "anime_impact_don",
+  "desc": "taiko hit DON impact",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 15.05,
+  "sound": "glass_shatter",
+  "desc": "frame shatters into shards",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 15.05,
+  "sound": "shockwave_whoosh",
+  "desc": "gold shockwave ring",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 15.08,
+  "sound": "tiles_rush",
+  "desc": "posters tunnel rushing toward camera",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 15.13,
+  "sound": "word_pop",
+  "desc": "title pops",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 15.42,
+  "sound": "pullback_whoosh",
+  "desc": "pull-back reveal of the poster wall",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 15.46,
+  "sound": "tile_wall_pops",
+  "desc": "wall tiles pop in radially",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 15.68,
+  "sound": "zoom_through",
+  "desc": "fast zoom-through into the wall",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 15.81,
+  "sound": "gold_burst_impact",
+  "desc": "light burst at the cut",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 15.85,
+  "sound": "white_out_swell",
+  "desc": "light fades to navy, radial streak tail",
+  "gain_db": -12,
+  "pan": 0
+ }
+]
