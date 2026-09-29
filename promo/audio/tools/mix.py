@@ -17,11 +17,14 @@ TARGET_LUFS = -14.0; TP_CEIL = -1.2
 
 # ---- tunables (dB)
 VO_TRIM = 0.0          # VO is the anchor
-MUSIC_GAIN = -5.0      # music bed level before ducking (relative to file)
+MUSIC_GAIN = -12.0      # music bed level before ducking (relative to file)
 DUCK_DB = -7.0         # music duck while narrator speaks (mids); lows duck less
-SFX_GAIN = 0.0
-SFX_DUCK = -2.5        # SFX dip under narration (excluding big hits)
+SFX_GAIN = -6.0
+SFX_DUCK = -4.0        # SFX dip under narration (excluding big hits)
 MAX_LOUD_OVERLAP = 4
+MAXLEN = {'impact_boom': 6.0, 'crowd_roar': 2.4, 'goal_horn': 1.2, 'stadium_crowd_swell': 2.6, 'button_ripple_chime': 2.0, 'goal_crowd_roar': 3.2}
+def maxlen(nm): return MAXLEN.get(nm, 3.6)
+BOOST = {('impact_boom', 25.61): 5.0, ('glass_shatter', 25.61): 2.0}   # the hero moment stays huge
 
 db = lambda x: 10 ** (x / 20.0)
 def sos(kind, f, order=2): return butter(order, f, kind, fs=SR, output='sos')
@@ -129,7 +132,7 @@ def load_cues():
     cues.sort(key=lambda c: c['t'])
     return cues
 
-def build_sfx(cues, vo_act):
+def build_sfx(cues, vo_dry, vo_act):
     hits = json.load(open(os.path.join(ROOT, 'sfx', 'hits.json')))
     cache = {}
     items = []
@@ -140,30 +143,43 @@ def build_sfx(cues, vo_act):
         if not os.path.exists(p): c['skip'] = 'missing wav'; continue
         if nm not in cache: cache[nm] = load(p)
         x = cache[nm]; h = hits.get(nm, 0.0)
-        maxlen = 3.6 + h if nm not in ('impact_boom',) else 6.0
-        x = x[:, :int((h + maxlen) * SR)]
+        x = x[:, :int((h + maxlen(nm)) * SR)]
         # loudness estimate for overlap limiter: rms of 0.6 s after the hit, plus cue gain
         a = int(max(h - .02, 0) * SR); seg = x[:, a:a + int(.6 * SR)]
         rms = 10 * np.log10(np.mean(seg ** 2) + 1e-12)
         c['loud'] = c['gain_db'] + rms
         c['start'] = c['t'] - h; c['len'] = x.shape[1] / SR; c['h'] = h
         items.append(c)
-    # ---- overlap limiter: rank by loudness among concurrent (active over first 1.2 s after start) cues
-    grid = int(DUR * 100) + 1
+    # ---- overlap limiter: effective audible span (until -25 dB) and loudness; >4 louder concurrent cues -> -2 dB each extra
     for c in items:
+        x = cache[c['sound']]; e = np.sqrt(uniform_filter1d(np.mean(x ** 2, axis=0), 480))
+        idx = np.nonzero(e > e.max() * db(-25))[0]
+        c['span'] = float(np.clip(idx[-1] / SR - c['h'], 0.08, 1.5)) if len(idx) else 0.1
         c['red'] = 0.0
+    LOUD_FLOOR = -30.0
     for c in items:
-        a0 = c['t'] - .03; a1 = c['t'] + min(1.2, c['len'] - c['h'])
         worst = 0
-        for tt in np.arange(a0, a1, 0.05):
-            act = [o for o in items if o['t'] - .03 <= tt <= o['t'] + min(1.2, o['len'] - o['h']) and o['loud'] > -40]
-            louder = sum(1 for o in act if o is not c and (o['loud'] > c['loud'] or (o['loud'] == c['loud'] and id(o) < id(c))))
+        for tt in np.arange(c['t'] - .03, c['t'] + c['span'], 0.04):
+            louder = sum(1 for o in items if o is not c and o['loud'] > LOUD_FLOOR and o['t'] - .03 <= tt <= o['t'] + o['span']
+                         and (o['loud'] > c['loud'] or (o['loud'] == c['loud'] and id(o) < id(c))))
             worst = max(worst, louder)
         if worst >= MAX_LOUD_OVERLAP:
-            c['red'] = -2.5 * (worst - MAX_LOUD_OVERLAP + 1)
+            c['red'] = max(-8.0, -2.0 * (worst - MAX_LOUD_OVERLAP + 1))
+    # ---- VO-aware limiter: during narration no non-hero cue may exceed (VO band level - 3 dB) in the 300-4k intelligibility band
+    vob = sosfilt(sos('bandpass', [300, 4000], 4), vo_dry[0])
+    for c in items:
+        c['vo_red'] = 0.0
+        if (c['sound'], round(c['t'], 2)) in BOOST: continue
+        i = int(c['t'] * SR); w = int(min(c['span'], 1.0) * SR) + 480
+        v = np.sqrt(np.mean(vob[i:i + w] ** 2)) if i < NS else 0
+        if v < 10 ** (-52 / 20): continue                          # narrator silent here
+        xb = sosfilt(sos('bandpass', [300, 4000], 4), cache[c['sound']][0])
+        a = int(max(c['h'] - .01, 0) * SR); sx = np.sqrt(np.mean(xb[a:a + w] ** 2)) * db(c['gain_db'] + c['red'] + SFX_GAIN + SFX_DUCK)
+        over = 20 * np.log10(sx / v + 1e-9) + 3.0
+        if over > 0: c['vo_red'] = -min(8.0, over)
     bus = np.zeros((2, NS))
     for c in items:
-        x = cache[c['sound']][:, :int((c['h'] + (3.6 if c['sound'] != 'impact_boom' else 6.0)) * SR)]
+        x = cache[c['sound']][:, :int((c['h'] + maxlen(c['sound'])) * SR)]
         L = x.shape[1]
         # soft fade tail
         fo = min(int(.4 * SR), L // 3); x = x.copy(); x[:, L - fo:] *= np.cos(np.linspace(0, np.pi / 2, fo)) ** 2
@@ -172,7 +188,7 @@ def build_sfx(cues, vo_act):
         g = np.array([np.cos(a), np.sin(a)]) * np.sqrt(2)          # unity at centre
         if np.abs(x[0] - x[1]).max() > 1e-4 * np.abs(x).max():      # true stereo file: balance
             g = np.array([min(1, 1 - p), min(1, 1 + p)])
-        gain = db(c['gain_db'] + c['red'] + SFX_GAIN)
+        gain = db(c['gain_db'] + c['red'] + c['vo_red'] + SFX_GAIN + BOOST.get((c['sound'], round(c['t'], 2)), 0.0))
         i = int(round(c['start'] * SR))
         s0 = max(0, -i); i0 = max(0, i)
         e = min(L, NS - i0 + s0)
@@ -184,54 +200,25 @@ def build_sfx(cues, vo_act):
 def true_peak_db(x):
     y = resample_poly(x, 4, 1, axis=-1); return 20 * np.log10(np.abs(y).max() + 1e-12)
 
-def tp_limiter(x, ceil_db=TP_CEIL, look_ms=2.5, rel_ms=90):
-    """lookahead limiter with 4x-oversampled peak detection (approximate true-peak)"""
-    os_ = resample_poly(x, 4, 1, axis=-1)
-    pk = np.abs(os_).max(axis=0)
-    pk = pk.reshape(-1, 4).max(axis=1)                      # back to SR
-    thr = db(ceil_db)
-    need = np.minimum(1.0, thr / (pk + 1e-9))
-    la = int(look_ms / 1000 * SR)
-    g = minimum_filter1d(need, 2 * la + 1, origin=0)
-    g = uniform_filter1d(g, la * 2 + 1)                     # smooth attack (symmetric window ~ lookahead)
-    g = np.minimum(g, need)                                 # never above required
-    # release smoothing: slow recovery
-    rel = np.exp(-1 / (SR * rel_ms / 1000))
-    out = np.empty_like(g); s = 1.0
-    # vectorised: use lfilter on (1-g) with instantaneous attack via running max
-    r = 1 - g
-    from scipy.signal import lfilter as lf
-    # envelope follower with instant attack, exponential release
-    y = np.empty_like(r); s = 0.0
-    for i0 in range(0, len(r), 1):   # python loop, ~1.8M iterations
-        pass
-    return None
-
 def limiter(x, ceil_db=TP_CEIL, look_ms=2.0, rel_ms=80):
-    os_ = resample_poly(x, 4, 1, axis=-1)
-    pk = np.abs(os_).reshape(2, -1, 4).max(axis=(0, 2)) if False else np.abs(os_).max(axis=0).reshape(-1, 4).max(axis=1)
-    thr = db(ceil_db)
-    red = np.maximum(0.0, 1 - thr / (pk + 1e-12)) if False else np.maximum(0.0, np.log(pk / thr + 1e-12))  # nepers of needed reduction
-    # process at 4 kHz control for the release envelope: block max, then follower
-    B = 12
-    nb = int(np.ceil(len(red) / B)); rp = np.pad(red, (0, nb * B - len(red))).reshape(nb, B).max(axis=1)
-    la = max(1, int(look_ms / 1000 * SR / B))
-    rp = np.maximum.accumulate(rp[::-1])[::-1] if False else rp
-    # lookahead: take max over window [i-?, i+la] so gain starts falling before the peak
+    """lookahead limiter, peak detection on a 4x oversampled signal (true-peak safe), block-rate release follower"""
     from scipy.ndimage import maximum_filter1d
-    rp = maximum_filter1d(rp, 2 * la + 1)
+    pk = np.abs(resample_poly(x, 4, 1, axis=-1)).max(axis=0).reshape(-1, 4).max(axis=1)
+    need = np.maximum(0.0, np.log(pk / db(ceil_db) + 1e-12))        # nepers of reduction required per sample
+    B = 12; nb = int(np.ceil(len(need) / B))
+    rp = np.pad(need, (0, nb * B - len(need))).reshape(nb, B).max(axis=1)
+    la = max(1, int(look_ms / 1000 * SR / B))
+    rp = maximum_filter1d(rp, 2 * la + 1)                            # start reducing before the peak
     cr = np.exp(-B / (SR * rel_ms / 1000)); env = np.empty_like(rp); s = 0.0
     for i, v in enumerate(rp):
-        s = v if v > s else cr * s + (1 - cr) * v * 0 + (1 - cr) * 0
-        s = max(s, v) if v >= s else s * cr
+        s = v if v >= s else s * cr
         env[i] = s
-    env = uniform_filter1d(env, 2 * la + 1)                 # smooth edges
-    env = np.maximum(env, rp * 0)  # safety
-    g = np.exp(-np.repeat(env, B)[:len(red)])
-    # ensure sample-wise guarantee: final hard safety on the residual
-    y = x * g[None, :x.shape[-1]]
+    env = uniform_filter1d(env, la + 1, mode='nearest')
+    env = np.maximum(env, 0)
+    g = np.exp(-np.repeat(env, B)[:x.shape[-1]])
+    y = x * g[None, :]
     tp = true_peak_db(y)
-    if tp > ceil_db + 0.05: y = y * db(ceil_db - tp)
+    if tp > ceil_db + 0.02: y = y * db(ceil_db - tp)
     return y
 
 def lufs(x):
@@ -241,13 +228,13 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--no-sfx-build', action='store_true'); ap.add_argument('--out', default=os.path.join(ROOT, 'master.wav'))
     args = ap.parse_args()
     if not args.no_sfx_build:
-        import promo_sfx; promo_sfx.main.__globals__  # ensure module importable
+        import promo_sfx
         sys.argv = [sys.argv[0]]; promo_sfx.main()
     vo_dry, vo_wet = build_vo()
     duck, act = duck_curve(vo_dry)
     music, msrc = build_music(duck)
     cues = load_cues()
-    sfx, items = build_sfx(cues, act)
+    sfx, items = build_sfx(cues, vo_dry, act)
     # SFX dips under narration (not for large hits: handled by cue loudness, keep simple broad dip)
     sfx_duck = up(duck, NS) * SFX_DUCK
     sfx = sfx * db(sfx_duck)

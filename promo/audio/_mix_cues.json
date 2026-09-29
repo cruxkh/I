@@ -1,250 +1,258 @@
 [
 {
 "t": 0.0,
-"sound": "whoosh_fast_push_in",
-"desc": "very fast airy camera-push whoosh with a slight doppler rise, settles into room tone by 0.8s",
-"gain_db": -8,
-"pan": 0,
-"scene": "s1",
-"loud": -25.980816486570795,
-"start": -0.55,
-"len": 1.0,
-"h": 0.55,
-"red": 0.0
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
+"start": 0.0,
+"len": 0.14,
+"h": 0.0,
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 0.15,
+"t": 0.02,
 "sound": "app_tornado_swirl_start",
-"desc": "looping cartoon wind-swirl with tiny UI blips and pings orbiting, builds in fast; runs until 2.0 then winds down",
-"gain_db": -14,
-"pan": 0,
-"scene": "s1",
-"loud": -32.55691202862367,
-"start": 0.15,
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0,
+"scene": "yt",
+"loud": -27.556912028623668,
+"start": 0.02,
 "len": 1.9,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 0.45,
-"sound": "tv_static_flick",
-"desc": "short channel-zap blip of the big TV switching apps",
-"gain_db": -16,
-"pan": 0.5,
-"scene": "s1",
-"loud": -34.65556000957059,
-"start": 0.45,
-"len": 0.3,
-"h": 0.0,
-"red": 0.0
-},
-{
-"t": 0.8,
-"sound": "laptop_spinner_bloop",
-"desc": "comic buffering bloop-bloop from the laptop",
-"gain_db": -18,
-"pan": 0.1,
-"scene": "s1",
-"loud": -30.75375378719334,
-"start": 0.8,
-"len": 0.8185208333333334,
-"h": 0.0,
-"red": 0.0
-},
-{
-"t": 1.05,
-"sound": "tablet_error_buzz",
-"desc": "small cheeky error buzzer from Tom's tablet",
-"gain_db": -16,
-"pan": 0.3,
-"scene": "s1",
-"loud": -26.883923988815106,
-"start": 1.05,
-"len": 0.6769375,
-"h": 0.0,
-"red": 0.0
-},
-{
-"t": 1.25,
-"sound": "maya_sigh",
-"desc": "long exasperated female sigh, comedic, short",
-"gain_db": -12,
+"t": 0.25,
+"sound": "heart_pop",
+"desc": "yt edit",
+"gain_db": -14,
 "pan": -0.5,
-"scene": "s1",
-"loud": -28.975900547305713,
-"start": 1.05,
-"len": 1.1355208333333333,
-"h": 0.2,
-"red": 0.0
+"scene": "yt",
+"loud": -31.08325302318855,
+"start": 0.25,
+"len": 0.2,
+"h": 0.0,
+"span": 0.1786875,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 1.55,
-"sound": "phone_ad_jingle_snip",
-"desc": "tinny 0.3s mobile ad jingle cut short",
-"gain_db": -18,
-"pan": -0.2,
-"scene": "s1",
-"loud": -32.468638107024525,
-"start": 1.55,
-"len": 1.8000833333333333,
+"t": 0.75,
+"sound": "heart_pop_beat",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.5,
+"scene": "yt",
+"loud": -30.54893896106844,
+"start": 0.75,
+"len": 0.2,
 "h": 0.0,
-"red": 0.0
+"span": 0.17983333333333335,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 1.85,
-"sound": "remote_button_mash",
-"desc": "rapid plastic remote-button clicks, frantic",
-"gain_db": -16,
-"pan": 0,
-"scene": "s1",
-"loud": -40.275694295219935,
-"start": 1.85,
-"len": 1.0861666666666667,
+"t": 1.35,
+"sound": "heart_pop_beat2",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": -0.3,
+"scene": "yt",
+"loud": -30.050503438367823,
+"start": 1.35,
+"len": 0.16,
 "h": 0.0,
-"red": -2.5
+"span": 0.147625,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 2.0,
-"sound": "tape_stop_freeze",
-"desc": "record/tape brake slam: whole chaos winds down to silence except tiny spinner ticks; tornado hangs",
-"gain_db": -8,
-"pan": 0,
-"scene": "s1",
-"loud": -23.67926520817937,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
 "start": 2.0,
-"len": 1.5665,
+"len": 0.14,
 "h": 0.0,
-"red": 0.0
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 2.02,
+"sound": "anticipation_suck",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0,
+"scene": "yt",
+"loud": -37.62125837008327,
+"start": 1.46,
+"len": 0.6,
+"h": 0.56,
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 2.1,
-"sound": "comic_freeze_sting",
-"desc": "single held comedic string pizzicato plink as everyone stares at camera",
-"gain_db": -12,
-"pan": 0,
-"scene": "s1",
-"loud": -26.119224667878918,
+"sound": "hero_badge_pop",
+"desc": "yt edit",
+"gain_db": -10,
+"pan": 0.4,
+"scene": "yt",
+"loud": -24.409743966144084,
 "start": 2.1,
-"len": 2.164,
+"len": 0.2,
 "h": 0.0,
-"red": 0.0
-},
-{
-"t": 2.45,
-"sound": "spinner_tick_loop",
-"desc": "tiny quiet clock ticks of hanging spinners, awkward silence tension",
-"gain_db": -22,
-"pan": 0.2,
-"scene": "s1",
-"loud": -54.441297644562866,
-"start": 2.45,
-"len": 1.5954166666666667,
-"h": 0.0,
-"red": 0.0
+"span": 0.18402083333333333,
+"red": 0.0,
+"vo_red": -0.08360596190721115
 },
 {
 "t": 3.05,
-"sound": "suction_snap_whoosh",
-"desc": "huge reversed-swoosh snap, all tiles suck into TV in a curved spiral, rising pitch sweep with glassy pings",
-"gain_db": -6,
-"pan": 0.3,
-"scene": "s1",
-"loud": -22.660693048865042,
-"start": 2.1999999999999997,
-"len": 1.0,
-"h": 0.85,
-"red": 0.0
-},
-{
-"t": 3.2,
-"sound": "tile_swirl_shimmer",
-"desc": "cascade of quick glassy plinks and chimes rising in pitch as tiles arrive one by one",
-"gain_db": -12,
-"pan": 0.5,
-"scene": "s1",
-"loud": -25.22135150225554,
-"start": 3.2,
-"len": 3.0651041666666665,
-"h": 0.0,
-"red": 0.0
-},
-{
-"t": 3.55,
 "sound": "gold_burst_impact",
-"desc": "big warm cinematic boom with bright shimmering choir-like swell and sparkle shower, TV blowing up in gold light",
+"desc": "yt edit",
 "gain_db": -4,
-"pan": 0.3,
-"scene": "s1",
+"pan": 0.0,
+"scene": "yt",
 "loud": -16.904101948735672,
-"start": 3.5469999999999997,
-"len": 3.606,
+"start": 3.0469999999999997,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 3.58,
+"t": 3.05,
+"sound": "tiles_suck_in",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0,
+"scene": "yt",
+"loud": -41.051843392820516,
+"start": 2.29,
+"len": 0.8,
+"h": 0.76,
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 3.05,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
+"start": 3.05,
+"len": 0.14,
+"h": 0.0,
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 3.12,
+"sound": "confetti_burst",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0,
+"scene": "yt",
+"loud": -26.153449767189336,
+"start": 3.12,
+"len": 2.2,
+"h": 0.0,
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 3.3,
 "sound": "sparkle_shower",
-"desc": "high magic-sparkle glitter shower, spread wide, decays over 1s",
-"gain_db": -10,
-"pan": 0,
-"scene": "s1",
-"loud": -24.996383028252158,
-"start": 3.58,
+"desc": "yt edit",
+"gain_db": -12,
+"pan": 0.0,
+"scene": "yt",
+"loud": -26.996383028252158,
+"start": 3.3,
 "len": 2.6377083333333333,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 3.7,
-"sound": "family_wow",
-"desc": "three-person awed 'wooow' gasp, warm, short",
-"gain_db": -11,
-"pan": -0.2,
-"scene": "s1",
-"loud": -27.333102513870497,
-"start": 3.37,
-"len": 0.8322916666666667,
-"h": 0.33,
-"red": 0.0
-},
-{
-"t": 3.9,
-"sound": "remote_drop_clunk",
-"desc": "plastic remote clatters on floor with a small bounce",
-"gain_db": -12,
-"pan": -0.3,
-"scene": "s1",
-"loud": -31.926361601723166,
-"start": 3.9,
-"len": 0.5527708333333333,
+"t": 3.6,
+"sound": "tv_pop_in",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.0,
+"scene": "yt",
+"loud": -28.28982106365369,
+"start": 3.6,
+"len": 0.3,
 "h": 0.0,
-"red": -2.5
+"span": 0.2806458333333333,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 4.1,
+"t": 4.05,
 "sound": "push_in_riser",
-"desc": "fast rising airy riser and whoosh as camera dives into the golden TV screen",
-"gain_db": -8,
-"pan": 0,
-"scene": "s1",
-"loud": -33.34619326622183,
-"start": 3.1999999999999997,
+"desc": "yt edit",
+"gain_db": -10,
+"pan": 0.0,
+"scene": "yt",
+"loud": -35.34619326622183,
+"start": 3.15,
 "len": 2.9205,
 "h": 0.9,
-"red": -10.0
+"span": 0.7039375,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 4.6,
-"sound": "white_out_swell",
-"desc": "bright pad swell to full-frame white, high shimmer, resolves into the next scene's hit at 5.0",
+"t": 4.85,
+"sound": "whoosh_fast_push_in",
+"desc": "yt edit",
+"gain_db": -6,
+"pan": 0.0,
+"scene": "yt",
+"loud": -23.980816486570795,
+"start": 4.3,
+"len": 1.0,
+"h": 0.55,
+"span": 0.4229583333333333,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 4.98,
+"sound": "zoom_through",
+"desc": "yt edit",
 "gain_db": -8,
-"pan": 0,
-"scene": "s1",
-"loud": -25.017083930166596,
-"start": 3.7499999999999996,
-"len": 4.644166666666667,
-"h": 0.85,
-"red": 0.0
+"pan": 0.0,
+"scene": "yt",
+"loud": -26.693968366017298,
+"start": 4.58,
+"len": 0.6,
+"h": 0.4,
+"span": 0.17662500000000003,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 5.0,
@@ -252,12 +260,14 @@
 "desc": "deep soft sub boom with bright airy shimmer as the gold-white flash bursts open",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -21.384157499256247,
 "start": 4.997,
-"len": 3.606,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 5.02,
@@ -265,12 +275,14 @@
 "desc": "punchy cartoon pop with tiny electronic blip for the red LIVE badge",
 "gain_db": -10,
 "pan": 0.3,
-"scene": "s2a",
+"scene": "anim",
 "loud": -26.94586431406631,
 "start": 5.02,
 "len": 0.16,
 "h": 0.0,
-"red": 0.0
+"span": 0.14397916666666666,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 5.06,
@@ -278,12 +290,14 @@
 "desc": "bouncy squeaky pop as the anchor scales in",
 "gain_db": -12,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -26.700840876988963,
 "start": 5.06,
 "len": 0.2,
 "h": 0.0,
-"red": 0.0
+"span": 0.18404166666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 5.1,
@@ -291,12 +305,14 @@
 "desc": "chunky pop-slam with short bright ding for the gold headline text",
 "gain_db": -9,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -27.44362214383792,
 "start": 5.0969999999999995,
 "len": 2.130520833333333,
 "h": 0.003,
-"red": -2.5
+"span": 0.8964791666666667,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 5.13,
@@ -304,12 +320,14 @@
 "desc": "cloth flutter whoosh, flag snapping open",
 "gain_db": -12,
 "pan": -0.4,
-"scene": "s2a",
+"scene": "anim",
 "loud": -30.142145496690848,
 "start": 5.07,
 "len": 0.9,
 "h": 0.06,
-"red": -7.5
+"span": 0.7637499999999999,
+"red": -8.0,
+"vo_red": 0.0
 },
 {
 "t": 5.15,
@@ -317,12 +335,14 @@
 "desc": "quick party-popper confetti burst with paper flutter",
 "gain_db": -11,
 "pan": 0.3,
-"scene": "s2a",
+"scene": "anim",
 "loud": -29.153449767189336,
 "start": 5.15,
 "len": 2.2,
 "h": 0.0,
-"red": -5.0
+"span": 1.5,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 5.3,
@@ -330,12 +350,14 @@
 "desc": "fast rising swipe with soft UI click, news ticker sliding up",
 "gain_db": -13,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -37.35693952402569,
 "start": 5.04,
 "len": 0.5666875,
 "h": 0.26,
-"red": -7.5
+"span": 0.09352083333333333,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 5.55,
@@ -343,12 +365,14 @@
 "desc": "small tick landing, news jingle blip",
 "gain_db": -15,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -27.633291228266692,
 "start": 5.55,
 "len": 0.2000625,
 "h": 0.0,
-"red": 0.0
+"span": 0.15347916666666667,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 5.8,
@@ -356,12 +380,14 @@
 "desc": "short upbeat broadcast stinger, two rising synth notes",
 "gain_db": -14,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -28.277844028678466,
 "start": 5.8,
 "len": 3.6,
 "h": 0.0,
-"red": 0.0
+"span": 1.113,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 6.1,
@@ -369,12 +395,14 @@
 "desc": "light sparkle blip on the anchor wave",
 "gain_db": -18,
 "pan": 0.3,
-"scene": "s2a",
+"scene": "anim",
 "loud": -30.405234279812973,
 "start": 6.1,
 "len": 0.20008333333333334,
 "h": 0.0,
-"red": -2.5
+"span": 0.15352083333333333,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 6.52,
@@ -382,12 +410,14 @@
 "desc": "fast rattling wooden-tile clatter with swoosh as ten panels flip in sequence",
 "gain_db": -9,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -22.689134816047385,
 "start": 6.17,
 "len": 0.7,
 "h": 0.35,
-"red": 0.0
+"span": 0.3196041666666667,
+"red": 0.0,
+"vo_red": -3.016552378385183
 },
 {
 "t": 6.62,
@@ -395,12 +425,14 @@
 "desc": "heavy velvet curtain sliding open with rushing swish",
 "gain_db": -10,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -26.558429666769758,
 "start": 6.17,
 "len": 1.1,
 "h": 0.45,
-"red": 0.0
+"span": 0.6297291666666667,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 6.86,
@@ -408,12 +440,14 @@
 "desc": "big cinematic impact hit with bass drop and metallic ring as the red wordmark slams in",
 "gain_db": -6,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -21.948958062150524,
 "start": 6.857,
-"len": 3.606,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 6.9,
@@ -421,12 +455,14 @@
 "desc": "card flip whap with paper flutter",
 "gain_db": -12,
 "pan": -0.5,
-"scene": "s2a",
+"scene": "anim",
 "loud": -35.410338826401556,
 "start": 6.9,
 "len": 0.33541666666666664,
 "h": 0.0,
-"red": -2.5
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 6.98,
@@ -434,12 +470,14 @@
 "desc": "cartoon popcorn popping burst, rapid pops, left",
 "gain_db": -11,
 "pan": -0.7,
-"scene": "s2a",
+"scene": "anim",
 "loud": -32.923626081691616,
 "start": 6.98,
 "len": 1.7823125,
 "h": 0.0,
-"red": -5.0
+"span": 1.5,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 6.99,
@@ -447,12 +485,14 @@
 "desc": "card flip whap with paper flutter",
 "gain_db": -12,
 "pan": -0.2,
-"scene": "s2a",
+"scene": "anim",
 "loud": -37.55730647158608,
 "start": 6.99,
 "len": 0.3567708333333333,
 "h": 0.0,
-"red": -7.5
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 7.05,
@@ -460,12 +500,14 @@
 "desc": "cartoon popcorn popping burst, rapid pops, right",
 "gain_db": -11,
 "pan": 0.7,
-"scene": "s2a",
+"scene": "anim",
 "loud": -32.923626081691616,
 "start": 7.05,
 "len": 1.7823125,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 7.08,
@@ -473,12 +515,14 @@
 "desc": "card flip whap with paper flutter",
 "gain_db": -12,
 "pan": 0.2,
-"scene": "s2a",
+"scene": "anim",
 "loud": -37.3017738089037,
 "start": 7.08,
 "len": 0.383875,
 "h": 0.0,
-"red": -5.0
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 7.17,
@@ -486,12 +530,14 @@
 "desc": "card flip whap with paper flutter",
 "gain_db": -12,
 "pan": 0.5,
-"scene": "s2a",
+"scene": "anim",
 "loud": -37.96911223307392,
 "start": 7.17,
 "len": 0.3459583333333333,
 "h": 0.0,
-"red": -10.0
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 7.6,
@@ -499,12 +545,14 @@
 "desc": "four soft bouncy thumps in sequence as the posters hop",
 "gain_db": -14,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -26.932489590642646,
 "start": 7.6,
 "len": 0.84,
 "h": 0.0,
-"red": 0.0
+"span": 0.5061875,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 7.86,
@@ -512,12 +560,14 @@
 "desc": "fast whip pan whoosh to the left with airy streak",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -24.39570126992491,
 "start": 7.5600000000000005,
 "len": 0.55,
 "h": 0.3,
-"red": 0.0
+"span": 0.24552083333333335,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 8.06,
@@ -525,12 +575,14 @@
 "desc": "magical sparkle pop with glassy chime as the wordmark appears",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -20.095965813942897,
 "start": 8.06,
 "len": 3.3047708333333334,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": -2.906395244395285
 },
 {
 "t": 8.1,
@@ -538,12 +590,14 @@
 "desc": "rising twinkling glissando, shooting star zip along an arc left to right",
 "gain_db": -10,
 "pan": 0.2,
-"scene": "s2a",
+"scene": "anim",
 "loud": -25.976103403408473,
 "start": 8.1,
 "len": 2.8696458333333332,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 8.3,
@@ -551,12 +605,14 @@
 "desc": "shimmering harp-like twinkles trailing the arc",
 "gain_db": -14,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -29.604650030911635,
 "start": 8.3,
 "len": 3.0071666666666665,
 "h": 0.0,
-"red": -2.5
+"span": 1.5,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 8.6,
@@ -564,12 +620,14 @@
 "desc": "tiny bell twinkles scattering",
 "gain_db": -16,
 "pan": 0,
-"scene": "s2a",
+"scene": "anim",
 "loud": -30.891418819942814,
 "start": 8.6,
 "len": 2.7655625,
 "h": 0.0,
-"red": -7.5
+"span": 1.5,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 9.05,
@@ -577,12 +635,14 @@
 "desc": "very fast whoosh to the left with doppler streak, scene whip-out",
 "gain_db": -7,
 "pan": -0.3,
-"scene": "s2a",
+"scene": "anim",
 "loud": -26.136477661513254,
 "start": 8.83,
 "len": 0.5,
 "h": 0.22,
-"red": 0.0
+"span": 0.25220833333333337,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 9.05,
@@ -590,12 +650,14 @@
 "desc": "fast airy whoosh, panel sweeping in from right to left with sizzling wind streaks",
 "gain_db": -8,
 "pan": 0.5,
-"scene": "s2b",
+"scene": "anim",
 "loud": -25.430968551429224,
 "start": 8.73,
 "len": 0.5,
 "h": 0.32,
-"red": 0.0
+"span": 0.16054166666666664,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 9.05,
@@ -603,12 +665,14 @@
 "desc": "stadium crowd roar swelling under the montage, chants blur, runs to 10.3",
 "gain_db": -16,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -29.622122967234844,
 "start": 8.950000000000001,
 "len": 2.6765416666666666,
 "h": 0.1,
-"red": -5.0
+"span": 1.466375,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 9.27,
@@ -616,12 +680,14 @@
 "desc": "punchy leather football kick thump with short bright snap and ball whistle-by",
 "gain_db": -6,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -30.78889382069267,
 "start": 9.267,
 "len": 1.3504791666666667,
 "h": 0.003,
-"red": -7.5
+"span": 0.2593958333333333,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 9.35,
@@ -629,12 +695,14 @@
 "desc": "tiny riser-stab tick on colour flash cut, short sparkle",
 "gain_db": -14,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -27.232938661404933,
 "start": 9.35,
 "len": 0.13004166666666667,
 "h": 0.0,
-"red": 0.0
+"span": 0.08233333333333333,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 9.57,
@@ -642,12 +710,14 @@
 "desc": "heavy basketball slam on rim, metallic rim rattle and net swish",
 "gain_db": -6,
 "pan": -0.2,
-"scene": "s2b",
+"scene": "anim",
 "loud": -24.469859080082166,
 "start": 9.57,
 "len": 0.8489375,
 "h": 0.0,
-"red": 0.0
+"span": 0.6044583333333333,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 9.65,
@@ -655,12 +725,14 @@
 "desc": "tiny riser-stab tick on colour flash cut, short sparkle",
 "gain_db": -14,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -27.232938661404933,
 "start": 9.65,
 "len": 0.13004166666666667,
 "h": 0.0,
-"red": 0.0
+"span": 0.08233333333333333,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 9.87,
@@ -668,12 +740,14 @@
 "desc": "crisp tennis racket pop plus fast ball zip down to the right",
 "gain_db": -6,
 "pan": 0.3,
-"scene": "s2b",
+"scene": "anim",
 "loud": -29.184213454717735,
 "start": 9.87,
 "len": 1.2752083333333333,
 "h": 0.0,
-"red": -2.5
+"span": 0.2684166666666667,
+"red": 0.0,
+"vo_red": -1.08098572833567
 },
 {
 "t": 9.95,
@@ -681,12 +755,14 @@
 "desc": "tiny riser-stab tick on colour flash cut, short sparkle",
 "gain_db": -14,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -27.232938661404933,
 "start": 9.95,
 "len": 0.13004166666666667,
 "h": 0.0,
-"red": 0.0
+"span": 0.08233333333333333,
+"red": 0.0,
+"vo_red": -2.2116261968415074
 },
 {
 "t": 10.13,
@@ -694,12 +770,14 @@
 "desc": "broadcast swoosh, bright layered sweep left to right with rising tail",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -25.603364537746902,
 "start": 9.73,
 "len": 0.75,
 "h": 0.4,
-"red": 0.0
+"span": 0.3091041666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 10.17,
@@ -707,12 +785,14 @@
 "desc": "meaty glove punch impact with low thud and crowd gasp",
 "gain_db": -5,
 "pan": 0.2,
-"scene": "s2b",
+"scene": "anim",
 "loud": -22.8074872510003,
 "start": 10.168,
 "len": 0.6899583333333333,
 "h": 0.002,
-"red": 0.0
+"span": 0.30314583333333334,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 10.27,
@@ -720,12 +800,14 @@
 "desc": "very fast whooshing ball flying across screen left to right with doppler",
 "gain_db": -7,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -25.862998120343498,
 "start": 10.0,
 "len": 0.6,
 "h": 0.27,
-"red": 0.0
+"span": 0.26031249999999995,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 10.48,
@@ -733,12 +815,14 @@
 "desc": "big broadcast logo slam, deep impact hit plus glassy shine sparkle",
 "gain_db": -6,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -21.424609556407525,
 "start": 10.477,
-"len": 3.606,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 10.6,
@@ -746,12 +830,14 @@
 "desc": "light UI slide-up with soft click and blip",
 "gain_db": -13,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -37.051893227542315,
 "start": 10.34,
 "len": 0.5667083333333334,
 "h": 0.26,
-"red": -2.5
+"span": 0.09272916666666664,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 10.75,
@@ -759,12 +845,14 @@
 "desc": "short shimmering sweep across logo",
 "gain_db": -16,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -34.03730241209736,
 "start": 10.35,
 "len": 0.8,
 "h": 0.4,
-"red": 0.0
+"span": 0.3620833333333333,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 11.0,
@@ -772,12 +860,14 @@
 "desc": "quick whoosh cut into match scene, crowd noise rises",
 "gain_db": -10,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -26.404311651176002,
 "start": 10.75,
 "len": 0.5,
 "h": 0.25,
-"red": 0.0
+"span": 0.2469791666666667,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 11.25,
@@ -785,12 +875,14 @@
 "desc": "hard football strike thump with air swish",
 "gain_db": -5,
 "pan": -0.3,
-"scene": "s2b",
+"scene": "anim",
 "loud": -29.00166794962459,
 "start": 11.247,
 "len": 1.4164375,
 "h": 0.003,
-"red": -7.5
+"span": 0.25954166666666667,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 11.38,
@@ -798,12 +890,14 @@
 "desc": "fast ball zipping rush toward the goal, rising",
 "gain_db": -9,
 "pan": 0.4,
-"scene": "s2b",
+"scene": "anim",
 "loud": -30.96933277448395,
 "start": 11.1775,
 "len": 0.45,
 "h": 0.2025,
-"red": -7.5
+"span": 0.19535416666666666,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 11.47,
@@ -811,12 +905,14 @@
 "desc": "ball slamming into goal net, rippling net flutter and thud",
 "gain_db": -5,
 "pan": 0.5,
-"scene": "s2b",
+"scene": "anim",
 "loud": -22.381998691950212,
 "start": 11.46,
 "len": 1.0,
 "h": 0.01,
-"red": 0.0
+"span": 0.7478125,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 11.5,
@@ -824,12 +920,14 @@
 "desc": "huge goal stinger: bright white flash hit, bass boom, then crowd eruption roar and horn",
 "gain_db": -3,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -17.15947976775927,
 "start": 11.497,
-"len": 3.606,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 11.5,
@@ -837,12 +935,14 @@
 "desc": "party cannon pop with falling confetti rustle",
 "gain_db": -10,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -28.153449767189336,
 "start": 11.5,
 "len": 2.2,
 "h": 0.0,
-"red": -5.0
+"span": 1.5,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 11.62,
@@ -850,12 +950,14 @@
 "desc": "grass slide swoosh and cheer accents",
 "gain_db": -12,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -26.330155117734222,
 "start": 11.319999999999999,
 "len": 0.9,
 "h": 0.3,
-"red": -2.5
+"span": 0.5565208333333334,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 11.95,
@@ -863,12 +965,14 @@
 "desc": "heavy diagonal stripe swoosh with gritty edge, sweeps left to right",
 "gain_db": -7,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -21.989857709203726,
 "start": 11.6,
 "len": 0.7,
 "h": 0.35,
-"red": 0.0
+"span": 0.32329166666666664,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 12.08,
@@ -876,12 +980,14 @@
 "desc": "aggressive metal-industrial logo slam, deep boom with a stopwatch tick layer",
 "gain_db": -5,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -20.51848512846386,
 "start": 12.077,
-"len": 3.606,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 12.2,
@@ -889,12 +995,14 @@
 "desc": "rapid stopwatch ticking loop accelerating",
 "gain_db": -15,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -41.54318432079029,
 "start": 12.2,
 "len": 1.806,
 "h": 0.0,
-"red": -12.5
+"span": 1.5,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 12.4,
@@ -902,12 +1010,14 @@
 "desc": "race car engine roar doppler pass left to right with tyre screech",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -23.297472746693458,
 "start": 11.85,
 "len": 1.3,
 "h": 0.55,
-"red": 0.0
+"span": 0.6162291666666666,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 12.55,
@@ -915,12 +1025,14 @@
 "desc": "cage fence rattle and short grunt",
 "gain_db": -12,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -33.789817134646995,
 "start": 12.548,
 "len": 0.8031875,
 "h": 0.002,
-"red": -10.0
+"span": 0.37366666666666665,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 12.66,
@@ -928,12 +1040,14 @@
 "desc": "hard punch impact with bone thump and cage rattle",
 "gain_db": -5,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -23.07045347922455,
 "start": 12.658,
 "len": 0.7875416666666667,
 "h": 0.002,
-"red": 0.0
+"span": 0.31325,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 12.7,
@@ -941,12 +1055,14 @@
 "desc": "fast sprinter footsteps on track, whoosh blur",
 "gain_db": -12,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -33.753309381513674,
 "start": 12.7,
 "len": 1.2890208333333333,
 "h": 0.0,
-"red": -7.5
+"span": 0.973125,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 12.85,
@@ -954,12 +1070,14 @@
 "desc": "final logo slam with white flash, sub boom and metallic ring",
 "gain_db": -4,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -20.66264182817872,
 "start": 12.847,
-"len": 3.606,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 13.1,
@@ -967,12 +1085,14 @@
 "desc": "fast whoosh panel whipping away to the left with wind streaks",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2b",
+"scene": "anim",
 "loud": -26.166692207747786,
 "start": 12.879999999999999,
 "len": 0.5,
 "h": 0.22,
-"red": -5.0
+"span": 0.2511875,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 13.1,
@@ -980,12 +1100,14 @@
 "desc": "fast airy whoosh sweeping right to left, doppler-like, with short shimmer tail",
 "gain_db": -8,
 "pan": 0.4,
-"scene": "s2c",
+"scene": "anim",
 "loud": -25.430968551429224,
 "start": 12.78,
 "len": 0.5,
 "h": 0.32,
-"red": -2.5
+"span": 0.16054166666666664,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 13.36,
@@ -993,12 +1115,14 @@
 "desc": "bouncy cartoon pop with tiny bell sparkle as ribbon title pops in",
 "gain_db": -12,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -26.294248689024055,
 "start": 13.36,
 "len": 0.22,
 "h": 0.0,
-"red": 0.0
+"span": 0.2034375,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 13.45,
@@ -1006,12 +1130,14 @@
 "desc": "two short distant seagull cries",
 "gain_db": -20,
 "pan": -0.3,
-"scene": "s2c",
+"scene": "anim",
 "loud": -33.97057925734298,
 "start": 13.45,
 "len": 2.5744166666666666,
 "h": 0.0,
-"red": -7.5
+"span": 1.5,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 13.62,
@@ -1019,12 +1145,14 @@
 "desc": "dramatic soap-opera orchestral sting: brass and timpani hit with rising string stab, short reverb",
 "gain_db": -6,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -17.417913793101633,
 "start": 13.62,
 "len": 3.1325833333333333,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 13.75,
@@ -1032,12 +1160,14 @@
 "desc": "second, smaller dramatic sting hit with low thump",
 "gain_db": -9,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -21.357434310583123,
 "start": 13.75,
 "len": 2.7353125,
 "h": 0.0,
-"red": 0.0
+"span": 1.255,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 13.8,
@@ -1045,12 +1175,14 @@
 "desc": "tiny high glassy twinkle ping for the tear sparkle",
 "gain_db": -16,
 "pan": -0.2,
-"scene": "s2c",
+"scene": "anim",
 "loud": -31.61382465427826,
 "start": 13.8,
 "len": 2.461291666666667,
 "h": 0.0,
-"red": -5.0
+"span": 1.4371666666666667,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 13.88,
@@ -1058,12 +1190,14 @@
 "desc": "third dramatic hit with tremolo string swell",
 "gain_db": -9,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -20.218112123471926,
 "start": 13.88,
 "len": 3.0732291666666667,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 14.0,
@@ -1071,12 +1205,14 @@
 "desc": "soft sugary whoosh-pop with pink sparkle, cut into Korean scene, light rain bed begins",
 "gain_db": -10,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -25.18144141646478,
 "start": 13.85,
 "len": 0.4,
 "h": 0.15,
-"red": -2.5
+"span": 0.23804166666666668,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 14.08,
@@ -1084,12 +1220,14 @@
 "desc": "cute rounded bubble pop with a kiss-like blip",
 "gain_db": -12,
 "pan": 0.4,
-"scene": "s2c",
+"scene": "anim",
 "loud": -29.08325302318855,
 "start": 14.08,
 "len": 0.2,
 "h": 0.0,
-"red": -2.5
+"span": 0.1786875,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 14.3,
@@ -1097,12 +1235,14 @@
 "desc": "second cute pop with sparkle chime, rising",
 "gain_db": -12,
 "pan": 0.3,
-"scene": "s2c",
+"scene": "anim",
 "loud": -28.54893896106844,
 "start": 14.3,
 "len": 0.2,
 "h": 0.0,
-"red": 0.0
+"span": 0.17983333333333335,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 14.45,
@@ -1110,12 +1250,14 @@
 "desc": "small heart pop and chime",
 "gain_db": -14,
 "pan": 0.3,
-"scene": "s2c",
+"scene": "anim",
 "loud": -30.050503438367823,
 "start": 14.45,
 "len": 0.16,
 "h": 0.0,
-"red": -2.5
+"span": 0.147625,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 14.6,
@@ -1123,12 +1265,14 @@
 "desc": "sharp white-flash swish and short high sizzle, one frame",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -26.526702951214826,
 "start": 14.42,
 "len": 0.18,
 "h": 0.18,
-"red": 0.0
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 14.63,
@@ -1136,12 +1280,14 @@
 "desc": "rising energy charge whine with crackling aura, gritty synth, 0.3 s",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -33.90612507891785,
 "start": 14.23,
 "len": 1.6775833333333334,
 "h": 0.4,
-"red": -17.5
+"span": 0.08,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 14.66,
@@ -1149,12 +1295,14 @@
 "desc": "comic caption box slam, snappy thwack",
 "gain_db": -12,
 "pan": -0.4,
-"scene": "s2c",
+"scene": "anim",
 "loud": -29.041299971629275,
 "start": 14.66,
 "len": 0.2999791666666667,
 "h": 0.0,
-"red": -2.5
+"span": 0.1449375,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 14.8,
@@ -1162,12 +1310,14 @@
 "desc": "quick shimmering anime eye-shine ting with rush whoosh",
 "gain_db": -10,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -25.183526450013098,
 "start": 14.8,
 "len": 2.3657291666666667,
 "h": 0.0,
-"red": -5.0
+"span": 1.0014791666666667,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 14.9,
@@ -1175,12 +1325,14 @@
 "desc": "reverse-suck implosion for black frame, 1 frame",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -42.602044135784084,
 "start": 14.59,
 "len": 0.35,
 "h": 0.31,
-"red": -10.0
+"span": 0.08,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 14.93,
@@ -1188,12 +1340,14 @@
 "desc": "huge punchy impact: deep boom kick with metallic crack and manga shockwave, short tail",
 "gain_db": -4,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -23.541895272938532,
 "start": 14.927,
-"len": 3.606,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 15.05,
@@ -1201,12 +1355,14 @@
 "desc": "three quick thuds of frames slamming in, layered clacks",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -21.43784643088557,
 "start": 15.05,
 "len": 0.83,
 "h": 0.0,
-"red": 0.0
+"span": 0.5066041666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 15.13,
@@ -1214,12 +1370,14 @@
 "desc": "bright glass shatter with rising debris scatter, fast",
 "gain_db": -5,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -23.963965376734706,
 "start": 15.13,
 "len": 1.113,
 "h": 0.0,
-"red": -2.5
+"span": 0.7868125,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 15.16,
@@ -1227,12 +1385,14 @@
 "desc": "rapid cascade of pop-pop-pop tile appearances spreading outward, cartoon blips rising in pitch",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -23.75676581011769,
 "start": 15.16,
 "len": 2.146916666666667,
 "h": 0.0,
-"red": 0.0
+"span": 0.70575,
+"red": 0.0,
+"vo_red": -5.195428507317617
 },
 {
 "t": 15.28,
@@ -1240,12 +1400,14 @@
 "desc": "rhythmic bass thump with whoosh for zoom pulse",
 "gain_db": -9,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -23.86525203864394,
 "start": 15.277,
-"len": 3.606,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 0.9177708333333333,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 15.42,
@@ -1253,12 +1415,14 @@
 "desc": "big pull-back riser whoosh with thump on downbeat, 0.4 s",
 "gain_db": -6,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -27.695340930836878,
 "start": 14.42,
-"len": 5.02,
+"len": 4.5999791666666665,
 "h": 1.0,
-"red": -12.5
+"span": 0.612625,
+"red": -8.0,
+"vo_red": 0.0
 },
 {
 "t": 15.6,
@@ -1266,12 +1430,14 @@
 "desc": "soft shiny sweep chime as light glint passes across the mosaic",
 "gain_db": -14,
 "pan": 0.2,
-"scene": "s2c",
+"scene": "anim",
 "loud": -31.482026209618184,
 "start": 15.2,
 "len": 0.9,
 "h": 0.4,
-"red": -15.0
+"span": 0.46799999999999997,
+"red": -8.0,
+"vo_red": 0.0
 },
 {
 "t": 15.81,
@@ -1279,12 +1445,14 @@
 "desc": "fast zoom-through whoosh with rising pitch into the next scene",
 "gain_db": -8,
 "pan": 0,
-"scene": "s2c",
+"scene": "anim",
 "loud": -26.693968366017298,
 "start": 15.41,
 "len": 0.6,
 "h": 0.4,
-"red": -10.0
+"span": 0.17662500000000003,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 15.81,
@@ -1292,12 +1460,14 @@
 "desc": "bright rising whoosh with a sparkly pop as a golden circle bursts open",
 "gain_db": -8,
 "pan": 0,
-"scene": "s3a",
+"scene": "anim",
 "loud": -25.980243339716893,
 "start": 15.41,
 "len": 1.4849375,
 "h": 0.4,
-"red": -7.5
+"span": 0.5516041666666667,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 15.97,
@@ -1305,12 +1475,14 @@
 "desc": "rapid cascade of soft bubbly pops as a wall of coloured tiles appears then scatters",
 "gain_db": -11,
 "pan": 0,
-"scene": "s3a",
+"scene": "anim",
 "loud": -26.486210088573156,
 "start": 15.97,
 "len": 2.2949375,
 "h": 0.0,
-"red": -7.5
+"span": 0.9441666666666667,
+"red": 0.0,
+"vo_red": -0.29032262542584153
 },
 {
 "t": 16.03,
@@ -1318,12 +1490,14 @@
 "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
 "gain_db": -11,
 "pan": 0.3,
-"scene": "s3a",
+"scene": "anim",
 "loud": -37.33887125593546,
 "start": 16.03,
 "len": 0.34520833333333334,
 "h": 0.0,
-"red": -17.5
+"span": 0.08,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 16.26,
@@ -1331,12 +1505,14 @@
 "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
 "gain_db": -14,
 "pan": 0.3,
-"scene": "s3a",
+"scene": "anim",
 "loud": -30.462721698039427,
 "start": 16.26,
 "len": 0.5,
 "h": 0.0,
-"red": -7.5
+"span": 0.35260416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 16.36,
@@ -1344,12 +1520,14 @@
 "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
 "gain_db": -11,
 "pan": 0.19999999999999998,
-"scene": "s3a",
+"scene": "anim",
 "loud": -37.33887125593546,
 "start": 16.36,
 "len": 0.34520833333333334,
 "h": 0.0,
-"red": -7.5
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 16.42,
@@ -1357,12 +1535,14 @@
 "desc": "two quick soft thuds and sparkle shimmer as posters land",
 "gain_db": -15,
 "pan": 0.3,
-"scene": "s3a",
+"scene": "anim",
 "loud": -29.265658178340164,
 "start": 16.42,
 "len": 0.58,
 "h": 0.0,
-"red": -2.5
+"span": 0.44285416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 16.59,
@@ -1370,12 +1550,14 @@
 "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
 "gain_db": -14,
 "pan": 0.19999999999999998,
-"scene": "s3a",
+"scene": "anim",
 "loud": -30.462721698039427,
 "start": 16.59,
 "len": 0.5,
 "h": 0.0,
-"red": -2.5
+"span": 0.35260416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 16.69,
@@ -1383,12 +1565,14 @@
 "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
 "gain_db": -11,
 "pan": 0.09999999999999998,
-"scene": "s3a",
+"scene": "anim",
 "loud": -37.33887125593546,
 "start": 16.69,
 "len": 0.34520833333333334,
 "h": 0.0,
-"red": -5.0
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 16.92,
@@ -1396,12 +1580,14 @@
 "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
 "gain_db": -14,
 "pan": 0.09999999999999998,
-"scene": "s3a",
+"scene": "anim",
 "loud": -30.462721698039427,
 "start": 16.92,
 "len": 0.5,
 "h": 0.0,
-"red": 0.0
+"span": 0.35260416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 17.02,
@@ -1409,12 +1595,14 @@
 "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
 "gain_db": -11,
 "pan": -5.551115123125783e-17,
-"scene": "s3a",
+"scene": "anim",
 "loud": -37.33887125593546,
 "start": 17.02,
 "len": 0.34520833333333334,
 "h": 0.0,
-"red": -2.5
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 17.08,
@@ -1422,12 +1610,14 @@
 "desc": "two quick soft thuds and sparkle shimmer as posters land",
 "gain_db": -15,
 "pan": 0.09999999999999998,
-"scene": "s3a",
+"scene": "anim",
 "loud": -29.265658178340164,
 "start": 17.08,
 "len": 0.58,
 "h": 0.0,
-"red": 0.0
+"span": 0.44285416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 17.25,
@@ -1435,12 +1625,14 @@
 "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
 "gain_db": -14,
 "pan": -5.551115123125783e-17,
-"scene": "s3a",
+"scene": "anim",
 "loud": -30.462721698039427,
 "start": 17.25,
 "len": 0.5,
 "h": 0.0,
-"red": 0.0
+"span": 0.35260416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 17.35,
@@ -1448,12 +1640,14 @@
 "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
 "gain_db": -11,
 "pan": -0.10000000000000003,
-"scene": "s3a",
+"scene": "anim",
 "loud": -37.33887125593546,
 "start": 17.35,
 "len": 0.34520833333333334,
 "h": 0.0,
-"red": 0.0
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 17.58,
@@ -1461,12 +1655,14 @@
 "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
 "gain_db": -14,
 "pan": -0.10000000000000003,
-"scene": "s3a",
+"scene": "anim",
 "loud": -30.462721698039427,
 "start": 17.58,
 "len": 0.5,
 "h": 0.0,
-"red": 0.0
+"span": 0.35260416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 17.68,
@@ -1474,12 +1670,14 @@
 "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
 "gain_db": -11,
 "pan": -0.2,
-"scene": "s3a",
+"scene": "anim",
 "loud": -37.33887125593546,
 "start": 17.68,
 "len": 0.34520833333333334,
 "h": 0.0,
-"red": -2.5
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 17.74,
@@ -1487,12 +1685,14 @@
 "desc": "two quick soft thuds and sparkle shimmer as posters land",
 "gain_db": -15,
 "pan": -0.10000000000000003,
-"scene": "s3a",
+"scene": "anim",
 "loud": -29.265658178340164,
 "start": 17.74,
 "len": 0.58,
 "h": 0.0,
-"red": 0.0
+"span": 0.44285416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 17.91,
@@ -1500,12 +1700,14 @@
 "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
 "gain_db": -14,
 "pan": -0.2,
-"scene": "s3a",
+"scene": "anim",
 "loud": -30.462721698039427,
 "start": 17.91,
 "len": 0.5,
 "h": 0.0,
-"red": 0.0
+"span": 0.35260416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 18.01,
@@ -1513,12 +1715,14 @@
 "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
 "gain_db": -11,
 "pan": -0.3000000000000001,
-"scene": "s3a",
+"scene": "anim",
 "loud": -37.33887125593546,
 "start": 18.01,
 "len": 0.34520833333333334,
 "h": 0.0,
-"red": 0.0
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 18.24,
@@ -1526,12 +1730,14 @@
 "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
 "gain_db": -14,
 "pan": -0.3000000000000001,
-"scene": "s3a",
+"scene": "anim",
 "loud": -30.462721698039427,
 "start": 18.24,
 "len": 0.5,
 "h": 0.0,
-"red": 0.0
+"span": 0.35260416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 18.4,
@@ -1539,12 +1745,14 @@
 "desc": "two quick soft thuds and sparkle shimmer as posters land",
 "gain_db": -15,
 "pan": -0.3000000000000001,
-"scene": "s3a",
+"scene": "anim",
 "loud": -29.265658178340164,
 "start": 18.4,
 "len": 0.58,
 "h": 0.0,
-"red": 0.0
+"span": 0.44285416666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 18.52,
@@ -1552,12 +1760,59 @@
 "desc": "tiny soft pop as the today marker vanishes",
 "gain_db": -16,
 "pan": 0,
-"scene": "s3a",
+"scene": "anim",
 "loud": -29.114230524042014,
 "start": 18.52,
 "len": 0.1,
 "h": 0.0,
-"red": 0.0
+"span": 0.0888125,
+"red": 0.0,
+"vo_red": -8.0
+},
+{
+"t": 18.7,
+"sound": "whip_out",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0,
+"scene": "yt",
+"loud": -27.136477661513254,
+"start": 18.48,
+"len": 0.5,
+"h": 0.22,
+"span": 0.25220833333333337,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 18.81,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
+"start": 18.81,
+"len": 0.14,
+"h": 0.0,
+"span": 0.12695833333333334,
+"red": -2.0,
+"vo_red": 0.0
+},
+{
+"t": 18.82,
+"sound": "hero_badge_pop",
+"desc": "yt edit",
+"gain_db": -6,
+"pan": 0.0,
+"scene": "yt",
+"loud": -20.409743966144084,
+"start": 18.82,
+"len": 0.2,
+"h": 0.0,
+"span": 0.18402083333333333,
+"red": 0.0,
+"vo_red": -1.9323687826471059
 },
 {
 "t": 18.85,
@@ -1565,103 +1820,59 @@
 "desc": "big airy rising whoosh as the camera pulls back",
 "gain_db": -8,
 "pan": 0,
-"scene": "s3a",
+"scene": "anim",
 "loud": -29.695340930836878,
 "start": 17.85,
-"len": 5.02,
+"len": 4.5999791666666665,
 "h": 1.0,
-"red": 0.0
+"span": 0.612625,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 19.0,
-"sound": "library_lights_shimmer",
-"desc": "warm glowing shimmer sweep, chimes rippling outward as shelves light up",
-"gain_db": -12,
-"pan": 0,
-"scene": "s3a",
-"loud": -24.15373481450554,
-"start": 19.0,
-"len": 3.4694583333333333,
+"t": 18.88,
+"sound": "sparkle_trail",
+"desc": "yt edit",
+"gain_db": -11,
+"pan": 0.0,
+"scene": "yt",
+"loud": -26.604650030911635,
+"start": 18.88,
+"len": 3.0071666666666665,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 19.3,
-"sound": "cursor_appear",
-"desc": "small UI blip as cursor appears",
-"gain_db": -14,
-"pan": 0.3,
-"scene": "s3a",
-"loud": -26.723202055135797,
-"start": 19.3,
-"len": 0.17504166666666668,
+"t": 19.2,
+"sound": "twinkle_cluster",
+"desc": "yt edit",
+"gain_db": -15,
+"pan": 0.0,
+"scene": "yt",
+"loud": -29.891418819942814,
+"start": 19.2,
+"len": 2.7655625,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 19.6,
-"sound": "hero_badge_pop",
-"desc": "cute pop with a sparkle as the new badge stamps on",
-"gain_db": -12,
-"pan": 0,
-"scene": "s3a",
-"loud": -26.409743966144084,
-"start": 19.6,
-"len": 0.2,
-"h": 0.0,
-"red": 0.0
-},
-{
-"t": 19.95,
-"sound": "cursor_click",
-"desc": "clean UI click",
+"t": 20.58,
+"sound": "whip_pan_1",
+"desc": "yt edit",
 "gain_db": -8,
-"pan": 0,
-"scene": "s3a",
-"loud": -34.84139105666375,
-"start": 19.95,
-"len": 0.30652083333333335,
-"h": 0.0,
-"red": 0.0
-},
-{
-"t": 19.98,
-"sound": "hero_pop_out",
-"desc": "springy boing whoosh with bright chime as the poster pops toward camera",
-"gain_db": -7,
-"pan": 0,
-"scene": "s3a",
-"loud": -23.634177897176656,
-"start": 19.78,
-"len": 0.6,
-"h": 0.2,
-"red": 0.0
-},
-{
-"t": 20.3,
-"sound": "zoom_in_whoosh",
-"desc": "fast rising zoom-in whoosh with light impact",
-"gain_db": -8,
-"pan": 0,
-"scene": "s3a",
-"loud": -24.350146029714875,
-"start": 19.75,
-"len": 0.7,
-"h": 0.55,
-"red": 0.0
-},
-{
-"t": 20.5,
-"sound": "poster_expand",
-"desc": "warm swelling sweep as poster expands to fill the screen, ends on soft boom",
-"gain_db": -9,
-"pan": 0,
-"scene": "s3a",
-"loud": -25.465128392024575,
-"start": 19.5,
-"len": 4.632145833333333,
-"h": 1.0,
-"red": 0.0
+"pan": 0.0,
+"scene": "yt",
+"loud": -24.39570126992491,
+"start": 20.279999999999998,
+"len": 0.55,
+"h": 0.3,
+"span": 0.24552083333333335,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 20.66,
@@ -1669,12 +1880,14 @@
 "desc": "poster shatters into a wall of live screens, quick airy whoosh with a soft pop",
 "gain_db": -8,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -24.385521371222488,
 "start": 20.36,
 "len": 0.6,
 "h": 0.3,
-"red": 0.0
+"span": 0.2738958333333334,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 20.78,
@@ -1682,12 +1895,14 @@
 "desc": "short punchy UI pop with tiny blip, red LIVE badge appears",
 "gain_db": -10,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -26.94586431406631,
 "start": 20.78,
 "len": 0.16,
 "h": 0.0,
-"red": 0.0
+"span": 0.14397916666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 21.0,
@@ -1695,12 +1910,14 @@
 "desc": "short punchy UI pop with tiny blip",
 "gain_db": -10,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -26.94586431406631,
 "start": 21.0,
 "len": 0.16,
 "h": 0.0,
-"red": 0.0
+"span": 0.14397916666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 21.22,
@@ -1708,12 +1925,14 @@
 "desc": "short punchy UI pop with tiny blip",
 "gain_db": -10,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -26.94586431406631,
 "start": 21.22,
 "len": 0.16,
 "h": 0.0,
-"red": 0.0
+"span": 0.14397916666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 21.44,
@@ -1721,12 +1940,14 @@
 "desc": "short punchy UI pop with tiny blip",
 "gain_db": -10,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -26.94586431406631,
 "start": 21.44,
 "len": 0.16,
 "h": 0.0,
-"red": 0.0
+"span": 0.14397916666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 21.66,
@@ -1734,12 +1955,14 @@
 "desc": "short punchy UI pop with tiny blip",
 "gain_db": -10,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -26.94586431406631,
 "start": 21.66,
 "len": 0.16,
 "h": 0.0,
-"red": 0.0
+"span": 0.14397916666666666,
+"red": 0.0,
+"vo_red": -3.112614830662047
 },
 {
 "t": 21.88,
@@ -1747,12 +1970,14 @@
 "desc": "short punchy UI pop with tiny blip, slightly higher",
 "gain_db": -9,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -25.94586431406631,
 "start": 21.88,
 "len": 0.16,
 "h": 0.0,
-"red": 0.0
+"span": 0.14397916666666666,
+"red": 0.0,
+"vo_red": -5.6078393478816055
 },
 {
 "t": 21.95,
@@ -1760,12 +1985,14 @@
 "desc": "fast rising whoosh, camera plunges into the screen wall, wind + shimmer",
 "gain_db": -7,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -33.924848637457465,
 "start": 21.05,
 "len": 2.7039583333333335,
 "h": 0.9,
-"red": -5.0
+"span": 0.5083125000000001,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 22.3,
@@ -1773,12 +2000,14 @@
 "desc": "bright airy burst as the light iris opens onto the silky world, sparkly swell",
 "gain_db": -8,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -28.12394353453949,
 "start": 21.900000000000002,
 "len": 1.5056458333333333,
 "h": 0.4,
-"red": 0.0
+"span": 0.5622083333333333,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 22.35,
@@ -1786,12 +2015,14 @@
 "desc": "smooth glassy shimmering pad swell, silky flowing texture",
 "gain_db": -14,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -31.320876811770386,
 "start": 21.35,
-"len": 4.8120416666666666,
+"len": 4.5999791666666665,
 "h": 1.0,
-"red": -5.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 22.4,
@@ -1799,12 +2030,14 @@
 "desc": "soft bubbly text pop",
 "gain_db": -12,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -25.542971161030515,
 "start": 22.4,
 "len": 0.14,
 "h": 0.0,
-"red": 0.0
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": -2.8423668932557122
 },
 {
 "t": 22.45,
@@ -1812,12 +2045,14 @@
 "desc": "stuttering glitchy digital ticks at low frame rate, ghost lag ball",
 "gain_db": -14,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -35.20456782496909,
 "start": 22.45,
 "len": 0.6977291666666666,
 "h": 0.0,
-"red": -7.5
+"span": 0.6495833333333333,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 22.5,
@@ -1825,12 +2060,14 @@
 "desc": "sleek bullet train gliding past, smooth air whoosh left to right, no clatter",
 "gain_db": -9,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -27.743235239569035,
 "start": 21.85,
 "len": 2.56,
 "h": 0.65,
-"red": 0.0
+"span": 0.5675833333333332,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 22.6,
@@ -1838,12 +2075,14 @@
 "desc": "fast smooth rolling whoosh of a ball overtaking, pitch rises",
 "gain_db": -9,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -28.861011111211813,
 "start": 22.375,
 "len": 0.5,
 "h": 0.225,
-"red": 0.0
+"span": 0.21062499999999998,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 22.68,
@@ -1851,12 +2090,14 @@
 "desc": "digital glitch shatter of the ghost ball, crisp pixel scatter plus bright swipe",
 "gain_db": -9,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -31.161594938053515,
 "start": 22.68,
 "len": 0.8,
 "h": 0.0,
-"red": -5.0
+"span": 0.38758333333333334,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 23.3,
@@ -1864,12 +2105,14 @@
 "desc": "soft bubbly text pop, higher",
 "gain_db": -11,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -24.542971161030515,
 "start": 23.3,
 "len": 0.14,
 "h": 0.0,
-"red": 0.0
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": -0.6235193435537827
 },
 {
 "t": 23.4,
@@ -1877,12 +2120,14 @@
 "desc": "cartoon TV pops in with a soft boing and glassy chime",
 "gain_db": -9,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -23.28982106365369,
 "start": 23.4,
 "len": 0.3,
 "h": 0.0,
-"red": 0.0
+"span": 0.2806458333333333,
+"red": 0.0,
+"vo_red": -8.0
 },
 {
 "t": 23.42,
@@ -1890,12 +2135,14 @@
 "desc": "soft bubbly text pop, higher",
 "gain_db": -11,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -24.542971161030515,
 "start": 23.42,
 "len": 0.14,
 "h": 0.0,
-"red": 0.0
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": -4.230006701856386
 },
 {
 "t": 23.55,
@@ -1903,12 +2150,14 @@
 "desc": "electronic power-down sweep, falling pitch, lights dimming, then dark hush",
 "gain_db": -8,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -19.865571395253212,
 "start": 23.55,
 "len": 1.4836666666666667,
 "h": 0.0,
-"red": 0.0
+"span": 1.204625,
+"red": 0.0,
+"vo_red": -1.2859470697937199
 },
 {
 "t": 23.7,
@@ -1916,12 +2165,29 @@
 "desc": "low soft thunk and hum as a single spotlight switches on in the dark",
 "gain_db": -10,
 "pan": 0,
-"scene": "s3b",
+"scene": "anim",
 "loud": -25.450414763441003,
 "start": 23.7,
 "len": 2.830041666666667,
 "h": 0.0,
-"red": 0.0
+"span": 1.39825,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 23.82,
+"sound": "power_down",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0,
+"scene": "yt",
+"loud": -19.865571395253212,
+"start": 23.82,
+"len": 1.4836666666666667,
+"h": 0.0,
+"span": 1.204625,
+"red": 0.0,
+"vo_red": -0.35649481523741366
 },
 {
 "t": 23.9,
@@ -1929,86 +2195,104 @@
 "desc": "dark hall low room tone, soft rising synth pad, dust-air shimmer",
 "gain_db": -16,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -32.42679313377187,
 "start": 22.4,
-"len": 5.270875,
+"len": 5.0999791666666665,
 "h": 1.5,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 24.2,
+"t": 23.9,
+"sound": "crowd_tense_bed",
+"desc": "yt edit",
+"gain_db": -16,
+"pan": 0.0,
+"scene": "yt",
+"loud": -32.70927251282369,
+"start": 23.9,
+"len": 3.6,
+"h": 0.0,
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 23.9,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
+"start": 23.9,
+"len": 0.14,
+"h": 0.0,
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": -4.551446475412169
+},
+{
+"t": 24.0,
 "sound": "drumroll_start",
-"desc": "tense snare drumroll starting very quiet, crescendo over 1.3 s",
+"desc": "yt edit",
 "gain_db": -14,
-"pan": 0,
-"scene": "s4",
+"pan": 0.0,
+"scene": "yt",
 "loud": -39.09555482851002,
-"start": 22.9,
+"start": 22.7,
 "len": 3.3065,
 "h": 1.3,
-"red": 0.0
+"span": 0.6360833333333333,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 24.6,
-"sound": "tv_bezel_buzz",
-"desc": "rising electric buzz of a vibrating TV, builds until 25.5",
-"gain_db": -20,
-"pan": 0,
-"scene": "s4",
-"loud": -45.27996125217841,
-"start": 23.700000000000003,
-"len": 1.4665,
-"h": 0.9,
-"red": -2.5
-},
-{
-"t": 24.95,
-"sound": "buffer_blip",
-"desc": "tiny digital blip as a buffering spinner fades in",
-"gain_db": -18,
-"pan": 0.1,
-"scene": "s4",
-"loud": -30.65507464975462,
-"start": 24.95,
-"len": 0.14997916666666666,
+"t": 24.85,
+"sound": "spinner_ghost_appear",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.0,
+"scene": "yt",
+"loud": -26.75375378719334,
+"start": 24.85,
+"len": 0.8185208333333334,
 "h": 0.0,
-"red": 0.0
+"span": 0.5564791666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 25.2,
+"t": 25.15,
 "sound": "glitch_burst",
-"desc": "short digital glitch stutter with bit-crush, 0.12 s",
-"gain_db": -10,
-"pan": 0,
-"scene": "s4",
-"loud": -24.965729485131643,
-"start": 25.2,
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0,
+"scene": "yt",
+"loud": -23.965729485131643,
+"start": 25.15,
 "len": 0.18,
 "h": 0.0,
-"red": 0.0
+"span": 0.17439583333333333,
+"red": 0.0,
+"vo_red": -5.782930312149629
 },
 {
-"t": 25.32,
-"sound": "freeze_stall",
-"desc": "record-stop / tape stall sucking down, then icy high tick",
+"t": 25.3,
+"sound": "tape_stop_freeze",
+"desc": "yt edit",
 "gain_db": -9,
-"pan": 0,
-"scene": "s4",
-"loud": -25.95013469227786,
-"start": 25.32,
-"len": 0.7665,
+"pan": 0.0,
+"scene": "yt",
+"loud": -24.67926520817937,
+"start": 25.3,
+"len": 1.5665,
 "h": 0.0,
-"red": 0.0
-},
-{
-"t": 25.5,
-"sound": "silence_cut",
-"desc": "hard cut of all audio to absolute silence for 0.11 s, no tail",
-"gain_db": -99,
-"pan": 0,
-"scene": "s4",
-"skip": "mute cue"
+"span": 0.8505625,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 25.61,
@@ -2016,12 +2300,14 @@
 "desc": "huge cinematic sub boom with punchy transient and short reverb tail",
 "gain_db": -3,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -17.676546615255628,
 "start": 25.607,
 "len": 6.003,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 25.61,
@@ -2029,12 +2315,14 @@
 "desc": "big glass and ice shattering, shards tinkling and falling",
 "gain_db": -5,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -23.963965376734706,
 "start": 25.61,
 "len": 1.113,
 "h": 0.0,
-"red": 0.0
+"span": 0.7868125,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 25.62,
@@ -2042,12 +2330,14 @@
 "desc": "fast expanding air shockwave whoosh",
 "gain_db": -9,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -25.10319538045686,
 "start": 25.5,
 "len": 0.5,
 "h": 0.12,
-"red": 0.0
+"span": 0.35125,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 25.75,
@@ -2055,12 +2345,14 @@
 "desc": "crackling ice fracture spreading across a screen, 0.4 s",
 "gain_db": -12,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -37.71927107276283,
 "start": 25.75,
 "len": 0.7374375,
 "h": 0.0,
-"red": -2.5
+"span": 0.4952083333333333,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
 "t": 26.55,
@@ -2068,12 +2360,14 @@
 "desc": "heavy rounded stamp thud with deep sub, second smaller boom",
 "gain_db": -4,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -20.532616980880842,
 "start": 26.547,
-"len": 3.606,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 1.2605416666666667,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 26.56,
@@ -2081,12 +2375,14 @@
 "desc": "second shockwave ring whoosh, short",
 "gain_db": -10,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -26.499288547145778,
 "start": 26.459999999999997,
 "len": 0.45,
 "h": 0.1,
-"red": 0.0
+"span": 0.32875,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 27.05,
@@ -2094,12 +2390,14 @@
 "desc": "reverse inhale whoosh building into the whip",
 "gain_db": -12,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -40.62125837008327,
 "start": 26.490000000000002,
 "len": 0.6,
 "h": 0.56,
-"red": 0.0
+"span": 0.08,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 27.2,
@@ -2107,12 +2405,14 @@
 "desc": "fast zoom-in whip whoosh with rising pitch, 0.4 s",
 "gain_db": -6,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -23.435239325133264,
 "start": 26.88,
 "len": 0.5,
 "h": 0.32,
-"red": 0.0
+"span": 0.1599375,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 27.6,
@@ -2120,12 +2420,14 @@
 "desc": "stadium crowd murmur, slowed and deep, slow-motion feel",
 "gain_db": -18,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -34.70927251282369,
 "start": 27.6,
 "len": 3.6,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 27.62,
@@ -2133,12 +2435,14 @@
 "desc": "soft landing thud as camera settles, crowd bed starts fading in slow-mo",
 "gain_db": -14,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -25.727849295717622,
 "start": 27.62,
 "len": 0.7499791666666666,
 "h": 0.0,
-"red": 0.0
+"span": 0.6816458333333333,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 28.15,
@@ -2146,12 +2450,14 @@
 "desc": "punchy leather boot smacking a ball, with deep slow-mo thump",
 "gain_db": -4,
 "pan": -0.1,
-"scene": "s4",
+"scene": "anim",
 "loud": -22.486200163896257,
 "start": 28.147,
 "len": 1.5187083333333333,
 "h": 0.003,
-"red": 0.0
+"span": 0.809375,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 28.17,
@@ -2159,12 +2465,14 @@
 "desc": "smooth airy ball whoosh trailing to the right, 1.1 s, slightly pitched down",
 "gain_db": -11,
 "pan": 0.2,
-"scene": "s4",
+"scene": "anim",
 "loud": -31.365143004525848,
 "start": 27.770000000000003,
 "len": 1.1,
 "h": 0.4,
-"red": 0.0
+"span": 0.5459999999999999,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 28.5,
@@ -2172,12 +2480,14 @@
 "desc": "tiny glass pop and sparkle as ball smashes through ghost spinner",
 "gain_db": -8,
 "pan": 0.1,
-"scene": "s4",
+"scene": "anim",
 "loud": -30.773138683677352,
 "start": 28.5,
 "len": 0.16,
 "h": 0.0,
-"red": 0.0
+"span": 0.12220833333333334,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 28.8,
@@ -2185,12 +2495,14 @@
 "desc": "cloth and body whoosh of a goalkeeper diving, small grunt",
 "gain_db": -12,
 "pan": 0.4,
-"scene": "s4",
+"scene": "anim",
 "loud": -33.10815948128094,
 "start": 28.45,
 "len": 0.8,
 "h": 0.35,
-"red": 0.0
+"span": 0.4316041666666667,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 29.28,
@@ -2198,12 +2510,14 @@
 "desc": "ball hitting net, soft rippling swish",
 "gain_db": -5,
 "pan": 0.5,
-"scene": "s4",
+"scene": "anim",
 "loud": -22.381998691950212,
 "start": 29.27,
 "len": 1.0,
 "h": 0.01,
-"red": 0.0
+"span": 0.7478125,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 29.28,
@@ -2211,12 +2525,14 @@
 "desc": "bright stinger hit and rising shimmer",
 "gain_db": -6,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -21.787272048722443,
 "start": 29.277,
 "len": 2.838208333333333,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 29.3,
@@ -2224,12 +2540,14 @@
 "desc": "huge stadium crowd eruption roar with cheers, 1.5 s",
 "gain_db": -3,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -18.10670769008499,
 "start": 29.25,
-"len": 3.5127083333333333,
+"len": 2.4499791666666666,
 "h": 0.05,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": -5.801912451115225
 },
 {
 "t": 29.32,
@@ -2237,12 +2555,14 @@
 "desc": "pop-bang of confetti cannons and paper flutter",
 "gain_db": -9,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -27.153449767189336,
 "start": 29.32,
 "len": 2.2,
 "h": 0.0,
-"red": -5.0
+"span": 1.5,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 29.4,
@@ -2250,12 +2570,14 @@
 "desc": "short air horn blast from the crowd",
 "gain_db": -12,
 "pan": 0.3,
-"scene": "s4",
+"scene": "anim",
 "loud": -22.96337255559547,
 "start": 29.38,
-"len": 3.64,
+"len": 1.22,
 "h": 0.02,
-"red": 0.0
+"span": 1.4672083333333332,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 29.9,
@@ -2263,12 +2585,14 @@
 "desc": "smooth zoom-out whoosh",
 "gain_db": -10,
 "pan": 0,
-"scene": "s4",
+"scene": "anim",
 "loud": -29.319322906170303,
 "start": 29.5,
 "len": 0.9,
 "h": 0.4,
-"red": -10.0
+"span": 0.41637499999999994,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 30.02,
@@ -2276,284 +2600,328 @@
 "desc": "fast lateral whip pan whoosh to the right with doppler",
 "gain_db": -6,
 "pan": 0.4,
-"scene": "s4",
+"scene": "anim",
 "loud": -23.201852381105738,
 "start": 29.74,
 "len": 0.5,
 "h": 0.28,
-"red": -2.5
+"span": 0.1965208333333333,
+"red": -2.0,
+"vo_red": 0.0
+},
+{
+"t": 30.1,
+"sound": "whip_in_left",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0,
+"scene": "yt",
+"loud": -28.353543782758692,
+"start": 29.78,
+"len": 0.5,
+"h": 0.32,
+"span": 0.15360416666666665,
+"red": -4.0,
+"vo_red": 0.0
 },
 {
 "t": 30.12,
-"sound": "whip_in_left",
-"desc": "fast airy whoosh sweeping left to right, short 0.3s, with a soft tail",
-"gain_db": -8,
-"pan": 0,
-"scene": "s5",
-"loud": -28.353543782758692,
-"start": 29.8,
-"len": 0.5,
-"h": 0.32,
-"red": -7.5
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
+"start": 30.12,
+"len": 0.14,
+"h": 0.0,
+"span": 0.12695833333333334,
+"red": -8.0,
+"vo_red": 0.0
 },
 {
-"t": 30.45,
+"t": 30.6,
 "sound": "thumb_slide_in",
-"desc": "soft fabric/skin slide, subtle low swish as the thumb enters",
-"gain_db": -18,
-"pan": 0.2,
-"scene": "s5",
-"loud": -39.11829526104877,
-"start": 30.39,
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.0,
+"scene": "yt",
+"loud": -35.11829526104877,
+"start": 30.540000000000003,
 "len": 0.5,
 "h": 0.06,
-"red": -2.5
+"span": 0.38989583333333333,
+"red": -6.0,
+"vo_red": 0.0
 },
 {
 "t": 30.72,
 "sound": "remote_ok_click",
-"desc": "crisp plastic remote button click with a tiny rubbery thunk",
-"gain_db": -6,
-"pan": 0,
-"scene": "s5",
-"loud": -27.608578962482383,
+"desc": "yt edit",
+"gain_db": -4,
+"pan": 0.0,
+"scene": "yt",
+"loud": -25.608578962482383,
 "start": 30.72,
 "len": 0.3644375,
 "h": 0.0,
-"red": 0.0
+"span": 0.08,
+"red": -2.0,
+"vo_red": 0.0
 },
 {
-"t": 30.74,
+"t": 30.72,
 "sound": "button_ripple_chime",
-"desc": "bright glassy magical chime with expanding shimmer as ripple rings spread",
-"gain_db": -10,
-"pan": 0,
-"scene": "s5",
-"loud": -23.532494008563134,
-"start": 30.74,
-"len": 3.203666666666667,
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0,
+"scene": "yt",
+"loud": -22.532494008563134,
+"start": 30.72,
+"len": 2.0,
 "h": 0.0,
-"red": 0.0
-},
-{
-"t": 31.0,
-"sound": "power_on_riser",
-"desc": "fast rising electric swell into white flash, 0.1s",
-"gain_db": -10,
-"pan": 0,
-"scene": "s5",
-"loud": -35.61699748083244,
-"start": 30.25,
-"len": 2.468541666666667,
-"h": 0.75,
-"red": -2.5
+"span": 1.5,
+"red": 0.0,
+"vo_red": -1.82321138287967
 },
 {
 "t": 31.1,
-"sound": "tv_power_on",
-"desc": "CRT style tv turn-on zap and warm hum, then soft low thump",
-"gain_db": -8,
-"pan": 0,
-"scene": "s5",
-"loud": -25.605686425367423,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
 "start": 31.1,
-"len": 1.4309166666666666,
+"len": 0.14,
 "h": 0.0,
-"red": 0.0
-},
-{
-"t": 31.16,
-"sound": "stadium_crowd_swell",
-"desc": "live stadium crowd murmur and cheer swelling from the tv, bright and warm",
-"gain_db": -16,
-"pan": 0,
-"scene": "s5",
-"loud": -29.295580833040468,
-"start": 30.16,
-"len": 3.3162708333333333,
-"h": 1.0,
-"red": 0.0
-},
-{
-"t": 31.6,
-"sound": "goal_crowd_roar",
-"desc": "big goal roar from the tv with a short horn, roomy",
-"gain_db": -14,
-"pan": 0,
-"scene": "s5",
-"loud": -24.688681792031456,
-"start": 31.5,
-"len": 3.8,
-"h": 0.1,
-"red": 0.0
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 32.04,
-"sound": "tiles_burst_out",
-"desc": "sparkly whoosh burst as posters fly out of the tv, rapid pops staggered",
-"gain_db": -10,
-"pan": 0,
-"scene": "s5",
-"loud": -27.792811182464888,
-"start": 31.84,
-"len": 0.8,
-"h": 0.2,
-"red": 0.0
+"sound": "tiles_pop_burst",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0,
+"scene": "yt",
+"loud": -23.75676581011769,
+"start": 32.04,
+"len": 2.146916666666667,
+"h": 0.0,
+"span": 0.70575,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 32.4,
+"t": 32.04,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
+"start": 32.04,
+"len": 0.14,
+"h": 0.0,
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 32.1,
+"sound": "confetti_pop",
+"desc": "yt edit",
+"gain_db": -11,
+"pan": 0.0,
+"scene": "yt",
+"loud": -29.153449767189336,
+"start": 32.1,
+"len": 2.2,
+"h": 0.0,
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 32.3,
 "sound": "orbit_swirl",
-"desc": "gentle airy circular whoosh loop as posters orbit, subtle glitter",
-"gain_db": -20,
-"pan": 0,
-"scene": "s5",
-"loud": -38.52277321172319,
-"start": 32.4,
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.0,
+"scene": "yt",
+"loud": -32.52277321172319,
+"start": 32.3,
 "len": 1.6,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 33.42,
-"sound": "card_flip_cascade",
-"desc": "rapid series of ten card flips, snappy paper whips, 0.7s spread",
-"gain_db": -10,
-"pan": 0,
-"scene": "s5",
-"loud": -31.02227062848272,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
 "start": 33.42,
-"len": 0.9014791666666667,
+"len": 0.14,
 "h": 0.0,
-"red": 0.0
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 33.75,
-"sound": "live_badge_pops",
-"desc": "cascade of small bubbly UI pops as red LIVE badges appear, rising pitch",
-"gain_db": -12,
-"pan": 0,
-"scene": "s5",
-"loud": -25.82911038176659,
-"start": 33.75,
-"len": 2.58675,
+"t": 33.55,
+"sound": "live_badge_pop",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": -0.5,
+"scene": "yt",
+"loud": -25.94586431406631,
+"start": 33.55,
+"len": 0.16,
 "h": 0.0,
-"red": 0.0
+"span": 0.14397916666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 34.0,
-"sound": "goal_crowd_roar_2",
-"desc": "second shorter goal roar and whistle from the tv, under the live screens",
-"gain_db": -18,
-"pan": 0.3,
-"scene": "s5",
-"loud": -33.124517572205825,
+"t": 33.95,
+"sound": "live_badge_pop",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.5,
+"scene": "yt",
+"loud": -25.94586431406631,
 "start": 33.95,
-"len": 3.4997291666666666,
-"h": 0.05,
-"red": 0.0
-},
-{
-"t": 34.6,
-"sound": "news_match_blips",
-"desc": "short broadcast beep and crowd chatter fragments under the live screens",
-"gain_db": -22,
-"pan": 0,
-"scene": "s5",
-"loud": -32.997582873328746,
-"start": 34.6,
-"len": 0.31004166666666666,
+"len": 0.16,
 "h": 0.0,
-"red": 0.0
+"span": 0.14397916666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 34.95,
-"sound": "tiles_suck_in",
-"desc": "reverse whoosh as all screens fly back into the tv, then a soft thump",
-"gain_db": -10,
-"pan": 0,
-"scene": "s5",
-"loud": -42.051843392820516,
-"start": 34.190000000000005,
-"len": 0.8,
-"h": 0.76,
-"red": 0.0
+"t": 34.4,
+"sound": "live_badge_pop",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": -0.4,
+"scene": "yt",
+"loud": -25.94586431406631,
+"start": 34.4,
+"len": 0.16,
+"h": 0.0,
+"span": 0.14397916666666666,
+"red": 0.0,
+"vo_red": -1.3850430217750187
 },
 {
 "t": 35.19,
-"sound": "camera_glide_whoosh",
-"desc": "long silky rising whoosh with warm swell for the push-in, 1s",
-"gain_db": -9,
-"pan": 0,
-"scene": "s5",
-"loud": -29.042688973215306,
-"start": 34.19,
-"len": 2.86,
-"h": 1.0,
-"red": 0.0
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
+"start": 35.19,
+"len": 0.14,
+"h": 0.0,
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 36.1,
-"sound": "cheer_laugh_family",
-"desc": "three people laughing and cheering happily, warm room, short",
-"gain_db": -11,
-"pan": 0,
-"scene": "s5",
-"loud": -32.67872962151719,
-"start": 35.68,
-"len": 1.5186041666666668,
-"h": 0.42,
-"red": -2.5
-},
-{
-"t": 36.12,
 "sound": "spinner_ghost_appear",
-"desc": "thin eerie loading blip, descending wobble, comic",
-"gain_db": -16,
-"pan": 0.5,
-"scene": "s5",
-"loud": -28.75375378719334,
-"start": 36.12,
+"desc": "yt edit",
+"gain_db": -13,
+"pan": 0.0,
+"scene": "yt",
+"loud": -25.75375378719334,
+"start": 36.1,
 "len": 0.8185208333333334,
 "h": 0.0,
-"red": 0.0
+"span": 0.5564791666666666,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
 "t": 36.2,
 "sound": "end_line_pop_sparkle",
-"desc": "punchy pop hit with golden sparkle shimmer and airy sub boom for the end line",
-"gain_db": -6,
-"pan": 0,
-"scene": "s5",
-"loud": -20.093824892766104,
+"desc": "yt edit",
+"gain_db": -7,
+"pan": 0.0,
+"scene": "yt",
+"loud": -21.093824892766104,
 "start": 36.197,
-"len": 3.606,
+"len": 3.603,
 "h": 0.003,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 36.31,
-"sound": "thumbs_up_slam_squish",
-"desc": "cartoon slam thud with squeaky squish and small bell ding, funny",
-"gain_db": -8,
-"pan": 0.5,
-"scene": "s5",
-"loud": -21.22674855984848,
-"start": 36.31,
-"len": 0.99,
+"t": 36.2,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0,
+"scene": "yt",
+"loud": -34.542971161030515,
+"start": 36.2,
+"len": 0.14,
 "h": 0.0,
-"red": 0.0
+"span": 0.12695833333333334,
+"red": 0.0,
+"vo_red": 0.0
 },
 {
-"t": 36.4,
+"t": 36.3,
+"sound": "spinner_smash",
+"desc": "yt edit",
+"gain_db": -6,
+"pan": 0.0,
+"scene": "yt",
+"loud": -28.773138683677352,
+"start": 36.3,
+"len": 0.16,
+"h": 0.0,
+"span": 0.12220833333333334,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 36.55,
+"sound": "headline_slam",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0,
+"scene": "yt",
+"loud": -26.44362214383792,
+"start": 36.547,
+"len": 2.130520833333333,
+"h": 0.003,
+"span": 0.8964791666666667,
+"red": 0.0,
+"vo_red": 0.0
+},
+{
+"t": 36.6,
 "sound": "final_sparkle_tail",
-"desc": "glittering shimmer tail fading with the fade to black",
-"gain_db": -14,
-"pan": 0,
-"scene": "s5",
-"loud": -27.8085342802164,
-"start": 36.4,
+"desc": "yt edit",
+"gain_db": -10,
+"pan": 0.0,
+"scene": "yt",
+"loud": -23.8085342802164,
+"start": 36.6,
 "len": 2.8210416666666664,
 "h": 0.0,
-"red": 0.0
+"span": 1.5,
+"red": 0.0,
+"vo_red": -8.0
 }
 ]

@@ -1,0 +1,1010 @@
+[
+{
+"t": 5.0,
+"sound": "flash_boom",
+"desc": "deep soft sub boom with bright airy shimmer as the gold-white flash bursts open",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 5.02,
+"sound": "live_badge_pop",
+"desc": "punchy cartoon pop with tiny electronic blip for the red LIVE badge",
+"gain_db": -10,
+"pan": 0.3
+},
+{
+"t": 5.06,
+"sound": "anchor_pop_in",
+"desc": "bouncy squeaky pop as the anchor scales in",
+"gain_db": -12,
+"pan": 0
+},
+{
+"t": 5.1,
+"sound": "headline_slam",
+"desc": "chunky pop-slam with short bright ding for the gold headline text",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 5.13,
+"sound": "flag_unfurl",
+"desc": "cloth flutter whoosh, flag snapping open",
+"gain_db": -12,
+"pan": -0.4
+},
+{
+"t": 5.15,
+"sound": "confetti_burst",
+"desc": "quick party-popper confetti burst with paper flutter",
+"gain_db": -11,
+"pan": 0.3
+},
+{
+"t": 5.3,
+"sound": "ticker_slide",
+"desc": "fast rising swipe with soft UI click, news ticker sliding up",
+"gain_db": -13,
+"pan": 0
+},
+{
+"t": 5.55,
+"sound": "ticker_settle",
+"desc": "small tick landing, news jingle blip",
+"gain_db": -15,
+"pan": 0
+},
+{
+"t": 5.8,
+"sound": "news_stinger",
+"desc": "short upbeat broadcast stinger, two rising synth notes",
+"gain_db": -14,
+"pan": 0
+},
+{
+"t": 6.1,
+"sound": "anchor_wave_blip",
+"desc": "light sparkle blip on the anchor wave",
+"gain_db": -18,
+"pan": 0.3
+},
+{
+"t": 6.52,
+"sound": "tile_flip_whoosh",
+"desc": "fast rattling wooden-tile clatter with swoosh as ten panels flip in sequence",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 6.62,
+"sound": "curtain_swish",
+"desc": "heavy velvet curtain sliding open with rushing swish",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 6.86,
+"sound": "netflix_slam",
+"desc": "big cinematic impact hit with bass drop and metallic ring as the red wordmark slams in",
+"gain_db": -6,
+"pan": 0
+},
+{
+"t": 6.9,
+"sound": "poster_flip_1",
+"desc": "card flip whap with paper flutter",
+"gain_db": -12,
+"pan": -0.5
+},
+{
+"t": 6.99,
+"sound": "poster_flip_2",
+"desc": "card flip whap with paper flutter",
+"gain_db": -12,
+"pan": -0.2
+},
+{
+"t": 7.08,
+"sound": "poster_flip_3",
+"desc": "card flip whap with paper flutter",
+"gain_db": -12,
+"pan": 0.2
+},
+{
+"t": 6.98,
+"sound": "popcorn_burst_l",
+"desc": "cartoon popcorn popping burst, rapid pops, left",
+"gain_db": -11,
+"pan": -0.7
+},
+{
+"t": 7.05,
+"sound": "popcorn_burst_r",
+"desc": "cartoon popcorn popping burst, rapid pops, right",
+"gain_db": -11,
+"pan": 0.7
+},
+{
+"t": 7.17,
+"sound": "poster_flip_4",
+"desc": "card flip whap with paper flutter",
+"gain_db": -12,
+"pan": 0.5
+},
+{
+"t": 7.6,
+"sound": "poster_hops",
+"desc": "four soft bouncy thumps in sequence as the posters hop",
+"gain_db": -14,
+"pan": 0
+},
+{
+"t": 7.86,
+"sound": "whip_pan_1",
+"desc": "fast whip pan whoosh to the left with airy streak",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 8.06,
+"sound": "disney_pop",
+"desc": "magical sparkle pop with glassy chime as the wordmark appears",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 8.1,
+"sound": "shooting_star",
+"desc": "rising twinkling glissando, shooting star zip along an arc left to right",
+"gain_db": -10,
+"pan": 0.2
+},
+{
+"t": 8.3,
+"sound": "sparkle_trail",
+"desc": "shimmering harp-like twinkles trailing the arc",
+"gain_db": -14,
+"pan": 0
+},
+{
+"t": 8.6,
+"sound": "twinkle_cluster",
+"desc": "tiny bell twinkles scattering",
+"gain_db": -16,
+"pan": 0
+},
+{
+"t": 9.05,
+"sound": "whip_out",
+"desc": "very fast whoosh to the left with doppler streak, scene whip-out",
+"gain_db": -7,
+"pan": -0.3
+},
+{
+"t": 9.05,
+"sound": "whip_in_right",
+"desc": "fast airy whoosh, panel sweeping in from right to left with sizzling wind streaks",
+"gain_db": -8,
+"pan": 0.5
+},
+{
+"t": 9.05,
+"sound": "stadium_crowd_roar",
+"desc": "stadium crowd roar swelling under the montage, chants blur, runs to 10.3",
+"gain_db": -16,
+"pan": 0
+},
+{
+"t": 9.27,
+"sound": "kick_impact",
+"desc": "punchy leather football kick thump with short bright snap and ball whistle-by",
+"gain_db": -6,
+"pan": 0
+},
+{
+"t": 9.35,
+"sound": "cut_flash_tick",
+"desc": "tiny riser-stab tick on colour flash cut, short sparkle",
+"gain_db": -14,
+"pan": 0
+},
+{
+"t": 9.57,
+"sound": "dunk_rim_hit",
+"desc": "heavy basketball slam on rim, metallic rim rattle and net swish",
+"gain_db": -6,
+"pan": -0.2
+},
+{
+"t": 9.65,
+"sound": "cut_flash_tick",
+"desc": "tiny riser-stab tick on colour flash cut, short sparkle",
+"gain_db": -14,
+"pan": 0
+},
+{
+"t": 9.87,
+"sound": "tennis_serve_hit",
+"desc": "crisp tennis racket pop plus fast ball zip down to the right",
+"gain_db": -6,
+"pan": 0.3
+},
+{
+"t": 9.95,
+"sound": "cut_flash_tick",
+"desc": "tiny riser-stab tick on colour flash cut, short sparkle",
+"gain_db": -14,
+"pan": 0
+},
+{
+"t": 10.13,
+"sound": "wipe_whoosh_blue",
+"desc": "broadcast swoosh, bright layered sweep left to right with rising tail",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 10.17,
+"sound": "boxing_punch_hit",
+"desc": "meaty glove punch impact with low thud and crowd gasp",
+"gain_db": -5,
+"pan": 0.2
+},
+{
+"t": 10.27,
+"sound": "ball_race_whoosh",
+"desc": "very fast whooshing ball flying across screen left to right with doppler",
+"gain_db": -7,
+"pan": 0
+},
+{
+"t": 10.48,
+"sound": "logo_slam",
+"desc": "big broadcast logo slam, deep impact hit plus glassy shine sparkle",
+"gain_db": -6,
+"pan": 0
+},
+{
+"t": 10.6,
+"sound": "scoreboard_slide",
+"desc": "light UI slide-up with soft click and blip",
+"gain_db": -13,
+"pan": 0
+},
+{
+"t": 10.75,
+"sound": "logo_shine",
+"desc": "short shimmering sweep across logo",
+"gain_db": -16,
+"pan": 0
+},
+{
+"t": 11.0,
+"sound": "cut_whip_goal",
+"desc": "quick whoosh cut into match scene, crowd noise rises",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 11.25,
+"sound": "striker_kick",
+"desc": "hard football strike thump with air swish",
+"gain_db": -5,
+"pan": -0.3
+},
+{
+"t": 11.38,
+"sound": "ball_shot_whistle",
+"desc": "fast ball zipping rush toward the goal, rising",
+"gain_db": -9,
+"pan": 0.4
+},
+{
+"t": 11.47,
+"sound": "net_hit",
+"desc": "ball slamming into goal net, rippling net flutter and thud",
+"gain_db": -5,
+"pan": 0.5
+},
+{
+"t": 11.5,
+"sound": "goal_flash_stinger",
+"desc": "huge goal stinger: bright white flash hit, bass boom, then crowd eruption roar and horn",
+"gain_db": -3,
+"pan": 0
+},
+{
+"t": 11.5,
+"sound": "confetti_pop",
+"desc": "party cannon pop with falling confetti rustle",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 11.62,
+"sound": "goal_slide_slap",
+"desc": "grass slide swoosh and cheer accents",
+"gain_db": -12,
+"pan": 0
+},
+{
+"t": 11.95,
+"sound": "wipe_whoosh_orange",
+"desc": "heavy diagonal stripe swoosh with gritty edge, sweeps left to right",
+"gain_db": -7,
+"pan": 0
+},
+{
+"t": 12.08,
+"sound": "charlton_slam",
+"desc": "aggressive metal-industrial logo slam, deep boom with a stopwatch tick layer",
+"gain_db": -5,
+"pan": 0
+},
+{
+"t": 12.2,
+"sound": "stopwatch_tick_fast",
+"desc": "rapid stopwatch ticking loop accelerating",
+"gain_db": -15,
+"pan": 0
+},
+{
+"t": 12.4,
+"sound": "race_car_pass",
+"desc": "race car engine roar doppler pass left to right with tyre screech",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 12.55,
+"sound": "cage_impact_prep",
+"desc": "cage fence rattle and short grunt",
+"gain_db": -12,
+"pan": 0
+},
+{
+"t": 12.66,
+"sound": "mma_punch_hit",
+"desc": "hard punch impact with bone thump and cage rattle",
+"gain_db": -5,
+"pan": 0
+},
+{
+"t": 12.7,
+"sound": "sprint_footsteps",
+"desc": "fast sprinter footsteps on track, whoosh blur",
+"gain_db": -12,
+"pan": 0
+},
+{
+"t": 12.85,
+"sound": "charlton_lockup_hit",
+"desc": "final logo slam with white flash, sub boom and metallic ring",
+"gain_db": -4,
+"pan": 0
+},
+{
+"t": 13.1,
+"sound": "whip_out_left",
+"desc": "fast whoosh panel whipping away to the left with wind streaks",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 13.1,
+"sound": "whip_in_right",
+"desc": "fast airy whoosh sweeping right to left, doppler-like, with short shimmer tail",
+"gain_db": -8,
+"pan": 0.4
+},
+{
+"t": 13.36,
+"sound": "title_pop_ribbon",
+"desc": "bouncy cartoon pop with tiny bell sparkle as ribbon title pops in",
+"gain_db": -12,
+"pan": 0
+},
+{
+"t": 13.45,
+"sound": "seagull_call",
+"desc": "two short distant seagull cries",
+"gain_db": -20,
+"pan": -0.3
+},
+{
+"t": 13.62,
+"sound": "soap_sting",
+"desc": "dramatic soap-opera orchestral sting: brass and timpani hit with rising string stab, short reverb",
+"gain_db": -6,
+"pan": 0
+},
+{
+"t": 13.75,
+"sound": "soap_sting_2",
+"desc": "second, smaller dramatic sting hit with low thump",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 13.88,
+"sound": "soap_sting_3",
+"desc": "third dramatic hit with tremolo string swell",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 13.8,
+"sound": "tear_glint",
+"desc": "tiny high glassy twinkle ping for the tear sparkle",
+"gain_db": -16,
+"pan": -0.2
+},
+{
+"t": 14.0,
+"sound": "hard_cut_pop",
+"desc": "soft sugary whoosh-pop with pink sparkle, cut into Korean scene, light rain bed begins",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 14.08,
+"sound": "heart_pop",
+"desc": "cute rounded bubble pop with a kiss-like blip",
+"gain_db": -12,
+"pan": 0.4
+},
+{
+"t": 14.3,
+"sound": "heart_pop_beat",
+"desc": "second cute pop with sparkle chime, rising",
+"gain_db": -12,
+"pan": 0.3
+},
+{
+"t": 14.45,
+"sound": "heart_pop_beat2",
+"desc": "small heart pop and chime",
+"gain_db": -14,
+"pan": 0.3
+},
+{
+"t": 14.6,
+"sound": "anime_flash",
+"desc": "sharp white-flash swish and short high sizzle, one frame",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 14.63,
+"sound": "power_charge",
+"desc": "rising energy charge whine with crackling aura, gritty synth, 0.3 s",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 14.66,
+"sound": "label_slam",
+"desc": "comic caption box slam, snappy thwack",
+"gain_db": -12,
+"pan": -0.4
+},
+{
+"t": 14.8,
+"sound": "eye_shine_ting",
+"desc": "quick shimmering anime eye-shine ting with rush whoosh",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 14.9,
+"sound": "silence_gap_suck",
+"desc": "reverse-suck implosion for black frame, 1 frame",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 14.93,
+"sound": "anime_impact_don",
+"desc": "huge punchy impact: deep boom kick with metallic crack and manga shockwave, short tail",
+"gain_db": -4,
+"pan": 0
+},
+{
+"t": 15.05,
+"sound": "frames_slam",
+"desc": "three quick thuds of frames slamming in, layered clacks",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 15.13,
+"sound": "glass_shatter",
+"desc": "bright glass shatter with rising debris scatter, fast",
+"gain_db": -5,
+"pan": 0
+},
+{
+"t": 15.16,
+"sound": "tiles_pop_burst",
+"desc": "rapid cascade of pop-pop-pop tile appearances spreading outward, cartoon blips rising in pitch",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 15.28,
+"sound": "beat_hit_zoom",
+"desc": "rhythmic bass thump with whoosh for zoom pulse",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 15.42,
+"sound": "pullback_whoosh",
+"desc": "big pull-back riser whoosh with thump on downbeat, 0.4 s",
+"gain_db": -6,
+"pan": 0
+},
+{
+"t": 15.6,
+"sound": "glint_sweep",
+"desc": "soft shiny sweep chime as light glint passes across the mosaic",
+"gain_db": -14,
+"pan": 0.2
+},
+{
+"t": 15.81,
+"sound": "zoom_through",
+"desc": "fast zoom-through whoosh with rising pitch into the next scene",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 15.81,
+"sound": "iris_burst_whoosh",
+"desc": "bright rising whoosh with a sparkly pop as a golden circle bursts open",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 15.97,
+"sound": "tile_wall_pops",
+"desc": "rapid cascade of soft bubbly pops as a wall of coloured tiles appears then scatters",
+"gain_db": -11,
+"pan": 0
+},
+{
+"t": 16.03,
+"sound": "calendar_flip",
+"desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+"gain_db": -11,
+"pan": 0.3
+},
+{
+"t": 16.26,
+"sound": "poster_thud",
+"desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+"gain_db": -14,
+"pan": 0.3
+},
+{
+"t": 16.42,
+"sound": "poster_thud_double",
+"desc": "two quick soft thuds and sparkle shimmer as posters land",
+"gain_db": -15,
+"pan": 0.3
+},
+{
+"t": 16.36,
+"sound": "calendar_flip",
+"desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+"gain_db": -11,
+"pan": 0.19999999999999998
+},
+{
+"t": 16.59,
+"sound": "poster_thud",
+"desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+"gain_db": -14,
+"pan": 0.19999999999999998
+},
+{
+"t": 16.69,
+"sound": "calendar_flip",
+"desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+"gain_db": -11,
+"pan": 0.09999999999999998
+},
+{
+"t": 16.92,
+"sound": "poster_thud",
+"desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+"gain_db": -14,
+"pan": 0.09999999999999998
+},
+{
+"t": 17.08,
+"sound": "poster_thud_double",
+"desc": "two quick soft thuds and sparkle shimmer as posters land",
+"gain_db": -15,
+"pan": 0.09999999999999998
+},
+{
+"t": 17.02,
+"sound": "calendar_flip",
+"desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+"gain_db": -11,
+"pan": -5.551115123125783e-17
+},
+{
+"t": 17.25,
+"sound": "poster_thud",
+"desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+"gain_db": -14,
+"pan": -5.551115123125783e-17
+},
+{
+"t": 17.35,
+"sound": "calendar_flip",
+"desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+"gain_db": -11,
+"pan": -0.10000000000000003
+},
+{
+"t": 17.58,
+"sound": "poster_thud",
+"desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+"gain_db": -14,
+"pan": -0.10000000000000003
+},
+{
+"t": 17.74,
+"sound": "poster_thud_double",
+"desc": "two quick soft thuds and sparkle shimmer as posters land",
+"gain_db": -15,
+"pan": -0.10000000000000003
+},
+{
+"t": 17.68,
+"sound": "calendar_flip",
+"desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+"gain_db": -11,
+"pan": -0.2
+},
+{
+"t": 17.91,
+"sound": "poster_thud",
+"desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+"gain_db": -14,
+"pan": -0.2
+},
+{
+"t": 18.01,
+"sound": "calendar_flip",
+"desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+"gain_db": -11,
+"pan": -0.3000000000000001
+},
+{
+"t": 18.24,
+"sound": "poster_thud",
+"desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+"gain_db": -14,
+"pan": -0.3000000000000001
+},
+{
+"t": 18.4,
+"sound": "poster_thud_double",
+"desc": "two quick soft thuds and sparkle shimmer as posters land",
+"gain_db": -15,
+"pan": -0.3000000000000001
+},
+{
+"t": 18.52,
+"sound": "today_marker_out",
+"desc": "tiny soft pop as the today marker vanishes",
+"gain_db": -16,
+"pan": 0
+},
+{
+"t": 18.85,
+"sound": "pullback_whoosh",
+"desc": "big airy rising whoosh as the camera pulls back",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 20.66,
+"sound": "wall_expand_whoosh",
+"desc": "poster shatters into a wall of live screens, quick airy whoosh with a soft pop",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 20.78,
+"sound": "live_badge_pop",
+"desc": "short punchy UI pop with tiny blip, red LIVE badge appears",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 21.0,
+"sound": "live_badge_pop",
+"desc": "short punchy UI pop with tiny blip",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 21.22,
+"sound": "live_badge_pop",
+"desc": "short punchy UI pop with tiny blip",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 21.44,
+"sound": "live_badge_pop",
+"desc": "short punchy UI pop with tiny blip",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 21.66,
+"sound": "live_badge_pop",
+"desc": "short punchy UI pop with tiny blip",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 21.88,
+"sound": "live_badge_pop",
+"desc": "short punchy UI pop with tiny blip, slightly higher",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 21.95,
+"sound": "push_through_rush",
+"desc": "fast rising whoosh, camera plunges into the screen wall, wind + shimmer",
+"gain_db": -7,
+"pan": 0
+},
+{
+"t": 22.3,
+"sound": "iris_burst",
+"desc": "bright airy burst as the light iris opens onto the silky world, sparkly swell",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 22.35,
+"sound": "silk_pad_swell",
+"desc": "smooth glassy shimmering pad swell, silky flowing texture",
+"gain_db": -14,
+"pan": 0
+},
+{
+"t": 22.4,
+"sound": "word_pop",
+"desc": "soft bubbly text pop",
+"gain_db": -12,
+"pan": 0
+},
+{
+"t": 22.45,
+"sound": "lag_flicker",
+"desc": "stuttering glitchy digital ticks at low frame rate, ghost lag ball",
+"gain_db": -14,
+"pan": 0
+},
+{
+"t": 22.5,
+"sound": "train_pass",
+"desc": "sleek bullet train gliding past, smooth air whoosh left to right, no clatter",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 22.6,
+"sound": "ball_zip",
+"desc": "fast smooth rolling whoosh of a ball overtaking, pitch rises",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 22.68,
+"sound": "glitch_wipe",
+"desc": "digital glitch shatter of the ghost ball, crisp pixel scatter plus bright swipe",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 23.3,
+"sound": "word_pop",
+"desc": "soft bubbly text pop, higher",
+"gain_db": -11,
+"pan": 0
+},
+{
+"t": 23.4,
+"sound": "tv_pop_in",
+"desc": "cartoon TV pops in with a soft boing and glassy chime",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 23.42,
+"sound": "word_pop",
+"desc": "soft bubbly text pop, higher",
+"gain_db": -11,
+"pan": 0
+},
+{
+"t": 23.55,
+"sound": "power_down",
+"desc": "electronic power-down sweep, falling pitch, lights dimming, then dark hush",
+"gain_db": -8,
+"pan": 0
+},
+{
+"t": 23.7,
+"sound": "spotlight_thunk",
+"desc": "low soft thunk and hum as a single spotlight switches on in the dark",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 23.9,
+"sound": "stage_ambience_swell",
+"desc": "dark hall low room tone, soft rising synth pad, dust-air shimmer",
+"gain_db": -16,
+"pan": 0
+},
+{
+"t": 25.61,
+"sound": "impact_boom",
+"desc": "huge cinematic sub boom with punchy transient and short reverb tail",
+"gain_db": -3,
+"pan": 0
+},
+{
+"t": 25.61,
+"sound": "glass_shatter",
+"desc": "big glass and ice shattering, shards tinkling and falling",
+"gain_db": -5,
+"pan": 0
+},
+{
+"t": 25.62,
+"sound": "shockwave_whoosh",
+"desc": "fast expanding air shockwave whoosh",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 25.75,
+"sound": "ice_crack_lines",
+"desc": "crackling ice fracture spreading across a screen, 0.4 s",
+"gain_db": -12,
+"pan": 0
+},
+{
+"t": 26.55,
+"sound": "dot_slam",
+"desc": "heavy rounded stamp thud with deep sub, second smaller boom",
+"gain_db": -4,
+"pan": 0
+},
+{
+"t": 26.56,
+"sound": "shockwave_ring",
+"desc": "second shockwave ring whoosh, short",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 27.05,
+"sound": "anticipation_suck",
+"desc": "reverse inhale whoosh building into the whip",
+"gain_db": -12,
+"pan": 0
+},
+{
+"t": 27.2,
+"sound": "whip_zoom",
+"desc": "fast zoom-in whip whoosh with rising pitch, 0.4 s",
+"gain_db": -6,
+"pan": 0
+},
+{
+"t": 27.62,
+"sound": "settle_thud",
+"desc": "soft landing thud as camera settles, crowd bed starts fading in slow-mo",
+"gain_db": -14,
+"pan": 0
+},
+{
+"t": 27.6,
+"sound": "crowd_tense_bed",
+"desc": "stadium crowd murmur, slowed and deep, slow-motion feel",
+"gain_db": -18,
+"pan": 0
+},
+{
+"t": 28.15,
+"sound": "boot_kick",
+"desc": "punchy leather boot smacking a ball, with deep slow-mo thump",
+"gain_db": -4,
+"pan": -0.1
+},
+{
+"t": 28.17,
+"sound": "ball_whoosh_trail",
+"desc": "smooth airy ball whoosh trailing to the right, 1.1 s, slightly pitched down",
+"gain_db": -11,
+"pan": 0.2
+},
+{
+"t": 28.5,
+"sound": "spinner_smash",
+"desc": "tiny glass pop and sparkle as ball smashes through ghost spinner",
+"gain_db": -8,
+"pan": 0.1
+},
+{
+"t": 28.8,
+"sound": "keeper_dive",
+"desc": "cloth and body whoosh of a goalkeeper diving, small grunt",
+"gain_db": -12,
+"pan": 0.4
+},
+{
+"t": 29.28,
+"sound": "net_swish",
+"desc": "ball hitting net, soft rippling swish",
+"gain_db": -5,
+"pan": 0.5
+},
+{
+"t": 29.28,
+"sound": "goal_flash_hit",
+"desc": "bright stinger hit and rising shimmer",
+"gain_db": -6,
+"pan": 0
+},
+{
+"t": 29.3,
+"sound": "crowd_roar",
+"desc": "huge stadium crowd eruption roar with cheers, 1.5 s",
+"gain_db": -3,
+"pan": 0
+},
+{
+"t": 29.32,
+"sound": "confetti_cannon",
+"desc": "pop-bang of confetti cannons and paper flutter",
+"gain_db": -9,
+"pan": 0
+},
+{
+"t": 29.4,
+"sound": "goal_horn",
+"desc": "short air horn blast from the crowd",
+"gain_db": -12,
+"pan": 0.3
+},
+{
+"t": 29.9,
+"sound": "zoom_out_whoosh",
+"desc": "smooth zoom-out whoosh",
+"gain_db": -10,
+"pan": 0
+},
+{
+"t": 30.02,
+"sound": "whip_right",
+"desc": "fast lateral whip pan whoosh to the right with doppler",
+"gain_db": -6,
+"pan": 0.4
+}
+]

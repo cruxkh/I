@@ -59,12 +59,12 @@ for nm, a, b in sc:
 # cue counts / notes
 by = {}
 for c in cues: by.setdefault(c['scene'], []).append(c)
-P('\ncue counts per scene (placed / listed, attenuated by overlap limiter):')
+P('\ncue counts per scene (placed / listed; limited = attenuated by overlap and/or VO-aware limiter):')
 placed_tot = 0
 for k in sorted(by):
-    cs = by[k]; pl = [c for c in cs if 'skip' not in c]; red = [c for c in pl if c.get('red', 0) < 0]
+    cs = by[k]; pl = [c for c in cs if 'skip' not in c]; red = [c for c in pl if c.get('red', 0) < 0 or c.get('vo_red', 0) < 0]
     placed_tot += len(pl)
-    P(f'  {k:4s} listed {len(cs):3d} placed {len(pl):3d} limited {len(red):2d}' + ('' if not red else '  -> ' + ', '.join(f"{c['sound']}@{c['t']:.2f}({c['red']:+.1f}dB)" for c in red[:8])))
+    P(f'  {k:4s} listed {len(cs):3d} placed {len(pl):3d} limited {len(red):2d}' + ('' if not red else '  -> ' + ', '.join(f"{c['sound']}@{c['t']:.2f}({c['red']+c.get('vo_red',0):+.1f}dB)" for c in red[:8])))
 sk = [c for c in cues if 'skip' in c]
 P(f'  total placed {placed_tot}; skipped: ' + (', '.join(f"{c['sound']}@{c['t']}({c['skip']})" for c in sk) or 'none'))
 P(f"  distinct sounds: {len(set(c['sound'] for c in cues))}")

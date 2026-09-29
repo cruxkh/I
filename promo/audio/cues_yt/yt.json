@@ -1,0 +1,359 @@
+[
+{
+"t": 0.02,
+"sound": "app_tornado_swirl_start",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0
+},
+{
+"t": 0.25,
+"sound": "heart_pop",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": -0.5
+},
+{
+"t": 0.75,
+"sound": "heart_pop_beat",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.5
+},
+{
+"t": 1.35,
+"sound": "heart_pop_beat2",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": -0.3
+},
+{
+"t": 2.02,
+"sound": "anticipation_suck",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0
+},
+{
+"t": 2.1,
+"sound": "hero_badge_pop",
+"desc": "yt edit",
+"gain_db": -10,
+"pan": 0.4
+},
+{
+"t": 3.05,
+"sound": "gold_burst_impact",
+"desc": "yt edit",
+"gain_db": -4,
+"pan": 0.0
+},
+{
+"t": 3.05,
+"sound": "tiles_suck_in",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0
+},
+{
+"t": 3.12,
+"sound": "confetti_burst",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0
+},
+{
+"t": 3.3,
+"sound": "sparkle_shower",
+"desc": "yt edit",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 3.6,
+"sound": "tv_pop_in",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.0
+},
+{
+"t": 4.05,
+"sound": "push_in_riser",
+"desc": "yt edit",
+"gain_db": -10,
+"pan": 0.0
+},
+{
+"t": 4.85,
+"sound": "whoosh_fast_push_in",
+"desc": "yt edit",
+"gain_db": -6,
+"pan": 0.0
+},
+{
+"t": 4.98,
+"sound": "zoom_through",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0
+},
+{
+"t": 18.7,
+"sound": "whip_out",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0
+},
+{
+"t": 18.82,
+"sound": "hero_badge_pop",
+"desc": "yt edit",
+"gain_db": -6,
+"pan": 0.0
+},
+{
+"t": 18.88,
+"sound": "sparkle_trail",
+"desc": "yt edit",
+"gain_db": -11,
+"pan": 0.0
+},
+{
+"t": 19.2,
+"sound": "twinkle_cluster",
+"desc": "yt edit",
+"gain_db": -15,
+"pan": 0.0
+},
+{
+"t": 20.58,
+"sound": "whip_pan_1",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0
+},
+{
+"t": 23.82,
+"sound": "power_down",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0
+},
+{
+"t": 23.9,
+"sound": "crowd_tense_bed",
+"desc": "yt edit",
+"gain_db": -16,
+"pan": 0.0
+},
+{
+"t": 24.0,
+"sound": "drumroll_start",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.0
+},
+{
+"t": 24.85,
+"sound": "spinner_ghost_appear",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.0
+},
+{
+"t": 25.15,
+"sound": "glitch_burst",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0
+},
+{
+"t": 25.3,
+"sound": "tape_stop_freeze",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0
+},
+{
+"t": 30.1,
+"sound": "whip_in_left",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0
+},
+{
+"t": 30.6,
+"sound": "thumb_slide_in",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.0
+},
+{
+"t": 30.72,
+"sound": "remote_ok_click",
+"desc": "yt edit",
+"gain_db": -4,
+"pan": 0.0
+},
+{
+"t": 30.72,
+"sound": "button_ripple_chime",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.0
+},
+{
+"t": 32.04,
+"sound": "tiles_pop_burst",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0
+},
+{
+"t": 32.1,
+"sound": "confetti_pop",
+"desc": "yt edit",
+"gain_db": -11,
+"pan": 0.0
+},
+{
+"t": 32.3,
+"sound": "orbit_swirl",
+"desc": "yt edit",
+"gain_db": -14,
+"pan": 0.0
+},
+{
+"t": 33.55,
+"sound": "live_badge_pop",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": -0.5
+},
+{
+"t": 33.95,
+"sound": "live_badge_pop",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": 0.5
+},
+{
+"t": 34.4,
+"sound": "live_badge_pop",
+"desc": "yt edit",
+"gain_db": -9,
+"pan": -0.4
+},
+{
+"t": 36.1,
+"sound": "spinner_ghost_appear",
+"desc": "yt edit",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 36.3,
+"sound": "spinner_smash",
+"desc": "yt edit",
+"gain_db": -6,
+"pan": 0.0
+},
+{
+"t": 36.2,
+"sound": "end_line_pop_sparkle",
+"desc": "yt edit",
+"gain_db": -7,
+"pan": 0.0
+},
+{
+"t": 36.55,
+"sound": "headline_slam",
+"desc": "yt edit",
+"gain_db": -8,
+"pan": 0.0
+},
+{
+"t": 36.6,
+"sound": "final_sparkle_tail",
+"desc": "yt edit",
+"gain_db": -10,
+"pan": 0.0
+},
+{
+"t": 0.0,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+},
+{
+"t": 2.0,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+},
+{
+"t": 3.05,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+},
+{
+"t": 18.81,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+},
+{
+"t": 23.9,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+},
+{
+"t": 30.12,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+},
+{
+"t": 31.1,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+},
+{
+"t": 32.04,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+},
+{
+"t": 33.42,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+},
+{
+"t": 35.19,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+},
+{
+"t": 36.2,
+"sound": "word_pop",
+"desc": "yt edit",
+"gain_db": -21,
+"pan": 0.0
+}
+]
