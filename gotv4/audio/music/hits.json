@@ -1,0 +1,44 @@
+{
+ "clutter_peak": 2.9,
+ "drop": 3.05,
+ "magic_run": 8.0,
+ "oud": 13.1,
+ "kpop": 14.0,
+ "anime": 14.6,
+ "build_start": 15.05,
+ "build_cut": 15.81,
+ "light_start": 15.81,
+ "smooth_start": 20.64,
+ "tension_start": 23.5,
+ "roll_start": 23.9,
+ "impact": 25.61,
+ "accent": 26.55,
+ "goal_peak": 29.3,
+ "triumph_start": 27.2,
+ "press_blip": 30.12,
+ "watch": 31.1,
+ "anthem_start": 32.04,
+ "tagline_chord": 36.2,
+ "fade_end": 39.5,
+ "logo_hit": 36.9,
+ "outro_end": 39.5,
+ "bpm": 120,
+ "beat": 0.5,
+ "silence": [
+  25.5,
+  25.61
+ ],
+ "gold_riser_land": 3.05,
+ "genre_stings": {
+  "cinematic": 6.7,
+  "magic": 8.0,
+  "sports": 9.05,
+  "oud": 13.1,
+  "kpop": 14.0,
+  "anime": 14.6
+ },
+ "tension": [
+  23.5,
+  25.5
+ ]
+}

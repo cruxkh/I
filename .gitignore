@@ -13,3 +13,7 @@ gotv/previews/
 gotv/node_modules
 gotv/audio/music/sf/
 gotv/audio/_mix_stems_v2.npz
+gotv4/out/
+gotv4/previews/
+gotv4/node_modules
+gotv4/audio/music/sf/

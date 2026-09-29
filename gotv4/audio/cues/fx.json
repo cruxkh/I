@@ -1,0 +1,506 @@
+[
+{
+"t": 23.9,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 35.9,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 2.0,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 34.2,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 19.7,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 5.58,
+"sound": "whip_in_left",
+"desc": "director fx",
+"gain_db": -9,
+"pan": -0.6
+},
+{
+"t": 5.76,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": -0.6
+},
+{
+"t": 6.3,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": -0.6
+},
+{
+"t": 7.03,
+"sound": "whip_in_right",
+"desc": "director fx",
+"gain_db": -9,
+"pan": 0.6
+},
+{
+"t": 7.21,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": 0.6
+},
+{
+"t": 7.75,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": 0.6
+},
+{
+"t": 10.98,
+"sound": "whip_in_right",
+"desc": "director fx",
+"gain_db": -9,
+"pan": 0.6
+},
+{
+"t": 11.16,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": 0.6
+},
+{
+"t": 11.7,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": 0.6
+},
+{
+"t": 16.48,
+"sound": "zoom_in_whoosh",
+"desc": "director fx",
+"gain_db": -9,
+"pan": 0.3
+},
+{
+"t": 16.66,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": 0.3
+},
+{
+"t": 17.2,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": 0.3
+},
+{
+"t": 18.81,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 9.93,
+"sound": "whip_in_left",
+"desc": "director fx",
+"gain_db": -9,
+"pan": -0.6
+},
+{
+"t": 10.11,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": -0.6
+},
+{
+"t": 10.55,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": -0.6
+},
+{
+"t": 20.98,
+"sound": "whip_in_left",
+"desc": "director fx",
+"gain_db": -9,
+"pan": -0.6
+},
+{
+"t": 21.16,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": -0.6
+},
+{
+"t": 21.6,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": -0.6
+},
+{
+"t": 33.42,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 30.12,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 32.04,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 22.53,
+"sound": "whip_in_right",
+"desc": "director fx",
+"gain_db": -9,
+"pan": 0.6
+},
+{
+"t": 22.71,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": 0.6
+},
+{
+"t": 23.1,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": 0.6
+},
+{
+"t": 29.33,
+"sound": "whip_in_right",
+"desc": "director fx",
+"gain_db": -9,
+"pan": 0.6
+},
+{
+"t": 29.51,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": 0.6
+},
+{
+"t": 29.9,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": 0.6
+},
+{
+"t": 35.19,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 30.9,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 1.32,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 0.65,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 8.33,
+"sound": "zoom_in_whoosh",
+"desc": "director fx",
+"gain_db": -9,
+"pan": 0.3
+},
+{
+"t": 8.51,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": 0.3
+},
+{
+"t": 8.82,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": 0.3
+},
+{
+"t": 13.28,
+"sound": "whip_in_right",
+"desc": "director fx",
+"gain_db": -9,
+"pan": 0.6
+},
+{
+"t": 13.46,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": 0.6
+},
+{
+"t": 13.75,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": 0.6
+},
+{
+"t": 28.33,
+"sound": "whip_in_right",
+"desc": "director fx",
+"gain_db": -9,
+"pan": 0.6
+},
+{
+"t": 28.51,
+"sound": "hero_badge_pop",
+"desc": "director fx",
+"gain_db": -11,
+"pan": 0.6
+},
+{
+"t": 28.8,
+"sound": "suction_snap_whoosh",
+"desc": "director fx",
+"gain_db": -14,
+"pan": 0.6
+},
+{
+"t": 32.8,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 31.6,
+"sound": "cut_flash_tick",
+"desc": "director fx",
+"gain_db": -13,
+"pan": 0.0
+},
+{
+"t": 4.6,
+"sound": "tv_pop_in",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 12.0,
+"sound": "tv_pop_in",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 15.25,
+"sound": "tv_pop_in",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 18.05,
+"sound": "tv_pop_in",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 23.0,
+"sound": "tv_pop_in",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 28.45,
+"sound": "tv_pop_in",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 37.25,
+"sound": "tv_pop_in",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 0.4,
+"sound": "heart_pop",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 7.4,
+"sound": "heart_pop",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 9.75,
+"sound": "heart_pop",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 14.8,
+"sound": "heart_pop",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 16.0,
+"sound": "heart_pop",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 22.65,
+"sound": "heart_pop",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 29.35,
+"sound": "heart_pop",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 34.45,
+"sound": "heart_pop",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 3.05,
+"sound": "beat_hit_zoom",
+"desc": "director fx",
+"gain_db": -6,
+"pan": 0.0
+},
+{
+"t": 25.61,
+"sound": "beat_hit_zoom",
+"desc": "director fx",
+"gain_db": -6,
+"pan": 0.0
+},
+{
+"t": 26.55,
+"sound": "beat_hit_zoom",
+"desc": "director fx",
+"gain_db": -6,
+"pan": 0.0
+},
+{
+"t": 29.28,
+"sound": "beat_hit_zoom",
+"desc": "director fx",
+"gain_db": -6,
+"pan": 0.0
+},
+{
+"t": 36.9,
+"sound": "beat_hit_zoom",
+"desc": "director fx",
+"gain_db": -6,
+"pan": 0.0
+},
+{
+"t": 9.35,
+"sound": "beat_hit_zoom",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 13.4,
+"sound": "beat_hit_zoom",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 31.6,
+"sound": "beat_hit_zoom",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+},
+{
+"t": 35.19,
+"sound": "beat_hit_zoom",
+"desc": "director fx",
+"gain_db": -12,
+"pan": 0.0
+}
+]

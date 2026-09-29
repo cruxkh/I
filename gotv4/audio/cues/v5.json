@@ -1,0 +1,331 @@
+[
+ {
+  "t": 15.81,
+  "sound": "iris_burst_whoosh",
+  "desc": "warm light iris burst expands to cover the previous scene",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 15.85,
+  "sound": "library_lights_shimmer",
+  "desc": "gold shimmer as the calendar appears",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 16.2,
+  "sound": "poster_thud",
+  "desc": "glossy posters slam onto the shelf with a crash-zoom punch",
+  "gain_db": -11,
+  "pan": -0.4
+ },
+ {
+  "t": 16.22,
+  "sound": "confetti_pop",
+  "desc": "confetti cannon pop with paper flutter",
+  "gain_db": -14,
+  "pan": -0.6
+ },
+ {
+  "t": 16.26,
+  "sound": "count_up_tick",
+  "desc": "fast rolling number tick for the +N new counter",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 16.42,
+  "sound": "badge_stamp",
+  "desc": "'new' sticker stamped on a poster",
+  "gain_db": -12,
+  "pan": -0.3
+ },
+ {
+  "t": 16.533,
+  "sound": "poster_thud",
+  "desc": "glossy posters slam onto the shelf with a crash-zoom punch",
+  "gain_db": -11,
+  "pan": -0.27
+ },
+ {
+  "t": 16.593,
+  "sound": "count_up_tick",
+  "desc": "fast rolling number tick for the +N new counter",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 16.867,
+  "sound": "poster_thud",
+  "desc": "glossy posters slam onto the shelf with a crash-zoom punch",
+  "gain_db": -11,
+  "pan": -0.14
+ },
+ {
+  "t": 16.887,
+  "sound": "confetti_pop",
+  "desc": "confetti cannon pop with paper flutter",
+  "gain_db": -14,
+  "pan": -0.6
+ },
+ {
+  "t": 16.927,
+  "sound": "count_up_tick",
+  "desc": "fast rolling number tick for the +N new counter",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 17.2,
+  "sound": "poster_thud",
+  "desc": "glossy posters slam onto the shelf with a crash-zoom punch",
+  "gain_db": -11,
+  "pan": -0.010000000000000009
+ },
+ {
+  "t": 17.26,
+  "sound": "count_up_tick",
+  "desc": "fast rolling number tick for the +N new counter",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 17.3,
+  "sound": "badge_stamp",
+  "desc": "'new' sticker stamped on a poster",
+  "gain_db": -12,
+  "pan": 0.3
+ },
+ {
+  "t": 17.533,
+  "sound": "poster_thud",
+  "desc": "glossy posters slam onto the shelf with a crash-zoom punch",
+  "gain_db": -11,
+  "pan": 0.12
+ },
+ {
+  "t": 17.553,
+  "sound": "confetti_pop",
+  "desc": "confetti cannon pop with paper flutter",
+  "gain_db": -14,
+  "pan": -0.6
+ },
+ {
+  "t": 17.593,
+  "sound": "count_up_tick",
+  "desc": "fast rolling number tick for the +N new counter",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 17.867,
+  "sound": "poster_thud",
+  "desc": "glossy posters slam onto the shelf with a crash-zoom punch",
+  "gain_db": -11,
+  "pan": 0.25
+ },
+ {
+  "t": 17.927,
+  "sound": "count_up_tick",
+  "desc": "fast rolling number tick for the +N new counter",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 18.2,
+  "sound": "poster_thud",
+  "desc": "glossy posters slam onto the shelf with a crash-zoom punch",
+  "gain_db": -11,
+  "pan": 0.38
+ },
+ {
+  "t": 18.22,
+  "sound": "confetti_pop",
+  "desc": "confetti cannon pop with paper flutter",
+  "gain_db": -14,
+  "pan": -0.6
+ },
+ {
+  "t": 18.26,
+  "sound": "count_up_tick",
+  "desc": "fast rolling number tick for the +N new counter",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 18.55,
+  "sound": "pullback_whoosh",
+  "desc": "camera pulls back to the whole library wall",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 18.6,
+  "sound": "count_up_total",
+  "desc": "big total counter rolls up to +74 with a rising pitch",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 18.7,
+  "sound": "sparkle_trail",
+  "desc": "sparkle sweep across the library",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 20.64,
+  "sound": "glass_shatter",
+  "desc": "glass shatter reveals the live wall",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 20.66,
+  "sound": "whoosh_low",
+  "desc": "low sub whoosh under the shatter",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 20.75,
+  "sound": "live_pop",
+  "desc": "LIVE badges pop on the beat, column 1",
+  "gain_db": -9,
+  "pan": -0.6
+ },
+ {
+  "t": 21.0,
+  "sound": "live_pop",
+  "desc": "LIVE badges pop on the beat, column 2",
+  "gain_db": -9,
+  "pan": -0.19999999999999996
+ },
+ {
+  "t": 21.25,
+  "sound": "live_pop",
+  "desc": "LIVE badges pop on the beat, column 3",
+  "gain_db": -9,
+  "pan": 0.20000000000000007
+ },
+ {
+  "t": 21.5,
+  "sound": "live_pop",
+  "desc": "LIVE badges pop on the beat, column 4",
+  "gain_db": -9,
+  "pan": 0.6000000000000002
+ },
+ {
+  "t": 21.5,
+  "sound": "beat_kick",
+  "desc": "beat punch",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 22.0,
+  "sound": "beat_kick",
+  "desc": "beat punch",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 22.05,
+  "sound": "riser_zoom",
+  "desc": "fast dolly into the wall rising whoosh",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 22.28,
+  "sound": "light_burst_whoosh",
+  "desc": "white push-through burst into the hero",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 22.32,
+  "sound": "train_pass",
+  "desc": "silky bullet train glides across the top",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 22.4,
+  "sound": "lag_glitch_tick",
+  "desc": "stuttering lag ghost step (6 fps)",
+  "gain_db": -19,
+  "pan": 0.3
+ },
+ {
+  "t": 22.45,
+  "sound": "ball_roll_whoosh",
+  "desc": "ball glides in with a smooth airy whoosh",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 22.733,
+  "sound": "lag_glitch_tick",
+  "desc": "stuttering lag ghost step (6 fps)",
+  "gain_db": -19,
+  "pan": 0.3
+ },
+ {
+  "t": 23.06,
+  "sound": "overtake_impact",
+  "desc": "ball overtakes the lag ghost: shatter and impact",
+  "gain_db": -5,
+  "pan": 0
+ },
+ {
+  "t": 23.067,
+  "sound": "lag_glitch_tick",
+  "desc": "stuttering lag ghost step (6 fps)",
+  "gain_db": -19,
+  "pan": 0.3
+ },
+ {
+  "t": 23.08,
+  "sound": "glitch_shards",
+  "desc": "LAG letters and shards fly off",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 23.1,
+  "sound": "speed_lines_zip",
+  "desc": "radial speed lines",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 23.3,
+  "sound": "word_pop_gold",
+  "desc": "'fast' word pops in",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 23.42,
+  "sound": "word_pop_cyan",
+  "desc": "'smooth' word pops in",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 23.5,
+  "sound": "power_down",
+  "desc": "dim to a dark void, electric hum drops",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 23.6,
+  "sound": "spotlight_on",
+  "desc": "spotlight cone switches on in the dark",
+  "gain_db": -10,
+  "pan": 0
+ }
+]

@@ -1,0 +1,359 @@
+[
+ {
+  "t": 9.05,
+  "sound": "whip_in_right",
+  "desc": "fast whip in from the right, streaks",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 9.05,
+  "sound": "stadium_crowd_swell",
+  "desc": "stadium crowd swell bed under the montage",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 9.07,
+  "sound": "logo_pop_sting",
+  "desc": "broadcast plate pop, sport 1 logo, bright glass tick",
+  "gain_db": -10,
+  "pan": -0.2
+ },
+ {
+  "t": 9.17,
+  "sound": "ball_zip",
+  "desc": "ball dropping to the boot",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.22,
+  "sound": "impact_hit",
+  "desc": "volley strike thump with crash zoom",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 9.23,
+  "sound": "plate_fly_whoosh",
+  "desc": "logo plate flies down into the lineup bar",
+  "gain_db": -14,
+  "pan": -0.3
+ },
+ {
+  "t": 9.24,
+  "sound": "crash_zoom_whoosh",
+  "desc": "quick zoom punch-in whoosh",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 9.35,
+  "sound": "whip_in_left",
+  "desc": "whip cut to basketball",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 9.37,
+  "sound": "logo_pop_sting",
+  "desc": "sport 2 plate pop",
+  "gain_db": -10,
+  "pan": 0.1
+ },
+ {
+  "t": 9.5,
+  "sound": "rim_clang",
+  "desc": "basketball rim clang and net swish",
+  "gain_db": -8,
+  "pan": 0.2
+ },
+ {
+  "t": 9.5,
+  "sound": "crash_zoom_whoosh",
+  "desc": "crash zoom onto the rim",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 9.53,
+  "sound": "plate_fly_whoosh",
+  "desc": "plate flies to bar",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.65,
+  "sound": "whip_in_right",
+  "desc": "whip cut to tennis",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 9.67,
+  "sound": "logo_pop_sting",
+  "desc": "sport 3 plate pop",
+  "gain_db": -10,
+  "pan": 0.2
+ },
+ {
+  "t": 9.81,
+  "sound": "racket_smash",
+  "desc": "tennis serve smash crack",
+  "gain_db": -7,
+  "pan": 0.1
+ },
+ {
+  "t": 9.81,
+  "sound": "crash_zoom_whoosh",
+  "desc": "crash zoom onto the racket",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 9.88,
+  "sound": "plate_fly_whoosh",
+  "desc": "plate flies to bar",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.95,
+  "sound": "whip_in_left",
+  "desc": "whip cut to boxing",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 9.97,
+  "sound": "logo_pop_sting",
+  "desc": "sport 4 plate pop",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 10.05,
+  "sound": "logo_pop_sting",
+  "desc": "ONE plate pop, pitch up",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 10.1,
+  "sound": "punch_impact",
+  "desc": "boxing glove punch thud",
+  "gain_db": -5,
+  "pan": 0
+ },
+ {
+  "t": 10.15,
+  "sound": "logo_pop_sting",
+  "desc": "Sport 5 plate pop, brightest",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 10.25,
+  "sound": "ball_whoosh_trail",
+  "desc": "ball racing across with energy trails",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 10.55,
+  "sound": "logo_slam_reveal",
+  "desc": "Sport 5 3D logo slam with sub-boom and flash",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 10.58,
+  "sound": "shimmer_sweep",
+  "desc": "light sweep across the logo",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 10.93,
+  "sound": "whoosh_up",
+  "desc": "logo lifts to the top",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 10.93,
+  "sound": "tile_pop",
+  "desc": "family tile pops (1 of 5)",
+  "gain_db": -13,
+  "pan": -0.4
+ },
+ {
+  "t": 10.98,
+  "sound": "tile_pop",
+  "desc": "family tile pops (2 of 5)",
+  "gain_db": -13,
+  "pan": -0.2
+ },
+ {
+  "t": 11.03,
+  "sound": "tile_pop",
+  "desc": "family tile pops (3 of 5)",
+  "gain_db": -13,
+  "pan": 0.0
+ },
+ {
+  "t": 11.08,
+  "sound": "tile_pop",
+  "desc": "family tile pops (4 of 5)",
+  "gain_db": -13,
+  "pan": 0.20000000000000007
+ },
+ {
+  "t": 11.13,
+  "sound": "tile_pop",
+  "desc": "family tile pops (5 of 5)",
+  "gain_db": -13,
+  "pan": 0.4
+ },
+ {
+  "t": 11.25,
+  "sound": "ui_swipe_out",
+  "desc": "tiles drop away",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 11.37,
+  "sound": "scoreboard_slide",
+  "desc": "scoreboard slides in",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 11.52,
+  "sound": "ball_shot",
+  "desc": "ball hit toward goal",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 11.61,
+  "sound": "goal_net_hit",
+  "desc": "net ripple and crowd roar hit",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 11.65,
+  "sound": "goal_crowd_roar",
+  "desc": "GOAL slam crowd eruption",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 11.65,
+  "sound": "confetti_pop",
+  "desc": "confetti cannons",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 12.05,
+  "sound": "whip_in_right",
+  "desc": "slab wipe to Charlton",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 12.06,
+  "sound": "bass_slam",
+  "desc": "Charlton Hebrew word slam",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 12.17,
+  "sound": "stopwatch_tick",
+  "desc": "stopwatch cut",
+  "gain_db": -13,
+  "pan": 0
+ },
+ {
+  "t": 12.25,
+  "sound": "car_whoosh",
+  "desc": "race car whips across",
+  "gain_db": -9,
+  "pan": 0.3
+ },
+ {
+  "t": 12.33,
+  "sound": "punch_impact",
+  "desc": "glove hit",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 12.41,
+  "sound": "flag_flutter",
+  "desc": "checkered flag snap",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 12.49,
+  "sound": "logo_slam_reveal",
+  "desc": "CHARLTON letters slam in",
+  "gain_db": -5,
+  "pan": 0
+ },
+ {
+  "t": 12.5,
+  "sound": "letter_tick",
+  "desc": "letter slam 1",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 12.54,
+  "sound": "letter_tick",
+  "desc": "letter slam 2",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 12.58,
+  "sound": "letter_tick",
+  "desc": "letter slam 3",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 12.62,
+  "sound": "letter_tick",
+  "desc": "letter slam 4",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 12.66,
+  "sound": "shimmer_sweep",
+  "desc": "light sweep over the wordmark",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 12.92,
+  "sound": "glitch_hit",
+  "desc": "digital glitch stutter",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 13.1,
+  "sound": "whip_out_left",
+  "desc": "whip out to the next scene",
+  "gain_db": -8,
+  "pan": 0
+ }
+]

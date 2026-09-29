@@ -1,0 +1,268 @@
+[
+ {
+  "t": 13.1,
+  "sound": "whip_in_right",
+  "desc": "fast whoosh, scene whips in from the right with RGB glitch",
+  "gain_db": -8,
+  "pan": 0.3
+ },
+ {
+  "t": 13.24,
+  "sound": "seagull_call",
+  "desc": "two gull cries over the Bosphorus",
+  "gain_db": -18,
+  "pan": -0.4
+ },
+ {
+  "t": 13.3,
+  "sound": "title_pop_ribbon",
+  "desc": "ornate gold title plaque pops with shimmer",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 13.5,
+  "sound": "string_swell_rise",
+  "desc": "short romantic strings riser into the drama",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 13.62,
+  "sound": "soap_sting",
+  "desc": "dramatic soap-opera orchestral sting, crash zoom + light leak",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 13.62,
+  "sound": "glitch_rgb_hit",
+  "desc": "short digital glitch / RGB split zap",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 13.72,
+  "sound": "heartbeat_thump",
+  "desc": "deep heartbeat lub",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 13.8,
+  "sound": "tear_glint",
+  "desc": "tear droplet glint",
+  "gain_db": -14,
+  "pan": -0.3
+ },
+ {
+  "t": 13.84,
+  "sound": "crash_zoom_thud",
+  "desc": "punchy crash zoom thud on the second beat",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 13.945,
+  "sound": "crash_zoom_thud",
+  "desc": "harder crash zoom thud",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 14.0,
+  "sound": "wipe_whoosh_pink",
+  "desc": "neon wipe whoosh into Seoul + glitch",
+  "gain_db": -9,
+  "pan": 0.2
+ },
+ {
+  "t": 14.04,
+  "sound": "neon_buzz_on",
+  "desc": "neon sign flickers on with buzz",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 14.1,
+  "sound": "rain_bed",
+  "desc": "soft rain ambience under scene",
+  "gain_db": -24,
+  "pan": 0
+ },
+ {
+  "t": 14.2,
+  "sound": "heart_pop",
+  "desc": "finger heart pop with cute sparkle",
+  "gain_db": -8,
+  "pan": 0.3
+ },
+ {
+  "t": 14.24,
+  "sound": "chime_sparkle",
+  "desc": "sparkle chime",
+  "gain_db": -16,
+  "pan": 0.3
+ },
+ {
+  "t": 14.32,
+  "sound": "whip_zoom_cut",
+  "desc": "crash zoom cut whoosh into the neon close-up",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 14.32,
+  "sound": "glitch_rgb_hit",
+  "desc": "RGB split zap on the cut",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 14.38,
+  "sound": "heart_pop",
+  "desc": "second heart pop, close-up",
+  "gain_db": -10,
+  "pan": -0.3
+ },
+ {
+  "t": 14.5,
+  "sound": "chime_sparkle",
+  "desc": "eye glint sparkle ping",
+  "gain_db": -15,
+  "pan": 0.2
+ },
+ {
+  "t": 14.6,
+  "sound": "anime_flash_whoosh",
+  "desc": "white flash + speed-line whoosh into anime",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 14.66,
+  "sound": "comic_pop",
+  "desc": "star-burst label pop",
+  "gain_db": -9,
+  "pan": -0.3
+ },
+ {
+  "t": 14.7,
+  "sound": "power_charge_rise",
+  "desc": "rising energy charge whine",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 14.78,
+  "sound": "eye_zoom_slam",
+  "desc": "extreme eye close-up crash zoom slam with glitch",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 14.86,
+  "sound": "sakura_swish",
+  "desc": "sakura petals swirl",
+  "gain_db": -18,
+  "pan": 0
+ },
+ {
+  "t": 14.9,
+  "sound": "speedline_cut",
+  "desc": "hard cut to black speed lines",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 14.94,
+  "sound": "anime_impact_don",
+  "desc": "manga impact DON, low boom + ring",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 15.05,
+  "sound": "glass_shatter",
+  "desc": "screen shatters",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 15.05,
+  "sound": "glitch_rgb_hit",
+  "desc": "RGB split zap on shatter",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 15.09,
+  "sound": "tunnel_rush_whoosh",
+  "desc": "fast 3D whoosh, logo plates fly at camera",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 15.13,
+  "sound": "title_pop_glass",
+  "desc": "glass title pops in",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 15.2,
+  "sound": "plate_flyby",
+  "desc": "glassy plate flyby swishes",
+  "gain_db": -16,
+  "pan": -0.3
+ },
+ {
+  "t": 15.28,
+  "sound": "plate_flyby",
+  "desc": "glassy plate flyby swishes",
+  "gain_db": -16,
+  "pan": 0.3
+ },
+ {
+  "t": 15.35,
+  "sound": "reverse_whoosh",
+  "desc": "pull-back reverse whoosh, decelerating",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 15.5,
+  "sound": "wall_pulse_boom",
+  "desc": "logo wall pulses on the beat, sub boom + shimmer",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 15.6,
+  "sound": "shimmer_sweep",
+  "desc": "light sweep shimmer across the wall",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 15.68,
+  "sound": "zoom_through_rise",
+  "desc": "riser into the zoom-through",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 15.75,
+  "sound": "wall_pulse_boom",
+  "desc": "second pulse, tighter",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 15.81,
+  "sound": "light_burst_hit",
+  "desc": "white light burst impact into the library",
+  "gain_db": -5,
+  "pan": 0
+ }
+]

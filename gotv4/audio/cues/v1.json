@@ -1,0 +1,212 @@
+[
+ {
+  "t": 3.05,
+  "sound": "flash_boom",
+  "desc": "gold-white flash on cut to logo",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 3.08,
+  "sound": "app_tornado_swirl_start",
+  "desc": "glass app tiles vortex spiral in",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 3.3,
+  "sound": "tiles_suck_in",
+  "desc": "tiles collapsing to point of light",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 3.45,
+  "sound": "power_charge",
+  "desc": "rising charge into the point of light",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 3.58,
+  "sound": "anticipation_suck",
+  "desc": "breath-in before burst",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 3.6,
+  "sound": "shockwave_ring",
+  "desc": "shockwave ring burst with lens flare",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 3.6,
+  "sound": "impact_boom",
+  "desc": "deep logo slam impact",
+  "gain_db": -5,
+  "pan": 0
+ },
+ {
+  "t": 3.62,
+  "sound": "logo_slam",
+  "desc": "GOTV logo slams out of the light",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 3.66,
+  "sound": "sparkle_shower",
+  "desc": "sparkle shimmer as beams open",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 3.9,
+  "sound": "glint_sweep",
+  "desc": "shine sweep across the logo",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 4.1,
+  "sound": "logo_shine",
+  "desc": "shine ting on the play O",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 4.2,
+  "sound": "twinkle_cluster",
+  "desc": "twinkles around logo",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 4.42,
+  "sound": "word_pop",
+  "desc": "tagline letters start popping",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 4.55,
+  "sound": "word_pop",
+  "desc": "tagline letter pops",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 4.7,
+  "sound": "word_pop",
+  "desc": "tagline letter pops",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 4.85,
+  "sound": "eye_shine_ting",
+  "desc": "tagline underline glint",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 4.95,
+  "sound": "whip_out",
+  "desc": "light streak whip exit",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 5.0,
+  "sound": "whip_zoom",
+  "desc": "whip into next scene",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 36.88,
+  "sound": "flash_boom",
+  "desc": "end card gold-white flash",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 36.9,
+  "sound": "shockwave_ring",
+  "desc": "end card shockwave",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 36.92,
+  "sound": "logo_slam",
+  "desc": "end card logo punch-in",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 37.1,
+  "sound": "sparkle_shower",
+  "desc": "end card sparkles",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 37.28,
+  "sound": "word_pop",
+  "desc": "tagline pops",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 37.35,
+  "sound": "glint_sweep",
+  "desc": "logo shine sweep 1",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 37.55,
+  "sound": "word_pop",
+  "desc": "tagline pops",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 37.6,
+  "sound": "logo_shine",
+  "desc": "shine ting",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 37.75,
+  "sound": "button_ripple_chime",
+  "desc": "glass pill appears",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 37.8,
+  "sound": "silk_pad_swell",
+  "desc": "end card music ring-out swell",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 38.75,
+  "sound": "glint_sweep",
+  "desc": "logo shine sweep 2",
+  "gain_db": -13,
+  "pan": 0
+ },
+ {
+  "t": 38.95,
+  "sound": "final_sparkle_tail",
+  "desc": "final sparkle tail",
+  "gain_db": -14,
+  "pan": 0
+ }
+]

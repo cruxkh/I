@@ -1,0 +1,16 @@
+# GOTV SHORT v3: THE WOW UPGRADE (read BRIEF_V2.md first, everything there still holds)
+
+The client saw v2 and wants it far more spectacular: "everyone should say WOW", pure YouTuber / TikTok creator energy: constantly changing camera moves, jump cuts, special effects popping, stickers, extra characters, REAL logos of the content, host popping in from odd angles. Aim at what top short-form editors do: speed, rhythm on the beat (120 BPM, beat = 0.5 s), overshoot pops, whip pans, zoom punches, glitch/RGB-split hits, shakes, light leaks, freeze-frame stamps, hand-drawn arrows/circles, comic bursts, emoji-like reactions.
+
+## What is new
+1. REAL LOGOS (transparent PNG, /home/user/I/gotv/assets/logos, preloaded by `vlogos.js`, global helpers): `V.drawLogo(ctx, name, x, y, maxW, maxH, {alpha, rot, glow, shadow})`, `V.logoCard(ctx, name, x, y, w, h, {tint, rot, scale, alpha, pad})` (logo on a glass card), `V.logoImg(name)` (HTMLImageElement natural size), `V.logoNames`.
+   Names: netflix, disney, prime, appletv, hbo, hulu, paramount, discovery, espn | sport5, sport5live, sport5plus, sport5gold, sport5_4k, sport1, sport2, sport3, sport4, one, one2 | kan11, keshet12, reshet13, ch14, ch9, i24, hot, yes, zoom. Most are white/colour on transparent: they read on dark/blue backgrounds; put light-coloured or glass plates behind the dark ones (check on real frames: e.g. reshet13 is dark navy, ch9 blue). Use the REAL logos wherever the voice-over mentions the brand (Netflix, Disney Plus, Sport 5, live Israeli channels, "all sports channels" = sport1-4/one/sport5 family). No real logo exists for CHARLTON: keep it as a designed typographic bumper.
+   Treat logos with premium finishing: soft glow, light sweep (clip to the logo alpha with globalCompositeOperation 'source-atop' on an offscreen canvas), glass plates, 3D tilt via V.card3d (pass the Image as src), bounce pops. Never distort their aspect ratio or recolour them.
+2. GLOBAL CAMERA/EDIT LAYER (director): the compositor now applies punch zooms on beats, whip pans, dutch tilts, shakes, RGB splits and speed lines ON TOP of your scene. So keep your scene's own camera lively too but do not fight it: no full-frame flashes longer than 0.15 s, and keep hard fast cuts inside the scene motivated.
+3. STICKERS + MASCOT (mascot agent, files `vsticker.js`, `vmascot.js`) and a director overlay layer place them globally: do not draw comic bursts/arrows yourself unless they are part of your art.
+4. The host appears as an overlay from odd angles during some animation scenes (peeking from edges, corner bubbles): keep the top-left/top-right corners and the lower-left/lower-right corners (about 380 px squares) somewhat free of critical small details in scenes 5-30 s if you can.
+
+## Rules for scene agents in this round
+- Your previous version is backed up in scenes/_v2_backup/<file>. Edit YOUR scene file(s) only. Keep timings/entries/exits/registration exactly as the brief states (start/end, tails), keep cue json updated (rewrite audio/cues/<yours>.json for the new hits).
+- Verify on real frames (full-size stills + contact sheets) at least 3 iterations. Perf <= 300 ms/frame.
+- Final reply: SHORT report (what changed, what is on screen when, problems, previews).
