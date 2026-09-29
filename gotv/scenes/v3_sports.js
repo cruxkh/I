@@ -167,7 +167,7 @@ function bgWord(ctx, y) {
   if (!CURW) return; const { i, k } = CURW, [txt, dir, size] = WORDS[i];
   slam(ctx, txt, 540, y, size * 1.12, k - .01, { dir, grad: WCOL[i], stroke: WSTK[i], glowCol: 'rgba(0,0,0,.55)', rot: i % 2 ? .05 : -.05, sw: .17, back: 'rgba(255,255,255,.9)' });
 }
-const warp = (k, ti) => k < ti - .06 ? k : k < ti + .06 ? ti - .06 + (k - ti + .06) * .28 : ti - .06 + .034 + (k - ti - .06) * 1.35;
+const warp = (k, ti) => k < ti ? k : ti + (k - ti) * .5;   // slow-mo follow-through after the impact instant
 function cam(ctx, k, o) {
   const z = lerp(o.z0 ?? 1.04, o.z1 ?? 1.24, eo(k / .3)) * (1 + (o.pop || 0) * Math.exp(-Math.max(0, k - o.ti) * 18) * (k > o.ti ? 1 : 0));
   const sh = k > o.ti ? (o.shake ?? 1) * Math.exp(-(k - o.ti) * 10) : 0, R = rng(Math.floor(k * 60) + 3);

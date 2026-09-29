@@ -1,0 +1,254 @@
+[
+ {
+  "t": 9.05,
+  "sound": "whip_in_right",
+  "desc": "fast whip in from the right, streaks",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 9.05,
+  "sound": "stadium_crowd_swell",
+  "desc": "stadium crowd swell bed under the montage",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.2,
+  "sound": "ball_zip",
+  "desc": "ball dropping to the boot",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.22,
+  "sound": "kick_impact",
+  "desc": "volley thump plus impact flash",
+  "gain_db": -6,
+  "pan": -0.1
+ },
+ {
+  "t": 9.24,
+  "sound": "ball_whoosh_trail",
+  "desc": "ball streaks away up-right",
+  "gain_db": -10,
+  "pan": 0.2
+ },
+ {
+  "t": 9.35,
+  "sound": "cut_flash_tick",
+  "desc": "hard cut flash to basketball",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 9.36,
+  "sound": "word_pop",
+  "desc": "SPORT word slam",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 9.5,
+  "sound": "dunk_rim_hit",
+  "desc": "rim rattle on the dunk",
+  "gain_db": -4,
+  "pan": 0.2
+ },
+ {
+  "t": 9.52,
+  "sound": "net_swish",
+  "desc": "net swish",
+  "gain_db": -8,
+  "pan": 0.2
+ },
+ {
+  "t": 9.65,
+  "sound": "cut_flash_tick",
+  "desc": "hard cut flash to tennis",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 9.66,
+  "sound": "word_pop",
+  "desc": "ספורט word slam",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 9.81,
+  "sound": "tennis_serve_hit",
+  "desc": "racket smash on serve, ball zips away",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 9.95,
+  "sound": "hard_cut_pop",
+  "desc": "cut to boxing",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 9.96,
+  "sound": "word_pop",
+  "desc": "SPORT word slam",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 10.1,
+  "sound": "boxing_punch_hit",
+  "desc": "heavy glove punch",
+  "gain_db": -2,
+  "pan": 0.1
+ },
+ {
+  "t": 10.1,
+  "sound": "impact_boom",
+  "desc": "sub boom with the punch",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 10.25,
+  "sound": "flash_boom",
+  "desc": "blue flash cut into Sport 5 bumper",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 10.27,
+  "sound": "ball_race_whoosh",
+  "desc": "racing ball with colour trails curves in",
+  "gain_db": -8,
+  "pan": -0.3
+ },
+ {
+  "t": 10.55,
+  "sound": "hero_badge_pop",
+  "desc": "glossy badge pops with shockwave rings",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 10.6,
+  "sound": "logo_slam",
+  "desc": "ספורט 5 wordmark lands",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 10.75,
+  "sound": "logo_shine",
+  "desc": "gloss sweep across the badge",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 11.11,
+  "sound": "scoreboard_slide",
+  "desc": "scoreboard slides in with overshoot",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 11.2,
+  "sound": "ball_whoosh_trail",
+  "desc": "ball rockets toward the goal",
+  "gain_db": -10,
+  "pan": 0.4
+ },
+ {
+  "t": 11.39,
+  "sound": "net_hit",
+  "desc": "ball hits the net, ripple",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 11.39,
+  "sound": "goal_flash_hit",
+  "desc": "goal flash",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 11.4,
+  "sound": "confetti_burst",
+  "desc": "confetti cannons",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 11.42,
+  "sound": "goal_crowd_roar",
+  "desc": "crowd erupts",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 11.49,
+  "sound": "headline_slam",
+  "desc": "GOAL text slam",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 11.96,
+  "sound": "cut_whip_goal",
+  "desc": "orange flash cut to Charlton",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 12.06,
+  "sound": "charlton_slam",
+  "desc": "צ'רלטון slam",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 12.32,
+  "sound": "stopwatch_tick_fast",
+  "desc": "stopwatch ticking cut",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 12.44,
+  "sound": "race_car_pass",
+  "desc": "race car passes",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 12.56,
+  "sound": "mma_punch_hit",
+  "desc": "glove smash cut",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 12.68,
+  "sound": "charlton_lockup_hit",
+  "desc": "CHARLTON lockup slam",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 12.98,
+  "sound": "glitch_burst",
+  "desc": "glitch out",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 13.1,
+  "sound": "whip_out_left",
+  "desc": "whip out to the series scene",
+  "gain_db": -8,
+  "pan": 0
+ }
+]
