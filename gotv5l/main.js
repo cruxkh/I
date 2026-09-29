@@ -58,7 +58,7 @@
   // ---- CINEMA moment on "וצ'רלטון" (v 11.08-11.79 + hold 'cin'): letterbox bars, projector flicker, sepia, film scratches, spotlight
   function cinema(c, t, T, hd) {
     let k = 0; if (hd && hd.k === 'cin') k = clamp((hd.d - hd.age) / .25); else if (t >= 11.06 && t < 11.8) k = clamp((t - 11.06) / .12);
-    if (k <= 0) return; const q = CL.q(T, 24), fl = .85 + .15 * hash(q * 7);
+    if (k <= 0) return; const q = CL.qs(T, 24), fl = .85 + .15 * hash(q * 7);
     c.save();
     c.globalCompositeOperation = 'multiply'; c.fillStyle = `rgba(255,214,150,${.55 * k})`; c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'source-over';
     const sp = c.createRadialGradient(W / 2, H * .45, Math.min(W, H) * .15, W / 2, H * .45, Math.max(W, H) * .7); sp.addColorStop(0, `rgba(255,240,200,${.10 * k * fl})`); sp.addColorStop(1, `rgba(0,0,0,${.7 * k})`); c.fillStyle = sp; c.fillRect(0, 0, W, H);
@@ -88,22 +88,33 @@
   }
   const grain = (() => { const g = mk(480, 270), gx = g.getContext('2d'), id = gx.createImageData(480, 270), r = rng(5); for (let i = 0; i < id.data.length; i += 4) { const v = r() * 255; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; } gx.putImageData(id, 0, 0); return g; })();
   const ACC = mk(W, H), acx = ACC.getContext('2d'), ACC2 = mk(W, H);
-  async function draw(f, opt = {}) {
-    const T = f / FPS, t = TLF.vOf(T), hd = TLF.holdAt(T), hc = holdCam(hd, t);
+  const MB = mk(W, H), mbx = MB.getContext('2d');
+  async function scenePass(ff) {   // one temporal sample of the picture (scenes + host + camera), into ACC
+    const T = ff / FPS, t = TLF.vOf(T), hd = TLF.holdAt(T), hc = holdCam(hd, t);
     cv.width = W;   // reset all canvas state
     if (window.HOST) await HOST.prepare(t);
-    A.renderFrame(f);
+    A.renderFrame(ff);
     if (window.HOST) HOST.overlay(ctx, t);
-    // whole-frame stop-motion punch at each phrase start (stepped at 12 fps)
-    const q = CL.q(t, 12); let z = 1; chunks.forEach(k => { const u = q - k.t0; if (u >= 0 && u < .34) z += .03 * (1 - u / .34); });
+    let z = 1; chunks.forEach(k => { const u = t - k.t0; if (u >= 0 && u < .4) z += .025 * Math.pow(1 - u / .4, 2); });   // soft punch-in at each phrase
     const j = CL.j(t, 77, 1.2);
     ACC.width = W; acx.save(); acx.translate(W / 2 + j[0], H / 2 + j[1]); acx.rotate(j[2]); acx.scale(z, z); acx.translate(-W / 2, -H / 2); acx.drawImage(cv, 0, 0); acx.restore();
-    if (hc) { const tmp = ACC2; tmp.width = W; const tx = tmp.getContext('2d'); tx.drawImage(ACC, 0, 0); ACC.width = W; acx.save(); acx.translate(lerp(W / 2, W / 2, hc.k), lerp(H / 2, H / 2, hc.k)); acx.scale(hc.z, hc.z); acx.translate(-lerp(W / 2, hc.fx, hc.k), -lerp(H / 2, hc.fy, hc.k)); acx.drawImage(tmp, 0, 0); acx.restore(); }
-    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.drawImage(ACC, 0, 0);
+    if (hc) { const tmp = ACC2; tmp.width = W; const tx = tmp.getContext('2d'); tx.drawImage(ACC, 0, 0); ACC.width = W; acx.save(); acx.translate(W / 2, H / 2); acx.scale(hc.z, hc.z); acx.translate(-lerp(W / 2, hc.fx, hc.k), -lerp(H / 2, hc.fy, hc.k)); acx.drawImage(tmp, 0, 0); acx.restore(); }
+  }
+  async function draw(f, opt = {}) {
+    const T = f / FPS, t = TLF.vOf(T), hd = TLF.holdAt(T);
+    const N = opt.fast ? 1 : (opt.n || 3), shutter = .5;   // temporal supersampling = natural motion blur, smooth 30 fps motion
+    MB.width = W;
+    for (let k = 0; k < N; k++) {
+      const ff = f + (N === 1 ? 0 : ((k + .5) / N - .5) * shutter);
+      await scenePass(ff);
+      mbx.globalAlpha = 1 / (k + 1); mbx.drawImage(ACC, 0, 0);
+    }
+    mbx.globalAlpha = 1;
+    cv.width = W; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.drawImage(MB, 0, 0);
     cinema(ctx, t, T, hd);
     if (!hd) captions(ctx, t); else holdOverlay(ctx, hd, T);
     if (window.G_OVERLAY) window.G_OVERLAY(ctx, t);
-    ctx.save(); ctx.globalAlpha = .07; ctx.globalCompositeOperation = 'multiply'; const gq = Math.floor(T * 12); ctx.drawImage(grain, (gq % 5) * 3, (gq % 7) * 2, 480 - 20, 270 - 20, 0, 0, W, H); ctx.restore();
+    ctx.save(); ctx.globalAlpha = .06; ctx.globalCompositeOperation = 'multiply'; const gq = Math.floor(T * 30); ctx.drawImage(grain, (gq % 5) * 3, (gq % 7) * 2, grain.width - 20, grain.height - 20, 0, 0, W, H); ctx.restore();
     const fb = Math.max(1 - inv(0, 0.15, T), inv(DURV - .25, DURV, T)); if (fb > 0) { ctx.fillStyle = `rgba(20,14,6,${fb})`; ctx.fillRect(0, 0, W, H); }
   }
   window.G = { draw, W, H, FPS, DURV, chunks };
