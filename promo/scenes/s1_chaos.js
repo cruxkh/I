@@ -7,12 +7,12 @@
   const GOLD_WHITE = '#FFF4D8';
 
   // ---------------------------------------------------------------- world layout
+  const P = window.PPL;
   const L = {
-    tv: { x: 1400, y: 450, w: 560, h: 316 },          // the big TV (right of centre)
-    old: { x: 300, y: 430, w: 430, h: 250 },          // left monitor / old TV on shelf
-    lap: { x: 1010, y: 815, w: 330, h: 205 },         // laptop on coffee table
-    yoni: { x: 760, y: 700 },                          // sofa centre (feet/seat anchor)
-    head: { x: 760, y: 470 },                          // tornado axis
+    tv: { x: P.TV.x + P.TV.w / 2, y: P.TV.y + P.TV.h / 2, w: P.TV.w, h: P.TV.h },   // the big TV (right of centre)
+    old: { x: 868, y: 322, w: 230, h: 130 },          // small monitor on the wall shelf
+    lap: { x: 1130, y: 968, w: 300, h: 190, s: 0.5 }, // laptop on the pouf
+    head: { x: 610, y: 500 },                          // tornado axis (above Yoni)
   };
   const TILE_C = [['#E50914', '#7A0710'], ['#1FB6A6', '#0B5F58'], ['#3D7BFF', '#1B3C9C'], ['#FF8A3D', '#B34A0B'], ['#B14CFF', '#5B1FA8'],
                   ['#3DDC84', '#127A44'], ['#FF4F9A', '#9C1F5A'], ['#FFC24A', '#B87A0B'], ['#38D9F5', '#0B7E96'], ['#F4F4F8', '#9A9AB8']];
@@ -89,83 +89,34 @@
     ctx.restore(); ctx.restore();
   }
 
-  // ---------------------------------------------------------------- static room (cached, world coords, 2600x1500, origin -340,-210)
-  const OX = 340, OY = 210;
-  function roomLayer() {
-    return A.layer('s1_room', 2600, 1500, (g) => {
-      g.translate(OX, OY);
-      const X0 = -340, Y0 = -210, W = 2600, H = 1500, floorY = 740;
-      // wall
-      g.fillStyle = A.linear(g, 0, Y0, 0, floorY, [[0, '#1C1450'], [1, '#3A2478']]); g.fillRect(X0, Y0, W, floorY - Y0);
-      // wall stripes texture
-      g.fillStyle = 'rgba(255,255,255,0.028)'; for (let x = X0; x < X0 + W; x += 90) g.fillRect(x, Y0, 44, floorY - Y0);
-      // window with night city (upper centre-left)
-      g.save(); g.translate(1000, 250);
-      A.rrect(g, -180, -150, 360, 300, 14); A.fillStroke(g, A.linear(g, 0, -150, 0, 150, [[0, '#0E0B2E'], [1, '#3B2A86']]), 8);
-      g.save(); A.rrect(g, -180, -150, 360, 300, 14); g.clip();
-      const r = A.rng(4); for (let i = 0; i < 22; i++) { const bw = 30 + r() * 40, bh = 40 + r() * 110; g.fillStyle = '#150F3D'; g.fillRect(-180 + i * 18 - 10, 150 - bh, bw, bh); }
-      for (let i = 0; i < 70; i++) { g.fillStyle = r() > 0.5 ? '#FFD88A' : '#7FE7FF'; g.fillRect(-175 + r() * 350, -20 + r() * 165, 4, 5); }
-      for (let i = 0; i < 26; i++) { g.fillStyle = '#fff'; g.globalAlpha = 0.4 + r() * 0.5; g.fillRect(-175 + r() * 350, -145 + r() * 100, 2.5, 2.5); }
-      g.globalAlpha = 1; g.fillStyle = '#FFF6E0'; g.beginPath(); g.arc(110, -85, 22, 0, TAU); g.fill(); g.restore();
-      g.fillStyle = A.OUTLINE; g.fillRect(-5, -150, 10, 300); g.fillRect(-180, -5, 360, 10);
-      g.restore();
-      // curtains
-      for (const s of [-1, 1]) { g.beginPath(); const cx = 1000 + s * 215; g.moveTo(cx - 40, 90); g.lineTo(cx + 40, 90); g.lineTo(cx + 46, 470); g.lineTo(cx - 46, 470); g.closePath(); A.fillStroke(g, s < 0 ? '#C23C7A' : '#B03270', 6); g.strokeStyle = 'rgba(0,0,0,0.22)'; g.lineWidth = 5; for (let i = -2; i <= 2; i++) { g.beginPath(); g.moveTo(cx + i * 14, 100); g.lineTo(cx + i * 15, 460); g.stroke(); } }
-      // shelf w/ books (left wall)
-      g.save(); g.translate(300, 0);
-      A.rrect(g, -260, 130, 520, 26, 6); A.fillStroke(g, '#5B3A2A', 6); // shelf above monitor
-      const rr = A.rng(8); let bx = -250; const bc = ['#FF4F9A', '#38D9F5', '#FFC24A', '#3DDC84', '#B14CFF', '#FF8A3D'];
-      while (bx < 210) { const bw = 18 + rr() * 18, bh = 50 + rr() * 45; A.rrect(g, bx, 130 - bh, bw, bh, 3); A.fillStroke(g, bc[Math.floor(rr() * 6)], 4); bx += bw + 3; }
-      g.restore();
-      // plant right of window
-      g.save(); g.translate(1990, 690);
-      A.rrect(g, -55, -60, 110, 110, 14); A.fillStroke(g, '#FF8A3D', 6);
-      for (let i = 0; i < 9; i++) { const a = -Math.PI / 2 + (i - 4) * 0.32; g.beginPath(); g.ellipse(Math.cos(a) * 75, -60 + Math.sin(a) * 120, 22, 70, a + Math.PI / 2, 0, TAU); A.fillStroke(g, i % 2 ? '#2FBF71' : '#1E9E5B', 5); }
-      g.restore();
-      // floor
-      g.fillStyle = A.linear(g, 0, floorY, 0, Y0 + H, [[0, '#4A2F5E'], [1, '#22123A']]); g.fillRect(X0, floorY, W, H - (floorY - Y0));
-      g.fillStyle = 'rgba(255,255,255,0.05)'; for (let y = floorY + 30; y < Y0 + H; y += 60) g.fillRect(X0, y, W, 3);
-      g.fillStyle = '#1a1330'; g.fillRect(X0, floorY - 8, W, 12); // baseboard
-      // rug
-      g.save(); g.translate(950, 900); A.ellipse(g, 0, 0, 820, 190); A.fillStroke(g, '#7A2C6E', 6); A.ellipse(g, 0, 0, 700, 150); g.strokeStyle = '#FFC24A'; g.lineWidth = 6; g.setLineDash([26, 16]); g.stroke(); g.setLineDash([]); g.restore();
-      // TV cabinet
-      g.save(); g.translate(L.tv.x, 690);
-      A.rrect(g, -420, -26, 840, 100, 14); A.fillStroke(g, '#6B4330', 7); g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(-410, 22, 820, 6);
-      A.rrect(g, -300, -2, 220, 66, 8); A.fillStroke(g, '#4B2E20', 5); A.rrect(g, 80, -2, 220, 66, 8); A.fillStroke(g, '#4B2E20', 5);
-      g.restore();
-      // old TV shelf/table
-      g.save(); g.translate(L.old.x, 690); A.rrect(g, -250, 30, 500, 90, 12); A.fillStroke(g, '#6B4330', 7); g.restore();
-      // coffee table
-      g.save(); g.translate(1010, 900);
-      A.rrect(g, -270, -80, 540, 30, 10); A.fillStroke(g, '#8A5A3A', 7);
-      for (const s of [-1, 1]) { A.rrect(g, s * 220 - 12, -52, 24, 116, 6); A.fillStroke(g, '#5B3A2A', 6); }
-      g.restore();
-      // cables (tangle) on floor
-      const cr = A.rng(21);
-      const cabs = [['#0B0818', 1100, 770, 700, 990, 1380, 990, 1620, 770], ['#0B0818', 320, 770, 500, 1040, 900, 1060, 1200, 940], ['#3A3A52', 1450, 770, 1200, 1100, 760, 1080, 560, 930], ['#0B0818', 1000, 770, 1500, 1050, 260, 1020, 140, 860]];
+  // ---------------------------------------------------------------- static clutter over the kit room (cables, remotes, pouf)
+  function clutterLayer() {
+    return A.layer('s1_clutter', 1920, 1080, (g) => {
+      // cables snaking across the floor from the TV console, tangled
+      const cabs = [['#0B0818', 1450, 812, 1200, 1010, 800, 1000, 500, 960], ['#0B0818', 1300, 812, 1700, 1000, 1000, 1080, 260, 900], ['#3A3A52', 1600, 812, 1300, 900, 1250, 1040, 900, 990], ['#0B0818', 1500, 812, 1750, 950, 1400, 1020, 1120, 900], ['#E8E8F2', 1350, 812, 1050, 980, 760, 930, 420, 1030]];
       for (const c of cabs) {
         g.beginPath(); g.moveTo(c[1], c[2]); g.bezierCurveTo(c[3], c[4], c[5], c[6], c[7], c[8]); g.lineCap = 'round';
-        g.strokeStyle = A.OUTLINE; g.lineWidth = 16; g.stroke(); g.strokeStyle = c[0] === '#0B0818' ? '#4B4570' : '#8888A8'; g.lineWidth = 8; g.stroke();
+        g.strokeStyle = A.OUTLINE; g.lineWidth = 17; g.stroke(); g.strokeStyle = c[0] === '#0B0818' ? '#4B4570' : (c[0] === '#E8E8F2' ? '#fff' : '#8888A8'); g.lineWidth = 8; g.stroke();
       }
       // power strip
-      A.rrect(g, 1040, 750, 130, 34, 8); A.fillStroke(g, '#F2F2F8', 5); for (let i = 0; i < 4; i++) { g.fillStyle = '#333'; g.fillRect(1056 + i * 28, 762, 14, 10); } g.fillStyle = '#FF4A3D'; g.beginPath(); g.arc(1160, 767, 5, 0, TAU); g.fill();
+      g.save(); g.translate(1215, 985); g.rotate(-0.08); A.rrect(g, -70, -18, 140, 36, 8); A.fillStroke(g, '#F2F2F8', 5); for (let i = 0; i < 4; i++) { g.fillStyle = '#333'; g.fillRect(-54 + i * 30, -6, 16, 12); } g.fillStyle = '#FF4A3D'; g.beginPath(); g.arc(56, 0, 5, 0, TAU); g.fill(); g.restore();
+      // pouf under the laptop
+      g.save(); g.translate(1130, 985); A.ellipse(g, 0, 62, 110, 22); g.fillStyle = 'rgba(8,4,26,.35)'; g.fill();
+      A.rrect(g, -96, -30, 192, 84, 30); A.fillStroke(g, A.linear(g, 0, -30, 0, 54, [[0, '#38D9F5'], [1, '#1F8FB0']]), 6); g.restore();
       // remotes strewn about
-      const rem = [[520, 990, 0.6], [1250, 1020, -0.4], [1480, 930, 1.2], [700, 1090, -1.0], [1010, 1060, 0.2], [230, 940, -0.7], [1700, 1010, 0.9]];
-      rem.forEach(([x, y, a], i) => {
-        g.save(); g.translate(x, y); g.rotate(a); A.rrect(g, -18, -62, 36, 124, 12); A.fillStroke(g, ['#2E2E44', '#E8E8F2', '#3B3B58'][i % 3], 5);
-        for (let k = 0; k < 6; k++) { g.beginPath(); g.arc(-7 + (k % 2) * 14, -32 + Math.floor(k / 2) * 20, 5, 0, TAU); g.fillStyle = [D.red, D.cyan, D.gold, D.green, D.magenta, '#fff'][(k + i) % 6]; g.fill(); }
-        g.restore();
-      });
-      // wall sockets etc
-      // sticky notes (wall by left monitor, tv side)
-      const notes = [[110, 300, -0.15, '#FFE066', '1234'], [500, 300, 0.1, '#FF9EC4', 'PASS?'], [105, 400, 0.12, '#9EF0FF', 'אבא123'], [1010, 470, 0.08, '#FFE066', 'Zapp: xY7!'], [1820, 250, -0.1, '#FF9EC4', 'איפה\nהשלט?!'], [1780, 640, 0.15, '#9EF0FF', 'סיסמה\n?']];
-      for (const [x, y, a, c, txt] of notes) {
-        g.save(); g.translate(x, y); g.rotate(a); g.shadowColor = 'rgba(0,0,0,0.35)'; g.shadowBlur = 8; g.shadowOffsetY = 4; g.fillStyle = c; g.fillRect(-46, -46, 92, 92); g.shadowColor = 'transparent';
-        g.fillStyle = 'rgba(0,0,0,0.12)'; g.fillRect(-46, -46, 92, 10);
-        txt.split('\n').forEach((ln, i, arr) => A.text(g, ln, 0, -4 + (i - (arr.length - 1) / 2) * 26, { font: '700 24px Rubik', fill: '#3a2a10', dir: /[א-ת]/.test(ln) ? 'rtl' : 'ltr' }));
-        g.restore();
-      }
+      const rem = [[470, 990, 0.9], [1010, 1040, -0.5], [1560, 1000, 1.3], [780, 1050, -1.0], [300, 940, 0.4], [1720, 930, -0.3]];
+      rem.forEach(([x, y, a], i) => { P.remote(g, x, y, 1.15, a, { t: 0 }); });
     });
+  }
+  function notes(ctx, t) { // sticky notes on devices / wall, drawn above screens
+    const list = [[1052, 232, -0.2, '#FFE066', '1234'], [1806, 214, 0.14, '#FF9EC4', 'PASS?'], [772, 268, -0.1, '#9EF0FF', 'אבא123'], [1035, 640, 0.1, '#FFE066', 'Zapp:\nxY7!'], [560, 340, -0.08, '#FF9EC4', 'איפה\nהשלט?!'], [1470, 690, 0.1, '#9EF0FF', 'סיסמה\n?']];
+    for (const [x, y, a, c, txt] of list) {
+      ctx.save(); ctx.translate(x, y); ctx.rotate(a + Math.sin(t * 2 + x) * 0.012); const S = 0.62;
+      ctx.scale(S, S); ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 4; ctx.fillStyle = c; ctx.fillRect(-46, -46, 92, 92); ctx.shadowColor = 'transparent';
+      ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fillRect(-46, -46, 92, 10);
+      txt.split('\n').forEach((ln, i, arr) => A.text(ctx, ln, 0, -2 + (i - (arr.length - 1) / 2) * 28, { font: '700 26px Rubik', fill: '#3a2a10', dir: /[א-ת]/.test(ln) ? 'rtl' : 'ltr' }));
+      ctx.restore();
+    }
   }
 
   // ---------------------------------------------------------------- tornado of app tiles
@@ -184,9 +135,9 @@
     const grow = A.smooth(-0.1, 0.45, tt);           // funnel builds in
     const ang = q.a0 + ph * q.sp * 1.15;
     const h = q.h;
-    const rad = (110 + 330 * Math.pow(h, 0.85)) * (0.5 + 0.5 * grow);
+    const rad = (190 + 300 * Math.pow(h, 0.8)) * (0.5 + 0.5 * grow);
     const cx = L.head.x + 20 * Math.sin(h * 3 + tt * 2) * (tt < T_FREEZE ? 1 : 0.2) + (h - 0.5) * 60;
-    const y0 = L.head.y + 130 - h * 470;
+    const y0 = L.head.y - 110 - h * 350;
     const bob = tt > T_FREEZE ? Math.sin(tt * 6 + q.wob) * 5 : 0;
     const x = cx + Math.cos(ang) * rad, y = y0 + Math.sin(ang) * rad * 0.26 + bob;
     const depth = Math.sin(ang); // >0 front
@@ -210,7 +161,7 @@
     list.sort((a, b) => a[1].depth - b[1].depth);
     for (const [q, p] of list) {
       const idx = TORN.indexOf(q), grow = A.smooth(-0.1 + q.h * 0.3, 0.3 + q.h * 0.3, Math.min(t, T_SNAP));
-      if (t >= T_SNAP + idx * 0.010) continue; // handled by spiral
+      if (t >= T_SNAP + idx * 0.006) continue; // handled by spiral
       const sc = p.sc * (0.2 + 0.8 * A.ease.outBack(clamp(grow)));
       // motion streak while spinning fast
       if (t < T_FREEZE + 0.1) { const v = (1 - A.smooth(1.3, T_FREEZE + 0.1, t)); if (v > 0.05) { ctx.save(); ctx.globalAlpha = 0.16 * v; const pb = tornPosPrev(q, t); tile(ctx, q, pb.x, pb.y, pb.sc * (0.2 + 0.8 * A.ease.outBack(clamp(grow))), pb.rot, 1); ctx.restore(); } }
@@ -235,13 +186,13 @@
       for (let g = 4; g >= 0; g--) { // trail ghosts
         const ug = clamp(u - g * 0.045); if (ug <= 0 && g > 0) continue;
         const p = spiralPos(px, py, ug, -1, tv.x, tv.y);
-        const sc = sc0 * (1 - 0.8 * Math.pow(ug, 1.6)) * (g ? 0.85 - g * 0.1 : 1);
+        const sc = sc0 * (1.15 - 0.85 * Math.pow(ug, 2.2)) * (g ? 0.85 - g * 0.1 : 1);
         if (g) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; tile(ctx, { ...q, c1: '#FFC24A', c2: '#FF8A3D', kind: 9, lab: '' }, p.x, p.y, sc, rot0 + ug * 9, 0.32 - g * 0.06); ctx.restore(); }
         else tile(ctx, q, p.x, p.y, sc, rot0 + ug * 9, 1);
       }
     };
-    TORN.forEach((q, i) => { const p = tornPos(q, T_SNAP); one(q, p.x, p.y, p.sc, p.rot, i * 0.010, 0.5 + 0.06 * (i % 4)); });
-    CARDS.forEach((q) => one(q, q.sx, q.sy, 1, 0.2, q.d + 0.02, 0.55));
+    TORN.forEach((q, i) => { const p = tornPos(q, T_SNAP); one(q, p.x, p.y, p.sc, p.rot, i * 0.006, 0.3 + 0.03 * (i % 4)); });
+    CARDS.forEach((q) => one(q, q.sx, q.sy, 1, 0.2, q.d * 0.6, 0.38));
     return arrived;
   }
 
@@ -268,60 +219,103 @@
   }
 
   // ---------------------------------------------------------------- devices layer
-  function bigTV(ctx, t, arrived) {
+  function bigTV(ctx, t) {
     const tv = L.tv, b = t - T_BURST;
-    ctx.save(); ctx.translate(tv.x, tv.y);
-    // stand
-    ctx.beginPath(); ctx.moveTo(-40, tv.h / 2); ctx.lineTo(40, tv.h / 2); ctx.lineTo(90, 265); ctx.lineTo(-90, 265); ctx.closePath(); A.fillStroke(ctx, '#241C44', 6);
-    ctx.restore();
-    // body
-    ctx.save(); ctx.translate(tv.x, tv.y);
-    A.rrect(ctx, -tv.w / 2 - 16, -tv.h / 2 - 16, tv.w + 32, tv.h + 32, 22); A.fillStroke(ctx, '#1b1438', 8);
-    ctx.save(); A.rrect(ctx, -tv.w / 2, -tv.h / 2, tv.w, tv.h, 10); ctx.clip(); ctx.translate(-tv.w / 2, -tv.h / 2);
-    if (t < T_SNAP) { fakeUI(ctx, tv.w, tv.h, 0, t, 1); }
-    else if (t < T_BURST) {
-      const p = inv(T_SNAP, T_BURST, t); fakeUI(ctx, tv.w, tv.h, 0, T_SNAP, 1);
-      ctx.fillStyle = `rgba(14,11,46,${0.8 * A.smooth(0, 0.3, p)})`; ctx.fillRect(0, 0, tv.w, tv.h);
-      // gathering vortex glow
-      ctx.globalCompositeOperation = 'lighter'; const g = 0.2 + 0.8 * p * p; ctx.fillStyle = A.radial(ctx, tv.w / 2, tv.h / 2, 0, tv.w * 0.6 * g, [[0, 'rgba(255,240,190,' + (0.95 * g) + ')'], [0.5, 'rgba(255,194,74,' + 0.5 * g + ')'], [1, 'rgba(255,194,74,0)']]); ctx.fillRect(0, 0, tv.w, tv.h);
-      ctx.globalCompositeOperation = 'source-over';
-    } else {
-      // blown-up golden screen
-      ctx.fillStyle = A.radial(ctx, tv.w / 2, tv.h / 2, 0, tv.w * 0.75, [[0, '#FFFFFF'], [0.35, '#FFF0B8'], [1, '#FFC24A']]); ctx.fillRect(0, 0, tv.w, tv.h);
-      ctx.save(); ctx.translate(tv.w / 2, tv.h / 2); ctx.rotate(b * 0.4); ctx.globalAlpha = 0.35; for (let i = 0; i < 12; i++) { ctx.rotate(TAU / 12); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(600, -50); ctx.lineTo(600, 50); ctx.fill(); } ctx.restore();
-    }
-    ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(tv.w * 0.5, 0); ctx.lineTo(tv.w * 0.18, tv.h); ctx.lineTo(0, tv.h); ctx.fill();
-    ctx.restore(); ctx.restore();
+    const chaos = 1 - A.smooth(T_SNAP - 0.1, T_SNAP + 0.3, t);
+    P.tv(ctx, (c, w, h) => {
+      if (t < T_SNAP) { fakeUI(c, w, h, 0, t, 1); }
+      else if (t < T_BURST) {
+        const p = inv(T_SNAP, T_BURST, t); fakeUI(c, w, h, 0, T_SNAP, 1);
+        c.fillStyle = `rgba(14,11,46,${0.8 * A.smooth(0, 0.3, p)})`; c.fillRect(0, 0, w, h);
+        c.globalCompositeOperation = 'lighter'; const g = 0.2 + 0.8 * p * p; c.fillStyle = A.radial(c, w / 2, h / 2, 0, w * 0.6 * g, [[0, 'rgba(255,240,190,' + (0.95 * g) + ')'], [0.5, 'rgba(255,194,74,' + 0.5 * g + ')'], [1, 'rgba(255,194,74,0)']]); c.fillRect(0, 0, w, h);
+        c.globalCompositeOperation = 'source-over';
+      } else {
+        c.fillStyle = A.radial(c, w / 2, h / 2, 0, w * 0.75, [[0, '#FFFFFF'], [0.35, '#FFF0B8'], [1, '#FFC24A']]); c.fillRect(0, 0, w, h);
+        c.save(); c.translate(w / 2, h / 2); c.rotate(b * 0.4); c.globalAlpha = 0.35; for (let i = 0; i < 12; i++) { c.rotate(TAU / 12); c.fillStyle = '#fff'; c.beginPath(); c.moveTo(0, 0); c.lineTo(700, -50); c.lineTo(700, 50); c.fill(); } c.restore();
+      }
+    }, { spill: t < T_BURST ? '#FF5A78' : '#FFD27A', spillAlpha: t < T_BURST ? 0.3 * chaos : 0.6 });
   }
   function otherDevices(ctx, t) {
-    const dr = A.smooth(T_SNAP + 0.05, T_SNAP + 0.5, t) * 0.9;
-    // old monitor
-    ctx.save(); ctx.translate(L.old.x, L.old.y); ctx.beginPath(); ctx.moveTo(-40, L.old.h / 2); ctx.lineTo(40, L.old.h / 2); ctx.lineTo(60, 262); ctx.lineTo(-60, 262); ctx.closePath(); A.fillStroke(ctx, '#241C44', 6); ctx.restore();
-    screen(ctx, L.old.x, L.old.y, L.old.w, L.old.h, 1, t, { drain: dr, bez: 14 });
-    // laptop
-    const lp = L.lap; ctx.save(); ctx.translate(lp.x, lp.y);
-    ctx.beginPath(); ctx.moveTo(-lp.w / 2 - 30, lp.h / 2 + 12); ctx.lineTo(lp.w / 2 + 30, lp.h / 2 + 12); ctx.lineTo(lp.w / 2 + 44, lp.h / 2 + 34); ctx.lineTo(-lp.w / 2 - 44, lp.h / 2 + 34); ctx.closePath(); A.fillStroke(ctx, '#B8B6D0', 6); ctx.restore();
-    screen(ctx, lp.x, lp.y, lp.w, lp.h, 2, t, { drain: dr, bez: 12, frame: '#3B3B58', r: 12 });
+    const dr = A.smooth(T_SNAP + 0.05, T_SNAP + 0.5, t) * 0.92;
+    const gold = A.smooth(T_BURST, T_BURST + 0.15, t);
+    const ov = (c, w, h) => { if (dr) { c.fillStyle = `rgba(14,11,46,${dr})`; c.fillRect(0, 0, w, h); } if (gold) { c.fillStyle = `rgba(255,236,170,${gold * 0.85})`; c.fillRect(0, 0, w, h); } };
+    // small monitor on the shelf
+    ctx.save(); ctx.translate(L.old.x, L.old.y); ctx.beginPath(); ctx.moveTo(-28, L.old.h / 2 + 10); ctx.lineTo(28, L.old.h / 2 + 10); ctx.lineTo(40, 82); ctx.lineTo(-40, 82); ctx.closePath(); A.fillStroke(ctx, '#241C44', 5); ctx.restore();
+    screen(ctx, L.old.x, L.old.y, L.old.w, L.old.h, 1, t, { drain: dr * (1 - gold), bez: 10, r: 12 });
+    if (gold) { ctx.save(); ctx.globalAlpha = gold * 0.85; A.rrect(ctx, L.old.x - L.old.w / 2, L.old.y - L.old.h / 2, L.old.w, L.old.h, 6); ctx.fillStyle = '#FFECAA'; ctx.fill(); ctx.restore(); }
+    // laptop on the pouf
+    P.laptop(ctx, L.lap.x, L.lap.y, L.lap.s, (c, w, h) => { fakeUI(c, w, h, 2, t, 3); ov(c, w, h); }, { spill: '#B47CFF', spillAlpha: 0 });
   }
+  const TABLET_UI = (t) => (c, w, h) => { fakeUI(c, w, h, 3, t, 4); const dr = A.smooth(T_SNAP + 0.05, T_SNAP + 0.5, t) * 0.92, gold = A.smooth(T_BURST, T_BURST + 0.15, t); if (dr) { c.fillStyle = `rgba(14,11,46,${dr})`; c.fillRect(0, 0, w, h); } if (gold) { c.fillStyle = `rgba(255,236,170,${gold * 0.9})`; c.fillRect(0, 0, w, h); } };
+  const PHONE_UI = (t) => (c, w, h) => { fakeUI(c, w, h, 4, t, 5); const dr = A.smooth(T_SNAP + 0.05, T_SNAP + 0.5, t) * 0.92, gold = A.smooth(T_BURST, T_BURST + 0.15, t); if (dr) { c.fillStyle = `rgba(14,11,46,${dr})`; c.fillRect(0, 0, w, h); } if (gold) { c.fillStyle = `rgba(255,236,170,${gold * 0.9})`; c.fillRect(0, 0, w, h); } };
 
-  // ---------------------------------------------------------------- people (adapter around kit_people.js PPL; placeholders until it lands)
-  function people(ctx, t, layer) {
-    if (window.S1_PEOPLE) return window.S1_PEOPLE(ctx, t, layer, L, { T_FREEZE, T_SNAP, T_BURST });
-    // placeholders
-    if (layer !== 'mid') return;
-    const box = (x, y, w, h, c, txt) => { ctx.fillStyle = c; ctx.fillRect(x - w / 2, y - h, w, h); A.text(ctx, txt, x, y - h / 2, { font: '700 30px Rubik', fill: '#fff' }); };
-    box(L.yoni.x, L.yoni.y, 200, 400, '#c96', 'YONI'); box(330, 700, 130, 320, '#6a9', 'MAYA'); box(1130, 700, 130, 320, '#69c', 'TOM');
+  // ---------------------------------------------------------------- people
+  const SOFA = { x: 610, y: 905, s: 0.86 };
+  const STAGE = (list, t, dur = 0.3) => { let i = 0; for (let j = 0; j < list.length; j++) if (t >= list[j][0]) i = j; const from = list[Math.max(0, i - 1)][1], to = list[i][1]; return { from: i ? from : to, to, k: i ? A.smooth(list[i][0], list[i][0] + dur, t) : 1 }; };
+  const pick = (seq, t, step) => seq[Math.floor(t / step) % seq.length];
+  const LOOKCAM = { x: 0, y: 0.05 };
+  function personArgs(who, t) {
+    const frozen = t >= T_FREEZE && t < T_SNAP, pt = t < T_SNAP ? Math.min(t, T_FREEZE) : t;
+    const post = t >= T_SNAP;
+    let list, face, look;
+    if (who === 'yoni') {
+      list = [[0, 'remote'], [0.95, 'scratch'], [T_SNAP, 'lean'], [3.75, 'cheer']];
+      face = frozen ? 'worried' : post ? (t < 4.1 ? 'wow' : 'joy') : pick(['confused', 'worried', 'bored', 'confused', 'worried'], t, 0.42);
+      const seq = [{ x: 0.9, y: -0.05 }, { x: -1, y: 0 }, { x: 0.25, y: 0.8 }, { x: 0.9, y: 0 }, { x: -1, y: 0.1 }, { x: 0.3, y: 0.8 }, { x: 0.9, y: -0.05 }];
+      look = frozen ? LOOKCAM : post ? 'tv' : seq[Math.floor(t / 0.3) % seq.length];
+    } else if (who === 'maya') {
+      list = [[0, 'slump'], [1.1, 'shrug'], [1.8, 'idle'], [T_SNAP, 'lean'], [3.7, 'cheer']];
+      face = frozen ? 'bored' : post ? (t < 4.0 ? 'wow' : 'joy') : (t < 1.1 ? 'bored' : t < 1.8 ? 'confused' : 'bored');
+      look = frozen ? LOOKCAM : post ? 'tv' : (t < 0.8 ? { x: 0.9, y: 0 } : { x: 0.3, y: 0.3 });
+    } else {
+      list = [[0, 'point'], [T_SNAP, 'lean'], [3.7, 'cheer']];
+      face = frozen ? 'bored' : post ? (t < 4.0 ? 'wow' : 'joy') : (t < 1.5 ? 'worried' : 'bored');
+      look = frozen ? LOOKCAM : post ? 'tv' : { x: -0.2, y: 0.2 };
+    }
+    return { t: pt, blend: STAGE(list, t), face, look, tvSide: 1 };
   }
+  const SEAT = () => P.sofaSeat(SOFA.x, SOFA.y, SOFA.s, 1);
+  function people(ctx, t, layer) {
+    if (layer === 'back') {
+      P.person(ctx, 'maya', 330, 748, 1.02, { ...personArgs('maya', t) });
+      const tom = P.person(ctx, 'tom', 930, 716, 1.2, { flip: true, ...personArgs('tom', t) });
+      if (tom) { const r = t < T_SNAP ? -0.25 : 0; P.tablet(ctx, tom.handR[0] - 20, tom.handR[1] - 70, 0.5, 0.2, TABLET_UI(t), { spill: '#7fe0a8', spillAlpha: 0 }); }
+      P.sofaBack(ctx, SOFA.x, SOFA.y, SOFA.s);
+    } else if (layer === 'mid') {
+      const st = SEAT(), a = personArgs('yoni', t);
+      const r = P.person(ctx, 'yoni', st.x, st.y + 18, 1.08, { seated: true, ...a });
+      // popcorn bucket on the lap side? phone in left hand
+      if (r) {
+        P.phone(ctx, r.handL[0] - 6, r.handL[1] - 28, 0.42, -0.25 + 0.1 * Math.sin(t * 5), PHONE_UI(t), { spill: '#FFA050', spillAlpha: 0 });
+        if (t < T_REMOTE_DROP) P.remote(ctx, r.handR[0] + 6, r.handR[1] - 20, 1.0, 0.5 + 0.2 * Math.sin(t * 12) * (t < T_FREEZE ? 1 : 0), { t });
+      }
+      P.sofaFront(ctx, SOFA.x, SOFA.y, SOFA.s);
+      if (t >= T_REMOTE_DROP) { // remote falls, bounces
+        const a0 = personArgs('yoni', T_REMOTE_DROP);
+        ctx.save(); ctx.globalAlpha = 0; const r0 = P.person(ctx, 'yoni', st.x, st.y + 18, 1.08, { seated: true, ...a0 }); ctx.restore();
+        const dt = t - T_REMOTE_DROP, fy = 960, x0 = r0.handR[0] + 6, y0 = r0.handR[1] - 20, g = 4200;
+        const tHit = Math.sqrt(2 * (fy - y0) / g), vy = g * tHit;
+        let y;
+        if (dt < tHit) y = y0 + 0.5 * g * dt * dt; else { const d2 = dt - tHit, v2 = vy * 0.32, tb = 2 * v2 / g; y = d2 < tb ? fy - (v2 * d2 - 0.5 * g * d2 * d2) : fy; }
+        const rot = 0.5 + Math.min(dt, tHit + 0.3) * 5;
+        ctx.save(); ctx.fillStyle = 'rgba(8,4,26,0.3)'; A.ellipse(ctx, x0 + 10, fy + 30, 22, 7); ctx.fill(); ctx.restore();
+        P.remote(ctx, x0 + dt * 40, y, 1.0, rot, { t });
+      }
+    } else if (layer === 'front') { /* nothing */ }
+  }
+  const T_REMOTE_DROP = 3.85;
 
   // ---------------------------------------------------------------- camera
   function cam(t) {
-    const shake = t > T_SNAP - 0.02 ? 1 : 0;
-    const x = A.key(t, [[0, 1200], [0.9, 900, 'out'], [T_FREEZE, 830, 'inOut'], [T_FREEZE + 0.86, 800, 'inOut'], [T_SNAP, 960, 'out'], [T_BURST + 0.1, 1000, 'inOut'], [4.1, 1180, 'inOut'], [T_END, L.tv.x, 'in']]);
-    const y = A.key(t, [[0, 640], [0.9, 560, 'out'], [T_FREEZE, 540], [T_SNAP, 540, 'out'], [T_BURST + 0.1, 520, 'inOut'], [4.1, 480, 'inOut'], [T_END, L.tv.y, 'in']]);
-    const zoom = A.key(t, [[0, 1.55], [0.9, 1.16, 'out'], [T_FREEZE, 1.24, 'inOut'], [T_FREEZE + 0.86, 1.34, 'inOut'], [T_SNAP, 1.0, 'outBack'], [T_BURST + 0.1, 1.06, 'inOut'], [4.1, 1.45, 'inOut'], [T_END, 5.6, 'in']]);
-    const rot = A.key(t, [[0, 0.07], [0.9, -0.015, 'out'], [T_FREEZE, 0.01], [T_SNAP, 0, 'out'], [T_BURST, 0], [T_BURST + 0.12, 0.02, 'out'], [4.3, -0.015, 'inOut'], [T_END, 0.0, 'inOut']]);
-    const sh = (t > T_BURST && t < T_BURST + 0.6 ? 1.2 * (1 - inv(T_BURST, T_BURST + 0.6, t)) : 0) + (t > T_SNAP && t < T_SNAP + 0.3 ? 0.6 * (1 - inv(T_SNAP, T_SNAP + 0.3, t)) : 0) + (t > 4.2 ? 0.25 * inv(4.2, T_END, t) : 0);
-    return { x, y, zoom, rot, shake: sh, t };
+    const TS = T_SNAP + 0.4;
+    const x = A.key(t, [[0, 1130], [0.9, 760, 'out'], [T_FREEZE, 700, 'inOut'], [T_SNAP, 640, 'inOut'], [TS, 960, 'out'], [T_BURST + 0.15, 1000, 'inOut'], [4.1, 1200, 'inOut'], [T_END, L.tv.x, 'in']]);
+    const y = A.key(t, [[0, 640], [0.9, 590, 'out'], [T_FREEZE, 560], [T_SNAP, 540, 'inOut'], [TS, 540, 'out'], [T_BURST + 0.15, 520, 'inOut'], [4.1, 470, 'inOut'], [T_END, L.tv.y, 'in']]);
+    const zoom = A.key(t, [[0, 1.6], [0.9, 1.3, 'out'], [T_FREEZE - 0.01, 1.34, 'lin'], [T_FREEZE + 0.12, 1.47, 'out'], [T_SNAP, 1.58, 'lin'], [TS, 1.0, 'outBack'], [T_BURST + 0.15, 1.04, 'inOut'], [4.1, 1.4, 'inOut'], [T_END, 5.2, 'in']]);
+    const rot = A.key(t, [[0, 0.06], [0.9, -0.012, 'out'], [T_FREEZE, 0.01], [T_SNAP, 0.0, 'inOut'], [TS, 0, 'out'], [T_BURST, 0], [T_BURST + 0.12, 0.015, 'out'], [4.3, -0.01, 'inOut'], [T_END, 0.0, 'inOut']]);
+    const sh = (t > T_FREEZE && t < T_FREEZE + 0.2 ? 0.7 * (1 - inv(T_FREEZE, T_FREEZE + 0.2, t)) : 0) + (t > T_BURST && t < T_BURST + 0.6 ? 1.2 * (1 - inv(T_BURST, T_BURST + 0.6, t)) : 0) + (t > T_SNAP && t < T_SNAP + 0.3 ? 0.6 * (1 - inv(T_SNAP, T_SNAP + 0.3, t)) : 0) + (t > 4.2 ? 0.25 * inv(4.2, T_END, t) : 0);
+    // keep the view inside the 1920x1080 kit room
+    const hw = 960 / zoom, hh = 540 / zoom, m = 1 + Math.abs(rot) * 2;
+    return { x: A.clamp(x, hw * m, 1920 - hw * m), y: A.clamp(y, hh * m, 1080 - hh * m), zoom, rot, shake: sh, t };
   }
 
   // ---------------------------------------------------------------- scene
@@ -331,21 +325,21 @@
     ctx.fillStyle = '#0E0B2E'; ctx.fillRect(0, 0, 1920, 1080);
     ctx.save();
     A.camera(ctx, cam(t));
-    ctx.drawImage(roomLayer(), -OX, -OY);
+    P.room(ctx, t, { tvRect: true });
+    ctx.drawImage(clutterLayer(), 0, 0);
     // evening lamp glow + TV chaos glow
-    A.glow(ctx, 1000, 250, 700, 'rgba(120,120,255,0.35)', 0.5);
-    A.glow(ctx, 240, 640, 420, 'rgba(255,170,90,0.55)', 0.35);
-    // screens flicker light (different colours) onto the room before the snap
+            // screens flicker light (different colours) onto the room before the snap
     const chaos = 1 - A.smooth(T_SNAP - 0.1, T_SNAP + 0.3, t);
     A.glow(ctx, L.tv.x, L.tv.y + 100, 720, 'rgba(255,60,80,0.9)', 0.32 * chaos);
     A.glow(ctx, L.old.x, L.old.y + 60, 480, 'rgba(60,120,255,0.9)', 0.36 * chaos);
-    A.glow(ctx, L.lap.x, L.lap.y, 420, 'rgba(180,80,255,0.9)', 0.36 * chaos);
+    A.glow(ctx, L.lap.x, L.lap.y - 60, 420, 'rgba(180,80,255,0.9)', 0.36 * chaos);
 
     // shadow of sofa etc handled by kit
     people(ctx, t, 'back');
     otherDevices(ctx, t);
     const arrived = t >= T_SNAP ? TORN.length + CARDS.length : 0;
     bigTV(ctx, t, arrived);
+    notes(ctx, t);
     tornado(ctx, t, false);
     people(ctx, t, 'mid');
     tornado(ctx, t, true);
