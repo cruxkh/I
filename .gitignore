@@ -34,3 +34,4 @@ gotv5/out/
 gotv5/previews/
 gotv5l/out/
 gotv5l/previews/
+*.npy
