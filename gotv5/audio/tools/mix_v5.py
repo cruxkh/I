@@ -156,7 +156,7 @@ def s_riser(d):
         m = int(.15 * SR); i = int(tk * SR); tt = np.arange(m) / SR
         k = np.sin(2 * np.pi * np.cumsum(np.maximum(52, 130 * np.exp(-tt / .03))) / SR) * np.exp(-tt / .07)
         hb[i:i + m] += k[:max(0, min(m, n - i))] * (.4 + .6 * tk / d); tk += gap; gap = max(.13, gap * .82)
-    y = y * .9 + hb * .8
+    y = y * .9 + hb * .3
     return fade(y, .01, .002)
 # drum kit (custom, tight)
 def d_kick(r=None):
@@ -266,96 +266,155 @@ def sf_render(notes, prog, bank=0, vol=127):
     end = min(N + 3 * SR, pos + 3 * SR); out[pos:end] = np.frombuffer(s.generate(end - pos), dtype=np.float32).reshape(-1, 2)
     return out[:N].T.astype(np.float64)
 
-# progression: Cmaj7 | Am7 | Fmaj7 | G6   (I vi IV V), key of C major; hook melody per bar (16th-grid index, midi, length in 16ths)
-CH = {'C': (36, [60, 64, 67, 71]), 'Am': (45, [60, 64, 67, 69]), 'F': (41, [60, 64, 65, 69]), 'G': (43, [59, 62, 64, 67]), 'Csix': (36, [60, 64, 67, 69])}
-CYC = ['C', 'Am', 'F', 'G']
-HOOK = {'C': [(0, 76, 3), (4, 79, 3), (8, 81, 2), (10, 79, 2), (12, 76, 4)],
-        'Am': [(0, 81, 3), (3, 84, 1), (6, 83, 2), (8, 81, 3), (12, 79, 4)],
-        'F': [(0, 81, 3), (4, 84, 3), (8, 81, 2), (10, 79, 2), (12, 77, 2), (14, 76, 2)],
-        'G': [(0, 74, 3), (4, 79, 3), (7, 83, 1), (8, 86, 4), (14, 84, 2)]}
-def chord_at(k):
+# ---- famous public-domain themes, arranged as a modern pop-kit mashup
+#  A  0.44-8.48 s   Beethoven "Fur Elise" (A minor)      | B 8.48-24.0 s  Beethoven "Ode to Joy" (C major)
+#  C  24.0-25.3 s   Grieg "Hall of the Mountain King" (A minor, accelerating) | breath 25.3-25.6
+#  D  25.64-36.9 s  Rossini "William Tell" finale gallop (C major) -> fanfare exactly on 36.9 | end card: Ode to Joy last phrase on celesta/glock
+TRI = {'Am': [57, 60, 64], 'E': [52, 56, 59], 'C': [55, 60, 64], 'G': [55, 59, 62], 'F': [53, 57, 60], 'Dm': [50, 53, 57], 'Em': [52, 55, 59]}
+BR = {'Am': 45, 'E': 40, 'C': 36, 'G': 43, 'F': 41, 'Dm': 38, 'Em': 40}
+KA = -47; KB = -32; KB2 = -16; KC = -3.05          # section starts in beats (relative to the 25.64 downbeat)
+CYC12 = ['E', 'Am', 'Am', 'Am', 'E', 'Am', 'E', 'Am', 'Am', 'Am', 'E', 'Am']
+def harm(k):
+    if k < KB: return CYC12[(k - KA) % 12]
+    if k < KB2:
+        b, p = divmod(k - KB, 4); return ['C', 'G', 'C', 'C' if p < 2 else 'G'][b]
+    if k < -4:
+        b, p = divmod(k - KB2, 4); return ['C', 'G', 'G' if p < 2 else 'C'][b]
+    if k < 0: return 'G' if k < -3 else 'Am'
     if 16 <= k < 18: return 'F'
     if 18 <= k < 21: return 'G'
-    if k >= 21: return 'Csix'
-    return CYC[(k // 4) % 4]
-def lvl(t):
-    if t < RISER0: return 1 if t < 9.0 else (2 if t < 20.3 else 3)
-    if t < IMPACT - 0.001: return 0
-    return 4
+    if k >= 21: return 'C'
+    return ['C', 'G', 'C', 'G'][k // 4]
+def sec(t):
+    if t < bt(KB): return 'A'
+    if t < RISER0: return 'B'
+    if t < IMPACT - .001: return 'C'
+    return 'D'
 def humanize(rr, t, v, j=.005): return t + rr.uniform(-j, j), int(np.clip(v + rr.integers(-6, 7), 20, 127))
-def g16(k, s):   # time of 16th s (0..3) of beat k, light swing
-    return bt(k + s / 4 + (0.035 if s % 2 else 0) + (0.02 if s == 2 else 0))
+def g16(k, s): return bt(k + s / 4 + (0.035 if s % 2 else 0) + (0.02 if s == 2 else 0))
+
+FE = [(0, 76, 1), (1, 75, 1), (2, 76, 1), (3, 75, 1), (4, 76, 1), (5, 71, 1), (6, 74, 1), (7, 72, 1), (8, 69, 3), (11, 60, 1), (12, 64, 1), (13, 69, 1), (14, 71, 3), (17, 64, 1), (18, 68, 1), (19, 71, 1), (20, 72, 3),
+      (24, 76, 1), (25, 75, 1), (26, 76, 1), (27, 75, 1), (28, 76, 1), (29, 71, 1), (30, 74, 1), (31, 72, 1), (32, 69, 3), (35, 60, 1), (36, 64, 1), (37, 69, 1), (38, 71, 3), (41, 64, 1), (42, 72, 1), (43, 71, 1), (44, 69, 4)]
+ODE1 = [(0, 76, 1), (1, 76, 1), (2, 77, 1), (3, 79, 1), (4, 79, 1), (5, 77, 1), (6, 76, 1), (7, 74, 1), (8, 72, 1), (9, 72, 1), (10, 74, 1), (11, 76, 1), (12, 76, 1.5), (13.5, 74, .5), (14, 74, 2)]
+ODE2 = ODE1[:8 + 0] + [(8, 74, 1.5), (9.5, 72, .5), (10, 72, 2)]
+ODE2 = [n for n in ODE1 if n[0] < 8] + [(8, 74, 1.5), (9.5, 72, .5), (10, 72, 2)]
+MK_T = [57, 59, 60, 62, 64, 60, 64]; MK_A = [63, 59, 63]
+TELL = [((79, 79, 84),) * 3 + ((84, 88),), ((74, 74, 79),) * 3 + ((79, 83),), ((79, 79, 88),) * 3 + ((88, 91),), ((74, 74, 83),) * 3 + ((86, 91),)]
 
 def build_score():
-    rr = rng(11); tr = {k: [] for k in ('uke', 'kal', 'mar', 'vib', 'xyl', 'glock', 'pizz', 'bass', 'sbass', 'pad', 'str', 'hit')}
+    rr = rng(11); tr = {k: [] for k in ('uke', 'kal', 'mar', 'vib', 'xyl', 'glock', 'cel', 'pizz', 'bass', 'sbass', 'pad', 'str', 'hit', 'brass', 'trump', 'timp', 'bsn', 'lowpz', 'gal')}
     dr = {k: [] for k in ('kick', 'snare', 'clap', 'bigclap', 'hat', 'ohat', 'shake', 'wood')}
-    k0 = int(np.floor((0 - IMPACT) / B)); k1 = int(np.ceil((END_HIT - IMPACT) / B))
-    KICKS = {1: {0, 8}, 2: {0, 6, 8, 11}, 3: {0, 6, 8, 10, 14}, 4: {0, 3, 6, 8, 10, 14}}
+    def nb(trk, kk, dur, n, v, j=.004):
+        tm, vv = humanize(rr, bt(kk), v, j); tr[trk].append((tm, dur * B * .95, n, vv))
+    KICKS = {'A': {0, 10}, 'B1': {0, 6, 8, 11}, 'B2': {0, 6, 8, 10, 14}, 'D': {0, 3, 6, 8, 10, 14}}
+    k0 = KA; k1 = int(np.ceil((END_HIT - IMPACT) / B))
     for k in range(k0, k1 + 1):
-        pb = k % 4; bar = k // 4; t = bt(k)
-        if t >= END_HIT - .02 or bt(k + 1) <= 0: continue
-        ch = chord_at(k); root, tones = CH[ch]
+        pb = k % 4; t = bt(k)
+        if t >= END_HIT - .02 or t < -.6 or t >= RISER0 and t < IMPACT - .01: continue
+        ch = harm(k); tri = TRI[ch]; root = BR[ch]
         for s in range(4):
             tt = g16(k, s)
-            if tt < 0 or tt >= END_HIT - .02: continue
-            L = lvl(tt)
-            if L == 0: continue
-            p = pb * 4 + s
-            if p in KICKS[L]: dr['kick'].append((tt, 108 if p == 0 else 92 if L >= 3 else 75))
-            if L >= 2 and p in (4, 12): dr['snare'].append((tt, 100)); dr['clap'].append((tt, 80))
-            elif L == 1 and p in (4, 12): dr['clap'].append((tt, 50)); dr['wood'].append((tt, 55))
-            if L >= 3 and p in (7, 15, 9): dr['snare'].append((tt, 26))
-            if L >= 4 and p in (7, 15): dr['snare'].append((tt, 40))
-            if (L >= 2 and s in (0, 2)) or (L == 1 and s == 2): dr['hat'].append((tt, 60 if s == 0 else 44))
-            if L >= 3 and s % 2: dr['hat'].append((tt, 26))
-            if L >= 2 and p in ((14,) if L == 2 else (6, 14)): dr['ohat'].append((tt, 55))
-            if s in (2,) or L >= 3: dr['shake'].append((tt, 38 if s % 2 == 0 else 26))
-            # bass groove
-            if L >= 2:
+            if tt < 0 or tt >= END_HIT - .02 or (RISER0 - .05 <= tt < IMPACT - .01): continue
+            S = sec(tt); key = 'A' if S == 'A' else ('B1' if (S == 'B' and k < KB2) else ('B2' if S == 'B' else 'D')); p = pb * 4 + s
+            if p in KICKS[key]: dr['kick'].append((tt, 108 if p == 0 else 92 if key in ('B2', 'D') else 75))
+            if S != 'A' and p in (4, 12): dr['snare'].append((tt, 100)); dr['clap'].append((tt, 80))
+            elif S == 'A' and p in (4, 12): dr['clap'].append((tt, 50)); dr['wood'].append((tt, 55))
+            if key in ('B2', 'D') and p in (7, 15, 9): dr['snare'].append((tt, 26))
+            if key == 'D' and p in (7, 15): dr['snare'].append((tt, 40))
+            if (S != 'A' and s in (0, 2)) or (S == 'A' and s == 2): dr['hat'].append((tt, 60 if s == 0 else 44))
+            if key in ('B2', 'D') and s % 2: dr['hat'].append((tt, 26))
+            if S != 'A' and p in ((14,) if key == 'B1' else (6, 14)): dr['ohat'].append((tt, 55))
+            if s == 2 or key in ('B2', 'D'): dr['shake'].append((tt, 38 if s % 2 == 0 else 26))
+            if S != 'A':
                 bp_ = {0: 0, 3: 0, 6: 7, 8: 0, 11: 12, 14: 7}.get(p)
-                if bp_ is not None: tm, v = humanize(rr, tt, 96 if p in (0, 8) else 84); tr['bass'].append((tm, .22 * B * 4 if p in (0, 8) else .16 * B * 4, root + bp_, v))
-                if L >= 3 and bp_ is not None: tr['sbass'].append((tm, .2 * B * 4, root + bp_ + 12, 70))
-            # uke chops
-            if (L == 1 and p in (2, 6, 10, 14)) or (L >= 2 and p in (2, 6, 10, 14, 4 if L >= 3 else 2, 12 if L >= 3 else 2)):
-                dn = p % 4 == 2
-                for i, n in enumerate(sorted(x - 12 for x in tones)):
-                    tm, v = humanize(rr, tt + i * .009, 60 + 8 * (L >= 3) + 6 * dn); tr['uke'].append((tm, .28, n, v))
-            # pizz answers
-            if L >= 2 and p in (5, 13): tm, v = humanize(rr, tt, 72); tr['pizz'].append((tm, .2, tones[2 if p == 5 else 3], v))
-        # snare fill on last beat of every 4th bar (from verse on)
-        t = bt(k)
-        if pb == 3 and lvl(t) >= 2 and t + B < END_HIT - .3:
-            for s in range(4): dr['snare'].append((g16(k, s), 36 + 22 * s + 8 * (lvl(t) >= 3)))
-        # hook (real melody), one octave up for intro kalimba
-        if pb == 0 and (k < 16 or k < -1):
-            for st16, n, ln in HOOK[ch]:
-                tt = g16(k + st16 // 4, st16 % 4)
-                if tt < 0 or tt >= END_HIT - .02: continue
-                L = lvl(tt)
-                if L == 0: continue
-                tm, v = humanize(rr, tt, 82 + 8 * (L >= 3), .004); d = ln * B / 4 * .95
-                if L == 1: tr['kal'].append((tm, d, n - 12, 84))
-                else: tr['mar'].append((tm, d, n, v))
-                if L >= 3: tr['vib'].append((tm + .003, d * 1.4, n, 62))
-                if L >= 4: tr['xyl'].append((tm + .004, d, n + 12, 66)); tr['glock'].append((tm + .006, d * 1.5, n + 12, 52))
-        # pads
-        if pb == 0 and k < 21:
-            tt = bt(k); L = lvl(tt)
-            if L >= 3:
-                for n in (tones[0] - 12, tones[1] - 12, tones[2] - 12, tones[3] - 12, tones[1]): tr['pad'].append((tt - .02, 4 * B * 1.02, n, 52 + 6 * (L >= 4)))
-                if L >= 4:
-                    for n in (tones[1], tones[2], tones[3]): tr['str'].append((tt - .02, 4 * B * 1.02, n, 60))
-    # pickup, run into resolution, resolution hit
-    for i, n in enumerate((72, 76, 79, 83)): tr['mar'].append((23.35 + i * .13, .2, n, 70 + i * 6))
-    for i, n in enumerate((67, 71, 74, 79, 83, 86)): tr['mar'].append((bt(19.0 + i * .33), .3, n, 84 + 5 * i)); tr['glock'].append((bt(19.0 + i * .33), .4, n + 12, 60))
+                if bp_ is not None and not (key == 'D' and False):
+                    tm, v = humanize(rr, tt, 96 if p in (0, 8) else 84); tr['bass'].append((tm, (.22 if p in (0, 8) else .16) * B * 4, root + bp_, v))
+                    if key in ('B2', 'D'): tr['sbass'].append((tm, .2 * B * 4, root + bp_ + 12, 70))
+            if (S == 'A' and p in (2, 6, 10, 14)) or (S != 'A' and p in (2, 6, 10, 14)) or (key == 'D' and p in (4, 12)):
+                for i, n in enumerate(tri):
+                    tm, v = humanize(rr, tt + i * .009, 60 + 8 * (key in ('B2', 'D')) + 6 * (p % 4 == 2)); tr['uke'].append((tm, .28, n, v))
+            if S != 'A' and p in (5, 13): tm, v = humanize(rr, tt, 72); tr['pizz'].append((tm, .2, tri[2 if p == 5 else 1] + 12, v))
+        S = sec(t)
+        if pb == 3 and S in ('B', 'D') and t + B < END_HIT - .3 and t + B < RISER0 - .1:
+            for s in range(4): dr['snare'].append((g16(k, s), 36 + 22 * s + 8 * (S == 'D')))
+        if S == 'B' and pb == 0 and k < -4:                       # warm pads / strings
+            for n in [x - 12 for x in tri] + [tri[1]]: tr['pad'].append((t - .02, 4 * B * 1.02, n, 50))
+            if k >= KB2:
+                for n in tri: tr['str'].append((t - .02, 4 * B * 1.02, n + 12, 58))
+        if S == 'D' and pb == 0 and k < 21:
+            for n in [x - 12 for x in tri] + [tri[1]]: tr['pad'].append((t - .02, 4 * B * 1.02, n, 56))
+            for n in tri: tr['str'].append((t - .02, 4 * B * 1.02, n + 12, 56))
+    # ---------------- A: Fur Elise, 16th-note theme (marimba + kalimba), cycle of 12 beats, cut at the B downbeat
+    endA = bt(KB)
+    for cyc0, lim in ((KA, 48), (KA + 12, 12)):
+        for s16, n, ln in FE:
+            if s16 >= lim: continue
+            kk = cyc0 + s16 / 4; tt = bt(kk)
+            if tt >= endA: continue
+            d = min(ln * B / 4, endA - tt) * .9
+            tm, v = humanize(rr, tt, 84, .003); tr['mar'].append((tm, d, n, v)); tr['kal'].append((tm + .002, d * 1.3, n, 66))
+    # ---------------- B: Ode to Joy in two lines (line 2 shortened by one bar to fit 24.0)
+    for line, (ks, mel) in enumerate(((KB, ODE1), (KB2, ODE2))):
+        for bar in range(4 if line == 0 else 3):
+            ck = ks + bar * 4; tri_ = TRI[harm(ck)]
+            for j, off in enumerate((1.5, 3.5)):                 # bell counter-line on the off-beats
+                kk = ck + off; n = TRI[harm(int(kk))][(bar + j) % 3] + 24 + (12 if line else 0)
+                nb('glock', kk, .5, n, 64 + 8 * line); nb('cel', kk, .5, n - 12, 50)
+        for off, n, ln in mel:
+            kk = ks + off; d = ln
+            nb('mar', kk, d, n, 92 if line else 86); nb('vib', kk, d * 1.3, n, 60)
+            if line == 1: nb('xyl', kk, d, n + 12, 78)
+            if line == 0 and int(off // 4) % 2 == 1: nb('xyl', kk, d, n + 12, 60)
+    for i, n in enumerate((72, 76, 79, 83)): nb('mar', -4 + i * .25, .2, n, 70 + i * 6)      # pickup into the suspense
+    # ---------------- C: Mountain King, staccato low pizz + bassoon, faster and higher each time
+    gaps = .085; t0 = 24.0; seq = MK_T + MK_A
+    for i, n in enumerate(seq):
+        tt = t0 + i * gaps; tr['lowpz'].append((tt, .07, n - 12, 96)); tr['bsn'].append((tt, .07, n, 84))
+    t1 = t0 + len(seq) * gaps + .02
+    for i, n in enumerate(MK_T):
+        tt = t1 + i * .048; tr['lowpz'].append((tt, .05, n - 5 + 4, 104)); tr['bsn'].append((tt, .05, n + 4, 92)); tr['str'].append((tt, .05, n + 16, 88))
+    for tt in (25.16, 25.21): tr['str'].append((tt, .05, 76, 110)); tr['bsn'].append((tt, .05, 64, 100))
+    gp = 0.16; tt = 24.0; vel = 30
+    while tt < 25.27:
+        dr['snare'].append((tt, vel)); tt += gp; gp = max(.04, gp * .9); vel = min(118, vel + 6)
+    # ---------------- D: William Tell gallop (triplet figures per beat), trumpets + brass, galloping strings, timpani
+    for k in range(0, 21):
+        ch = harm(k); tri = TRI[ch]; root = BR[ch]; bar, pb = divmod(k, 4)
+        for i in range(3):                                        # galloping strings da-da-DUM
+            nb('gal', k + i / 3, .28, root + 12 + (7 if i == 2 else 0), 78 + 24 * (i == 2), .002)
+        if pb in (0, 2) or k >= 16: tr['timp'].append((bt(k), .3, root + (12 if k >= 16 and False else 0) if root >= 36 else root, 100 if pb == 0 else 84))
+        if pb == 0 and k < 16:
+            for n in [x + 12 for x in tri]: tr['brass'].append((bt(k), .32, n, 92))
+    for bar, figs in enumerate(TELL):
+        for b, fig in enumerate(figs):
+            kk = 4 * bar + b
+            if len(fig) == 3:
+                for i, n in enumerate(fig):
+                    v = 120 if i == 2 else 86; d = .17 if i == 2 else .12
+                    nb('trump', kk + i / 3, d / B * 1.0, n, v, .002); nb('brass', kk + i / 3, d / B, n - 12, v - 24, .002)
+            else:
+                for i, n in enumerate(fig):
+                    nb('trump', kk + i * .5, .45, n, 122, .002); nb('brass', kk + i * .5, .45, n - 12, 100, .002)
+    for kk, figs in ((16, ((77, 77, 81),)), (17, ((77, 77, 81),)), (18, ((79, 79, 83),)), (19, ((79, 79, 83),))):
+        for i, n in enumerate(figs[0]):
+            v = 122 if i == 2 else 90; nb('trump', kk + i / 3, .35 if i == 2 else .25, n, v, .002); nb('brass', kk + i / 3, .35 if i == 2 else .25, n - 12, v - 22, .002)
+    for i, n in enumerate((74, 79, 83)): nb('trump', 20 + i / 3, .3, n, 100 + 8 * i); nb('brass', 20 + i / 3, .3, n - 12, 90)
+    for i in range(6): tr['timp'].append((bt(20 + i / 6), .12, 43, 70 + 9 * i))               # timpani roll into the resolution
+    tr['brass'].append((IMPACT, .5, 60, 110)); tr['brass'].append((IMPACT, .5, 67, 110)); tr['brass'].append((IMPACT, .5, 76, 110)); tr['timp'].append((IMPACT, .6, 36, 118))
+    # ---------------- final fanfare exactly on 36.9
     for n in (48, 55, 64, 67, 69, 74): tr['hit'].append((END_HIT, 2.6, n, 100))
+    for n in (60, 64, 67, 72, 76): tr['brass'].append((END_HIT, 1.8, n, 122))
+    for n in (84, 79): tr['trump'].append((END_HIT, 1.6, n, 124))
+    for n in (60, 64, 67, 72): tr['str'].append((END_HIT, 2.4, n, 110))
+    tr['timp'].append((END_HIT, 2.0, 36, 127)); tr['timp'].append((END_HIT, 2.0, 48, 120))
     tr['bass'].append((END_HIT, 2.5, 36, 118)); tr['bass'].append((END_HIT, 2.5, 24, 100))
     for n in (72, 76, 79, 81, 86): tr['mar'].append((END_HIT + (n - 72) * .006, 1.6, n, 112))
     for n in (84, 88, 91): tr['glock'].append((END_HIT + .01, 1.5, n, 100))
     for n in (60, 64, 67, 69, 74): tr['uke'].append((END_HIT + (n - 60) * .012, 1.5, n - 12, 96))
-    for i, n in enumerate((72, 76, 79, 84, 88)): tr['glock'].append((37.55 + i * .16, 1.2, n + 12, 62 - 3 * i))
-    for i, n in enumerate((79, 76, 72)): tr['mar'].append((38.55 + i * .2, .5, n, 60 - 6 * i))
-    for n in (48, 55, 60, 64, 67, 74): tr['pad'].append((END_HIT, 3.1, n, 58)); tr['str'].append((END_HIT, 3.1, n + 12, 50))
+    # end card sting: last phrase of Ode to Joy (D. C C) softly on celesta + glock over a warm pad
+    for kk, n, ln, v in ((21.5, 74, 1.4, 64), (23.0, 72, .5, 58), (23.5, 72, 4.0, 60)):
+        nb('cel', kk, ln, n + 12, v); nb('glock', kk, ln, n + 12, v - 10); nb('cel', kk, ln, n, v - 14)
+    for n in (48, 55, 60, 64, 67, 74): tr['pad'].append((END_HIT, 3.1, n, 58)); tr['str'].append((END_HIT + 1.0, 2.1, n + 12, 44))
     dr['kick'].append((END_HIT, 118)); dr['bigclap'].append((END_HIT, 0)); dr['bigclap'].append((IMPACT, 0)); dr['kick'].append((IMPACT, 118))
     return tr, dr
 
@@ -373,9 +432,10 @@ def comp(x, thr=-20, ratio=2.5, att=.01, rel=.14, makeup=0.0):
 
 def render_score():
     tr, dr = build_score(); r = rng(21); t = np.arange(N) / SR
-    G = {'uke': (24, -8, -.45), 'kal': (108, -5, .3), 'mar': (12, -3, .15), 'vib': (11, -13, -.25), 'xyl': (13, -13, .4), 'glock': (9, -14, .5), 'pizz': (45, -7, -.3),
-         'bass': (33, -2, 0), 'sbass': (38, -13, 0), 'pad': (89, -12, 0), 'str': (48, -16, 0), 'hit': (21, -12, 0)}
-    SIDE = {'bass': 1.0, 'sbass': 1.0, 'pad': 1.0, 'str': .8, 'uke': .4, 'pizz': .3}
+    G = {'uke': (24, -8, -.45), 'kal': (108, -8, .3), 'mar': (12, -3, .15), 'vib': (11, -13, -.25), 'xyl': (13, -12, .4), 'glock': (9, -13, .5), 'cel': (8, -13, -.4), 'pizz': (45, -7, -.3),
+         'bass': (33, -2, 0), 'sbass': (38, -13, 0), 'pad': (89, -12, 0), 'str': (48, -14, 0), 'hit': (21, -12, 0),
+         'brass': (61, -9, 0), 'trump': (56, -8, .1), 'timp': (47, -6, 0), 'bsn': (70, -6, -.2), 'lowpz': (45, -4, .2), 'gal': (48, -13, -.2)}
+    SIDE = {'bass': 1.0, 'sbass': 1.0, 'pad': 1.0, 'str': .8, 'uke': .4, 'pizz': .3, 'gal': .3}
     # sidechain envelope from kicks
     kt = [tk for tk, _ in dr['kick']]; sc = np.ones(N)
     for tk in kt:
@@ -456,7 +516,7 @@ def main():
     cues, nsc = merged_cues(); r = rng(77); sfx = np.zeros((2, N)); ncue = 0; SEQ = [0, 1, 2, 3, 2, 1]
     for i, (t_, name, g, pan) in enumerate(cues):
         nm = name if name in LEVEL else ALIAS.get(name, 'pop')
-        k = int(round((t_ - IMPACT) / B)); tones = CH[chord_at(k)][1]; f = mf(tones[SEQ[i % 6]] + 12)
+        k = int(round((t_ - IMPACT) / B)); tones = TRI[harm(k)] + [TRI[harm(k)][0] + 12]; f = mf(tones[SEQ[i % 6]] + 12)
         y, hit = snd(nm, rng(1000 + i), f)
         add(sfx, st(y, pan), t_ - hit, DB(LEVEL[nm] + g)); ncue += 1
     hero = np.zeros((2, N)); add(hero, st(s_impact(), 0), IMPACT, DB(-1))
