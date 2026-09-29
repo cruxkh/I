@@ -1,0 +1,184 @@
+[
+ {
+  "t": 5.0,
+  "sound": "flash_boom",
+  "desc": "deep soft sub boom with bright airy shimmer as the gold-white flash bursts open",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 5.02,
+  "sound": "live_badge_pop",
+  "desc": "punchy cartoon pop with tiny electronic blip for the red LIVE badge",
+  "gain_db": -10,
+  "pan": 0.3
+ },
+ {
+  "t": 5.06,
+  "sound": "anchor_pop_in",
+  "desc": "bouncy squeaky pop as the anchor scales in",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 5.1,
+  "sound": "headline_slam",
+  "desc": "chunky pop-slam with short bright ding for the gold headline text",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 5.13,
+  "sound": "flag_unfurl",
+  "desc": "cloth flutter whoosh, flag snapping open",
+  "gain_db": -12,
+  "pan": -0.4
+ },
+ {
+  "t": 5.15,
+  "sound": "confetti_burst",
+  "desc": "quick party-popper confetti burst with paper flutter",
+  "gain_db": -11,
+  "pan": 0.3
+ },
+ {
+  "t": 5.3,
+  "sound": "ticker_slide",
+  "desc": "fast rising swipe with soft UI click, news ticker sliding up",
+  "gain_db": -13,
+  "pan": 0
+ },
+ {
+  "t": 5.55,
+  "sound": "ticker_settle",
+  "desc": "small tick landing, news jingle blip",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 5.8,
+  "sound": "news_stinger",
+  "desc": "short upbeat broadcast stinger, two rising synth notes",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 6.1,
+  "sound": "anchor_wave_blip",
+  "desc": "light sparkle blip on the anchor wave",
+  "gain_db": -18,
+  "pan": 0.3
+ },
+ {
+  "t": 6.52,
+  "sound": "tile_flip_whoosh",
+  "desc": "fast rattling wooden-tile clatter with swoosh as ten panels flip in sequence",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 6.62,
+  "sound": "curtain_swish",
+  "desc": "heavy velvet curtain sliding open with rushing swish",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 6.86,
+  "sound": "netflix_slam",
+  "desc": "big cinematic impact hit with bass drop and metallic ring as the red wordmark slams in",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 6.9,
+  "sound": "poster_flip_1",
+  "desc": "card flip whap with paper flutter",
+  "gain_db": -12,
+  "pan": -0.5
+ },
+ {
+  "t": 6.99,
+  "sound": "poster_flip_2",
+  "desc": "card flip whap with paper flutter",
+  "gain_db": -12,
+  "pan": -0.2
+ },
+ {
+  "t": 7.08,
+  "sound": "poster_flip_3",
+  "desc": "card flip whap with paper flutter",
+  "gain_db": -12,
+  "pan": 0.2
+ },
+ {
+  "t": 6.98,
+  "sound": "popcorn_burst_l",
+  "desc": "cartoon popcorn popping burst, rapid pops, left",
+  "gain_db": -11,
+  "pan": -0.7
+ },
+ {
+  "t": 7.05,
+  "sound": "popcorn_burst_r",
+  "desc": "cartoon popcorn popping burst, rapid pops, right",
+  "gain_db": -11,
+  "pan": 0.7
+ },
+ {
+  "t": 7.17,
+  "sound": "poster_flip_4",
+  "desc": "card flip whap with paper flutter",
+  "gain_db": -12,
+  "pan": 0.5
+ },
+ {
+  "t": 7.6,
+  "sound": "poster_hops",
+  "desc": "four soft bouncy thumps in sequence as the posters hop",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 7.86,
+  "sound": "whip_pan_1",
+  "desc": "fast whip pan whoosh to the left with airy streak",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 8.06,
+  "sound": "disney_pop",
+  "desc": "magical sparkle pop with glassy chime as the wordmark appears",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 8.1,
+  "sound": "shooting_star",
+  "desc": "rising twinkling glissando, shooting star zip along an arc left to right",
+  "gain_db": -10,
+  "pan": 0.2
+ },
+ {
+  "t": 8.3,
+  "sound": "sparkle_trail",
+  "desc": "shimmering harp-like twinkles trailing the arc",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 8.6,
+  "sound": "twinkle_cluster",
+  "desc": "tiny bell twinkles scattering",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 9.05,
+  "sound": "whip_out",
+  "desc": "very fast whoosh to the left with doppler streak, scene whip-out",
+  "gain_db": -7,
+  "pan": -0.3
+ }
+]

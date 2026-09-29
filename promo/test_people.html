@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>@font-face{font-family:Rubik;src:url(fonts/Rubik.ttf);font-weight:300 900}html,body{margin:0;background:#000}canvas{display:block;width:100vw}</style></head><body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="engine.js"></script><script src="design.js"></script><script src="kit_people.js"></script>
+<script>
+const scr=(ctx,w,h)=>{ctx.fillStyle=A.linear(ctx,0,0,w,h,[[0,'#ff4f9a'],[1,'#38d9f5']]);ctx.fillRect(0,0,w,h);A.text(ctx,'SCREEN',w/2,h/2,{font:'900 '+h*.15+'px Rubik'});};
+A.scene({name:'t',start:0,end:40,draw(ctx,s){
+ const page=Math.floor(s.t), t=s.t*3.3;
+ const W=['yoni','maya','tom'];
+ if(page==0){ PPL.room(ctx,t); PPL.tv(ctx,scr,{spill:'#7fb2ff'});
+  const sx=610,sy=890; PPL.sofaBack(ctx,sx,sy,1);
+  PPL.blanket(ctx,sx,sy-120,1,{w:300,h:100,t});
+  PPL.person(ctx,'yoni',sx-285,sy-134,1,{t,seated:true,pose:'remote',look:'tv'});
+  PPL.person(ctx,'maya',sx,sy-134,1,{t,seated:true,pose:'idle',look:'tv'});
+  PPL.person(ctx,'tom',sx+285,sy-134,1,{t,seated:true,pose:'cheer',look:'tv'});
+  PPL.sofaFront(ctx,sx,sy,1); PPL.popcorn(ctx,1000,760,.8,t); PPL.cushion(ctx,200,780,1,-.2);
+ } else if(page>=1&&page<=3){ ctx.fillStyle='#3a2a6a';ctx.fillRect(0,0,1920,1080); const who=W[page-1];
+  PPL.POSES.forEach((p,i)=>{const x=170+(i%6)*315, y=i<6?520:1000; PPL.person(ctx,who,x,y,.62,{t,pose:p});A.text(ctx,p,x,y+30,{font:'600 26px Rubik'});});
+ } else if(page==4){ ctx.fillStyle='#3a2a6a';ctx.fillRect(0,0,1920,1080);
+  PPL.FACES.forEach((f,i)=>{ W.forEach((w,j)=>{ const cx=140+(i%4)*440, cy=(i<4?0:1)*0; }); });
+  const fl=PPL.FACES; ctx.fillStyle='#3a2a6a';ctx.fillRect(0,0,1920,1080);
+  fl.forEach((f,i)=>{ const w=W[Math.floor(s.t*3)%3]; });
+  const who=W[(Math.floor(s.t*10)%10)%3];
+  fl.forEach((f,i)=>{ const cx=130+(i%4)*470, cy=(i<4?190:560); ctx.save();ctx.translate(cx,cy);ctx.scale(2.4,2.4);const c=PPL.CAST[who];PPL.person(ctx,who,0,395*c.sc,1,{t:1.1,face:f,look:'cam',shadow:false});ctx.restore();A.text(ctx,f,cx,cy+150,{font:'600 30px Rubik'});});
+ } else if(page==5){ ctx.fillStyle='#3a2a6a';ctx.fillRect(0,0,1920,1080);
+  PPL.POSES.forEach((p,i)=>{const x=170+(i%6)*315, y=i<6?400:800; PPL.person(ctx,W[i%3],x,y,.75,{t,pose:p,seated:true});A.text(ctx,p,x,y+150,{font:'600 26px Rubik'});});
+ } else if(page==6){ PPL.room(ctx,t,{});
+  PPL.phone(ctx,300,600,1,-.2,scr); PPL.tablet(ctx,700,700,1,.1,scr); PPL.laptop(ctx,1100,900,1,scr); PPL.remote(ctx,1400,800,2,.5,{ir:1,t}); PPL.popcorn(ctx,1650,900,1.2,t); PPL.blanket(ctx,900,300,1,{t});
+ } else if(page==7){ PPL.room(ctx,t); // blend
+  const k=(s.t%1); PPL.person(ctx,'yoni',500,900,1.6,{t,blend:{from:'slump',to:'cheer',k}}); PPL.person(ctx,'maya',1000,900,1.6,{t,pose:'laugh',flip:true,look:'l'}); PPL.person(ctx,'tom',1400,900,1.9,{t,faceBlend:{from:'bored',to:'wow',k},pose:'point'});
+ }
+}});
+</script></body></html>
