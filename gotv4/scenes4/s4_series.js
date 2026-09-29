@@ -424,7 +424,7 @@ function drawTurkish(ctx, v) {
   // sky + sun + far/near skyline (parallax drift)
   const bx = -60 + Math.sin(t * .25) * 6; ctx.drawImage(turBG(), bx, 0);
   // sun
-  const sunY = 590, sunR = 138; add(ctx, () => { ctx.fillStyle = rad(ctx, 540, sunY, 20, 900, [[0, 'rgba(255,220,140,.75)'], [.35, 'rgba(255,140,80,.28)'], [1, 'rgba(255,90,80,0)']]); ctx.fillRect(-400, -400, 1900, 1900); });
+  const sunY = 650, sunR = 150; add(ctx, () => { ctx.fillStyle = rad(ctx, 540, sunY, 20, 900, [[0, 'rgba(255,220,140,.75)'], [.35, 'rgba(255,140,80,.28)'], [1, 'rgba(255,90,80,0)']]); ctx.fillRect(-400, -400, 1900, 1900); });
   ctx.fillStyle = rad(ctx, 540, sunY, 10, sunR, [[0, '#FFFBE0'], [.7, '#FFE49A'], [1, '#FFC24A']]); ctx.beginPath(); ctx.arc(540, sunY, sunR, 0, TAU); ctx.fill(); ctx.lineWidth = 8; ctx.strokeStyle = INK; ctx.globalAlpha = .0; ctx.stroke(); ctx.globalAlpha = 1;
   [190, 250, 330].forEach((r, i) => { ctx.strokeStyle = `rgba(255,236,170,${.34 - i * .08})`; ctx.lineWidth = 8 + i * 3; ctx.beginPath(); ctx.arc(540, sunY, r + Math.sin(t * 1.4 + i) * 4, 0, TAU); ctx.stroke(); });
   add(ctx, () => { ctx.translate(540, sunY); for (let i = 0; i < 12; i++) { const a = i / 12 * TAU + t * .05 + tt * .08; ctx.save(); ctx.rotate(a); ctx.fillStyle = lin(ctx, 0, 0, 0, -1400, [[0, 'rgba(255,230,160,.22)'], [1, 'rgba(255,230,160,0)']]); ctx.beginPath(); ctx.moveTo(-6, 0); ctx.lineTo(-70, -1400); ctx.lineTo(70, -1400); ctx.lineTo(6, 0); ctx.fill(); ctx.restore(); } });
@@ -435,37 +435,43 @@ function drawTurkish(ctx, v) {
   const wtr = lay('tur_water', 1080, 1300, g => { g.fillStyle = lin(g, 0, 0, 0, 1300, [[0, '#FF9A5A'], [.12, '#C4457A'], [.4, '#5C1E78'], [1, '#170838']]); g.fillRect(0, 0, 1080, 1300); }); ctx.drawImage(wtr, 0, 700);
   add(ctx, () => { for (let i = 0; i < 64; i++) { const k = i / 63, y = 706 + Math.pow(k, 1.55) * 520, w0 = 30 + k * 300 * (.6 + .4 * hash(i * 1.9)), x = 540 + Math.sin(t * (1.2 + k) + i * 1.3) * (10 + k * 40) + (hash(i * 3.1) - .5) * 40 * k; ctx.globalAlpha = (1 - k * .8) * .8; ctx.fillStyle = '#FFE9A8'; ctx.beginPath(); ctx.roundRect(x - w0 / 2, y, w0, 4 + k * 6, 6); ctx.fill(); }
     ctx.globalAlpha = .25; ctx.strokeStyle = '#FFB070'; ctx.lineWidth = 3; for (let i = 0; i < 22; i++) { const y = 740 + i * 34 + Math.sin(t + i) * 4, x0 = (hash(i * 7.7) * 900 + t * (10 + i)) % 1200 - 60; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 + 120 + i * 6, y); ctx.stroke(); } ctx.globalAlpha = 1; });
+  { const nr = lay('tur_near', 1200, 300, (g) => skylineNear(g, 1200, 260)); ctx.save(); ctx.globalAlpha = .38; for (let k = 0; k < 44; k++) { const sy = 40 + k * 4.4, dy = 700 + k * 5.2 + k * k * .04; ctx.drawImage(nr, 0, 300 - sy - 4, 1200, 5, -60 + Math.sin(t * 2 + k * .5) * (2 + k * .3), dy, 1200, 6.5); } ctx.restore(); }
   ferry(ctx, 1240 - ((t * 26) % 1500), 738, .55, t);
   ctx.restore();
   // title
   const shine = A.H ? (A.H.u / A.H.dur * 1.4 - .2) : clamp((tt - .25) / .8) * 1.3 - .15;
   const out = clamp((v - 15.6) / 0.2) * 0;   // title stays until the Korean slabs cover it
-  bigTitle(ctx, 'סדרות', 540, 262, 196, v - 12.0, { from: 2.3, rot: -.07, shine: A.H ? shine : undefined });
-  bigTitle(ctx, 'טורקיות', 540, 476, 222, v - 12.39, { from: 2.1, rot: .05, shine: A.H ? shine - .15 : undefined, grad: [[0, '#FFF3C4'], [.45, '#FFB53A'], [1, '#E0620A']], off: '#B3122E' });
+  bigTitle(ctx, 'סדרות', 540, 250, 176, v - 12.0, { from: 2.3, rot: -.07, shine: A.H ? shine : undefined });
+  bigTitle(ctx, 'טורקיות', 540, 440, 204, v - 12.39, { from: 2.1, rot: .05, shine: A.H ? shine - .15 : undefined, grad: [[0, '#FFF3C4'], [.45, '#FFB53A'], [1, '#E0620A']], off: '#B3122E' });
   // drama panels
   const u2 = v - 12.39, kk = kick(u2, .02, 20), blink = A.blink(t, 3);
-  const PG = [[40, 760], [590, 718], [540, 1176], [40, 1200]], PM = [[618, 742], [1040, 716], [1040, 1196], [570, 1176]];
+  const PG = [[80, 700], [566, 664], [524, 1096], [80, 1116]], PM = [[598, 680], [1004, 660], [1004, 1110], [556, 1096]];
   if (u2 > 0 && u2 < .5) { ctx.save(); ctx.globalAlpha = kick(u2, .06, 30); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(600, 640); ctx.lineTo(520, 900); ctx.lineTo(590, 900); ctx.lineTo(470, 1240); ctx.lineTo(640, 930); ctx.lineTo(570, 930); ctx.lineTo(690, 640); ctx.closePath(); ctx.fill(); ctx.restore(); }
   panelFrame(ctx, PG, u2 - .04, -1, () => {
-    ctx.fillStyle = rad(ctx, 320, 960, 40, 620, [[0, '#FF7C96'], [.5, '#C0245C'], [1, '#4A0A3A']]); ctx.fillRect(0, 700, 700, 520); tone(ctx, 'tg', 20, 700, 640, 520, 16, 'rgba(60,0,40,.5)', 'radial', 1);
-    speedLines(ctx, 300, 1010, t, { r0: 260, len: 700, n: 46, col: 'rgba(255,255,255,.28)', fps: 10 });
+    ctx.fillStyle = rad(ctx, 320, 960, 40, 620, [[0, '#FF7C96'], [.5, '#C0245C'], [1, '#4A0A3A']]); ctx.fillRect(60, 640, 560, 500); tone(ctx, 'tg', 60, 640, 560, 500, 16, 'rgba(60,0,40,.5)', 'radial', 1);
+    speedLines(ctx, 320, 920, t, { r0: 260, len: 700, n: 46, col: 'rgba(255,255,255,.28)', fps: 10 });
     const tear = clamp((v - 12.62) / 1.0);
-    ctx.save(); ctx.translate(310 + Math.sin(t * 1.3) * 3, 1000 + Math.sin(t * 2) * 3); ctx.scale(1.12, 1.12); drawHead(ctx, { id: 'girl', t, eyes: { style: 'sparkle', lx: .5, ly: -.1, blink, spark: 1 }, mouth: { open: 0, curve: -.5, w: 26 }, brow: { ang: -.75, raise: -2 }, turn: .2, blush: .55, tear }); ctx.restore();
+    ctx.save(); ctx.translate(318 + Math.sin(t * 1.3) * 3, 930 + Math.sin(t * 2) * 3); ctx.scale(1.0, 1.0); drawHead(ctx, { id: 'girl', t, eyes: { style: 'sparkle', lx: .5, ly: -.1, blink, spark: 1 }, mouth: { open: 0, curve: -.5, w: 26 }, brow: { ang: -.75, raise: -2 }, turn: .2, blush: .55, tear }); ctx.restore();
     ctx.globalAlpha = .9; rosePetals(ctx, t, { n: 14, seed: 9, alpha: .9 }); ctx.globalAlpha = 1;
-    sfx(ctx, 'ドキッ', 130, 800, 78, -.2, u2 - .12, { fill: '#FF9AC0', shake: 1 });
+    sfx(ctx, 'ドキッ', 170, 740, 78, -.2, u2 - .12, { fill: '#FF9AC0', shake: 1 });
   });
   panelFrame(ctx, PM, u2 - .08, 1, () => {
-    ctx.fillStyle = rad(ctx, 820, 960, 40, 620, [[0, '#3C6E9E'], [.55, '#182C5E'], [1, '#0A0E2A']]); ctx.fillRect(560, 700, 500, 520); tone(ctx, 'tm', 560, 700, 500, 520, 15, 'rgba(0,0,30,.55)', 'radial', 1);
-    add(ctx, () => { ctx.fillStyle = lin(ctx, 1040, 720, 700, 1180, [[0, 'rgba(255,190,90,.55)'], [1, 'rgba(255,190,90,0)']]); ctx.fillRect(560, 700, 500, 520); });
-    ctx.save(); ctx.translate(816 + Math.sin(t * 1.1) * 3, 980); ctx.scale(1.08, 1.08); drawHead(ctx, { id: 'man', t, eyes: { style: 'normal', k: .82, lx: -.75, ly: .05, blink: A.blink(t, 8) }, mouth: { open: 0, curve: -.15, w: 24 }, brow: { ang: .55, raise: 0 }, turn: -.22 }); ctx.restore();
-    sparkleStar(ctx, 700, 990, 20 + 8 * Math.sin(t * 6), '#fff', t, .9);
+    ctx.fillStyle = rad(ctx, 820, 960, 40, 620, [[0, '#3C6E9E'], [.55, '#182C5E'], [1, '#0A0E2A']]); ctx.fillRect(540, 640, 480, 500); tone(ctx, 'tm', 540, 640, 480, 500, 15, 'rgba(0,0,30,.55)', 'radial', 1);
+    add(ctx, () => { ctx.fillStyle = lin(ctx, 1040, 720, 700, 1180, [[0, 'rgba(255,190,90,.55)'], [1, 'rgba(255,190,90,0)']]); ctx.fillRect(540, 640, 480, 500); });
+    ctx.save(); ctx.translate(790 + Math.sin(t * 1.1) * 3, 910); ctx.scale(1.0, 1.0); drawHead(ctx, { id: 'man', t, eyes: { style: 'normal', k: .82, lx: -.75, ly: .05, blink: A.blink(t, 8) }, mouth: { open: 0, curve: -.15, w: 24 }, brow: { ang: .55, raise: 0 }, turn: -.22 }); ctx.restore();
+    sparkleStar(ctx, 700, 900, 20 + 8 * Math.sin(t * 6), '#fff', t, .9);
   });
   // heart beat between panels
-  { const hk = eob((u2 - .3) / .2), beat = 1 + .16 * Math.pow(Math.max(0, Math.sin(t * 7.5)), 6); ctx.save(); ctx.translate(578, 1208); ctx.scale(hk * beat * 1.3, hk * beat * 1.3); ctx.beginPath(); ctx.moveTo(0, 38); ctx.bezierCurveTo(-62, -6, -32, -46, 0, -16); ctx.bezierCurveTo(32, -46, 62, -6, 0, 38); ctx.fillStyle = '#FF3D7A'; ctx.fill(); ctx.lineWidth = 9; ctx.strokeStyle = INK; ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.ellipse(-20, -14, 9, 5, -.6, 0, TAU); ctx.fill(); ctx.restore(); }
-  // foreground: tulips (left) + tea (right), petals
+  { const hk = eob((u2 - .3) / .2), beat = 1 + .16 * Math.pow(Math.max(0, Math.sin(t * 7.5)), 6); ctx.save(); ctx.translate(560, 1110); ctx.scale(hk * beat * 1.2, hk * beat * 1.2); ctx.beginPath(); ctx.moveTo(0, 38); ctx.bezierCurveTo(-62, -6, -32, -46, 0, -16); ctx.bezierCurveTo(32, -46, 62, -6, 0, 38); ctx.fillStyle = '#FF3D7A'; ctx.fill(); ctx.lineWidth = 9; ctx.strokeStyle = INK; ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.ellipse(-20, -14, 9, 5, -.6, 0, TAU); ctx.fill(); ctx.restore(); }
+  // foreground: terrace table with tulips (left) + tea (right)
+  { const e = eio((v - 12.05) / .3); ctx.save(); ctx.translate(0, (1 - e) * 700); const tb = 1236;
+    ctx.fillStyle = lin(ctx, 0, tb, 0, H, [[0, '#5A2432'], [.15, '#361626'], [1, '#150818']]); ctx.fillRect(0, tb, W, H - tb);
+    ctx.fillStyle = '#FFB070'; ctx.fillRect(0, tb - 6, W, 8); ctx.fillStyle = INK; ctx.fillRect(0, tb - 12, W, 6);
+    ctx.strokeStyle = 'rgba(255,170,110,.14)'; ctx.lineWidth = 3; for (let i = -10; i < 24; i++) { ctx.beginPath(); ctx.moveTo(540 + (i - 7) * 40, tb); ctx.lineTo(540 + (i - 7) * 230, H); ctx.stroke(); }
+    ctx.restore(); }
   const sw = Math.sin(t * 1.4) * .03;
-  [[46, 1290, 330, '#FF3B4A', '#C4122E', .4], [130, 1330, 380, '#FFC24A', '#E88A12', .1], [214, 1300, 300, '#FF5A9A', '#C4246A', -.15], [-10, 1400, 300, '#FF3B4A', '#C4122E', .2], [290, 1380, 260, '#FFF0D0', '#E8C88A', -.2]].forEach(([x, y, h, c1, c2, r], i) => { const e = eob((v - 12.2 - i * .04) / .3); tulip(ctx, x, lerp(2100, y, e), h, c1, c2, r + sw * (i % 2 ? 1 : -1) + Math.sin(t * 1.3 + i) * .02); });
-  { const e = eob((v - 12.3) / .3); teaGlass(ctx, 900, lerp(2200, 1360, e), .9, t); }
+  [[70, 1250, 300, '#FF3B4A', '#C4122E', .3], [150, 1262, 340, '#FFC24A', '#E88A12', .08], [236, 1250, 270, '#FF5A9A', '#C4246A', -.2], [20, 1270, 250, '#FFF0D0', '#E8C88A', .12]].forEach(([x, y, h, c1, c2, r], i) => { const e = eob((v - 12.1 - i * .05) / .32); tulip(ctx, x, lerp(2100, y, e), h, c1, c2, r + sw * (i % 2 ? 1 : -1) + Math.sin(t * 1.3 + i) * .02); });
+  { const e = eob((v - 12.2) / .32); teaGlass(ctx, 880, lerp(2200, 1290, e), .84, t); }
   rosePetals(ctx, t, { n: 12, seed: 2, alpha: .9 });
   if (A.H) { const b = holdBell(); add(ctx, () => { ctx.globalAlpha = .18 * b; ctx.fillStyle = '#FFD890'; ctx.fillRect(0, 0, W, H); }); }
   if (tt < .3) { const k = clamp(tt / .22); slabs(ctx, 1 - k, ['#FFC24A', '#FF6B55', '#7C2C76', '#FFE49A', '#FFC24A'], -.4); }

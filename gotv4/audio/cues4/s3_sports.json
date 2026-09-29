@@ -1,0 +1,380 @@
+[
+ {
+  "t": 9.0,
+  "sound": "manga_panel_slam",
+  "desc": "hard cut into football volley, impact frame",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 9.02,
+  "sound": "ball_shot",
+  "desc": "football volley kick",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 9.02,
+  "sound": "score_bug_pop",
+  "desc": "SPORT1 bug pops",
+  "gain_db": -12,
+  "pan": -0.4
+ },
+ {
+  "t": 9.22,
+  "sound": "whip_pan_1",
+  "desc": "cut to dunk",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.23,
+  "sound": "rim_clang",
+  "desc": "dunk hits rim",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 9.23,
+  "sound": "score_bug_pop",
+  "desc": "SPORT2 bug pops",
+  "gain_db": -12,
+  "pan": -0.2
+ },
+ {
+  "t": 9.43,
+  "sound": "whip_pan_1",
+  "desc": "cut to tennis",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.44,
+  "sound": "racket_smash",
+  "desc": "tennis smash",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 9.44,
+  "sound": "score_bug_pop",
+  "desc": "SPORT3 bug pops",
+  "gain_db": -12,
+  "pan": 0.2
+ },
+ {
+  "t": 9.64,
+  "sound": "whip_pan_1",
+  "desc": "cut to boxing",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.65,
+  "sound": "punch_impact",
+  "desc": "boxing punch",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 9.65,
+  "sound": "score_bug_pop",
+  "desc": "SPORT4 bug pops",
+  "gain_db": -12,
+  "pan": 0.4
+ },
+ {
+  "t": 9.85,
+  "sound": "light_burst_hit",
+  "desc": "gold burst, logo grid",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 9.86,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate 1 pops",
+  "gain_db": -13,
+  "pan": -0.3
+ },
+ {
+  "t": 9.905,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate 2 pops",
+  "gain_db": -13,
+  "pan": 0.3
+ },
+ {
+  "t": 9.95,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate 3 pops",
+  "gain_db": -13,
+  "pan": -0.3
+ },
+ {
+  "t": 9.995,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate 4 pops",
+  "gain_db": -13,
+  "pan": 0.3
+ },
+ {
+  "t": 10.04,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate 5 pops",
+  "gain_db": -13,
+  "pan": -0.3
+ },
+ {
+  "t": 10.085,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate 6 pops",
+  "gain_db": -13,
+  "pan": 0.3
+ },
+ {
+  "t": 22.75,
+  "T": true,
+  "sound": "whip_in_right",
+  "desc": "whip in from montage to the stand",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 23.1,
+  "T": true,
+  "sound": "drumroll_start",
+  "desc": "drums chant",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 23.25,
+  "T": true,
+  "sound": "beat_kick",
+  "desc": "drum hit",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 23.5,
+  "T": true,
+  "sound": "beat_kick",
+  "desc": "drum hit",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 23.75,
+  "T": true,
+  "sound": "beat_kick",
+  "desc": "drum hit",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 23.7,
+  "T": true,
+  "sound": "manga_panel_slam",
+  "desc": "close-up roaring face panel",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 23.92,
+  "T": true,
+  "sound": "pre_impact_silence_pop",
+  "desc": "breath before the goal",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 23.95,
+  "T": true,
+  "sound": "goal_crowd_roar",
+  "desc": "goal eruption roar",
+  "gain_db": -5,
+  "pan": 0
+ },
+ {
+  "t": 23.95,
+  "T": true,
+  "sound": "confetti_burst",
+  "desc": "confetti and tifo drop",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 23.95,
+  "T": true,
+  "sound": "impact_frame_don",
+  "desc": "impact frame",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 24.25,
+  "T": true,
+  "sound": "flag_unfurl",
+  "desc": "tifo settles",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 24.95,
+  "T": true,
+  "sound": "whip_out",
+  "desc": "whip out to Sport 5",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 10.16,
+  "sound": "whip_in_left",
+  "desc": "whip in, charge up",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 10.2,
+  "sound": "power_charge_rise",
+  "desc": "floodlights charge",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 10.27,
+  "sound": "spotlight_on",
+  "desc": "floodlight on",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 10.34,
+  "sound": "spotlight_on",
+  "desc": "floodlight on",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 10.4,
+  "sound": "spotlight_on",
+  "desc": "last floodlight",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 10.41,
+  "sound": "impact_frame_don",
+  "desc": "SPORT 5 logo slam impact frame",
+  "gain_db": -5,
+  "pan": 0
+ },
+ {
+  "t": 10.41,
+  "sound": "logo_slam_reveal",
+  "desc": "SPORT 5 hero slam",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 10.42,
+  "sound": "halo_shockwave",
+  "desc": "shockwave rings",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 10.45,
+  "sound": "shine_sweep",
+  "desc": "light sweep over logo",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 10.63,
+  "sound": "plate_pop_glossy",
+  "desc": "Sport 5 family plate 1",
+  "gain_db": -10,
+  "pan": -0.4
+ },
+ {
+  "t": 10.74,
+  "sound": "plate_pop_glossy",
+  "desc": "Sport 5 family plate 2",
+  "gain_db": -10,
+  "pan": -0.13
+ },
+ {
+  "t": 10.85,
+  "sound": "plate_pop_glossy",
+  "desc": "Sport 5 family plate 3",
+  "gain_db": -10,
+  "pan": 0.14
+ },
+ {
+  "t": 10.96,
+  "sound": "plate_pop_glossy",
+  "desc": "Sport 5 family plate 4",
+  "gain_db": -10,
+  "pan": 0.41000000000000003
+ },
+ {
+  "t": 11.08,
+  "sound": "impact_frame_don",
+  "desc": "CHARLTON slam impact frame",
+  "gain_db": -5,
+  "pan": 0
+ },
+ {
+  "t": 11.08,
+  "sound": "logo_slam_reveal",
+  "desc": "CHARLTON wordmark slam",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 11.09,
+  "sound": "shockwave_ring",
+  "desc": "slam ring",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 26.3,
+  "T": true,
+  "sound": "shine_sweep",
+  "desc": "Sport 5 hold: light sweep and glints",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 11.3,
+  "sound": "slash_wipe_whoosh",
+  "desc": "magenta burst expands over Sport 5",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 11.52,
+  "sound": "badge_stamp",
+  "desc": "Hebrew tag stamps in",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 28.0,
+  "T": true,
+  "sound": "logo_shine_sweep",
+  "desc": "CHARLTON hold: shine sweep",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 11.93,
+  "sound": "whip_out",
+  "desc": "whip out to series",
+  "gain_db": -8,
+  "pan": 0
+ }
+]
