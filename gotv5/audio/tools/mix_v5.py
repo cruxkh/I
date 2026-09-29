@@ -43,8 +43,8 @@ def st(x, pan=0.0):
 def env_exp(n, tau): return np.exp(-np.arange(n) / SR / tau)
 def fade(x, a=0.002, b=0.004):
     x = x.copy(); na, nb = int(a * SR), int(b * SR)
-    if na: x[:na] *= np.linspace(0, 1, na)
-    if nb: x[-nb:] *= np.linspace(1, 0, nb)
+    if na: x[..., :na] *= np.linspace(0, 1, na)
+    if nb: x[..., -nb:] *= np.linspace(1, 0, nb)
     return x
 def rng(seed): return np.random.default_rng(seed)
 def ir(rt60, seed, pre=0.012, bright=6000):
@@ -181,51 +181,150 @@ def d_shake(r):
     n = int(.1 * SR); t = np.arange(n) / SR
     return fade(bp(r.standard_normal(n), 5500, 9500, 2) * np.minimum(t / .02, 1) * np.exp(-t / .04) * .45, .003, .01)
 
+# ============================================================ 2026 short-form-video sound language (all synthesised sound-alikes, no samples, no hiss)
+def saw_stack(f, n, dets=(-12, 0, 12), fc=None, nh=28):
+    """band-limited detuned saw stack; f may be array (Hz per sample); fc lowpass shaping per sample (array or None)"""
+    f = np.broadcast_to(np.asarray(f, float), (n,)); y = np.zeros(n)
+    for c in dets:
+        ph = np.cumsum(f * 2 ** (c / 1200)) / SR
+        for h in range(1, nh):
+            w = 1.0 / h
+            if fc is not None: w = w * np.exp(-(h * f / fc) ** 2)
+            else: w = w * (h * f[0] < 16000)
+            y += np.sin(2 * np.pi * h * ph + c * .01) * w
+    return y / len(dets)
+def s_pop2(f):
+    n = int(.14 * SR); t = np.arange(n) / SR
+    fr = f * (.65 + .55 * (1 - np.exp(-t / .018)))
+    y = np.sin(2 * np.pi * np.cumsum(fr) / SR) * np.exp(-t / .04) + .25 * np.sin(2 * np.pi * np.cumsum(fr * 2) / SR) * np.exp(-t / .02)
+    return fade(y * .9, .001, .02)
+def s_notif(f=None):
+    y = np.zeros(int(.75 * SR))
+    for t0, m, g in ((0, 88, 1), (.13, 95, .85)):
+        n = int(.55 * SR); t = np.arange(n) / SR; fq = mf(m)
+        b = (np.sin(2 * np.pi * fq * t + .6 * np.exp(-t / .05) * np.sin(2 * np.pi * fq * 2 * t)) * np.exp(-t / .12)); y[int(t0 * SR):int(t0 * SR) + n] += b * g
+    return fade(y * .5, .001, .05)
+def s_boom(big=False, root=33, d=None):
+    """vine-boom sound-alike: pitch-dropping 808 sub + saturated body + wood-ish punch (no noise)"""
+    d = d or (2.4 if big else 1.0); n = int(d * SR); t = np.arange(n) / SR
+    f = mf(root) * .5 + (mf(root) * 3.2) * np.exp(-t / .05) + 40 * np.exp(-t / .3) * 0
+    sub = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / (.55 if big else .26))
+    body = np.sin(2 * np.pi * np.cumsum(mf(root + 12) * (1 + 1.4 * np.exp(-t / .03))) / SR) * np.exp(-t / .12) * .7
+    punch = np.sin(2 * np.pi * 180 * (1 + 1.5 * np.exp(-t / .01)) * t) * np.exp(-t / .03) * .8
+    y = np.tanh((sub * 1.5 + body + punch) * 1.8) * .8
+    return fade(y, .0004, .06)
+def s_braaam(f=55.0, d=1.0):
+    n = int(d * SR); t = np.arange(n) / SR
+    fr = f * (1 + .06 * np.exp(-t / .07)) * np.ones(n); fc = 350 + 2600 * np.exp(-((t - .08) / .12) ** 2) + 700 * np.exp(-t / .5)
+    y = saw_stack(fr, n, (-14, 0, 14), fc, 40) + .8 * saw_stack(fr * 2, n, (-10, 10), fc, 30) + .4 * saw_stack(fr * 1.5, n, (0,), fc, 30)
+    e = np.minimum(t / .012, 1) * np.exp(-t / (d * .42)); y = np.tanh(y * e * .8) * 1.0
+    return fade(y * .6, .001, .08)
+def s_swipe(f_land, up=True):
+    y, hit = s_sweep(f_land, .34, up, False)
+    c = s_click(); y[int(hit * SR):int(hit * SR) + len(c)] += c * .5
+    return y, hit
+def s_rdrop(f_land):
+    """riser (tonal saw sweep + sub pulses) -> 0.3 s pre-drop silence -> 808 boom; returns audio with the boom at offset 0.9 s"""
+    rd = .6; n = int(rd * SR); u = np.arange(n) / n
+    fr = f_land * .5 * 2 ** (3 * u); fc = 300 + 6500 * u ** 1.3
+    r = saw_stack(fr, n, (-12, 0, 12), fc, 30) * u ** 1.6 * .5; r[-int(.01 * SR):] *= np.linspace(1, 0, int(.01 * SR))
+    out = np.zeros(int(.9 * SR) + int(2.2 * SR)); out[:n] += r * .8
+    b = s_boom(True, 33, 2.2); out[int(.9 * SR):int(.9 * SR) + len(b)] += b[:len(out) - int(.9 * SR)]
+    return out, .9
+def s_tapestop(f=220.0, d=.6):
+    n = int(d * SR); u = np.arange(n) / n; fr = f * (1 - u) ** 1.6 + 8
+    y = saw_stack(fr, n, (-8, 8), 300 + 3000 * (1 - u) ** 2, 20) * np.exp(-u * 1.2)
+    y += np.sin(2 * np.pi * np.cumsum(fr * .5) / SR) * .6
+    return fade(y * .5, .002, .03)
+def s_stutter(f=220.0):
+    """glitch stutter of a chord slice that slows/pitches down, ending in a tape stop"""
+    n = int(.6 * SR); src = np.zeros(int(.09 * SR)); t = np.arange(len(src)) / SR
+    for m in (0, 3, 7): src += np.sin(2 * np.pi * f * 2 ** (m / 12) * t) * np.exp(-t / .05) + .4 * np.sin(2 * np.pi * f * 2 ** (m / 12) * 2 * t) * np.exp(-t / .03)
+    out = np.zeros(int(1.0 * SR)); pos = 0.0
+    for i in range(9):
+        sp = .93 ** i; idx = np.arange(int(len(src) * .55 / sp)) * sp; sl = np.interp(idx, np.arange(len(src)), src); sl = fade(sl, .001, .004)
+        k = int(pos * SR); out[k:k + len(sl)] += sl * (1 - i * .06); pos += .05 + .012 * i
+    ts = s_tapestop(f * .6, .35) * .7; k = int(pos * SR); out[k:k + len(ts)] += ts[:len(out) - k]
+    return fade(lp(out, 6000, 2) * .8, .001, .02)
+def s_scratch():
+    n = int(.42 * SR); t = np.arange(n) / SR
+    fr = 420 * 2 ** (1.6 * np.sin(2 * np.pi * 5.0 * t) * np.exp(-t / .4)) + 60
+    y = saw_stack(fr, n, (-6, 6), 2600, 18) * (np.abs(np.sin(2 * np.pi * 2.5 * t + .3)) ** .35) * np.exp(-t / .3)
+    return fade(lp(y, 5000, 2) * .5, .002, .04)
+def s_tada(f=None):
+    out = np.zeros(int(1.6 * SR)); hit = .2
+    for t0, notes, d in ((0, (67,), .13), (.1, (72,), .12), (hit, (72, 76, 79, 84), 1.2)):
+        for m in notes:
+            n = int(d * SR); fr = mf(m); tt = np.arange(n) / SR
+            b = saw_stack(np.full(n, fr), n, (-10, 0, 10), 500 + 5000 * np.exp(-tt / .3), 24) * np.minimum(tt / .006, 1) * np.exp(-tt / (d * .6)); b = fade(b * .28, .001, .05)
+            out[int(t0 * SR):int(t0 * SR) + n] += b
+    b = fmbell(mf(96), 1.2) * .3; k = int(hit * SR); out[k:k + len(b)] += b[:len(out) - k]
+    return out, hit
+def s_tvon(f=None):
+    n = int(.5 * SR); t = np.arange(n) / SR
+    fr = 350 * (2600 / 350) ** np.minimum(t / .09, 1); y = np.sin(2 * np.pi * np.cumsum(fr) / SR) * np.exp(-t / .16) * np.minimum(t / .004, 1)
+    y += .3 * np.sin(2 * np.pi * np.cumsum(fr * 2) / SR) * np.exp(-t / .08); k = int(.11 * SR); b = fmbell(mf(100), .5)[:n - k]; y[k:k + len(b)] += b * .35
+    return fade(y * .6, .001, .05)
 def snd(nm, r, f):
-    if nm == 'pop': return pluck(f, .4), 0
-    if nm == 'slap': return s_wood(300, .1) * .9, 0
-    if nm in ('stamp', 'thump'): return s_thump(False, 48), 0.0
-    if nm == 'slam': return s_thump(True, 48), 0.0
+    if nm == 'pop': return s_pop2(f), 0
+    if nm == 'notif': return s_notif(), 0
+    if nm == 'slap': return s_boom(False, 33, .35), 0
+    if nm in ('stamp', 'thump'): return s_boom(False, 33, 1.0), 0
+    if nm == 'slam': return s_boom(True, 33, 1.8), 0
+    if nm == 'braaam': return s_braaam(55.0 if f < 900 else 110.0, 1.0), 0
     if nm == 'tick': return s_tick(), 0
     if nm == 'snip': return s_snip(), 0
-    if nm == 'flip': return s_sweep(f * .5, .38, False, False)
+    if nm == 'flip': return s_swipe(f * .5, False)
     if nm == 'shutter': return s_shutter(), 0
     if nm == 'click': return s_click(), 0
-    if nm == 'ding': return s_ding(), 0
+    if nm == 'tvon': return s_tvon(), 0
     if nm == 'cheer': return s_cheer(r, 2.6, .55), 0
     if nm == 'goal': return s_cheer(r, 3.0, .5, True), 0
-    if nm == 'whoosh': return s_sweep(f * .5, .5, True, True)
+    if nm == 'whoosh': return s_swipe(f * .5, True)
     if nm == 'whoosh_s': return s_thwip(f * .5)
-    if nm == 'impact': return s_impact(), 0
-    return pluck(f, .4), 0
-LEVEL = {'pop': -9, 'slap': -8, 'stamp': -6, 'slam': -7, 'thump': -8, 'tick': -14, 'snip': -13, 'flip': -8, 'shutter': -11, 'click': -12, 'ding': -9,
-         'cheer': -10, 'goal': -8, 'whoosh': -9, 'whoosh_s': -10, 'impact': 0}
-ALIAS = {'sting': 'ding', 'peel': 'flip', 'wipe': 'whoosh', 'swipe': 'whoosh', 'tear': 'tick', 'rip': 'tick', 'tape': 'tick', 'marker': 'pop', 'scribble': 'pop', 'squeak': 'pop',
-         'scissors': 'snip', 'cut': 'snip', 'camera': 'shutter', 'crowd': 'cheer', 'tv': 'ding', 'remote': 'click', 'button': 'click', 'paper': 'pop', 'rustle': 'pop',
-         'page': 'flip', 'boom': 'impact', 'hit': 'slap', 'drop': 'slap', 'slide': 'whoosh', 'zoom': 'whoosh_s', 'sticker': 'pop', 'logo': 'pop', 'reveal': 'pop', 'crash': 'impact'}
-
-# ------------------------------------------------------------ cue tables
+    if nm == 'rdrop': return s_rdrop(f * .5)
+    if nm == 'tapestop': return s_tapestop(), 0
+    if nm == 'stutter': return s_stutter(), 0
+    if nm == 'scratch': return s_scratch(), 0
+    if nm == 'tada': return s_tada()
+    if nm == 'impact': return s_impact2(), 0
+    return s_pop2(f), 0
+def s_impact2():
+    b = s_boom(True, 33, 3.2); y = b.copy(); y *= 1.0
+    br = s_braaam(55.0, 1.4); y[:len(br)] += br * .55
+    for i, m in enumerate((69, 81, 88)):
+        bb = fmbell(mf(m), 2.4) * .12; y[:len(bb)] += bb
+    return np.tanh(y * .9)
+LEVEL = {'pop': -10, 'notif': -11, 'slap': -13, 'stamp': -10, 'slam': -9, 'thump': -11, 'braaam': -10, 'tick': -12, 'snip': -13, 'flip': -8, 'shutter': -10, 'click': -10, 'tvon': -8,
+         'cheer': -10, 'goal': -8, 'whoosh': -8, 'whoosh_s': -9, 'rdrop': -8, 'tapestop': -8, 'stutter': -7, 'scratch': -9, 'tada': -7, 'impact': 0}
+ALIAS = {'sting': 'tada', 'peel': 'flip', 'wipe': 'whoosh', 'swipe': 'whoosh', 'tear': 'tick', 'rip': 'tick', 'tape': 'tick', 'marker': 'pop', 'scribble': 'pop', 'squeak': 'pop',
+         'scissors': 'snip', 'cut': 'snip', 'camera': 'shutter', 'crowd': 'cheer', 'tv': 'tvon', 'remote': 'click', 'button': 'click', 'paper': 'pop', 'rustle': 'pop', 'ding': 'notif',
+         'page': 'flip', 'boom': 'slam', 'hit': 'slap', 'drop': 'slap', 'slide': 'whoosh', 'zoom': 'whoosh_s', 'sticker': 'pop', 'logo': 'braaam', 'reveal': 'braaam', 'crash': 'impact'}
+FORCE_BRAAAM = (3.58, 7.02, 37.08)          # big reveals: Netflix, GOTV logo, end card
+RDROPS = (8.6, 15.4, 20.3)                  # big transitions: riser -> 0.3 s silence -> drop
+GAP = .3
 def base_cues():
     C = []
     def c(t, n, g=0, pan=0.0): C.append((t, n, g, pan))
-    for t, n in ((4.77, 'whoosh'), (8.6, 'flip'), (11.6, 'whoosh_s'), (15.4, 'whoosh'), (20.3, 'flip'), (29.75, 'whoosh')): c(t, n)
-    for t, n, p in ((0.77, 'pop', -.3), (1.34, 'pop', .3), (1.98, 'slam', 0), (2.46, 'pop', 0), (3.18, 'pop', -.2), (3.58, 'pop', .2), (4.28, 'slap', 0), (4.64, 'shutter', 0)): c(t, n, 0, p)
-    for t, n, p in ((4.975, 'slap', -.3), (5.16, 'pop', .3), (5.63, 'pop', -.2), (5.86, 'pop', .2), (6.69, 'slap', -.3), (7.02, 'pop', .3), (7.69, 'slap', .3), (8.2, 'pop', -.3), (8.55, 'pop', .3)): c(t, n, 0, p)
-    for t, n, p in ((9.02, 'slap', -.4), (9.26, 'pop', -.2), (9.68, 'pop', .2), (10.2, 'slap', .3), (10.44, 'pop', -.3), (10.66, 'stamp', 0), (11.1, 'pop', .2), (11.3, 'pop', .3)): c(t, n, 0, p)
+    for t, n in ((4.77, 'whoosh'), (8.6, 'rdrop'), (11.6, 'whoosh_s'), (15.4, 'rdrop'), (20.3, 'rdrop'), (29.75, 'whoosh')): c(t, n)
+    for t, n, p in ((0.77, 'pop', -.3), (1.34, 'pop', .3), (1.98, 'slam', 0), (2.46, 'pop', 0), (3.18, 'pop', -.2), (3.58, 'braaam', .2), (4.28, 'tada', 0), (4.64, 'shutter', 0)): c(t, n, 0, p)
+    for t, n, p in ((4.975, 'slap', -.3), (5.16, 'pop', .3), (5.63, 'pop', -.2), (5.86, 'pop', .2), (6.69, 'slap', -.3), (7.02, 'braaam', .3), (7.69, 'slap', .3), (8.2, 'pop', -.3), (8.55, 'pop', .3)): c(t, n, 0, p)
+    for t, n, p in ((9.02, 'slap', -.4), (9.26, 'pop', -.2), (9.68, 'pop', .2), (10.2, 'slap', .3), (10.44, 'pop', -.3), (10.66, 'stamp', 0), (11.1, 'slam', .2), (11.3, 'pop', .3)): c(t, n, 0, p)
     for t, n, p in ((12.0, 'slap', 0), (12.39, 'pop', -.4), (13.095, 'pop', .4), (13.99, 'pop', -.3), (14.53, 'pop', .3), (14.8, 'pop', -.2), (15.11, 'snip', .2)): c(t, n, 0, p)
-    for t, n, p in ((15.79, 'slap', 0), (16.1, 'pop', .3), (16.72, 'slap', -.3), (17.14, 'pop', .3), (17.61, 'pop', -.2), (17.97, 'pop', .2), (18.17, 'pop', -.3),
-                    (18.8, 'slap', 0), (19.39, 'pop', -.3), (19.54, 'pop', .2), (19.77, 'pop', .3), (20.05, 'pop', 0)): c(t, n, 0, p)
+    for t, n, p in ((15.79, 'slap', 0), (16.1, 'notif', .3), (16.72, 'slap', -.3), (17.14, 'tick', .3), (17.61, 'tick', -.2), (17.97, 'tick', .2), (18.17, 'notif', -.3),
+                    (18.8, 'slap', 0), (19.39, 'pop', -.3), (19.54, 'pop', .2), (19.77, 'stamp', .3), (20.05, 'pop', 0)): c(t, n, 0, p)
     for t, n, p in ((20.68, 'slap', 0), (21.08, 'whoosh_s', -.3), (21.49, 'pop', .3), (22.22, 'whoosh_s', .3), (22.72, 'pop', -.3), (23.14, 'whoosh_s', .3), (24.01, 'click', 0)): c(t, n, 0, p)
-    c(26.52, 'stamp', -2); c(27.19, 'slap', 0, -.2); c(27.41, 'pop', 0, .2); c(27.99, 'pop', 0, -.2); c(28.53, 'pop', 0, .2)
+    c(26.52, 'stamp', -2); c(27.19, 'stutter', 0); c(27.41, 'pop', 0, .2); c(27.99, 'pop', 0, -.2); c(28.53, 'pop', 0, .2)
     c(27.5, 'cheer', -3); c(28.7, 'goal', -3); c(29.25, 'pop', 0)
-    c(30.12, 'slap', 0); c(30.6, 'click', -1); c(31.0, 'ding', 0); c(31.12, 'pop', 0)
-    for t, p in ((32.05, -.3), (32.22, .3), (32.53, -.2), (32.86, .3), (33.44, -.3), (33.99, .3), (34.36, -.2), (34.63, .2), (35.21, -.3), (35.63, .3), (36.18, -.2), (36.39, .3)): c(t, 'pop', -2, p)
-    c(36.5, 'snip', -4)
+    c(30.12, 'slap', 0); c(30.6, 'click', -1); c(31.0, 'tvon', 0); c(31.12, 'pop', 0)
+    for t, p in ((32.05, -.3), (32.22, .3), (32.53, -.2), (32.86, .3), (33.44, -.3), (33.99, .3), (34.36, -.2), (34.63, .2), (35.21, -.3), (35.63, .3), (36.18, -.2)): c(t, 'pop', -2, p)
+    c(36.39, 'scratch', 0); c(36.5, 'snip', -4)
     return C
 KW = [('slam', 'slam'), ('stamp', 'stamp'), ('goal', 'goal'), ('cheer', 'cheer'), ('crowd', 'cheer'), ('flip', 'flip'), ('peel', 'flip'), ('snip', 'snip'), ('scissor', 'snip'),
+      ('freeze', 'stutter'), ('buffer', 'stutter'), ('stutter', 'stutter'), ('cross', 'scratch'), ('check', 'tada'), ('calendar', 'tick'), ('day ', 'tick'),
       ('rip', 'tick'), ('tear', 'tick'), ('tape', 'tick'), ('shutter', 'shutter'), ('camera', 'shutter'),
-      ('ding', 'ding'), ('click', 'click'), ('press', 'click'), ('whoosh', 'whoosh'), ('wipe', 'whoosh'), ('fly', 'whoosh'), ('avalanche', 'whoosh'), ('wave', 'whoosh'),
-      ('drop', 'slap'), ('slap', 'slap'), ('thump', 'thump'), ('burst', 'pop'), ('confetti', 'pop'), ('pop', 'pop'), ('flash', 'pop'), ('logo', 'slam')]
+      ('ding', 'notif'), ('click', 'click'), ('press', 'click'), ('whoosh', 'whoosh'), ('wipe', 'whoosh'), ('fly', 'whoosh'), ('avalanche', 'whoosh'), ('wave', 'whoosh'),
+      ('drop', 'slap'), ('slap', 'slap'), ('thump', 'thump'), ('burst', 'pop'), ('confetti', 'pop'), ('pop', 'pop'), ('flash', 'pop'), ('logo', 'braaam')]
 def kind_of(txt):
     txt = txt.lower(); hit = [(txt.find(k), v) for k, v in KW if k in txt]
     return min(hit)[1] if hit else 'pop'
@@ -238,13 +337,208 @@ def scene_cues():
             for m in re.finditer(r'CUE\s+([0-9]+(?:\.[0-9]+)?)\s*([^|]*?)(?=\s*(?:CUE|\||$))', part):
                 t = float(m.group(1))
                 if t >= TOTAL: continue
-                out.append((t, kind_of(m.group(2)), 0.0, 0.0, os.path.basename(f)))
+                kd = 'braaam' if any(abs(t - x) < .06 for x in FORCE_BRAAAM) else kind_of(m.group(2))
+                if any(abs(t - x) < .06 for x in RDROPS): kd = 'rdrop' if kd in ('whoosh', 'pop', 'slap') else kd
+                out.append((t, kd, 0.0, 0.0, os.path.basename(f)))
     return out
 def merged_cues():
     base = base_cues(); sc = scene_cues(); keep = [b for b in base if not any(abs(b[0] - s[0]) < .05 for s in sc)]
     return sorted(keep + [(t, n, g, p) for t, n, g, p, _ in sc]), len(sc)
 
-# ------------------------------------------------------------ score
+# ------------------------------------------------------------ score: 2026 hit-radio / short-form production (original)
+# key A minor, Am F C G (vi IV I V feel), resolves to C major; 4-note topline hook (original).  ~112 bpm (21 beats = 25.64 -> 36.9)
+TRI = {'Am': [57, 60, 64], 'F': [53, 57, 60], 'C': [55, 60, 64], 'G': [55, 59, 62], 'E': [52, 56, 59]}
+BR = {'Am': 33, 'F': 29 + 12, 'C': 36, 'G': 31 + 12}      # 808 roots (F and G taken up an octave so the line stays smooth)
+HOOK = {'Am': [(0, 81, 3), (3, 79, 3), (6, 76, 4), (10, 79, 2)], 'F': [(0, 81, 3), (3, 84, 3), (6, 81, 4), (10, 77, 2)],
+        'C': [(0, 79, 3), (3, 76, 3), (6, 79, 4), (10, 84, 2)], 'G': [(0, 83, 3), (3, 81, 3), (6, 79, 4), (10, 74, 4)]}
+def harm(k):
+    if 16 <= k < 18: return 'F'
+    if 18 <= k < 21: return 'G'
+    if k >= 21: return 'C'
+    return ['Am', 'F', 'C', 'G'][(k // 4) % 4]
+T_VERSE, T_PRE = 9.0, 20.3
+def sec(t):
+    if t < T_VERSE: return 'I'
+    if t < T_PRE: return 'V'
+    if t < RISER0: return 'P'
+    if t < IMPACT - .001: return 'S'
+    return 'D'
+def humanize(rr, t, v, j=.004): return t + rr.uniform(-j, j), int(np.clip(v + rr.integers(-5, 6), 20, 127))
+def g16(k, s): return bt(k + s / 4 + (0.03 if s % 2 else 0))
+
+def build_score():
+    rr = rng(11); tr = {k: [] for k in ('pad', 'ep', 'glock', 'lead', 'chop', 'b808', 'arp')}
+    dr = {k: [] for k in ('kick', 'snare', 'clap', 'bigclap', 'hat', 'ohat', 'rim', 'shake')}
+    KICK = {'I': {0, 10}, 'V': {0, 3, 7, 10}, 'P': {0, 4, 8, 12}, 'D': {0, 3, 6, 10, 13}}
+    prev = None
+    for k in range(-47, 22):
+        t = bt(k); ch = harm(k); tri = TRI[ch]; pb = k % 4
+        if t >= END_HIT - .02 or bt(k + 1) <= 0: continue
+        for s in range(4):
+            tt = g16(k, s)
+            if tt < 0.02 or tt >= END_HIT - .02 or (RISER0 - .03 <= tt < IMPACT - .01): continue
+            S = sec(tt); p = pb * 4 + s
+            if p in KICK[S]: dr['kick'].append((tt, 110 if p == 0 else 92))
+            if S == 'I':
+                if p == 8: dr['clap'].append((tt, 80))
+                if p == 12: dr['rim'].append((tt, 70))
+            elif p in (4, 12):
+                dr['clap'].append((tt, 100)); dr['snare'].append((tt, 90 if S in ('V', 'P') else 100))
+            if S == 'D' and p in (7, 15): dr['rim'].append((tt, 80))
+            if S == 'V' and p == 14: dr['rim'].append((tt, 60))
+            if S == 'I': hv = 42 if s in (0, 2) else 0
+            elif S == 'V': hv = (64 if s == 0 else 50 if s == 2 else 28)
+            else: hv = (68 if s == 0 else 54 if s == 2 else 32)
+            if hv: dr['hat'].append((tt, hv))
+            if S in ('V', 'P', 'D') and p in ((6, 14) if S != 'V' else (14,)): dr['ohat'].append((tt, 60))
+            if S in ('D',) : dr['shake'].append((tt, 30))
+        # hat rolls / triplet fills on the last beat of a bar (verse: every 2nd bar, drop: every bar)
+        S = sec(t)
+        if pb == 3 and S in ('V', 'P', 'D') and t + B < END_HIT - .3 and (S == 'D' or (k // 4) % 2 == 1) and t + B < RISER0 - .05:
+            n_ = 6 if (k // 4) % 2 == 0 else 8
+            for i in range(n_): dr['hat'].append((bt(k + i / n_), 30 + 50 * i / n_))
+        # 808: rhythm follows the kick; slides on the last note of a bar
+        if S in ('I', 'V', 'D') and t < END_HIT - .3:
+            root = BR[ch]
+            pat = {'I': [(0, 0, 10, 100)], 'V': [(0, 0, 3, 110), (3, 0, 3, 95), (7, 7 if False else 0, 2, 92), (10, 12, 4, 98)], 'D': [(0, 0, 3, 118), (3, 0, 2, 100), (6, 0, 3, 104), (10, 0, 2, 110), (13, 12, 3, 100)]}[S]
+            for p0, iv, ln, v in pat:
+                if p0 // 4 != 0 and False: pass
+                kk = k + p0 / 16 * 4 if False else None
+            # patterns are per bar: place on bar starts only
+            if pb == 0:
+                for p0, iv, ln, v in pat:
+                    tt = g16(k + p0 // 4, p0 % 4)
+                    if tt >= END_HIT - .3 or (RISER0 - .03 <= tt < IMPACT): continue
+                    tr['b808'].append((tt, ln * B / 4 * .95, root + iv, v, prev))
+                    prev = root + iv
+        # pads (sidechained later) + electric piano stabs
+        if pb == 0 and S in ('I', 'V', 'P', 'D') and k < 21 and not (RISER0 - .1 <= t < IMPACT):
+            for n in [x - 12 for x in tri] + [tri[1] + 12]: tr['pad'].append((t - .02, 4 * B * 1.03, n, 50 if S == 'I' else 60))
+        if S in ('V', 'D') and pb in (0, 2) and t < END_HIT - .3:
+            for i, n in enumerate(tri):
+                tm, v = humanize(rr, g16(k, 3) if False else bt(k + .75), 70); tr['ep'].append((tm, .22, n + 12, v))
+                tm, v = humanize(rr, bt(k + 2.5 if pb == 0 else k + .75) if False else bt(k + .75), 60)
+        # topline hook (original 4-note figure): plucky synth lead; intro = quiet tease every 2nd bar
+        if pb == 0 and t < END_HIT - .3 and not (RISER0 - .1 <= t < IMPACT):
+            S = sec(t)
+            if S in ('V', 'D') or (S == 'I' and (k // 4) % 2 == 0) or S == 'P':
+                for st16, n, ln in HOOK[ch]:
+                    tt = g16(k + st16 // 4, st16 % 4)
+                    if tt >= END_HIT - .3: continue
+                    if S == 'P' and st16 not in (0, 6): continue
+                    tm, v = humanize(rr, tt, 96 if S == 'D' else 84, .003)
+                    tr['lead'].append((tm, ln * B / 4 * 1.1, n + (12 if S == 'D' and k % 8 >= 4 else 0), v))
+                    if S == 'D': tr['glock'].append((tm, ln * B / 4, n + 12, 70))
+                # vocal-chop style formant stabs on the off-beats
+                if S in ('V', 'D', 'I') and t < END_HIT - .3:
+                    for st16, m_ in ((6, 1), (11, 2)) if S != 'I' else ((11, 2),):
+                        tt = g16(k + st16 // 4, st16 % 4); tr['chop'].append((tt, .16, tri[m_ % 3] + 24, 80))
+    # pre-chorus lift: 8th-note rising Am arpeggio into the suspense, then the suspense arpeggio (24.0-25.3) accelerating
+    t = 22.4; g = .27; i = 0; ar = (69, 72, 76, 81)
+    while t < 24.0: tr['arp'].append((t, .1, ar[i % 4] + 12 * (i // 4 % 2), 70 + min(40, i * 3))); t += g; g = max(.09, g * .93); i += 1
+    t = 24.0; g = .16; i = 0
+    while t < 25.27: tr['arp'].append((t, .06, ar[i % 4] + 12 * (1 + i // 4), 80 + min(40, i * 3))); t += g; g = max(.035, g * .88); i += 1
+    t = 24.0; gp = .16; vel = 30                                             # snare roll
+    while t < 25.27: dr['snare'].append((t, vel)); t += gp; gp = max(.04, gp * .9); vel = min(118, vel + 6)
+    t = 22.6; gp = .27; vel = 25
+    while t < 23.96: dr['snare'].append((t, vel)); t += gp; gp = max(.07, gp * .9); vel = min(90, vel + 6)
+    # the DROP (25.64) and final resolve (36.9)
+    dr['kick'].append((IMPACT, 118)); dr['bigclap'].append((IMPACT, 0)); dr['snare'].append((IMPACT, 110))
+    tr['b808'].append((IMPACT, 1.3, 33, 127, None))
+    for n in (57, 60, 64, 69): tr['ep'].append((IMPACT, .5, n, 110))
+    tr['b808'].append((END_HIT, 2.2, 36, 127, None)); dr['kick'].append((END_HIT, 120)); dr['bigclap'].append((END_HIT, 0)); dr['snare'].append((END_HIT, 110))
+    for n in (60, 64, 67, 72, 76): tr['ep'].append((END_HIT, 1.5, n, 118)); tr['lead'].append((END_HIT, 1.4, n + 12, 100)); tr['pad'].append((END_HIT, 3.1, n - 12, 64))
+    for n in (84, 88, 91): tr['glock'].append((END_HIT + .01, 1.5, n, 100))
+    # warm outro: hook fragment on soft pluck + glock over pad (C major), dies away by 40
+    for kk, n, ln, v in ((22.0, 79, 1.0, 60), (23.0, 76, 1.0, 54), (24.0, 72, 4.0, 50)):
+        tr['glock'].append((bt(kk), ln * B, n + 12, v)); tr['lead'].append((bt(kk), ln * B, n, v - 14))
+    for n in (48, 55, 60, 64, 67, 71): tr['pad'].append((END_HIT + .1, 3.0, n, 56))
+    return tr, dr
+
+def synth_notes(notes, fn, gain=1.0):
+    y = np.zeros((2, N + 2 * SR))
+    for tt, d, n, v in notes:
+        if tt < 0 or tt >= TOTAL: continue
+        x = fn(mf(n), d, v / 127.0)
+        i = int(tt * SR); y[:, i:i + x.shape[-1]] += x[:, :y.shape[1] - i]
+    return y[:, :N] * gain
+def n_lead(f, d, v):
+    L = int((d + .35) * SR); t = np.arange(L) / SR
+    fc = 900 + 5200 * np.exp(-t / .12) * v; y = []
+    for dets in ((-9, 4), (9, -4)):
+        s_ = saw_stack(np.full(L, f), L, dets, fc, 26)
+        y.append(s_)
+    e = np.minimum(t / .004, 1) * np.exp(-t / (max(d, .12) * .8 + .08)) * np.where(t < d, 1, np.exp(-(t - d) / .05))
+    return fade(np.vstack(y) * e * v * .5, 0, .02)
+def n_arp(f, d, v):
+    L = int(.2 * SR); t = np.arange(L) / SR; s_ = saw_stack(np.full(L, f), L, (-8, 8), 400 + 4500 * np.exp(-t / .04), 22)
+    y = s_ * np.exp(-t / .06) * v * .5; return np.vstack([y, y])
+def n_chop(f, d, v):
+    """vocal-chop sound-alike: formant-filtered saw (ah -> oh), pitched, airy top, gated"""
+    L = int((d + .06) * SR); t = np.arange(L) / SR; s_ = saw_stack(np.full(L, f), L, (-6, 6), None, 30)
+    a = bp(s_, 700, 1100, 2) * 1.0 + bp(s_, 1000, 1700, 2) * .7 + bp(s_, 2400, 3300, 2) * .3
+    y = a * np.minimum(t / .008, 1) * np.where(t < d, 1, np.exp(-(t - d) / .03)); y = fade(y * v * .55, 0, .01)
+    return np.vstack([y, y * .8])
+def n_808(f, d, v, f_prev=None):
+    L = int((d + .15) * SR); t = np.arange(L) / SR
+    fs = f + 2.2 * f * np.exp(-t / .025)
+    if f_prev: fs = np.where(t < .07, f_prev + (f - f_prev) * (t / .07), fs)
+    ph = np.cumsum(fs) / SR; y = np.sin(2 * np.pi * ph)
+    y = np.tanh(y * (1.8 + 1.0 * v)) * .85 + .15 * np.sin(4 * np.pi * ph)
+    e = np.minimum(t / .003, 1) * np.where(t < d, np.exp(-t / (d * 1.1 + .25)), np.exp(-d / (d * 1.1 + .25)) * np.exp(-(t - d) / .05))
+    y = y * e * v; return np.vstack([y, y])
+def d_snare2(r):
+    n = int(.22 * SR); t = np.arange(n) / SR
+    y = np.sin(2 * np.pi * 210 * (1 + .4 * np.exp(-t / .01)) * t) * np.exp(-t / .05) * .8 + bp(r.standard_normal(n), 2200, 7500, 2) * np.exp(-t / .045) * .5
+    return fade(lp(np.tanh(y * 1.4), 11000, 2), 0, .02)
+def d_rim(r):
+    n = int(.06 * SR); t = np.arange(n) / SR
+    return fade((np.sin(2 * np.pi * 1750 * t) * np.exp(-t / .006) + .6 * np.sin(2 * np.pi * 480 * t) * np.exp(-t / .012)) * .8, 0, .005)
+def d_kick2(r=None):
+    n = int(.36 * SR); t = np.arange(n) / SR
+    y = np.sin(2 * np.pi * np.cumsum(48 + 130 * np.exp(-t / .022)) / SR) * np.exp(-t / .16) + .3 * np.sin(2 * np.pi * 2200 * t) * np.exp(-t / .0015)
+    return fade(np.tanh(y * 1.5) * .9, .0005, .02)
+
+def render_score():
+    tr, dr = build_score(); r = rng(21); t = np.arange(N) / SR
+    kt = [tk for tk, _ in dr['kick']]; sc = np.ones(N)
+    for tk in kt:
+        i = int(tk * SR); m = int(.3 * SR)
+        if i >= N: continue
+        x = np.arange(min(m, N - i)) / SR; sc[i:i + len(x)] = np.minimum(sc[i:i + len(x)], 1 - .6 * np.exp(-x / .11) * np.minimum(x / .004, 1))
+    def scd(y, a=1.0): return y * (1 - a * (1 - sc))
+    pad = widen(sf_render(tr['pad'], 89), 22) * DB(-11); pad = scd(pad, 1.0)
+    ep = pan_st(sf_render(tr['ep'], 4), -.25) * DB(-11); ep = scd(ep, .7)
+    gl = pan_st(sf_render(tr['glock'], 9), .4) * DB(-13)
+    lead = synth_notes(tr['lead'], n_lead, DB(-5)); lead = scd(widen(lead, 10), .35)
+    arp = synth_notes(tr['arp'], n_arp, DB(-8)); chop = pan_st(synth_notes(tr['chop'], n_chop, DB(-6)), .2)
+    b8 = np.zeros((2, N + 2 * SR))
+    for tt, d, n, v, prv in tr['b808']:
+        x = n_808(mf(n), d, v / 127, mf(prv) if prv else None); i = int(tt * SR); b8[:, i:i + x.shape[1]] += x[:, :b8.shape[1] - i]
+    b8 = b8[:, :N] * DB(-6); b8 = scd(b8, 1.0)
+    P = np.zeros((2, N))
+    for tk, v in dr['kick']: add(P, st(d_kick2(), 0), tk, DB(-3) * v / 110)
+    for tk, v in dr['snare']: add(P, st(d_snare2(r), .05), tk, DB(-8) * v / 100)
+    for tk, v in dr['clap']: add(P, st(d_clap(r), .2), tk, DB(-9) * v / 100)
+    for tk, _ in dr['bigclap']: add(P, st(d_clap(r, True), 0), tk, DB(-5))
+    for tk, v in dr['hat']: add(P, st(d_hat(r), r.uniform(.1, .4)), tk, DB(-8) * v / 60)
+    for tk, v in dr['ohat']: add(P, st(d_hat(r, True), -.3), tk, DB(-10) * v / 60)
+    for tk, v in dr['rim']: add(P, st(d_rim(r), .3), tk, DB(-11) * v / 80)
+    for tk, v in dr['shake']: add(P, st(d_shake(r), r.uniform(-.5, .5)), tk, DB(-15) * v / 38)
+    P = lp(P, 12000, 2)
+    tones = pad + ep + gl + lead + chop; tones = peq(tones, 2800, .8, -1.5)
+    # intro tease: filtered, opening up toward the verse at 9.0 s
+    lo = lp(tones, 900, 2); mid = lp(tones, 2400, 2); w = np.clip(t / T_VERSE, 0, 1)
+    tones = np.where(t < T_VERSE, np.where(w < .55, lo, np.where(w < .9, mid, tones)), tones)
+    m = np.ones(N); s_ = (t >= 23.98) & (t < IMPACT); m[s_] = 0                      # suspense: pads/808/hook off, only arp + snare roll + riser
+    mel = reverb(tones, 1.3, .16, seed=5) * m + reverb(arp * 1.0, .5, .1, seed=8); P = reverb(P, .35, .05, seed=6); b8 = lp(b8, 6000, 2) * m
+    mix = mel + P + b8
+    mix *= np.interp(t, [0, 0.05, 39.0, 40.0], [0, 1, .8, 0])
+    mix = comp(mix, -22, 2.4, .012, .16, 2.0); mix = np.tanh(mix * 1.1) / 1.1
+    rs = s_riser(RISER1 - RISER0); riser = np.zeros((2, N)); add(riser, st(rs, 0), RISER0, DB(-6))
+    return mix, riser, tr, dr
+
+
 _SY = None
 def sf_render(notes, prog, bank=0, vol=127):
     global _SY
@@ -266,158 +560,6 @@ def sf_render(notes, prog, bank=0, vol=127):
     end = min(N + 3 * SR, pos + 3 * SR); out[pos:end] = np.frombuffer(s.generate(end - pos), dtype=np.float32).reshape(-1, 2)
     return out[:N].T.astype(np.float64)
 
-# ---- famous public-domain themes, arranged as a modern pop-kit mashup
-#  A  0.44-8.48 s   Beethoven "Fur Elise" (A minor)      | B 8.48-24.0 s  Beethoven "Ode to Joy" (C major)
-#  C  24.0-25.3 s   Grieg "Hall of the Mountain King" (A minor, accelerating) | breath 25.3-25.6
-#  D  25.64-36.9 s  Rossini "William Tell" finale gallop (C major) -> fanfare exactly on 36.9 | end card: Ode to Joy last phrase on celesta/glock
-TRI = {'Am': [57, 60, 64], 'E': [52, 56, 59], 'C': [55, 60, 64], 'G': [55, 59, 62], 'F': [53, 57, 60], 'Dm': [50, 53, 57], 'Em': [52, 55, 59]}
-BR = {'Am': 45, 'E': 40, 'C': 36, 'G': 43, 'F': 41, 'Dm': 38, 'Em': 40}
-KA = -47; KB = -32; KB2 = -16; KC = -3.05          # section starts in beats (relative to the 25.64 downbeat)
-CYC12 = ['E', 'Am', 'Am', 'Am', 'E', 'Am', 'E', 'Am', 'Am', 'Am', 'E', 'Am']
-def harm(k):
-    if k < KB: return CYC12[(k - KA) % 12]
-    if k < KB2:
-        b, p = divmod(k - KB, 4); return ['C', 'G', 'C', 'C' if p < 2 else 'G'][b]
-    if k < -4:
-        b, p = divmod(k - KB2, 4); return ['C', 'G', 'G' if p < 2 else 'C'][b]
-    if k < 0: return 'G' if k < -3 else 'Am'
-    if 16 <= k < 18: return 'F'
-    if 18 <= k < 21: return 'G'
-    if k >= 21: return 'C'
-    return ['C', 'G', 'C', 'G'][k // 4]
-def sec(t):
-    if t < bt(KB): return 'A'
-    if t < RISER0: return 'B'
-    if t < IMPACT - .001: return 'C'
-    return 'D'
-def humanize(rr, t, v, j=.005): return t + rr.uniform(-j, j), int(np.clip(v + rr.integers(-6, 7), 20, 127))
-def g16(k, s): return bt(k + s / 4 + (0.035 if s % 2 else 0) + (0.02 if s == 2 else 0))
-
-FE = [(0, 76, 1), (1, 75, 1), (2, 76, 1), (3, 75, 1), (4, 76, 1), (5, 71, 1), (6, 74, 1), (7, 72, 1), (8, 69, 3), (11, 60, 1), (12, 64, 1), (13, 69, 1), (14, 71, 3), (17, 64, 1), (18, 68, 1), (19, 71, 1), (20, 72, 3),
-      (24, 76, 1), (25, 75, 1), (26, 76, 1), (27, 75, 1), (28, 76, 1), (29, 71, 1), (30, 74, 1), (31, 72, 1), (32, 69, 3), (35, 60, 1), (36, 64, 1), (37, 69, 1), (38, 71, 3), (41, 64, 1), (42, 72, 1), (43, 71, 1), (44, 69, 4)]
-ODE1 = [(0, 76, 1), (1, 76, 1), (2, 77, 1), (3, 79, 1), (4, 79, 1), (5, 77, 1), (6, 76, 1), (7, 74, 1), (8, 72, 1), (9, 72, 1), (10, 74, 1), (11, 76, 1), (12, 76, 1.5), (13.5, 74, .5), (14, 74, 2)]
-ODE2 = ODE1[:8 + 0] + [(8, 74, 1.5), (9.5, 72, .5), (10, 72, 2)]
-ODE2 = [n for n in ODE1 if n[0] < 8] + [(8, 74, 1.5), (9.5, 72, .5), (10, 72, 2)]
-MK_T = [57, 59, 60, 62, 64, 60, 64]; MK_A = [63, 59, 63]
-TELL = [((79, 79, 84),) * 3 + ((84, 88),), ((74, 74, 79),) * 3 + ((79, 83),), ((79, 79, 88),) * 3 + ((88, 91),), ((74, 74, 83),) * 3 + ((86, 91),)]
-
-def build_score():
-    rr = rng(11); tr = {k: [] for k in ('uke', 'kal', 'mar', 'vib', 'xyl', 'glock', 'cel', 'pizz', 'bass', 'sbass', 'pad', 'str', 'hit', 'brass', 'trump', 'timp', 'bsn', 'lowpz', 'gal')}
-    dr = {k: [] for k in ('kick', 'snare', 'clap', 'bigclap', 'hat', 'ohat', 'shake', 'wood')}
-    def nb(trk, kk, dur, n, v, j=.004):
-        tm, vv = humanize(rr, bt(kk), v, j); tr[trk].append((tm, dur * B * .95, n, vv))
-    KICKS = {'A': {0, 10}, 'B1': {0, 6, 8, 11}, 'B2': {0, 6, 8, 10, 14}, 'D': {0, 3, 6, 8, 10, 14}}
-    k0 = KA; k1 = int(np.ceil((END_HIT - IMPACT) / B))
-    for k in range(k0, k1 + 1):
-        pb = k % 4; t = bt(k)
-        if t >= END_HIT - .02 or t < -.6 or t >= RISER0 and t < IMPACT - .01: continue
-        ch = harm(k); tri = TRI[ch]; root = BR[ch]
-        for s in range(4):
-            tt = g16(k, s)
-            if tt < 0 or tt >= END_HIT - .02 or (RISER0 - .05 <= tt < IMPACT - .01): continue
-            S = sec(tt); key = 'A' if S == 'A' else ('B1' if (S == 'B' and k < KB2) else ('B2' if S == 'B' else 'D')); p = pb * 4 + s
-            if p in KICKS[key]: dr['kick'].append((tt, 108 if p == 0 else 92 if key in ('B2', 'D') else 75))
-            if S != 'A' and p in (4, 12): dr['snare'].append((tt, 100)); dr['clap'].append((tt, 80))
-            elif S == 'A' and p in (4, 12): dr['clap'].append((tt, 50)); dr['wood'].append((tt, 55))
-            if key in ('B2', 'D') and p in (7, 15, 9): dr['snare'].append((tt, 26))
-            if key == 'D' and p in (7, 15): dr['snare'].append((tt, 40))
-            if (S != 'A' and s in (0, 2)) or (S == 'A' and s == 2): dr['hat'].append((tt, 60 if s == 0 else 44))
-            if key in ('B2', 'D') and s % 2: dr['hat'].append((tt, 26))
-            if S != 'A' and p in ((14,) if key == 'B1' else (6, 14)): dr['ohat'].append((tt, 55))
-            if s == 2 or key in ('B2', 'D'): dr['shake'].append((tt, 38 if s % 2 == 0 else 26))
-            if S != 'A':
-                bp_ = {0: 0, 3: 0, 6: 7, 8: 0, 11: 12, 14: 7}.get(p)
-                if bp_ is not None and not (key == 'D' and False):
-                    tm, v = humanize(rr, tt, 96 if p in (0, 8) else 84); tr['bass'].append((tm, (.22 if p in (0, 8) else .16) * B * 4, root + bp_, v))
-                    if key in ('B2', 'D'): tr['sbass'].append((tm, .2 * B * 4, root + bp_ + 12, 70))
-            if (S == 'A' and p in (2, 6, 10, 14)) or (S != 'A' and p in (2, 6, 10, 14)) or (key == 'D' and p in (4, 12)):
-                for i, n in enumerate(tri):
-                    tm, v = humanize(rr, tt + i * .009, 60 + 8 * (key in ('B2', 'D')) + 6 * (p % 4 == 2)); tr['uke'].append((tm, .28, n, v))
-            if S != 'A' and p in (5, 13): tm, v = humanize(rr, tt, 72); tr['pizz'].append((tm, .2, tri[2 if p == 5 else 1] + 12, v))
-        S = sec(t)
-        if pb == 3 and S in ('B', 'D') and t + B < END_HIT - .3 and t + B < RISER0 - .1:
-            for s in range(4): dr['snare'].append((g16(k, s), 36 + 22 * s + 8 * (S == 'D')))
-        if S == 'B' and pb == 0 and k < -4:                       # warm pads / strings
-            for n in [x - 12 for x in tri] + [tri[1]]: tr['pad'].append((t - .02, 4 * B * 1.02, n, 50))
-            if k >= KB2:
-                for n in tri: tr['str'].append((t - .02, 4 * B * 1.02, n + 12, 58))
-        if S == 'D' and pb == 0 and k < 21:
-            for n in [x - 12 for x in tri] + [tri[1]]: tr['pad'].append((t - .02, 4 * B * 1.02, n, 56))
-            for n in tri: tr['str'].append((t - .02, 4 * B * 1.02, n + 12, 56))
-    # ---------------- A: Fur Elise, 16th-note theme (marimba + kalimba), cycle of 12 beats, cut at the B downbeat
-    endA = bt(KB)
-    for cyc0, lim in ((KA, 48), (KA + 12, 12)):
-        for s16, n, ln in FE:
-            if s16 >= lim: continue
-            kk = cyc0 + s16 / 4; tt = bt(kk)
-            if tt >= endA: continue
-            d = min(ln * B / 4, endA - tt) * .9
-            tm, v = humanize(rr, tt, 84, .003); tr['mar'].append((tm, d, n, v)); tr['kal'].append((tm + .002, d * 1.3, n, 66))
-    # ---------------- B: Ode to Joy in two lines (line 2 shortened by one bar to fit 24.0)
-    for line, (ks, mel) in enumerate(((KB, ODE1), (KB2, ODE2))):
-        for bar in range(4 if line == 0 else 3):
-            ck = ks + bar * 4; tri_ = TRI[harm(ck)]
-            for j, off in enumerate((1.5, 3.5)):                 # bell counter-line on the off-beats
-                kk = ck + off; n = TRI[harm(int(kk))][(bar + j) % 3] + 24 + (12 if line else 0)
-                nb('glock', kk, .5, n, 64 + 8 * line); nb('cel', kk, .5, n - 12, 50)
-        for off, n, ln in mel:
-            kk = ks + off; d = ln
-            nb('mar', kk, d, n, 92 if line else 86); nb('vib', kk, d * 1.3, n, 60)
-            if line == 1: nb('xyl', kk, d, n + 12, 78)
-            if line == 0 and int(off // 4) % 2 == 1: nb('xyl', kk, d, n + 12, 60)
-    for i, n in enumerate((72, 76, 79, 83)): nb('mar', -4 + i * .25, .2, n, 70 + i * 6)      # pickup into the suspense
-    # ---------------- C: Mountain King, staccato low pizz + bassoon, faster and higher each time
-    gaps = .085; t0 = 24.0; seq = MK_T + MK_A
-    for i, n in enumerate(seq):
-        tt = t0 + i * gaps; tr['lowpz'].append((tt, .07, n - 12, 96)); tr['bsn'].append((tt, .07, n, 84))
-    t1 = t0 + len(seq) * gaps + .02
-    for i, n in enumerate(MK_T):
-        tt = t1 + i * .048; tr['lowpz'].append((tt, .05, n - 5 + 4, 104)); tr['bsn'].append((tt, .05, n + 4, 92)); tr['str'].append((tt, .05, n + 16, 88))
-    for tt in (25.16, 25.21): tr['str'].append((tt, .05, 76, 110)); tr['bsn'].append((tt, .05, 64, 100))
-    gp = 0.16; tt = 24.0; vel = 30
-    while tt < 25.27:
-        dr['snare'].append((tt, vel)); tt += gp; gp = max(.04, gp * .9); vel = min(118, vel + 6)
-    # ---------------- D: William Tell gallop (triplet figures per beat), trumpets + brass, galloping strings, timpani
-    for k in range(0, 21):
-        ch = harm(k); tri = TRI[ch]; root = BR[ch]; bar, pb = divmod(k, 4)
-        for i in range(3):                                        # galloping strings da-da-DUM
-            nb('gal', k + i / 3, .28, root + 12 + (7 if i == 2 else 0), 78 + 24 * (i == 2), .002)
-        if pb in (0, 2) or k >= 16: tr['timp'].append((bt(k), .3, root + (12 if k >= 16 and False else 0) if root >= 36 else root, 100 if pb == 0 else 84))
-        if pb == 0 and k < 16:
-            for n in [x + 12 for x in tri]: tr['brass'].append((bt(k), .32, n, 92))
-    for bar, figs in enumerate(TELL):
-        for b, fig in enumerate(figs):
-            kk = 4 * bar + b
-            if len(fig) == 3:
-                for i, n in enumerate(fig):
-                    v = 120 if i == 2 else 86; d = .17 if i == 2 else .12
-                    nb('trump', kk + i / 3, d / B * 1.0, n, v, .002); nb('brass', kk + i / 3, d / B, n - 12, v - 24, .002)
-            else:
-                for i, n in enumerate(fig):
-                    nb('trump', kk + i * .5, .45, n, 122, .002); nb('brass', kk + i * .5, .45, n - 12, 100, .002)
-    for kk, figs in ((16, ((77, 77, 81),)), (17, ((77, 77, 81),)), (18, ((79, 79, 83),)), (19, ((79, 79, 83),))):
-        for i, n in enumerate(figs[0]):
-            v = 122 if i == 2 else 90; nb('trump', kk + i / 3, .35 if i == 2 else .25, n, v, .002); nb('brass', kk + i / 3, .35 if i == 2 else .25, n - 12, v - 22, .002)
-    for i, n in enumerate((74, 79, 83)): nb('trump', 20 + i / 3, .3, n, 100 + 8 * i); nb('brass', 20 + i / 3, .3, n - 12, 90)
-    for i in range(6): tr['timp'].append((bt(20 + i / 6), .12, 43, 70 + 9 * i))               # timpani roll into the resolution
-    tr['brass'].append((IMPACT, .5, 60, 110)); tr['brass'].append((IMPACT, .5, 67, 110)); tr['brass'].append((IMPACT, .5, 76, 110)); tr['timp'].append((IMPACT, .6, 36, 118))
-    # ---------------- final fanfare exactly on 36.9
-    for n in (48, 55, 64, 67, 69, 74): tr['hit'].append((END_HIT, 2.6, n, 100))
-    for n in (60, 64, 67, 72, 76): tr['brass'].append((END_HIT, 1.8, n, 122))
-    for n in (84, 79): tr['trump'].append((END_HIT, 1.6, n, 124))
-    for n in (60, 64, 67, 72): tr['str'].append((END_HIT, 2.4, n, 110))
-    tr['timp'].append((END_HIT, 2.0, 36, 127)); tr['timp'].append((END_HIT, 2.0, 48, 120))
-    tr['bass'].append((END_HIT, 2.5, 36, 118)); tr['bass'].append((END_HIT, 2.5, 24, 100))
-    for n in (72, 76, 79, 81, 86): tr['mar'].append((END_HIT + (n - 72) * .006, 1.6, n, 112))
-    for n in (84, 88, 91): tr['glock'].append((END_HIT + .01, 1.5, n, 100))
-    for n in (60, 64, 67, 69, 74): tr['uke'].append((END_HIT + (n - 60) * .012, 1.5, n - 12, 96))
-    # end card sting: last phrase of Ode to Joy (D. C C) softly on celesta + glock over a warm pad
-    for kk, n, ln, v in ((21.5, 74, 1.4, 64), (23.0, 72, .5, 58), (23.5, 72, 4.0, 60)):
-        nb('cel', kk, ln, n + 12, v); nb('glock', kk, ln, n + 12, v - 10); nb('cel', kk, ln, n, v - 14)
-    for n in (48, 55, 60, 64, 67, 74): tr['pad'].append((END_HIT, 3.1, n, 58)); tr['str'].append((END_HIT + 1.0, 2.1, n + 12, 44))
-    dr['kick'].append((END_HIT, 118)); dr['bigclap'].append((END_HIT, 0)); dr['bigclap'].append((IMPACT, 0)); dr['kick'].append((IMPACT, 118))
-    return tr, dr
-
 def widen(x, ms=14, amt=1.0):
     d = int(ms * SR / 1000); y = x.copy(); y[1] = np.concatenate([np.zeros(d), x[1, :-d]]) * amt + x[1] * (1 - amt); return y
 def pan_st(x, p):
@@ -429,50 +571,6 @@ def comp(x, thr=-20, ratio=2.5, att=.01, rel=.14, makeup=0.0):
         c = np.exp(-1 / (cs * (att if v > s else rel))); s = c * s + (1 - c) * v; g[i] = s
     gg = np.interp(np.arange(x.shape[1]) / SR, np.arange(len(g)) / cs, g)
     return x * DB(-gg + makeup)
-
-def render_score():
-    tr, dr = build_score(); r = rng(21); t = np.arange(N) / SR
-    G = {'uke': (24, -8, -.45), 'kal': (108, -8, .3), 'mar': (12, -3, .15), 'vib': (11, -13, -.25), 'xyl': (13, -12, .4), 'glock': (9, -13, .5), 'cel': (8, -13, -.4), 'pizz': (45, -7, -.3),
-         'bass': (33, -2, 0), 'sbass': (38, -13, 0), 'pad': (89, -12, 0), 'str': (48, -14, 0), 'hit': (21, -12, 0),
-         'brass': (61, -9, 0), 'trump': (56, -8, .1), 'timp': (47, -6, 0), 'bsn': (70, -6, -.2), 'lowpz': (45, -4, .2), 'gal': (48, -13, -.2)}
-    SIDE = {'bass': 1.0, 'sbass': 1.0, 'pad': 1.0, 'str': .8, 'uke': .4, 'pizz': .3, 'gal': .3}
-    # sidechain envelope from kicks
-    kt = [tk for tk, _ in dr['kick']]; sc = np.ones(N)
-    for tk in kt:
-        i = int(tk * SR); m = int(.3 * SR)
-        if i >= N: continue
-        x = np.arange(min(m, N - i)) / SR; sc[i:i + len(x)] = np.minimum(sc[i:i + len(x)], 1 - .55 * np.exp(-x / .11) * np.minimum(x / .004, 1))
-    melodic = np.zeros((2, N)); stems = {}
-    for k, (prog, g, pan) in G.items():
-        if not tr[k]: continue
-        y = sf_render(tr[k], prog)
-        if k == 'bass': y = lp(y, 800, 2); y = np.vstack([y.mean(0)] * 2)
-        if k == 'sbass': y = lp(y, 1200, 2); y = np.vstack([y.mean(0)] * 2)
-        if k in ('pad', 'str', 'uke'): y = widen(y, 16 if k == 'uke' else 22)
-        y = pan_st(y, pan) if k not in ('pad', 'str', 'hit') else y
-        if k in SIDE: y = y * (1 - SIDE[k] * (1 - sc))
-        stems[k] = y * DB(g); melodic += stems[k]
-    melodic = peq(melodic, 2800, .8, -2.0)
-    P = np.zeros((2, N))
-    for tk, v in dr['kick']: add(P, st(d_kick(), 0), tk, DB(-3) * v / 100)
-    for tk, v in dr['snare']: add(P, st(d_snare(r), .05), tk, DB(-8) * v / 100)
-    for tk, v in dr['clap']: add(P, st(d_clap(r), .2), tk, DB(-11) * v / 80)
-    for tk, _ in dr['bigclap']: add(P, st(d_clap(r, True), 0), tk, DB(-6))
-    for tk, v in dr['hat']: add(P, st(d_hat(r), .25), tk, DB(-13) * v / 60)
-    for tk, v in dr['ohat']: add(P, st(d_hat(r, True), .3), tk, DB(-14) * v / 55)
-    for tk, v in dr['shake']: add(P, st(d_shake(r), r.uniform(-.5, .5)), tk, DB(-15) * v / 38)
-    for tk, v in dr['wood']: add(P, st(s_wood(1350, .08), .3), tk, DB(-14) * v / 55)
-    P = lp(P, 12000, 2)
-    # reverb send on melodic content (tasteful) + short room on drums
-    mel = reverb(melodic, 1.4, .16, seed=5); P = reverb(P, .35, .05, seed=6)
-    mix = mel + P
-    # gating: score muted 24.0 -> 25.64 (riser only), end-card fade
-    m = np.ones(N); s_ = (t >= 23.92) & (t < IMPACT); m[s_] = np.interp(t[s_], [23.92, 24.05, IMPACT], [1, 0, 0])
-    mix *= m; mix *= np.interp(t, [0, 0.05, 39.0, 40.0], [0, 1, .8, 0])
-    # master-bus glue + soft saturation
-    mix = comp(mix, -22, 2.2, .012, .16, 2.0); mix = np.tanh(mix * 1.1) / 1.1
-    rs = s_riser(RISER1 - RISER0); riser = np.zeros((2, N)); add(riser, st(rs, 0), RISER0, DB(-6))
-    return mix, riser, tr, dr
 
 # ------------------------------------------------------------ VO / duck
 def load_vo():
@@ -513,19 +611,25 @@ def main():
     ref = (t0 := np.arange(N) / SR); mm = ((ref > 12) & (ref < 24)) | ((ref > 26) & (ref < 36))
     score = score * DB(-24 - 10 * np.log10(np.mean(score[:, mm] ** 2)))     # normalise score bus to -24 dBFS rms
     # SFX bus: every sound is pitched to the chord under it (chord tones, arpeggiating through consecutive cues)
-    cues, nsc = merged_cues(); r = rng(77); sfx = np.zeros((2, N)); ncue = 0; SEQ = [0, 1, 2, 3, 2, 1]
+    cues, nsc = merged_cues(); r = rng(77); sfx = np.zeros((2, N)); ncue = 0; SEQ = [0, 1, 2, 3, 2, 1]; gaps = []
     for i, (t_, name, g, pan) in enumerate(cues):
         nm = name if name in LEVEL else ALIAS.get(name, 'pop')
         k = int(round((t_ - IMPACT) / B)); tones = TRI[harm(k)] + [TRI[harm(k)][0] + 12]; f = mf(tones[SEQ[i % 6]] + 12)
+        if nm == 'rdrop': gaps.append(t_)
         y, hit = snd(nm, rng(1000 + i), f)
         add(sfx, st(y, pan), t_ - hit, DB(LEVEL[nm] + g)); ncue += 1
-    hero = np.zeros((2, N)); add(hero, st(s_impact(), 0), IMPACT, DB(-1))
+    hero = np.zeros((2, N)); add(hero, st(s_impact2(), 0), IMPACT, DB(-1))
     sfx = reverb(sfx, .7, .08); sfx = lp(hp(sfx, 45, 2), 12000, 4); hero = lp(hero, 12000, 2)
     t = np.arange(N) / SR; bm = np.ones(N)
     sel = (t > 25.22) & (t < IMPACT); bm[sel] = np.interp(t[sel], [25.22, 25.30, 25.60, 25.635, IMPACT], [1, .02, .02, .02, 1])
     sfx *= bm; score *= bm
-    MG, SG = -5.0, -8.0
-    lift = np.interp(t, [0, 9, 20, 20.3, 36.8, 36.95, 40], [6, 6, 3, 3, 0, 12, 12])   # dB: quiet early sections up, end card up (no VO)
+    gm = np.ones(N)                                        # 0.3 s pre-drop silence before each riser->drop, and glitch-stutter gate on the score while the wheel freezes
+    for tg in gaps: s_ = (t >= tg - GAP) & (t < tg); gm[s_] = np.minimum(gm[s_], np.interp(t[s_], [tg - GAP, tg - GAP + .01, tg - .004, tg], [1, 0, 0, 1]) * 0 + (t[s_] < tg - .004) * 0.0 + 0.0)
+    gm = uniform_filter1d(gm, 240); score *= gm
+    s_ = (t >= 27.19) & (t < 27.8); gg = np.ones(N); gg[s_] = ((np.sin(2 * np.pi * 16.7 * t[s_]) > 0) * 1.0) * (t[s_] < 27.6); score *= gg
+    for tg in gaps: s_ = (t >= tg - GAP) & (t < tg - .0001); sfx[:, s_] *= 0.0
+    MG, SG = -5.0, -6.0
+    lift = np.interp(t, [0, 9, 20, 20.3, 36.8, 36.95, 40], [6, 6, 3, 3, 0, 8, 8])   # dB: quiet early sections up, end card up (no VO)
     bed_score = score * duck * DB(MG + lift)
     bed_sfx = sfx * (duck ** .5) * DB(SG)
     rise = riser * (duck ** .3) * DB(-8) * np.interp(t, [24, 25.3, 25.32], [1, 1, 0])
