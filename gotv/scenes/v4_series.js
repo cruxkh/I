@@ -112,8 +112,8 @@ function bridgeLayer() {
 function midLayer() {
   return A.layer('v4_mid', W, H, g => {
     houses(g, HOR + 12, 31, '#5a2c66', '#3a1a4e', 40, 140, -20, 1100, 30, 90);
-    mosque(g, 300, HOR + 14, 1.15, ['#4a2360', '#2b1440'], 'rgba(255,190,110,.9)');
-    mosque(g, 890, HOR + 14, .8, ['#54286a', '#2b1440'], 'rgba(255,190,110,.9)');
+    mosque(g, 210, HOR + 14, 1.05, ['#7a3a80', '#2b1440'], 'rgba(255,200,120,.95)');
+    mosque(g, 1000, HOR + 14, .75, ['#54286a', '#2b1440'], 'rgba(255,190,110,.9)');
     // dense hillside houses near, with a few lit windows
     houses(g, HOR + 22, 33, '#2e1645', '#1d0d33', 20, 60, -20, 1100, 26, 70);
     const r = rng(37);
@@ -235,7 +235,7 @@ function drawBos(ctx, t) {
   L(farLayer(), 1 + (zz - 1) * .45);
   L(bridgeLayer(), 1 + (zz - 1) * .6);
   // far ferry
-  ctx.save(); cam(1 + (zz - 1) * .7); ferry(ctx, 250 + u * -14, HOR + 30, .32, t, 3); ctx.restore();
+  ctx.save(); cam(1 + (zz - 1) * .7); ferry(ctx, 420 + u * -14, HOR + 30, .32, t, 3); ctx.restore();
   L(midLayer(), 1 + (zz - 1) * .85);
   // water + reflection
   ctx.save(); cam(zz);
@@ -257,7 +257,7 @@ function drawBos(ctx, t) {
     }
   });
   // ferry (mid), bobbing, with wake
-  const fx = lerp(880, 500, clamp(u / .9)) , fy = 1040;
+  const fx = lerp(700, 430, clamp(u / .9)) , fy = 1040;
   ctx.save(); ctx.globalAlpha = .28; ctx.translate(0, 2 * (fy + 6)); ctx.scale(1, -1); ferry(ctx, fx, fy, 1, t, 1); ctx.restore();
   ferry(ctx, fx, fy, 1, t, 1);
   ctx.strokeStyle = 'rgba(255,240,230,.55)'; ctx.lineWidth = 4; ctx.lineCap = 'round';
@@ -280,7 +280,7 @@ function drawBos(ctx, t) {
 // ---------- soap-opera close-up ----------
 // profile faces, local coords: eye level y=0, nose points +x
 const FACE = [[20, -172], [42, -140], [50, -90], [48, -40], [36, -12], [50, 20], [82, 58], [112, 88], [114, 100], [86, 108], [62, 112], [66, 128], [70, 142], [56, 156], [64, 170], [60, 190], [48, 204], [58, 222], [46, 238], [10, 246],
-  [-40, 232], [-78, 208], [-70, 262], [-62, 400], [-260, 400], [-200, 240], [-262, 130], [-312, -10], [-300, -140], [-200, -250], [-70, -250], [-10, -215]];
+  [-40, 232], [-70, 250], [-66, 400], [-190, 400], [-176, 250], [-262, 130], [-312, -10], [-300, -140], [-200, -250], [-70, -250], [-10, -215]];
 const FRONT = FACE.slice(0, 20);
 function profile(g, o) {   // o: {skin:[back,mid,front], rim, hair:'w'|'m', lips, wet}
   g.save();
@@ -352,8 +352,9 @@ function soapBackground() {
 function soapChars() {
   // both heads + shoulders, cached (eyes/tear animated separately)
   return A.layer('v4_soapfaces', W, H, g => {
+    const SC = 1.0;
     const draw = (cx, cy, mirror, o) => {
-      g.save(); g.translate(cx, cy); g.scale(mirror ? -1.18 : 1.18, 1.18);
+      g.save(); g.translate(cx, cy); g.scale(mirror ? -SC : SC, SC);
       // body first
       g.fillStyle = o.body; g.beginPath(); g.moveTo(-320, 430); g.bezierCurveTo(-300, 340, -140, 300, -60, 290); g.lineTo(60, 300); g.bezierCurveTo(180, 320, 260, 400, 300, 560); g.lineTo(-330, 560); g.closePath(); g.fill();
       g.fillStyle = o.collar; g.beginPath(); g.moveTo(-70, 292); g.lineTo(-10, 400); g.lineTo(70, 300); g.lineTo(20, 270); g.closePath(); g.fill();
@@ -363,8 +364,8 @@ function soapChars() {
       if (!o.hairFirst) o.hairFn(g);
       g.restore();
     };
-    draw(300, 640, false, { skin: ['#5a2a2a', '#c98a72', '#f0b090'], rim: '#ffd39a', blush: 'rgba(255,90,100,.6)', lips: '#a80c2c', brow: '#1a0a0a', lash: true, hairFn: hairWoman, hairFirst: true, body: lin(g, 0, 0, 0, 1, [[0, '#7a0c26'], [1, '#3a0614']]), collar: '#a41232' });
-    draw(780, 660, true, { skin: ['#3a2530', '#a87a70', '#dcaa92'], rim: '#9fd0ff', blush: 'rgba(200,90,80,.35)', lips: '#a8564c', brow: '#0c0a10', lash: false, hairFn: hairMan, hairFirst: false, body: '#10141f', collar: '#f2ecf0' });
+    draw(290, 700, false, { skin: ['#5a2a2a', '#c98a72', '#f0b090'], rim: '#ffd39a', blush: 'rgba(255,90,100,.6)', lips: '#a80c2c', brow: '#1a0a0a', lash: true, hairFn: hairWoman, hairFirst: false, body: lin(g, 0, 0, 0, 1, [[0, '#7a0c26'], [1, '#3a0614']]), collar: '#a41232' });
+    draw(790, 720, true, { skin: ['#3a2530', '#a87a70', '#dcaa92'], rim: '#9fd0ff', blush: 'rgba(200,90,80,.35)', lips: '#a8564c', brow: '#0c0a10', lash: false, hairFn: hairMan, hairFirst: false, body: '#10141f', collar: '#f2ecf0' });
     // bottom fade
     g.fillStyle = lin(g, 0, 1000, 0, 1300, [[0, 'rgba(10,2,6,0)'], [1, 'rgba(10,2,6,.95)']]); g.fillRect(0, 1000, W, 400);
   });
@@ -384,14 +385,14 @@ function drawSoap(ctx, t) {
   ctx.save(); ctx.translate(-dx, 0); ctx.globalAlpha = 1; ctx.drawImage(soapChars(), 0, 0, 540 + 1, 1920, 0, 0, 541, 1920); ctx.restore();
   ctx.save(); ctx.translate(dx, 0); ctx.drawImage(soapChars(), 540, 0, 540, 1920, 540, 0, 540, 1920); ctx.restore();
   // animated: tear on woman (eye at world ~ (300+56*1.18, 640-4*1.18)), wet shine
-  const ex = 300 - dx + 66, ey = 635;
+  const SC = 1.0, wx = 290 - dx, wy = 700;
+  const ex = wx + 56 * SC + 4, ey = wy - 4 * SC;
   const wet = eo(u / .15);
-  add(ctx, () => { V.glow(ctx, ex + 8, ey + 10, 70, 'rgba(160,220,255,.6)', .6 * wet); });
-  // tear track + droplet
+  add(ctx, () => { V.glow(ctx, ex, ey + 6, 60, 'rgba(160,220,255,.6)', .6 * wet); });
   const tp = A.smooth(.10, .36, u);
-  const tx = (v) => ex - 14 - 6 * v, ty = (v) => ey + 12 + 260 * v;
+  const tx = (v) => wx + (46 - 34 * v) * SC, ty = (v) => wy + (14 + 190 * v) * SC;
   ctx.save(); ctx.lineCap = 'round';
-  ctx.strokeStyle = 'rgba(190,230,255,.55)'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(tx(0), ty(0)); for (let k = 1; k <= 20; k++) { const v = tp * k / 20; ctx.lineTo(tx(v) + Math.sin(v * 9) * 3, ty(v)); } ctx.stroke();
+  ctx.strokeStyle = 'rgba(190,230,255,.55)'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(tx(0), ty(0)); for (let k = 1; k <= 20; k++) { const v = tp * k / 20; ctx.lineTo(tx(v), ty(v)); } ctx.stroke();
   ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 2.2; ctx.stroke();
   const dxp = tx(tp), dyp = ty(tp);
   ctx.fillStyle = rad(ctx, dxp - 3, dyp - 4, 1, 16, [[0, '#ffffff'], [.5, 'rgba(180,225,255,.9)'], [1, 'rgba(120,180,240,.7)']]);
