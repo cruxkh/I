@@ -173,16 +173,16 @@
   const LX = 540, LY = 800;
   const tile = (ctx, ch, i, t, t0) => {
     const p = CL.pop(t, t0); if (!p) return;
-    const cfg = [[-318, -14, -.09, C.yellow, C.blue, 240, 290], [-105, 20, .06, C.blue, C.yellow, 250, 250], [104, -18, -.05, C.yellow, C.blue, 240, 290], [317, 14, .1, C.blue, C.yellow, 250, 270]][i];
+    const cfg = [[-352, -14, -.09, C.yellow, C.blue, 215, 290], [-118, 20, .06, C.blue, C.yellow, 250, 250], [112, -18, -.05, C.yellow, C.blue, 215, 290], [350, 14, .1, C.blue, C.yellow, 225, 270]][i];
     const j = CL.j(t, 90 + i, 3);
     ctx.save(); ctx.translate(LX + cfg[0] + j[0], LY + cfg[1] + j[1]); ctx.rotate(cfg[2] + j[2]); ctx.scale(p, p);
     if (i === 1) {   // O = round tile with a play button
-      ctx.fillStyle = 'rgba(40,20,0,.32)'; ctx.beginPath(); ctx.arc(12, 16, 132, 0, 6.3); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 134, 0, 6.3); ctx.fill(); ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(0, 0, 122, 0, 6.3); ctx.fill();
-      ctx.strokeStyle = C.yellow; ctx.lineWidth = 34; ctx.beginPath(); ctx.arc(0, 0, 80, 0, 6.3); ctx.stroke(); ctx.fillStyle = C.yellow; ctx.strokeStyle = C.ink; ctx.lineWidth = 8; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(-22, -44); ctx.lineTo(50, 0); ctx.lineTo(-22, 44); ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.strokeStyle = C.ink; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(0, 0, 122, 0, 6.3); ctx.stroke();
+      ctx.fillStyle = 'rgba(40,20,0,.32)'; ctx.beginPath(); ctx.arc(12, 16, 132, 0, 6.3); ctx.fill(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 124, 0, 6.3); ctx.fill(); ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(0, 0, 113, 0, 6.3); ctx.fill();
+      ctx.strokeStyle = C.yellow; ctx.lineWidth = 34; ctx.beginPath(); ctx.arc(0, 0, 74, 0, 6.3); ctx.stroke(); ctx.fillStyle = C.yellow; ctx.strokeStyle = C.ink; ctx.lineWidth = 8; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(-22, -44); ctx.lineTo(50, 0); ctx.lineTo(-22, 44); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(0, 0, 113, 0, 6.3); ctx.stroke();
     } else {
       CL.scrap(ctx, 0, 0, cfg[5], cfg[6], { fill: cfg[3], seed: 11 + i, rough: 5, shadow: 14 });
-      ctx.font = '900 280px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.lineJoin = 'round';
+      ctx.font = '900 250px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.lineJoin = 'round';
       ctx.strokeStyle = C.ink; ctx.lineWidth = 26; ctx.strokeText(ch, 0, 18); ctx.fillStyle = cfg[4]; ctx.fillText(ch, 0, 18);
     }
     if (i === 0) CL.tape(ctx, -70, -cfg[6] / 2 + 4, -.5, 120, 40); if (i === 3) CL.tape(ctx, 70, cfg[6] / 2 - 2, -.4, 120, 40);
@@ -195,7 +195,7 @@
     ctx.save(); ctx.translate(LX, LY + 10); ctx.scale(pb * sb, pb * sb); ctx.rotate(.045);
     CL.scrap(ctx, 0, 0, 1010, 700, { fill: C.blue, seed: 21, rough: 9, shadow: 18 }); ctx.restore();
     ctx.save(); ctx.translate(LX, LY); ctx.scale(pb * sb, pb * sb); ctx.rotate(-.03);
-    CL.scrap(ctx, 0, 0, 990, 660, { fill: C.cream, seed: 22, rough: 9, shadow: 0, draw: (c, w, h) => { CL.halftone(c, -w / 2, -h / 2, w, h, C.blue, 34, .5, { alpha: .22, fade: 'r' }); CL.halftone(c, -w / 2, -h / 2, w, h, C.yellow, 40, .3, { alpha: .9, fade: 'l', k: .7 }); } });
+    CL.scrap(ctx, 0, 0, 990, 660, { fill: C.cream, seed: 22, rough: 9, shadow: 0, draw: (c, w, h) => { CL.halftone(c, -w / 2, -h / 2, w, h, C.blue, 34, .5, { alpha: .12, fade: 'r' }); CL.halftone(c, -w / 2, -h / 2, w, h, C.yellow, 40, .3, { alpha: .55, fade: 'l', k: .6 }); } });
     CL.tape(ctx, -430, -320, -.6, 170, 50); CL.tape(ctx, 440, 310, -.6, 170, 50); ctx.restore();
     'GOTV'.split('').forEach((ch, i) => tile(ctx, ch, i, t, T0 + .04 + i * .06));
     // stars / sparks
@@ -203,10 +203,10 @@
     if (t < T0 + .45) CL.sparks(ctx, LX, LY, 420, 560, 18, t, { lw: 10 });
     // underline scribble under logo, marker arrow + "כאן", check mark
     const pu = clamp((t - 3.92) / .3); if (pu > 0) CL.underline(ctx, 150, 930, 1140, pu, { color: C.red, lw: 16, seed: 4 });
-    const pa = clamp((t - 3.92) / .3); if (pa > 0) CL.arrow(ctx, 120, 1320, 250, 1060, pa, { color: C.ink, lw: 12, bend: -80 });
+    const pa = clamp((t - 3.92) / .3); if (pa > 0) CL.arrow(ctx, 130, 1190, 230, 1060, pa, { color: C.ink, lw: 12, bend: -80 });
     const chk = clamp((t - 4.28) / .25);
     if (chk > 0) mk(ctx, lerpPts([[800, 430], [860, 520], [1010, 300]], 10), chk, C.green, 44);
-    const pc = CL.pop(t, 4.0, .3); if (pc) { const j = CL.j(t, 95, 3); CL.chip(ctx, 'כאן!', 190 + j[0], 1370 + j[1], { size: 90, fill: C.red, ink: '#fff', rot: -.12 + j[2], scale: pc, seed: 9 }); }
+    const pc = CL.pop(t, 4.0, .3); if (pc) { const j = CL.j(t, 95, 3); CL.chip(ctx, 'כאן!', 220 + j[0], 1255 + j[1], { size: 90, fill: C.red, ink: '#fff', rot: -.12 + j[2], scale: pc, seed: 9 }); }
   };
 
   // ---------- scene

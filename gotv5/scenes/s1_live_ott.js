@@ -88,8 +88,8 @@
   };
 
   const CH = [
-    { key: 'kan11', t0: 5.16, x: 250, y: 440, r: -.09, lw: 340, bg: '#0B1F5C', from: [-300, 300] },
-    { key: 'keshet12', t0: 5.32, x: 830, y: 430, r: .08, lw: 250, bg: C.white, from: [1400, 250] },
+    { key: 'kan11', t0: 5.16, x: 235, y: 335, r: -.09, lw: 340, bg: '#0B1F5C', from: [-300, 300] },
+    { key: 'keshet12', t0: 5.32, x: 835, y: 345, r: .08, lw: 250, bg: C.white, from: [1400, 250] },
     { key: 'reshet13', t0: 5.5, x: 165, y: 1140, r: .07, lw: 260, bg: C.white, crop: [107, 99, 298, 319], from: [-300, 1500] },
     { key: 'ch14', t0: 5.68, x: 905, y: 1130, r: -.07, lw: 280, bg: C.cream, from: [1400, 1500] },
     { key: 'i24', t0: 5.88, x: 540, y: 1290, r: .03, lw: 340, bg: C.ink, from: [540, 2200] },
@@ -100,9 +100,9 @@
     CL.paper(ctx, 'blue', { dots: C.yellow, dotSize: 36, dotAlpha: .22, dotFade: 'b' });
     // map behind
     const mp = CL.pop(tq(t), 4.95, .3);
-    if (mp) { const j = CL.j(t, 1, 4); drawMap(ctx, 520 + j[0], 850 + j[1], 250 * mp, -.05 + j[2], t); }
+    if (false && mp) { const j = CL.j(t, 1, 4); drawMap(ctx, 400 + j[0], 830 + j[1], 300 * mp, -.08 + j[2], t); }
     // flag on 'בישראל'
-    const f = fly(t, 5.86, .24, 540, -300, 540, 205, -.5, .04);
+    const f = fly(t, 5.86, .24, 540, -300, 540, 215, -.5, .04);
     if (f) flag(ctx, f.x, f.y, 400, f.rot, 4);
     // TV drop
     const tv = fly(t, 5.0, .3, 540, -600, 540, 830, .12, -.025);
