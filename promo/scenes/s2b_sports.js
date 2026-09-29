@@ -62,7 +62,7 @@ function fig(ctx, x, y, s, pose, kit, o = {}) {
   leg(l1kx, l1ky, l1fx, l1fy);
   seg(hx * 0.4 + nx * 0.6, hy * 0.4 + ny * 0.6, nx, ny, 28, kit.skin);
   ctx.beginPath(); ctx.arc(hx, hy, 40, 0, TAU); A.fillStroke(ctx, kit.skin, 7);
-  ctx.beginPath(); ctx.arc(hx, hy, 40, Math.PI * 0.92, Math.PI * 2.08); ctx.closePath(); ctx.fillStyle = kit.hair; ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.arc(hx, hy, 40, 0, TAU); ctx.clip(); ctx.fillStyle = kit.hair; ctx.fillRect(hx - 42, hy - 42, 84, 27); ctx.fillRect(hx - 42, hy - 42, 30, 70); ctx.restore();
   ctx.beginPath(); ctx.arc(hx, hy, 40, 0, TAU); ctx.lineWidth = 7; ctx.strokeStyle = OL; ctx.stroke();
   ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(hx + 17, hy - 2, 8, 0, TAU); ctx.fill();
   ctx.fillStyle = OL; ctx.beginPath(); ctx.arc(hx + 20, hy - 2, 4.5, 0, TAU); ctx.fill();
@@ -336,9 +336,9 @@ function sport5(ctx, t) {
   ctx.restore();
   A.glow(ctx, 960, 440, 900, '#3D8BFF', 0.8);
   // ball position racing across
-  const bx = A.key(u, [[0, -260], [0.26, 2250, 'lin']]), by = 470 + 22 * Math.sin(u * 30) - 40 * Math.sin(inv(0, 0.26, u) * Math.PI);
-  const rev = u < 0.26 ? bx - 30 : 3000;
-  const beat = t >= 11 ? Math.exp(-(t - 11) * 10) : 0, land = u > 0.24 ? Math.exp(-(u - 0.24) * 13) * Math.cos((u - 0.24) * 38) : 0;
+  const bx = A.key(u, [[0, -260], [0.2, 2250, 'lin']]), by = 470 + 22 * Math.sin(u * 30) - 40 * Math.sin(inv(0, 0.2, u) * Math.PI);
+  const rev = u < 0.2 ? bx - 30 : 3000;
+  const beat = t >= 11 ? Math.exp(-(t - 11) * 10) : 0, land = u > 0.18 ? Math.exp(-(u - 0.18) * 13) * Math.cos((u - 0.18) * 38) : 0;
   const bph = Math.sin(t * 2.2) * 26;
   swoosh(ctx, '#2f7bff', 760, 200, bph, 1);
   swoosh(ctx, '#ffffff', 800, 90, bph * 1.2, 0.95);
@@ -346,26 +346,25 @@ function sport5(ctx, t) {
   // sparkles
   for (let i = 0; i < 26; i++) { const x = A.hash(i * 3) * W, y = fmod(A.hash(i * 5) * H - t * (80 + 120 * A.hash(i * 7)), H), r = 3 + A.hash(i) * 6; ctx.fillStyle = `rgba(255,255,255,${0.3 + 0.5 * A.hash(i * 11 + Math.floor(t * 6))})`; ctx.fillRect(x - r, y - 1, r * 2, 2); ctx.fillRect(x - 1, y - r, 2, r * 2); }
   hlines(ctx, t, 'rgba(255,255,255,.18)', 14, 3, 0, 1080, 700, 3000);
+  if (u < 0.24) {
+    const R = 84; streak(ctx, bx, by, bx - 520, by + 10, R * 1.3, '#E8322B', 0.95); streak(ctx, bx, by - 30, bx - 640, by - 26, R * 0.8, '#ffffff', 0.95); streak(ctx, bx, by + 34, bx - 440, by + 46, R * 0.7, '#5aa0ff', 0.95);
+  }
   // logo
   if (u > 0) {
     ctx.save();
-    if (u < 0.26) { ctx.beginPath(); ctx.rect(0, 0, Math.max(0, rev), H); ctx.clip(); }
+    if (u < 0.2) { ctx.beginPath(); ctx.rect(0, 0, Math.max(0, rev), H); ctx.clip(); }
     const sc = 1 + 0.17 * land + beat * 0.05 + 0.008 * Math.sin(t * 6);
     const sk = (u > 0.4 && u < 0.62) ? inv(0.4, 0.62, u) : (t > 10.9 && t < 11.0 ? 0 : null);
-    logo5(ctx, 960, 430 + Math.sin(t * 5) * 4, sc * 1.05, { rot: 0.012 * Math.sin(t * 3), shine: sk });
+    logo5(ctx, 960, 400 + Math.sin(t * 5) * 4, sc * 1.28, { rot: 0.012 * Math.sin(t * 3), shine: sk });
     ctx.restore();
   }
-  if (u < 0.3) {
-    const R = 84; streak(ctx, bx, by, bx - 1100, by + 10, R * 1.5, '#E8322B', 0.95); streak(ctx, bx, by - 30, bx - 1300, by - 26, R, '#ffffff', 0.95); streak(ctx, bx, by + 34, bx - 900, by + 46, R * 0.9, '#5aa0ff', 0.95);
-    ball(ctx, bx, by, R, bx * 0.02);
-    A.glow(ctx, bx, by, 300, '#fff', 0.6);
-  }
-  flash(ctx, '#ffffff', 0.7 * (1 - inv(0, 0.07, u - 0.24)) * (u > 0.24 ? 1 : 0));
+  if (u < 0.24) { ball(ctx, bx, by, 84, bx * 0.02); A.glow(ctx, bx, by, 300, '#fff', 0.6); }
+  flash(ctx, '#ffffff', 0.7 * (1 - inv(0, 0.07, u - 0.18)) * (u > 0.18 ? 1 : 0));
 }
 function scoreOverlay(ctx, t) {
   if (t < 10.6 || t > 11.95) return;
   const k = E.outBack(inv(10.6, 10.8, t)), bump = t >= 11.5 ? Math.exp(-(t - 11.5) * 6) : 0;
-  scoreboard(ctx, 960, A.lerp(1000, 812, k), 0.95, t, t >= 11.5 ? '2 : 1' : '1 : 1', bump);
+  if (t >= 11) scoreboard(ctx, 1380, 84, 0.78, t, t >= 11.5 ? '2 : 1' : '1 : 1', bump); else scoreboard(ctx, 960, A.lerp(1000, 800, k), 0.95, t, t >= 11.5 ? '2 : 1' : '1 : 1', bump);
 }
 function stadiumGoal(ctx, t, h) { }
 function goalNet(ctx, x0, y0, x1, y1, t, dt, hx, hy) {
@@ -542,7 +541,7 @@ function charlton(ctx, t) {
     ctx.save(); ctx.fillStyle = 'rgba(0,0,0,.72)'; ctx.beginPath(); ctx.moveTo(0, 250); ctx.lineTo(W, 190); ctx.lineTo(W, 710); ctx.lineTo(0, 770); ctx.fill(); ctx.restore();
     stopwatch(ctx, 960, 480, 330, w * 22 + v * 3, '#FF6A00', 0.55);
     const k = fin ? 1 + 0.6 * Math.exp(-w * 26) : 1 + 0.55 * Math.exp(-w * 30);
-    charWord(ctx, 960, 440, fin ? 262 : 250, k * (1 + 0.012 * Math.sin(t * 9)), { rot: -0.03 });
+    charWord(ctx, 960, 440, fin ? 292 : 280, k * (1 + 0.012 * Math.sin(t * 9)), { rot: -0.03 });
     const hk = E.outBack(inv(fin ? 0.02 : 0.08, fin ? 0.12 : 0.2, w));
     hebSlab(ctx, 980, 690, hk * (fin ? 1.05 : 1), {});
     speedLines(ctx, 960, 480, t, 'rgba(255,255,255,.28)', 26, 500, 1400, 61, 8);
@@ -559,8 +558,8 @@ function body(ctx, t) {
   if (t < 10.25) montage(ctx, t);
   else if (t < 12.05) { if (t < 11) sport5(ctx, t); else goalScene(ctx, t); if (t < 11) { } else { /* bug */ const k = E.outBack(inv(11, 11.15, t)); logo5(ctx, 250, 86, 0.26 * k); } scoreOverlay(ctx, t); if (t >= 12.05 - 0.0) { } }
   else charlton(ctx, t);
-  wipe(ctx, t, 10.25, 0.22, ['#1E6BFF', '#ffffff', '#E8322B']);
-  wipe(ctx, t, 12.05, 0.22, ['#0d0d0d', '#FF6A00', '#ffffff']);
+  wipe(ctx, t, 10.25, 0.2, ['#1E6BFF', '#ffffff', '#E8322B']);
+  wipe(ctx, t, 12.05, 0.18, ['#0d0d0d', '#FF6A00', '#ffffff']);
 }
 A.scene({
   name: 's2b_sports', start: 9.05, end: 13.40,

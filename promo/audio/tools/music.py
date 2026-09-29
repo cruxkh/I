@@ -456,10 +456,10 @@ HATO = hat(True)
 SHK = [shaker(rng.uniform(.8, 1)) for _ in range(3)]
 
 # ---- instruments (SoundFont)
-pizz = trk('lead', 45, 1.0, -.25, .2)
+pizz = trk('lead', 45, 1.6, -.25, .2)
 marim = trk('lead', 12, 1.0, .25, .25)
-xylo = trk('lead', 13, .8, .35, .2)
-clar = trk('lead', 71, .7, -.35, .2)
+xylo = trk('lead', 13, 1.2, .35, .2)
+clar = trk('lead', 71, 1.2, -.35, .2)
 cel = trk('lead', 8, 1.0, .1, .45)
 glo = trk('lead', 9, .8, -.1, .45)
 harp = trk('harmony', 46, 1.0, 0, .4)
@@ -556,7 +556,7 @@ def sec0():
     roll(2.35, 2.95, .1, .045, .15, .8, rev=.2)
     # low tension note + riser
     lowbr.n(0.0, 1.0, 'C2', 40)
-    put('fx', riser(1.6, 400, 10000, 1.0, tone=(200, 2600), curve=2.0), 1.45, 1.0, 0, .3)
+    put('fx', riser(1.6, 400, 10000, .6, tone=(200, 2600), curve=2.0), 1.45, 1.0, 0, .3)
     for i, t in enumerate([2.4, 2.65, 2.85]):
         put('fx', tick(900 + 500 * i, .9, .05), t, .8, rng.uniform(-.7, .7), .3)
     put('fx', rev_crash(1.0, .8), 2.05, 1, 0, .2)
@@ -792,7 +792,7 @@ def secC():
         put('harmony', supersaw([mtof(x) for x in ch[:4]], b - a, 1500, .25, .5, v=.45), a, 1, 0, .5)
         # slidey bass glide
         bs = broot(root)
-        put('bass', bass(mtof(bs), b - a - .05, .95, f_end=mtof(bs - 5 if root == 9 else bs - 2), glide=.55), a, 1)
+        put('bass', bass(mtof(bs), b - a - .05, .55, f_end=mtof(bs - 5 if root == 9 else bs - 2), glide=.55), a, 1)
         put('bass', bass(mtof(bs - 5 if root == 9 else bs - 2), .01, 0), a)
         # flowing arpeggio (harp/vibes), 16ths, up and down
         seq = [0, 1, 2, 3, 4, 3, 2, 1]
@@ -888,7 +888,7 @@ def secD():
     t0, bt = 27.2, .525
     tr_ = 4 * bt
     put('fx', crash(2.4, .8, .8), t0, 1, 0, .3)
-    ch_seq = [(7, 'M', 0), (7, 'M', 1), (7, 'M', 2), (9, 'M', 3)]  # G G G A (in D: IV IV IV V)
+    ch_seq = [(5, 'M', 0), (5, 'M', 1), (5, 'M', 2), (7, 'M', 3)]  # rel. to C: F F F G  -> in D: G G G A
     for beat in range(4):
         tb = t0 + beat * bt
         K(tb, 1.1, .6, groove=False)
@@ -914,7 +914,7 @@ def secD():
         for s in range(2):
             strs_stac.n(t0 + beat * bt + s * bt / 2, bt * .4, [ch[0], ch[1], ch[2]], 85)
         strs.n(t0 + beat * bt, bt * .95, ch + [ch[0] + 12], 88)
-    pad.n(t0, 2.2, chord(7, 'M', 50, KEYD), 70)
+    pad.n(t0, 2.2, chord(5, 'M', 50, KEYD), 70)
     # hook bar 1 in D on brass + pluck (heroic)
     hook_bar(0, t0, bt, KEYD, [brass], 100)
     hook_bar(0, t0, bt, KEYD, [trumpet], 92, 0)
@@ -968,7 +968,7 @@ def secE():
         K(tb, 1.0, .6, groove=False)
         D('hatc', tb + bt / 2, .4, .3, groove=False)
         D('clap', tb + bt, .6, groove=False) if False else None
-        root = 11 if k == 0 else 7
+        root = 9 if k == 0 else 5
         put('bass', bass(mtof(broot(root, KEYD)), .4, .95), tb)
         ch = chord(root, 'm7' if k == 0 else 'M', 57, 0)
     for s in range(4):
@@ -985,7 +985,7 @@ def secE():
 def secF():
     t0, bt = 32.04, .52
     put('fx', crash(2.5, .9, 1.0), t0, 1, 0, .4)
-    chs = [(7, 'M'), (9, 'M')]   # in D: G, A
+    chs = [(5, 'M'), (7, 'M')]   # rel. to C; in D: G, A
     for bar in range(2):
         tb = t0 + bar * 4 * bt
         root, kind = chs[bar]
@@ -1108,6 +1108,7 @@ def build():
         ST[stem] *= env[:, None]
 
 
+AUTO = [(15.81, 20.6, -3.5), (20.64, 23.5, -2.5), (30.12, 31.1, -4), (29.3, 30.1, -1.5), (0, 3.0, -1.0)]
 GATES = [(3.035, 3.05), (15.80, 15.81), (25.50, 25.61), (36.16, 36.2)]
 
 
@@ -1121,16 +1122,24 @@ def master():
         else:
             y = peaking(y, 2600, -1.5, .7)
         ST[k] = y
+    GN = {'drums': .6, 'bass': .8, 'harmony': 1.5, 'lead': 1.7, 'fx': .85}
+    tv = np.arange(N) / SR
+    auto = np.ones(N)
+    for a, b, gdb in AUTO:
+        w = np.clip(np.minimum((tv - a) / .15, (b - tv) / .15), 0, 1)
+        auto *= 10 ** (gdb * w / 20)
+    for k in STEMS:
+        ST[k] = ST[k] * GN[k] * auto[:, None]
     mix = sum(ST.values())
     # bus compressor gain (glue)
     env = np.abs(mix).max(1)
     env = signal.lfilter([1 - .9993], [1, -.9993], env ** 2)
     rms_db = 10 * np.log10(env + 1e-12)
-    gr = -(1 - 1 / 2.5) * np.maximum(0, rms_db + 19)
+    gr = -(1 - 1 / 2.0) * np.maximum(0, rms_db + 13)
     g = 10 ** (gr / 20)
     g = signal.lfilter([1 - .996], [1, -.996], g, zi=[.996 * g[0] * 0 + g[0] * (1 - .996)])[0] if False else g
     g = uniform_filter1d(g, int(.02 * SR))
-    mk = db(9.0)
+    mk = db(3.0)
     y = mix * (g * mk)[:, None]
     # limiter
     pk = np.abs(y).max(1)

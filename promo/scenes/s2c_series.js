@@ -344,7 +344,7 @@ function koreaFull(ctx, t) {
   neonSign(ctx, 210, 110, 240, 250, '사랑', 'rgb(255,120,200)', t, 1, 92);
   neonSign(ctx, 1500, 90, 240, 250, '안녕', 'rgb(90,235,255)', t, 2, 92);
   // latin cafe sign
-  { const fl = 0.9 + 0.1 * Math.sin(t * 19); ctx.save(); ctx.translate(1000, 330); A.glow(ctx, 130, 45, 300, 'rgb(190,150,255)', 0.5 * fl); A.rrect(ctx, 0, 0, 260, 90, 20); ctx.fillStyle = '#150B3A'; ctx.fill(); ctx.lineWidth = 7; ctx.strokeStyle = O; ctx.stroke();
+  { const fl = 0.9 + 0.1 * Math.sin(t * 19); ctx.save(); ctx.translate(985, 430); A.glow(ctx, 130, 45, 300, 'rgb(190,150,255)', 0.5 * fl); A.rrect(ctx, 0, 0, 260, 90, 20); ctx.fillStyle = '#150B3A'; ctx.fill(); ctx.lineWidth = 7; ctx.strokeStyle = O; ctx.stroke();
     A.text(ctx, 'CAFE', 130, 48, { font: '800 52px Rubik', fill: '#fff', stroke: 'rgba(190,150,255,0.6)', lw: 14 }); ctx.restore(); }
   // wet street reflection streaks
   ctx.save(); ctx.globalAlpha = 0.5; [[330, '#FF78C8'], [1620, '#5AEBFF'], [1130, '#BE96FF']].forEach(([gx, gc]) => { ctx.fillStyle = A.linear(ctx, 0, 860, 0, 1080, [[0, gc], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(gx - 90, 860, 180, 240); }); ctx.restore();
@@ -368,18 +368,18 @@ function koreaFull(ctx, t) {
   body(ctx, cx, cyb, 190, 190, '#7FF3C9', '#3A3A6E');
   // long hair back
   A.blob(ctx, [[cx - 100, cyb + 90], [cx - 118, 480], [cx - 60, 385], [cx + 60, 385], [cx + 118, 480], [cx + 100, cyb + 90]]); A.fillStroke(ctx, '#B79CFF', 6);
-  ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(cx - 60, cyb + 40); ctx.quadraticCurveTo(cx - 190, 640, 1400, 500); ctx.lineWidth = 50; ctx.strokeStyle = O; ctx.stroke(); ctx.lineWidth = 36; ctx.strokeStyle = '#7FF3C9'; ctx.stroke();
   kidHead(ctx, cx, 520, 88, '#FFE3CC', '#B79CFF', 'bob', 0.05, 'wink');
+  ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(cx - 60, cyb + 40); ctx.quadraticCurveTo(cx - 190, 640, 1345, 520); ctx.lineWidth = 50; ctx.strokeStyle = O; ctx.stroke(); ctx.lineWidth = 36; ctx.strokeStyle = '#7FF3C9'; ctx.stroke();
   // hand + crossed fingers
-  A.ellipse(ctx, 1400, 496, 32, 28); A.fillStroke(ctx, '#FFE3CC', 6);
-  ctx.strokeStyle = O; ctx.lineWidth = 24; ctx.beginPath(); ctx.moveTo(1380, 480); ctx.lineTo(1414, 424); ctx.moveTo(1424, 484); ctx.lineTo(1388, 424); ctx.stroke();
+  A.ellipse(ctx, 1345, 496, 32, 28); A.fillStroke(ctx, '#FFE3CC', 6);
+  ctx.strokeStyle = O; ctx.lineWidth = 24; ctx.beginPath(); ctx.moveTo(1325, 480); ctx.lineTo(1359, 424); ctx.moveTo(1369, 484); ctx.lineTo(1333, 424); ctx.stroke();
   ctx.strokeStyle = '#FFE3CC'; ctx.lineWidth = 12; ctx.stroke();
   ctx.restore();
   // finger heart pops on beat
   const hp = ease.outBack(inv(14.08, 14.28, t)), hb = 1 + 0.12 * pulse(t, 14.3, 0.2) + 0.08 * pulse(t, 14.45, 0.2);
-  if (hp > 0) { A.glow(ctx, 1401, 350, 300, 'rgb(255,100,190)', 0.9); heart(ctx, 1401, 350, 78 * hp * hb); A.fillStroke(ctx, A.linear(ctx, 0, 300, 0, 400, [[0, '#FF9DD2'], [1, '#FF3E9C']]), 8);
-    heart(ctx, 1380, 335, 20 * hp); ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fill();
-    for (let i = 0; i < 5; i++) sparkle(ctx, 1401 + Math.cos(i * 1.3 + lt * 2) * 130, 350 + Math.sin(i * 1.3 + lt * 2) * 90, 14 + 8 * Math.sin(t * 20 + i * 2), '#fff', i); }
+  if (hp > 0) { A.glow(ctx, 1346, 350, 300, 'rgb(255,100,190)', 0.9); heart(ctx, 1346, 350, 78 * hp * hb); A.fillStroke(ctx, A.linear(ctx, 0, 300, 0, 400, [[0, '#FF9DD2'], [1, '#FF3E9C']]), 8);
+    heart(ctx, 1325, 335, 20 * hp); ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fill();
+    for (let i = 0; i < 5; i++) sparkle(ctx, 1346 + Math.cos(i * 1.3 + lt * 2) * 130, 350 + Math.sin(i * 1.3 + lt * 2) * 90, 14 + 8 * Math.sin(t * 20 + i * 2), '#fff', i); }
   ctx.restore();
   // rain (screen space)
   ctx.save(); ctx.lineCap = 'round'; ctx.beginPath();
@@ -448,7 +448,7 @@ function hero(ctx, x, y, s, t, o = {}) {
   // sweat + blush lines
   ctx.strokeStyle = 'rgba(255,60,90,0.6)'; ctx.lineWidth = 4; [-1, 1].forEach(d => { for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(d * (78 + i * 12), 62); ctx.lineTo(d * (86 + i * 12), 78); ctx.stroke(); } });
   // bangs
-  [[-70, -110, -35, 20, -10], [-15, -125, 20, 15, 5], [45, -118, 80, 10, 0]].forEach(([bx, by, tx, ty], i) => { ctx.beginPath(); ctx.moveTo(bx - 34, by); ctx.lineTo(tx + i * 6 - 10, ty + 20); ctx.lineTo(bx + 40, by); ctx.closePath(); A.fillStroke(ctx, '#FFD52E', 6); });
+  [[-70, -110, -45, -70], [-15, -125, 10, -78], [45, -118, 70, -72]].forEach(([bx, by, tx, ty], i) => { ctx.beginPath(); ctx.moveTo(bx - 34, by); ctx.lineTo(tx + i * 6 - 10, ty + 20); ctx.lineTo(bx + 40, by); ctx.closePath(); A.fillStroke(ctx, '#FFD52E', 6); });
   ctx.beginPath(); ctx.moveTo(-110, -92); ctx.quadraticCurveTo(0, -150, 110, -92); ctx.lineWidth = 8; ctx.strokeStyle = O; ctx.stroke();
   ctx.restore();
 }
@@ -486,8 +486,8 @@ function animeImpact(ctx, t) {
   const lt = t - 14.93, sc = 1 + 0.5 * ease.out(inv(14.93, 14.99, t)) * 0 + 0.12 * (1 - inv(14.93, 15.05, t));
   ctx.save(); ctx.translate(960 + Math.sin(t * 200) * 12, 470 + Math.cos(t * 230) * 10); ctx.rotate(-0.08); ctx.scale(sc * 1.05, sc * 1.05);
   D.starburst(ctx, 0, 0, 260, 520, 14, 0.2, '#FFE23A'); ctx.lineWidth = 10; ctx.strokeStyle = '#000'; ctx.stroke();
-  glyphs(ctx, 'ドン', -330, -250, 330, 350, [[120, '#000'], [72, '#E0184F']]);
-  glyphs(ctx, '!', 300, -250, 330, 350, [[120, '#000'], [72, '#E0184F']]);
+  glyphs(ctx, 'ドン', -340, -230, 300, 330, [[74, '#000'], [40, '#E0184F']]);
+  glyphs(ctx, '!', 330, -230, 300, 330, [[74, '#000'], [40, '#E0184F']]);
   ctx.restore();
   // shockwave ring
   ctx.beginPath(); ctx.arc(960, 470, 200 + 900 * ease.out(inv(14.93, 15.05, t)), 0, TAU); ctx.lineWidth = 30 * (1 - inv(14.93, 15.05, t)); ctx.strokeStyle = '#000'; ctx.stroke();
@@ -598,7 +598,7 @@ function shards(ctx, t) {
         const [bx, by] = pts[(i + 1) % 8], dl = hash(fi * 8 + i) * 0.04, tt = Math.max(0, tau - dl), sp = 1500 + hash(i + fi * 9) * 700;
         const lx = (ax + bx) * FW / 6, ly = (ay + by) * FH / 6; // centroid (local, ignoring center)
         const wx = fx + lx * 1.0, wy = fy + ly * 1.0, dx = wx - 960, dy = wy - 500, dn = Math.hypot(dx, dy) || 1, dir = [dx / dn + (hash(i * 3) - 0.5) * 0.8, dy / dn + (hash(i * 5) - 0.5) * 0.8 + 0.5 * tt];
-        const off = sp * tt * (0.4 + tt), a = 1 - inv(0.18, 0.37, tau);
+        const off = sp * tt * (0.4 + tt), a = 1 - inv(0.1, 0.26, tau);
         if (a <= 0) return;
         ctx.save(); ctx.globalAlpha = a; ctx.translate(fx + dir[0] * off, fy + dir[1] * off + 900 * tt * tt * 0.5); ctx.rotate(fr + (hash(i + 2) - 0.5) * 6 * tt); ctx.scale(1 + tt, 1 + tt);
         ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(ax * FW / 2, ay * FH / 2); ctx.lineTo(bx * FW / 2, by * FH / 2); ctx.closePath(); ctx.save(); ctx.clip(); ctx.drawImage(snaps[key], -FW / 2, -FH / 2, FW, FH); ctx.restore();

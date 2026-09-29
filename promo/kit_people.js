@@ -37,12 +37,12 @@ P.FACES = Object.keys(FACES);
 // R = screen-right arm, L = screen-left arm.
 function poseParams(name, seated, t, ph) {
   const s = Math.sin, b = { tl: 0, sink: 0, hy: 0, hx: 0, hd: 0, sh: 0, bob: 0, R: [26, 172, 'fist', 0], L: [-26, 172, 'fist', 0], face: 'neutral', mo: 0 };
-  const rest = seated ? [[60, 128], [-60, 128]] : [[26, 172], [-26, 172]];
+  const rest = seated ? [[60, 128], [-60, 128]] : [[22, 182], [-22, 182]];
   b.R = [rest[0][0], rest[0][1], 'fist', 0]; b.L = [rest[1][0], rest[1][1], 'fist', 0];
   switch (name) {
     case 'remote': b.R = [150 + s(t * 3) * 2, seated ? -6 : -20, 'remote', 0]; b.tl = .04; b.face = 'smirk'; b.hd = .05; break;
     case 'slump': b.tl = -.07; b.sink = 24; b.hy = 16; b.hd = .16; b.hx = -6; b.sh = -6; b.face = 'bored';
-      b.R = [50, seated ? 116 : 150, 'fist', 0]; b.L = [-50, seated ? 116 : 150, 'fist', 0]; break;
+      b.R = [seated ? 50 : 30, seated ? 116 : 165, 'fist', 0]; b.L = [seated ? -50 : -30, seated ? 116 : 165, 'fist', 0]; break;
     case 'scratch': b.hd = .08; b.face = 'confused'; b.R = [24 + s(t * 15) * 13, -122 + s(t * 15 + 1.6) * 5, 'open', 0]; break;
     case 'shrug': b.sh = 18; b.hd = .13; b.hy = 6; b.face = 'confused'; b.R = [104, 58, 'open', 0]; b.L = [-104, 58, 'open', 0]; break;
     case 'cheer': { const p = s(t * 11); b.sink = -4; b.face = 'joy'; b.bob = -Math.abs(s(t * 5.5)) * (seated ? 9 : 18); b.R = [52 + s(t * 11) * 6, -172 + p * 16, 'open', 0]; b.L = [-52 - s(t * 11 + 1) * 6, -172 - p * 16, 'open', 0]; b.hd = s(t * 5.5) * .05; break; }
@@ -160,7 +160,7 @@ function drawFace(ctx, c, f, st, t, who) {
   // brows
   const browW = who === 'tom' ? 5.5 : who === 'yoni' ? 6.5 : 4.5;
   for (const sd of [-1, 1]) {
-    const y = -20 + fy + (sd < 0 ? bly : bry) - (eo0 > 1.1 ? 2 : 0), a = sd < 0 ? bla : bra;
+    const y = (who === 'yoni' ? -26 : -21) + fy + (sd < 0 ? bly : bry) - (eo0 > 1.1 ? 2 : 0), a = sd < 0 ? bla : bra;
     ctx.save(); ctx.translate(fx + sd * ex, y); ctx.rotate(a * (sd < 0 ? 1 : 1));
     ctx.beginPath(); ctx.moveTo(-10, 1.5); ctx.quadraticCurveTo(0, -3.5, 10, 1.5); ctx.lineWidth = browW; ctx.strokeStyle = who === 'maya' ? '#2b1a1c' : c.hair; ctx.lineCap = 'round'; ctx.stroke(); ctx.restore();
   }
@@ -233,7 +233,7 @@ function drawHead(ctx, c, who, st, t, pass) {
     ctx.fillStyle = A.linear(ctx, 0, R * .1, 0, R * 1.05, [[0, 'rgba(50,30,30,0)'], [.5, 'rgba(50,30,30,.26)'], [1, 'rgba(50,30,30,.36)']]);
     ctx.beginPath(); ctx.moveTo(-R * 1.1, -R * .05); ctx.quadraticCurveTo(-R * .6, R * .45, -R * .32, R * .48); ctx.quadraticCurveTo(0, R * .38, R * .32, R * .48); ctx.quadraticCurveTo(R * .6, R * .45, R * 1.1, -R * .05); ctx.lineTo(R * 1.1, R * 1.2); ctx.lineTo(-R * 1.1, R * 1.2); ctx.fill();
     ctx.fillStyle = 'rgba(40,25,25,.5)'; const rn = A.rng(5);
-    for (let i = 0; i < 46; i++) { const x = (rn() - .5) * R * 1.6, y = R * .35 + rn() * R * .65; if (Math.abs(x) < R * .8) ctx.fillRect(x, y, 1.8, 1.8); }
+    for (let i = 0; i < 70; i++) { const x = (rn() - .5) * R * 1.6, y = R * .35 + rn() * R * .65; if (Math.abs(x) < R * .8) { ctx.beginPath(); ctx.arc(x, y, 1.1, 0, A.TAU); ctx.fill(); } }
     ctx.restore();
     headShape(ctx, R); ctx.lineWidth = 6; ctx.strokeStyle = OL; ctx.stroke();
   }
@@ -244,8 +244,8 @@ function drawHead(ctx, c, who, st, t, pass) {
     const fx = st.lx * 7, fy = st.ly * 3, gy = -1 + fy;
     ctx.lineWidth = 4.5; ctx.strokeStyle = '#3b2a3a';
     for (const sd of [-1, 1]) {
-      ctx.beginPath(); ctx.arc(fx + sd * 17, gy, 17, 0, A.TAU); ctx.fillStyle = 'rgba(190,230,255,.16)'; ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.arc(fx + sd * 17, gy, 12.5, Math.PI * 1.15, Math.PI * 1.55); ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.stroke(); ctx.lineWidth = 4.5; ctx.strokeStyle = '#3b2a3a';
+      ctx.beginPath(); ctx.arc(fx + sd * 17, gy, 15.5, 0, A.TAU); ctx.fillStyle = 'rgba(190,230,255,.16)'; ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(fx + sd * 17, gy, 11.5, Math.PI * 1.15, Math.PI * 1.55); ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.stroke(); ctx.lineWidth = 4.5; ctx.strokeStyle = '#3b2a3a';
       ctx.beginPath(); ctx.moveTo(fx + sd * 33, gy - 3); ctx.lineTo(sd * (R * .96), gy - 4); ctx.stroke();
     }
     ctx.beginPath(); ctx.moveTo(fx - 1, gy - 3); ctx.quadraticCurveTo(fx, gy - 7, fx + 1, gy - 3); ctx.stroke();
@@ -265,7 +265,7 @@ function drawHead(ctx, c, who, st, t, pass) {
     for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(Math.cos(i * 1.05) * 8, Math.sin(i * 1.05) * 8, 7.5, 0, A.TAU); A.fillStroke(ctx, i % 2 ? '#ff6f91' : '#ff4f7f', 3.5); }
     ctx.restore();
   } else {
-    const cu = [[-R * .78, -R * .55, 15], [-R * .4, -R * .92, 16], [0, -R * 1.08, 17], [R * .42, -R * .92, 16], [R * .8, -R * .55, 15], [-R * .2, -R * .78, 13], [R * .22, -R * .8, 13], [-R * .62, -R * .78, 12], [R * .62, -R * .78, 12], [R * .92, -R * .18, 11], [-R * .92, -R * .18, 11], [-R * .5, -R * .58, 10], [R * .1, -R * .62, 10], [R * .5, -R * .55, 10]];
+    const cu = [[-R * .78, -R * .66, 15], [-R * .4, -R * 1.0, 16], [0, -R * 1.14, 17], [R * .42, -R * 1.0, 16], [R * .8, -R * .66, 15], [-R * .2, -R * .86, 13], [R * .22, -R * .88, 13], [-R * .62, -R * .86, 12], [R * .62, -R * .86, 12], [R * .95, -R * .25, 10], [-R * .95, -R * .25, 10], [-R * .45, -R * .74, 9], [R * .1, -R * .76, 9], [R * .5, -R * .72, 9]];
     curls(ctx, cu, c.hair, c.hairHi);
   }
 }
@@ -298,7 +298,7 @@ function drawTorso(ctx, c, who, TL, t) {
   } else { // tom jersey
     ctx.fillStyle = '#fff'; ctx.fillRect(-sw, -TL * .42, sw * 2, 9); ctx.fillStyle = '#ffd23a'; ctx.fillRect(-sw, -TL * .42 + 9, sw * 2, 5);
     ctx.beginPath(); ctx.moveTo(-sw * .3, -TL - 4); ctx.lineTo(0, -TL + 24); ctx.lineTo(sw * .3, -TL - 4); ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = OL; ctx.stroke();
-    A.text(ctx, '9', 0, -TL * .68, { font: '900 52px Rubik', fill: '#fff', stroke: OL, lw: 6 });
+    A.text(ctx, '9', 0, -TL * .58, { font: '900 52px Rubik', fill: '#fff', stroke: OL, lw: 6 });
     ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.fillRect(-sw, -6, sw * 2, 14);
   }
   ctx.restore();
@@ -319,12 +319,13 @@ function drawLegs(ctx, c, who, seated, t, ph, bob) {
   for (const sd of sd2) {
     let pts, ankle;
     if (seated) {
-      const kx = sd * (hw + 6), ky = 26, ax = sd * (hw + 10), ay = 26 + c.legs * .5;
+      const kx = sd * (hw + 8), ky = 36, ax = sd * (hw + 12), ay = 36 + c.legs * .5 - 8;
       pts = [[sd * hw * .7, -10], [kx, ky], [ax, ay]]; ankle = [ax, ay];
     } else {
       const ax = sd * (hw + 6), ay = -14; pts = [[sd * hw * .8, -c.legs], [sd * (hw + 2), -c.legs * .5], [ax, ay]]; ankle = [ax, ay];
     }
     const full = c.shortsFrac >= 1;
+    if (seated) { limb(ctx, [pts[0], pts[1]], c.legW + 12, full ? c.pants : c.skin, 6); limb(ctx, [pts[1], pts[2]], c.legW, full ? c.pants : c.skin, 6); if (!full) limb(ctx, alongPath([pts[0], pts[1]], 60), c.legW + 18, c.pants, 6); ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 6; poly(ctx, [[pts[0][0] + sd * 4, pts[0][1] + 4], [pts[1][0], pts[1][1] - 8]]); ctx.stroke(); } else
     limb(ctx, pts, c.legW, full ? c.pants : c.skin, 6);
     if (!full) { // skin legs + socks + shorts
       const sockPts = alongPath([pts[2], pts[1], pts[0]], 46).reverse();
@@ -446,10 +447,11 @@ P.sofaBack = function (ctx, x, y, s = 1, o = {}) {
     ctx.strokeStyle = 'rgba(0,0,0,.16)'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(cx - 80, -250); ctx.quadraticCurveTo(cx, -232, cx + 80, -250); ctx.stroke();
     ctx.beginPath(); ctx.arc(cx, -236, 7, 0, A.TAU); ctx.fillStyle = k.dk; ctx.fill();
   }
-  // seat cushions
+  // seat cushions: visible top surface + front lip
   for (let i = 0; i < 3; i++) {
-    const cx = (i - 1) * 285; ctx.beginPath(); ctx.roundRect(cx - 140, -SEATH - 6, 280, 78, 30);
-    A.fillStroke(ctx, A.linear(ctx, cx, -SEATH, cx, -60, [[0, k.hi], [.5, k.c], [1, k.sh]]), 6);
+    const cx = (i - 1) * 285;
+    ctx.beginPath(); ctx.roundRect(cx - 136, -SEATH - 50, 272, 96, 34); A.fillStroke(ctx, A.linear(ctx, 0, -SEATH - 50, 0, -SEATH + 40, [[0, k.c], [1, k.hi]]), 6);
+    ctx.beginPath(); ctx.roundRect(cx - 141, -SEATH + 30, 282, 64, 26); A.fillStroke(ctx, A.linear(ctx, 0, -SEATH + 30, 0, -SEATH + 94, [[0, k.c], [1, k.sh]]), 6);
   }
   ctx.restore();
 };
@@ -550,13 +552,16 @@ P.cushion = function (ctx, x, y, s = 1, rot = 0, o = {}) {
 P.blanket = function (ctx, x, y, s = 1, o = {}) { // draped plaid, (x,y)=centre
   const w = o.w || 420, h = o.h || 140, t = o.t || 0, c = o.color || '#ff4f9a', c2 = o.color2 || '#ffe08a'; ctx.save(); ctx.translate(x, y); ctx.rotate(o.rot || 0); ctx.scale(s, s);
   const wav = (i) => Math.sin(i * 1.3 + t * 1.2) * 3;
+  const bp = () => {
   ctx.beginPath(); ctx.moveTo(-w / 2, -h / 2 + 10); for (let i = 0; i <= 8; i++) ctx.lineTo(-w / 2 + w * i / 8, -h / 2 + wav(i) + (i % 2 ? 6 : 0));
   ctx.lineTo(w / 2, h / 2 - 6); for (let i = 8; i >= 0; i--) ctx.quadraticCurveTo(-w / 2 + w * (i + .5) / 8, h / 2 + 14 + wav(i + 3), -w / 2 + w * i / 8, h / 2 - 2 + wav(i + 1)); ctx.closePath();
+  };
+  bp();
   ctx.save(); ctx.fillStyle = A.linear(ctx, 0, -h / 2, 0, h / 2, [[0, c], [1, A.mixc(c, '#1a0a30', .3)]]); ctx.fill(); ctx.clip();
   ctx.fillStyle = 'rgba(255,224,138,.5)'; for (let i = -6; i < 8; i++) ctx.fillRect(i * 44 - 5, -h, 10, h * 2);
   ctx.fillStyle = 'rgba(26,19,48,.25)'; for (let j = -3; j < 4; j++) ctx.fillRect(-w, j * 40 - 4, w * 2, 8);
   ctx.strokeStyle = 'rgba(0,0,0,.14)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(-w * .2, -h / 2); ctx.quadraticCurveTo(-w * .1, 0, -w * .25, h / 2); ctx.moveTo(w * .25, -h / 2); ctx.quadraticCurveTo(w * .35, 0, w * .2, h / 2); ctx.stroke(); ctx.restore();
-  ctx.lineWidth = 6; ctx.strokeStyle = OL; ctx.lineJoin = 'round'; ctx.stroke(); ctx.restore();
+  bp(); ctx.lineWidth = 6; ctx.strokeStyle = OL; ctx.lineJoin = 'round'; ctx.stroke(); ctx.restore();
 };
 
 // ------------------------------------------------------------------ room
