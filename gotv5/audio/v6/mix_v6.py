@@ -387,62 +387,99 @@ def main():
         thr[a_:b_] = meter0.integrated_loudness(VO[:, a_ - p_:b_ + p_].T) - 9.0
     sounding = inword & (vo_l4 > thr)
 
-    # ---- SFX bus with per-cue VO protection.
-    #   Each cue is measured alone against the voice (K-weighted momentary, 400 ms) over its first second where a
-    #   word is sounding: its speech-band part (> 200 Hz, the part that could mask words) is set >= M_HI dB under the
-    #   VO and the whole cue (incl. sub/kick) >= M_ALL dB under.  A static gain per cue keeps every hit's shape
-    #   intact; hits in speech gaps are untouched.  A slow safety rider catches overlaps/tails afterwards.
+    # ---- SFX bus with per-cue VO protection (sequential, in time order).
+    #   Every cue gets a static gain chosen so that, wherever a word is sounding, the SFX bus (all cues so far + this
+    #   one; K-weighted, 200 ms) stays >= M_HI dB under the voice in the speech band (> 200 Hz, the part that could
+    #   mask words) and >= M_ALL dB under it full-band (sub/kick included).  If the cue's hit lands in a speech gap,
+    #   only its tail (from 50 ms before the next word) is tucked under, with a 60 ms raised-cosine ramp, so the
+    #   transient keeps its full punch.  If the bus is already over the line before this cue, the cue may not
+    #   raise it by more than 0.5 dB.  Nothing here is time-varying compression: one or two static gains per cue.
     SFX_BUS_DB = 0.0
     M_HI, M_ALL = 7.0, 5.0
+    WIN = 0.2
     sos_lo = butter(4, 200, 'lowpass', fs=SR, output='sos')
-    SFX = np.zeros((2, NS))
+    vo_l2 = loud_curve(VO, WIN)
+    LO = np.zeros((2, NS))
+    HI = np.zeros((2, NS))
     cues = cue_sheet(dict(root=root))
-    pad = int(0.3 * SR)
-    for q in cues:
+    order = sorted(range(len(cues)), key=lambda k: cues[k]['t'])
+    pad = int(0.25 * SR)
+    ramp_n = int(0.06 * SR)
+    for k in order:
+        q = cues[k]
         x, hit = sound(q['nm'], q.get('root'))
         if q.get('var'):
             x = vary(x, q['var'])
             hit = hit / q['var']
         seg = q.get('seg')
         t_start = q['t'] - hit + (seg[0] if seg else 0)
-        loc = np.zeros((2, NS))
-        place(loc, x, t_start, q['g'] + SFX_BUS_DB, q['p'], seg=seg, fin=q.get('fin', 0), fout=q.get('fout', 0))
+        L_ = (int((seg[1] - seg[0]) * SR) if seg else x.shape[1])
         i0_ = max(0, int(t_start * SR) - pad)
-        i1_ = min(NS, int((q['t'] + 1.0) * SR))
-        i2_ = min(NS, int(t_start * SR) + x.shape[1] + pad)
-        i1_ = min(i1_, i2_)
-        seg_ = loc[:, i0_:i2_]
-        lo_ = sosfilt(sos_lo, seg_)
-        hi_ = seg_ - lo_
-        m = sounding[i0_:i1_]
-        vref = vo_l4[i0_:i1_]
-        g_h = g_a = 0.0
+        i2_ = min(NS, int(t_start * SR) + L_ + pad)
+        loc = np.zeros((2, i2_ - i0_))
+        place(loc, x, t_start - i0_ / SR, q['g'] + SFX_BUS_DB, q['p'], seg=seg, fin=q.get('fin', 0),
+              fout=q.get('fout', 0))
+        lo_ = sosfilt(sos_lo, loc)
+        hi_ = loc - lo_
+        V = vo_l2[i0_:i2_]
+        m = sounding[i0_:i2_] & (V > thr[i0_:i2_])      # syllable cores on both the 400 ms and 200 ms scale
+        onset = int(q['t'] * SR) - i0_
+        head = np.ones(i2_ - i0_)            # weight of the part that stays at full level
         if m.any():
-            hl = loud_curve(hi_, 0.4)[:i1_ - i0_]
-            g_h = min(0.0, np.min((vref - q.get('m_hi', M_HI) - hl)[m]))
-            wl = loud_curve(lo_ + hi_ * db(g_h), 0.4)[:i1_ - i0_]
-            g_a = min(0.0, np.min((vref - q.get('m_all', M_ALL) - wl)[m]))
-        q['prot'] = (g_h, g_a)
-        SFX[:, i0_:i2_] += lo_ * db(g_a) + hi_ * db(g_h + g_a)
-    SFX = sosfilt(butter(2, 22, 'highpass', fs=SR, output='sos'), SFX)
+            first = int(np.argmax(m[onset:] if onset < len(m) else m)) + (onset if onset < len(m) else 0)
+            if m[:onset + int(0.04 * SR)].any() or not m[onset:].any():
+                first_word = None if not m[onset:].any() else first
+            else:
+                first_word = first
+            if first_word is not None and first_word - onset > int(0.09 * SR) and not m[max(0, onset - int(0.02 * SR)):onset + int(0.04 * SR)].any():
+                s_ = first_word - int(0.05 * SR)
+                head[s_:s_ + ramp_n] = np.cos(np.linspace(0, np.pi / 2, ramp_n)) ** 2
+                head[s_ + ramp_n:] = 0.0
+                m[:first_word + int(0.1 * SR)] = False      # head spill into the first 100 ms of the word is accepted
+            else:
+                head[:] = 0.0                               # hit is on a word: the whole cue is set under the voice
+        if m.any():
+            Ehi, Elo = HI[:, i0_:i2_], LO[:, i0_:i2_]
+            base_hi = loud_curve(Ehi, WIN)
+            base_all = loud_curve(Ehi + Elo, WIN)
 
-    # ---- safety rider (overlapping cues, long tails): whole bus >= 4.5 dB under the sounding voice
+            def need(G, band):
+                w = head + (1 - head) * db(G)
+                if band == 'hi':
+                    l = loud_curve(Ehi + hi_ * w, WIN)
+                    lim = np.maximum(V - q.get('m_hi', M_HI), base_hi + 0.5)
+                else:
+                    l = loud_curve(Ehi + Elo + (hi_ * db(G_h_) + lo_) * w if False else Ehi + Elo + hi_ * wh_ + lo_ * w, WIN)
+                    lim = np.maximum(V - q.get('m_all', M_ALL), base_all + 0.5)
+                return np.all(l[m] <= lim[m] + 0.05)
+
+            def solve(band):
+                if need(0.0, band):
+                    return 0.0
+                lo_g, hi_g = -36.0, 0.0
+                for _ in range(8):
+                    mid = 0.5 * (lo_g + hi_g)
+                    if need(mid, band):
+                        lo_g = mid
+                    else:
+                        hi_g = mid
+                return lo_g
+            wh_ = head
+            G_h_ = solve('hi')
+            wh_ = head + (1 - head) * db(G_h_)
+            G_a_ = solve('all')
+        else:
+            G_h_ = G_a_ = 0.0
+        wa = head + (1 - head) * db(G_a_)
+        wh = (head + (1 - head) * db(G_h_)) * wa
+        q['prot'] = (G_h_, G_a_, bool(head.max() > 0 and head.min() < 1))
+        LO[:, i0_:i2_] += lo_ * wa
+        HI[:, i0_:i2_] += hi_ * wh
+    SFX = sosfilt(butter(2, 22, 'highpass', fs=SR, output='sos'), LO + HI)
     exempt = np.zeros(NS, bool)
     for q in cues:
         if 'm_all' in q:
             exempt[int(q['t'] * SR):int((q['t'] + 0.6) * SR)] = True
-    g_all = np.zeros(NS)
-    for it in range(4):
-        hi_b = SFX - sosfilt(sos_lo, SFX)
-        o1 = np.maximum(0.0, loud_curve(SFX, 0.4) - (vo_l4 - 4.6))
-        o1[exempt] = 0.0
-        o2 = np.maximum(0.0, loud_curve(hi_b, 0.4) - (vo_l4 - 6.6))
-        over = np.where(sounding, np.maximum(o1, o2), 0.0)
-        if over.max() < 0.05:
-            break
-        gg = smooth_gain(-np.minimum(over, 30.0), look=0.1, rel=0.4)
-        SFX = SFX * db(gg)
-        g_all += gg
 
     # ---- music ducking (8 dB under speech, 150 ms look-ahead attack, 400 ms release)
     duck = np.zeros(NS)
@@ -497,11 +534,12 @@ def main():
     print('silence %.3f-%.3f: max |x| = %.3g (%s) | first non-zero sample after: %.5f s'
           % (SIL0, SIL1, np.max(np.abs(sil)), 'DIGITAL ZERO' if np.max(np.abs(sil)) == 0 else 'NOT ZERO',
              (i1 + np.argmax(np.any(chk[:, i1:] != 0, axis=0))) / SR))
-    print('SFX safety rider: max %.1f dB, active (>0.5 dB) %.2f s; SFX bus peak %.1f dBFS pre-master'
-          % (-g_all.min(), np.sum(g_all < -0.5) / SR, 20 * np.log10(np.max(np.abs(SFX)) + 1e-12)))
+    print('SFX bus peak %.1f dBFS pre-master; cues %d, tucked under the voice: %d (tail-only: %d)'
+          % (20 * np.log10(np.max(np.abs(SFX)) + 1e-12), len(cues), sum(min(q['prot'][:2]) < -0.5 for q in cues),
+             sum(q['prot'][2] and min(q['prot'][:2]) < -0.5 for q in cues)))
     print('per-cue VO protection (speech-band / whole):  ' + '  '.join(
         '%.2f %s %.0f/%.0f' % (q['t'], q['nm'].replace('lib:', '')[:12], q['prot'][0], q['prot'][1])
-        for q in cues if min(q['prot']) < -0.5))
+        for q in cues if min(q['prot'][:2]) < -0.5))
     # per-phrase VO vs bed
     gm = db(g)
     VOf, BED = VO * gm * mask, (MU + SFX) * gm * mask
