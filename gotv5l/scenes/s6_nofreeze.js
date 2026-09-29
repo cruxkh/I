@@ -1,26 +1,21 @@
 // s6 NO FREEZING. PERIOD.  25.4 to 30.5  (climax)
 (() => {
-  const { clamp, lerp, inv, ease, hash, rng, TAU } = A, C = CL.C, W = 1080, H = 1920;
+  const { clamp, lerp, inv, ease, hash, rng, TAU } = A, C = CL.C, W = CL.W, H = CL.H, CX = W / 2, CY = H / 2;
   const SK = ['#FF3B30', '#FFD60A', '#1F4FFF', '#2BC48A', '#FF7AB8', '#FF8A1F', '#FFFDF6'];
 
   // ---------- helpers
   // region beyond an edge with torn jagged border. side: 'top' (y<pos), 'bottom' (y>pos), 'right' (x>pos)
   function region(ctx, side, pos, seed) {
-    const r = rng(seed * 17 + 5), pts = [], n = 44;
+    const r = rng(seed * 17 + 5), pts = [], n = 44, vert = side === 'right' || side === 'left';
     ctx.beginPath();
-    if (side === 'right') {
-      for (let i = 0; i <= n; i++) pts.push([pos + (r() - .5) * 36, -20 + (H + 40) * i / n]);
-      pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.lineTo(W + 60, H + 20); ctx.lineTo(W + 60, -20);
-    } else {
-      for (let i = 0; i <= n; i++) pts.push([-20 + (W + 40) * i / n, pos + (r() - .5) * 36]);
-      pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
-      if (side === 'top') { ctx.lineTo(W + 20, -60); ctx.lineTo(-20, -60); } else { ctx.lineTo(W + 20, H + 60); ctx.lineTo(-20, H + 60); }
-    }
+    for (let i = 0; i <= n; i++) pts.push(vert ? [pos + (r() - .5) * 36, -20 + (H + 40) * i / n] : [-20 + (W + 40) * i / n, pos + (r() - .5) * 36]);
+    pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+    if (side === 'right') { ctx.lineTo(W + 60, H + 20); ctx.lineTo(W + 60, -20); } else if (side === 'left') { ctx.lineTo(-60, H + 20); ctx.lineTo(-60, -20); }
+    else if (side === 'top') { ctx.lineTo(W + 20, -60); ctx.lineTo(-20, -60); } else { ctx.lineTo(W + 20, H + 60); ctx.lineTo(-20, H + 60); }
     ctx.closePath();
   }
   function wipe(ctx, side, pos, seed, fn) {
-    const m = side === 'bottom' ? -1 : 1, sh = side === 'right' ? [-1, 0] : [0, m * -1];
-    const at = (d) => pos + (side === 'right' ? -d : (side === 'top' ? d : -d));
+    const at = (d) => pos + (side === 'top' || side === 'left' ? d : -d);
     ctx.save();
     ctx.fillStyle = 'rgba(40,20,0,.28)'; region(ctx, side, at(30), seed + 1); ctx.fill();
     ctx.fillStyle = C.white; region(ctx, side, at(16), seed + 2); ctx.fill();
@@ -85,7 +80,7 @@
   // ---------- TV 1 (buffering)
   const tvc = document.createElement('canvas'); tvc.width = 1100; tvc.height = 820;
   const TVC = [550, 410];
-  function antenna(g, w, h, col = C.ink) { g.save(); g.strokeStyle = col; g.lineWidth = 12; g.lineCap = 'round'; g.fillStyle = col; [[-1, -.12], [1, .12]].forEach(([s]) => { g.beginPath(); g.moveTo(s * 20, -h / 2 + 6); g.lineTo(s * 130, -h / 2 - 120); g.stroke(); g.beginPath(); g.arc(s * 130, -h / 2 - 124, 12, 0, TAU); g.fill(); }); g.restore(); }
+  function antenna(g, w, h, col = C.ink, len = 120) { g.save(); g.strokeStyle = col; g.lineWidth = 12; g.lineCap = 'round'; g.fillStyle = col; [[-1, -.12], [1, .12]].forEach(([s]) => { g.beginPath(); g.moveTo(s * 20, -h / 2 + 6); g.lineTo(s * 130, -h / 2 - len); g.stroke(); g.beginPath(); g.arc(s * 130, -h / 2 - len - 4, 12, 0, TAU); g.fill(); }); g.restore(); }
   function wheel(g, cx, cy, R, ang) {
     for (let i = 0; i < 10; i++) {
       const a = ang + i / 10 * TAU, lead = (10 - i) / 10; g.save(); g.translate(cx + Math.cos(a) * R, cy + Math.sin(a) * R); g.rotate(a);
@@ -106,13 +101,13 @@
   }
   function tornLine(y0, y1, x0, x1, seed) { const r = rng(seed), pts = [], n = 16; for (let i = 0; i <= n; i++) { const k = i / n; pts.push([lerp(x0, x1, k) + (i % 2 ? 22 : -22) * (.5 + r()), lerp(y0, y1, k)]); } return pts; }
   function tv1(ctx, t) {
-    const p = CL.pop(t, 27.19, .3); if (p <= 0 && t < 27.19) return; const j = CL.j(t, 5, 2.5), cx = 540 + j[0], cy = 650 + j[1], rot = -.035 + j[2];
+    const p = CL.pop(t, 27.19, .3); if (p <= 0 && t < 27.19) return; const j = CL.j(t, 5, 2.5), cx = CX + j[0], cy = 450 + j[1], rot = -.035 + j[2];
     drawTV1(t, p); const ts = 27.8;
-    if (t < ts) { ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(p * 1.06, p * 1.06); ctx.drawImage(tvc, -TVC[0], -TVC[1]); ctx.restore(); return; }
+    if (t < ts) { ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(p * 1.15, p * 1.15); ctx.drawImage(tvc, -TVC[0], -TVC[1]); ctx.restore(); return; }
     const u = t - ts, line = tornLine(-30, 820, 640, 470, 4);
     [-1, 1].forEach(sd => {
       ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot);
-      const fall = u * u * 2600, sh = u * 260 * sd; ctx.translate(sh + sd * 6, fall); ctx.rotate(sd * (u * 1.8) * (1 + u));
+      const fall = u * u * 2600, sh = u * 260 * sd; ctx.translate((sh + sd * 6) * 1.6, fall); ctx.rotate(sd * (u * 1.8) * (1 + u));
       ctx.translate(-TVC[0], -TVC[1]);
       ctx.beginPath(); line.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]));
       if (sd < 0) { ctx.lineTo(-100, 820); ctx.lineTo(-100, -30); } else { ctx.lineTo(1300, 820); ctx.lineTo(1300, -30); } ctx.closePath();
@@ -122,7 +117,7 @@
   }
 
   // ---------- football TV
-  const FX = 540, FY = 790, FW = 1000, FH = 700;
+  const FX = CX, FY = 430, FW = 1300, FH = 700;
   function player(g, x, y, col, ph, face = 1, big = 1) {
     g.save(); g.translate(x, y); g.scale(big * face, big);
     g.fillStyle = 'rgba(0,0,0,.25)'; g.beginPath(); g.ellipse(4, 22, 28, 12, 0, 0, TAU); g.fill();
@@ -148,13 +143,13 @@
   }
   function game(c, sw, sh, t) {
     pitch(c, sw, sh, t);
-    const sp = clamp((t - 28.1) / .75), sx = lerp(130, 540, sp * (2 - sp) * .5 + sp * .5), sy = 300 + 40 * Math.sin((t - 28.1) * 4) * (1 - sp * .3), kick = 28.85, land = 29.25, run = t * 11;
+    const K = sw / 900, sp = clamp((t - 28.1) / .75), sx = lerp(130, 540, sp * (2 - sp) * .5 + sp * .5) * K, sy = 300 + 40 * Math.sin((t - 28.1) * 4) * (1 - sp * .3), kick = 28.85, land = 29.25, run = t * 11;
     // defenders + mates
-    player(c, 400 + 110 * Math.sin(t * 1.9), 190 + 45 * Math.sin(t * 2.6), C.blue, run, -1, 1.15); player(c, 470 + 90 * Math.sin(t * 1.4 + 1), 430 + 30 * Math.sin(t * 2.1), C.blue, run + 1, -1, 1.15);
-    player(c, 250 + 60 * Math.sin(t * 1.7), 440 + 35 * Math.sin(t * 2.2), C.yellow, run + 2, 1, 1.15); player(c, 620 + 80 * Math.sin(t * 1.2), 130 + 30 * Math.sin(t * 2.0), C.yellow, run + 3, 1, 1.15);
+    player(c, K * (400 + 110 * Math.sin(t * 1.9)), 190 + 45 * Math.sin(t * 2.6), C.blue, run, -1, 1.15); player(c, K * (470 + 90 * Math.sin(t * 1.4 + 1)), 430 + 30 * Math.sin(t * 2.1), C.blue, run + 1, -1, 1.15);
+    player(c, K * (250 + 60 * Math.sin(t * 1.7)), 440 + 35 * Math.sin(t * 2.2), C.yellow, run + 2, 1, 1.15); player(c, K * (620 + 80 * Math.sin(t * 1.2)), 130 + 30 * Math.sin(t * 2.0), C.yellow, run + 3, 1, 1.15);
     // goalkeeper dives at the last moment
     const dv = ease.out(clamp((t - 29.0) / .28)); player(c, sw - 96, 300 + 26 * Math.sin(t * 3.1) - dv * 100, C.orange, run * .5, -1, 1.2 + dv * .1);
-    const sxp = t < kick ? sx : sx + Math.min(60, (t - kick) * 120);
+    const sxp = t < kick ? sx : sx + Math.min(60, (t - kick) * 120) * K;
     player(c, sxp, sy, C.yellow, run + 5, 1, 1.35);
     let bx, by, br = 25, hgt = 0;
     if (t < kick) { bx = sx + 44 + 10 * Math.sin(t * 15); by = sy + 16; }
@@ -171,16 +166,16 @@
   function football(ctx, t) {
     const p = CL.pop(t, 28.08, .3); if (p <= 0) return; const j = CL.j(t, 9, 2), rot = .025 + j[2];
     const lift = ease.inOut(inv(29.55, 29.85, t));
-    ctx.save(); ctx.translate(FX + j[0], lerp(FY, 560, lift) + j[1]); ctx.rotate(rot * (1 - lift)); const sc = p * lerp(1, .62, lift); ctx.scale(sc, sc);
-    antenna(ctx, FW, FH, C.ink);
+    ctx.save(); ctx.translate(lerp(FX, 560, lift) + j[0], lerp(FY, 400, lift) + j[1]); ctx.rotate(rot * (1 - lift)); const sc = p * lerp(.96, .58, lift); ctx.scale(sc, sc);
+    antenna(ctx, FW, FH, C.ink, 60);
     CL.tv(ctx, 0, 0, FW, FH, { body: C.yellow, draw: (c, sw, sh) => game(c, sw, sh, t) });
     ctx.restore();
   }
   function crowd(ctx, t) {
-    const t0 = 29.25; if (t < t0) return; const sink = ease.in(inv(29.55, 29.75, t)) * 420;
-    for (let i = 0; i < 9; i++) {
-      const tt = t - t0 - i * .02; if (tt < 0) continue; const x = 60 + i * 120 + (i % 2) * 8, q = CL.q(t, 12), jump = Math.abs(Math.sin(q * 9 + i * 1.7)) * 50, rise = (1 - ease.out(clamp(tt / .16))) * 260;
-      const y = 1275 - jump + rise + sink, col = SK[(i * 2) % 6], arm = Math.sin(q * 11 + i) * .4;
+    const t0 = 29.25; if (t < t0) return; const sink = ease.in(inv(29.55, 29.75, t)) * 320;
+    for (let i = 0; i < 16; i++) {
+      const tt = t - t0 - i * .015; if (tt < 0) continue; const x = 60 + i * 120 + (i % 2) * 8, q = CL.q(t, 12), jump = Math.abs(Math.sin(q * 9 + i * 1.7)) * 50, rise = (1 - ease.out(clamp(tt / .16))) * 260;
+      const y = 815 - jump + rise + sink, col = SK[(i * 2) % 6], arm = Math.sin(q * 11 + i) * .4;
       ctx.save(); ctx.translate(x, y); ctx.rotate((hash(i + 3) - .5) * .2 + arm * .1);
       ctx.strokeStyle = C.ink; ctx.lineWidth = 16; ctx.lineCap = 'round'; [[-1, 1], [1, -1]].forEach(([s]) => { ctx.beginPath(); ctx.moveTo(s * 34, 6); ctx.lineTo(s * (56 + arm * 30), -96 - arm * 20); ctx.stroke(); ctx.fillStyle = '#F2B48C'; ctx.beginPath(); ctx.arc(s * (56 + arm * 30), -104 - arm * 20, 15, 0, TAU); ctx.fill(); ctx.lineWidth = 5; ctx.stroke(); ctx.lineWidth = 16; });
       CL.scrap(ctx, 0, 40, 104, 120, { fill: col, seed: i + 1, shadow: 8, rough: 4 });
@@ -208,53 +203,53 @@
   }
   function pressBeat(ctx, t) {
     const t0 = 29.6; if (t < t0) return; const bp = CL.pop(t, t0, .3), j = CL.j(t, 12, 3);
-    ctx.save(); ctx.translate(540 + j[0], 1230 + j[1]); ctx.scale(bp, bp); ctx.rotate(-.03);
+    ctx.save(); ctx.translate(1420 + j[0], 720 + j[1]); ctx.scale(bp, bp); ctx.rotate(-.03);
     CL.blob(ctx, 0, 0, 640, 230, { fill: C.red, lw: 10 }); ctx.font = '900 110px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = C.ink; ctx.beginPath(); ctx.moveTo(-40, -56); ctx.lineTo(60, 0); ctx.lineTo(-40, 56); ctx.closePath(); ctx.fillStyle = C.white; ctx.fill(); ctx.lineWidth = 8; ctx.stroke();
     ctx.restore();
-    const u = inv(29.66, 30.3, t), fy = lerp(-520, 1010, ease.inOut(u)) - Math.sin(u * Math.PI) * 0; const jj = CL.j(t, 3, 2);
-    if (t > 29.66) finger(ctx, 555 + jj[0], fy + jj[1], .03);
+    const u = inv(29.66, 30.3, t), fy = lerp(-560, 500, ease.inOut(u)) - Math.sin(u * Math.PI) * 0; const jj = CL.j(t, 3, 2);
+    if (t > 29.66) finger(ctx, 1440 + jj[0], fy + jj[1], .03);
   }
 
   A.scene({ name: 's6_nofreeze', start: 25.4, end: 30.5, draw: (ctx, s) => {
     if (CL.noCap && !CL.noCap.some(q => q[0] === 25.6)) CL.noCap.push([25.6, 27.3]);   // main.js resets CL.noCap after scenes load, so register lazily
     const t = s.t; let sx = 0, sy = 0;
     [[25.64, .45, 22], [25.82, .5, 30], [26.52, .7, 40], [29.25, .6, 24]].forEach(([a, d, m]) => { const k = CL.shake(t, a, d, m); sx += k[0]; sy += k[1]; });
-    ctx.translate(540 + sx, 960 + sy); ctx.scale(1.035, 1.035); ctx.translate(-540, -960);
+    ctx.translate(CX + sx, CY + sy); ctx.scale(1.035, 1.035); ctx.translate(-CX, -CY);
 
     const partA = () => {
       const flash = t >= 26.52;
       if (!flash) { CL.paper(ctx, 'cream'); }
       else { CL.paper(ctx, 'yellow'); if (t < 26.6) { ctx.fillStyle = 'rgba(255,250,200,.85)'; ctx.fillRect(-50, -50, W + 100, H + 100); } }
       // halftone bursts
-      [[25.64, 540, 520, C.red, .28], [25.82, 540, 980, C.red, .3]].forEach(([a, x, y, col, al]) => { const u = t - a; if (u >= 0 && !flash) CL.halftone(ctx, x - 1000, y - 1000, 2000, 2000, col, 34 + Math.min(u, 1) * 12, .5, { fade: 'radial', alpha: al * (u < .6 ? 1 : .8) }); });
-      if (flash) { const u = t - 26.52; CL.halftone(ctx, 540 - 1100, 1380 - 1100, 2200, 2200, C.orange, 36 + Math.min(u, 1) * 16, .5, { fade: 'radial', alpha: .5 }); CL.halftone(ctx, 540 - 900, 520 - 900, 1800, 1800, C.red, 40, .5, { fade: 'radial', alpha: .16 }); }
-      const S1 = stampLayer('אין', 430, 800, C.red, 11), S2 = stampLayer('תקיעות', 300, 960, C.red, 23);
+      [[25.64, 1520, 400, C.red, .28], [25.82, 580, 400, C.red, .3]].forEach(([a, x, y, col, al]) => { const u = t - a; if (u >= 0 && !flash) CL.halftone(ctx, x - 1000, y - 1000, 2000, 2000, col, 34 + Math.min(u, 1) * 12, .5, { fade: 'radial', alpha: al * (u < .6 ? 1 : .8) }); });
+      if (flash) { const u = t - 26.52; CL.halftone(ctx, CX - 1300, 880 - 1300, 2600, 2600, C.orange, 36 + Math.min(u, 1) * 16, .5, { fade: 'radial', alpha: .5 }); CL.halftone(ctx, CX - 1100, 400 - 1100, 2200, 2200, C.red, 40, .5, { fade: 'radial', alpha: .16 }); }
+      const S1 = stampLayer('אין', 380, 600, C.red, 11), S2 = stampLayer('תקיעות', 330, 1020, C.red, 23);
       // CUE 25.64 stamp
-      slam(ctx, t, 25.64, 540, 470, S1, -.07);
+      slam(ctx, t, 25.64, 1520, 400, S1, -.07);
       // CUE 25.82 stamp2
-      slam(ctx, t, 25.82, 540, 900, S2, .04);
-      bits(ctx, t, 25.64, 540, 470, 26, 1, { sp: 1100, g: 1300 }); bits(ctx, t, 25.82, 540, 900, 26, 40, { sp: 1100, g: 1300 });
+      slam(ctx, t, 25.82, 580, 400, S2, .04);
+      bits(ctx, t, 25.64, 1520, 400, 26, 1, { sp: 1300, g: 1300 }); bits(ctx, t, 25.82, 580, 400, 26, 40, { sp: 1300, g: 1300 });
       // CUE 26.52 period dot + yellow flash
-      dot(ctx, t, 26.52, 540, 1390, 190); bits(ctx, t, 26.52, 540, 1390, 30, 90, { sp: 1300, g: 900, cols: [C.ink, C.red, C.white, C.blue, C.orange] });
+      dot(ctx, t, 26.52, CX, 880, 150); bits(ctx, t, 26.52, CX, 880, 30, 90, { sp: 1300, g: 900, cols: [C.ink, C.red, C.white, C.blue, C.orange] });
     };
     const partB1 = () => {
       CL.paper(ctx, 'cream'); CL.halftone(ctx, 0, 0, W, H, C.blue, 34, .5, { alpha: .14, fade: 't' });
       tv1(ctx, t);
-      bits(ctx, t, 27.8, 540, 700, 22, 300, { sp: 800, g: 1500, cols: [C.cream, C.red, C.kraft, C.white] });
+      bits(ctx, t, 27.8, CX, 450, 26, 300, { sp: 800, g: 1500, cols: [C.cream, C.red, C.kraft, C.white] });
     };
     const partB2 = () => {
       CL.paper(ctx, 'blue'); CL.halftone(ctx, 0, 0, W, H, C.yellow, 36, .5, { alpha: .18, fade: 'b' });
-      if (t >= 29.25) { const u = t - 29.25; CL.halftone(ctx, 540 - 1000, 780 - 1000, 2000, 2000, C.yellow, 30 + Math.min(u, 1) * 20, .5, { fade: 'radial', alpha: .5 }); }
-      if (t < 29.25) { const tg = CL.pop(t, 28.2, .3); if (tg > 0) { ctx.save(); ctx.translate(210, 250); ctx.rotate(-.08); ctx.scale(tg, tg); CL.chip(ctx, 'LIVE', 0, 0, { size: 110, dir: 'ltr', fill: C.red, ink: C.white, seed: 4 }); ctx.restore(); } }
+      if (t >= 29.25) { const u = t - 29.25; CL.halftone(ctx, CX - 1300, 430 - 1300, 2600, 2600, C.yellow, 30 + Math.min(u, 1) * 20, .5, { fade: 'radial', alpha: .5 }); }
+      if (t < 29.25) { const tg = CL.pop(t, 28.2, .3); if (tg > 0) { ctx.save(); ctx.translate(230, 190); ctx.rotate(-.08); ctx.scale(tg, tg); CL.chip(ctx, 'LIVE', 0, 0, { size: 110, dir: 'ltr', fill: C.red, ink: C.white, seed: 4 }); ctx.restore(); } }
       football(ctx, t); crowd(ctx, t);
       // CUE 29.25 goal
-      if (t >= 29.25 && t < 29.75) { const p = CL.pop(t, 29.27, .3); ctx.save(); ctx.translate(540, 240); ctx.rotate(-.06); ctx.scale(p, p); CL.title(ctx, 'גוווול!', 0, 0, { size: 230, fill: C.red }); ctx.restore(); }
-      bits(ctx, t, 29.25, 915, 780, 34, 500, { sp: 1500, g: 1000 }); bits(ctx, t, 29.27, 540, 1200, 30, 700, { a0: -3.5, spread: 3.8, sp: 1200, g: 1200 });
+      if (t >= 29.25 && t < 29.75) { const p = CL.pop(t, 29.27, .3); ctx.save(); ctx.translate(CX, 95); ctx.rotate(-.04); ctx.scale(p, p); CL.title(ctx, 'גוווול!', 0, 0, { size: 190, fill: C.red }); ctx.restore(); }
+      bits(ctx, t, 29.25, 1460, 440, 34, 500, { sp: 1500, g: 1000 }); bits(ctx, t, 29.27, CX, 800, 36, 700, { a0: -3.5, spread: 3.8, sp: 1500, g: 1200 });
       pressBeat(ctx, t);
     };
-    if (t < 25.62) { wipe(ctx, 'top', lerp(-60, 2000, ease.out(inv(25.4, 25.6, t))), 3, () => CL.paper(ctx, 'cream')); }
-    else if (t < 27.32) { partA(); if (t >= 27.12) wipe(ctx, 'bottom', lerp(2000, -80, ease.inOut(inv(27.12, 27.3, t))), 6, partB1); }
-    else if (t < 28.22) { partB1(); if (t >= 28.0) wipe(ctx, 'right', lerp(1200, -80, ease.inOut(inv(28.0, 28.2, t))), 8, partB2); }
+    if (t < 25.62) { wipe(ctx, 'left', lerp(-60, W + 100, ease.out(inv(25.4, 25.6, t))), 3, () => CL.paper(ctx, 'cream')); }
+    else if (t < 27.32) { partA(); if (t >= 27.12) wipe(ctx, 'right', lerp(W + 100, -80, ease.inOut(inv(27.12, 27.3, t))), 6, partB1); }
+    else if (t < 28.22) { partB1(); if (t >= 28.0) wipe(ctx, 'bottom', lerp(H + 100, -80, ease.inOut(inv(28.0, 28.2, t))), 8, partB2); }
     else partB2();
   } });
 })();

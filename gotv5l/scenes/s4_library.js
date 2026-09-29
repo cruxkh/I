@@ -136,7 +136,7 @@
     const tOpen = 19.54; if (t < 18.8) return;
     const bt = clamp((t - 18.95) / (tOpen - 18.95)), jt = CL.j(t, 98, t < tOpen ? 3 + bt * 12 : 0, 24);
     let x = BX + jt[0], y = BY - 140 - 40 + jt[1], rot = 0, sc = t < 18.95 ? CL.pop(t, 18.8, .3) : 1;
-    if (t >= tOpen) { const u = S(t - tOpen, 12), a = Math.min(u, 1.2); x = BX - 40 - a * 300 + u * 40; y = BY - 180 - Math.sin(clamp(u / .8) * Math.PI) * 500 * .55 - a * 420 + a * a * 180 * 1.4; rot = -u * 4.5; sc = 1; if (t > tOpen + 1) return; }
+    if (t >= tOpen) { const u = S(t - tOpen, 12), a = Math.min(u, 1.2); x = BX - 40 - a * 300 + u * 40; y = BY - 180 - Math.sin(clamp(u / .8) * Math.PI) * 500 * .55 - a * 420 + a * a * 180 * 1.4; rot = -u * 4.5; sc = 1; if (t > tOpen + .55) return; }
     else if (t >= tOpen - .12) { y -= 8; }
     ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sc, sc);
     ctx.fillStyle = 'rgba(40,20,0,.3)'; ctx.fillRect(-235 + 12, -45 + 16, 470, 90);
@@ -223,7 +223,7 @@
       if (sg > 0) CL.chip(ctx, 'הספרייה', 960, 92, { size: 92, rot: -.03, scale: sg, seed: 12, fill: C.yellow });
       drawBox(ctx, t); drawLid(ctx, t); drawBurst(ctx, t);
       // giant חדש stamp CUE 19.77
-      if (t >= 19.77 - .03) { const u = t - (19.77 - .03), sc = [2.6, 1.4, 1.0, 1.1, 1][Math.min(4, Math.floor(u * 24))]; const sh = CL.shake(t, 19.77, .4, 16); ctx.save(); ctx.translate(300 + sh[0], 210 + sh[1]); ctx.rotate(-.07); ctx.scale(sc, sc); CL.title(ctx, 'חדש!', 0, 0, { size: 210, fill: C.red, rot: 0 }); ctx.restore(); }
+      if (t >= 19.77 - .03) { const u = t - (19.77 - .03), sc = [2.6, 1.4, 1.0, 1.1, 1][Math.min(4, Math.floor(u * 24))]; const sh = CL.shake(t, 19.77, .4, 16); ctx.save(); ctx.translate(430 + sh[0], 230 + sh[1]); ctx.rotate(-.07); ctx.scale(sc, sc); CL.title(ctx, 'חדש!', 0, 0, { size: 210, fill: C.red, rot: 0 }); ctx.restore(); }
       drawEye(ctx, t);
     }
     ctx.restore();

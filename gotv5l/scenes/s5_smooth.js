@@ -1,6 +1,6 @@
 // s5_smooth: LIVE + FAST + SMOOTH, then suspense and the held breath before the stamp. Window 20.5 to 25.9
 (() => {
-  const { clamp, lerp, inv, ease, hash } = A, C = CL.C, W = 1080, H = 1920, TAU = Math.PI * 2;
+  const { clamp, lerp, inv, ease, hash } = A, C = CL.C, W = 1920, H = 1080, TAU = Math.PI * 2;
   const P = (t, t0, d = .3) => CL.pop(t, t0, d);
   const step = (t, fps = 24) => CL.q(t, fps);
 
@@ -9,9 +9,9 @@
     const p = inv(t0, t1, t);
     if (p >= 1) return fn();
     if (p <= 0) return;
-    const e0 = ease.inOut(Math.floor(p * 8) / 8 + .125 * (p > 0 ? 1 : 0)), L = dir === 'b' ? H : W, span = (dir === 'b' ? H : W) + 120, pts = [];
+    const e0 = ease.inOut(Math.floor(p * 8) / 8 + .125 * (p > 0 ? 1 : 0)), span = (dir === 'b' ? H : W) + 120, pts = [];
     const e = dir === 'l' ? W + 60 - span * e0 : dir === 'r' ? -60 + span * e0 : H + 60 - span * e0;
-    const n = dir === 'b' ? 30 : 48, len = dir === 'b' ? W : H;
+    const n = dir === 'b' ? 40 : 30, len = dir === 'b' ? W : H;
     for (let i = 0; i <= n; i++) { const o = len * i / n, j = (hash(i * 3.3 + 1) - .5) * 44; pts.push(dir === 'b' ? [o, e + j] : [e + j, o]); }
     const far = dir === 'l' ? W + 200 : dir === 'r' ? -200 : H + 200;
     const path = () => { ctx.beginPath(); if (dir === 'b') { ctx.moveTo(-100, far); pts.forEach(q => ctx.lineTo(q[0], q[1])); ctx.lineTo(W + 100, far); } else { ctx.moveTo(far, -100); pts.forEach(q => ctx.lineTo(q[0], q[1])); ctx.lineTo(far, H + 100); } ctx.closePath(); };
@@ -54,13 +54,13 @@
 
   // ---------- phase 1: LIVE
   function phase1(ctx, t) {
-    CL.paper(ctx, 'kraft', { dots: C.yellow, dotSize: 40, dotFade: 'radial', dotAlpha: .3 });
-    let k = P(t, 20.68); if (k) CL.chip(ctx, 'יש לכם גם', 540, 210, { size: 84, rot: -.05, seed: 3, scale: k });
-    k = P(t, 21.08); if (k) CL.chip(ctx, 'שידורים', 690, 370, { size: 130, rot: .04, seed: 5, fill: C.yellow, scale: k });
-    k = P(t, 21.49); if (k) CL.chip(ctx, 'חיים', 275, 385, { size: 130, rot: -.06, seed: 8, fill: C.white, scale: k });
+    CL.paper(ctx, 'kraft', { dots: C.yellow, dotSize: 44, dotFade: 'radial', dotAlpha: .3 });
+    let k = P(t, 20.68); if (k) CL.chip(ctx, 'יש לכם גם', 1200, 120, { size: 84, rot: -.05, seed: 3, scale: k });
+    k = P(t, 21.08); if (k) CL.chip(ctx, 'שידורים', 1240, 270, { size: 130, rot: .04, seed: 5, fill: C.yellow, scale: k });
+    k = P(t, 21.49); if (k) CL.chip(ctx, 'חיים', 1100, 425, { size: 130, rot: -.06, seed: 8, fill: C.white, scale: k });
     // TV with a live match
     k = P(t, 20.85); const jb = CL.j(t, 2, 2);
-    if (k) CL.tv(ctx, 540 + jb[0], 1010 + jb[1], 860, 620, { rot: -.025, scale: k, chin: 0, draw: (g, w, h) => {
+    if (k) CL.tv(ctx, 520 + jb[0], 470 + jb[1], 900, 600, { rot: -.025, scale: k, chin: 0, draw: (g, w, h) => {
       g.fillStyle = '#2BA85E'; g.fillRect(0, 0, w, h); for (let i = 0; i < 6; i++) { g.fillStyle = i % 2 ? 'rgba(0,0,0,.09)' : 'rgba(255,255,255,.05)'; g.fillRect(i * w / 6, 0, w / 6, h); }
       g.strokeStyle = C.white; g.lineWidth = 6; g.strokeRect(24, 24, w - 48, h - 92); g.beginPath(); g.moveTo(w / 2, 24); g.lineTo(w / 2, h - 68); g.stroke(); g.beginPath(); g.arc(w / 2, (h - 44) / 2, 70, 0, TAU); g.stroke();
       g.strokeRect(24, h * .3, 110, h * .28); g.strokeRect(w - 134, h * .3, 110, h * .28);
@@ -71,30 +71,30 @@
     } });
     // LIVE tag
     k = P(t, 21.49); if (k) { const blink = Math.floor(t * 2.4) % 2, jj = CL.j(t, 9, 2), r = -.07;
-      CL.blob(ctx, 540 + jj[0], 660 + jj[1], 520, 190, { fill: C.red, rot: r, lw: 10 }); ctx.save(); ctx.translate(540 + jj[0], 660 + jj[1]); ctx.rotate(r); ctx.scale(k, k);
+      CL.blob(ctx, 1230 + jj[0], 640 + jj[1], 520, 190, { fill: C.red, rot: r, lw: 10 }); ctx.save(); ctx.translate(1230 + jj[0], 640 + jj[1]); ctx.rotate(r); ctx.scale(k, k);
       ctx.fillStyle = blink ? C.white : C.yellow; ctx.beginPath(); ctx.arc(-170, 0, 34, 0, TAU); ctx.fill(); ctx.lineWidth = 7; ctx.strokeStyle = C.ink; ctx.stroke();
       ctx.font = '900 140px Bangers, Rubik'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.fillStyle = C.white; ctx.strokeStyle = C.ink; ctx.lineWidth = 12; ctx.lineJoin = 'round'; ctx.strokeText('LIVE', -110, 6); ctx.fillText('LIVE', -110, 6); ctx.restore();
-      CL.underline(ctx, 240, 840, 800, inv(21.6, 21.85, t), { color: C.ink, seed: 4, lw: 12 }); }
+      CL.underline(ctx, 960, 1500, 780, inv(21.6, 21.85, t), { color: C.ink, seed: 4, lw: 12 }); }
     // paper airplane flying through
     const ap = inv(21.72, 22.16, t);
-    if (ap > 0 && ap < 1) { const q = Math.floor(ap * 9) / 9, x = lerp(-200, 1300, q * q * .4 + q * .6), y = lerp(1500, 60, q) + Math.sin(q * 5) * 120;
-      ctx.save(); ctx.setLineDash([26, 26]); ctx.strokeStyle = C.ink; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.beginPath(); for (let i = 0; i <= 9; i++) { const u = Math.min(i / 9, q); const xx = lerp(-200, 1300, u * u * .4 + u * .6), yy = lerp(1500, 60, u) + Math.sin(u * 5) * 120; i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); } ctx.stroke(); ctx.restore();
+    if (ap > 0 && ap < 1) { const q = Math.floor(ap * 9) / 9, x = lerp(-200, 2100, q * q * .4 + q * .6), y = lerp(1000, 60, q) + Math.sin(q * 5) * 90;
+      ctx.save(); ctx.setLineDash([26, 26]); ctx.strokeStyle = C.ink; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.beginPath(); for (let i = 0; i <= 9; i++) { const u = Math.min(i / 9, q); const xx = lerp(-200, 2100, u * u * .4 + u * .6), yy = lerp(1000, 60, u) + Math.sin(u * 5) * 90; i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); } ctx.stroke(); ctx.restore();
       airplane(ctx, x, y, -.9 + Math.cos(q * 5) * .25, 1.5); }
   }
 
   // ---------- phase 2: FAST
   function phase2(ctx, t) {
-    CL.paper(ctx, 'yellow', { dots: C.blue, dotSize: 34, dotFade: 'b', dotAlpha: .22 });
-    let k = P(t, 22.22); if (k) CL.chip(ctx, 'חוויית צפייה', 540, 210, { size: 100, rot: .03, seed: 11, scale: k });
+    CL.paper(ctx, 'yellow', { dots: C.blue, dotSize: 38, dotFade: 'b', dotAlpha: .22 });
+    let k = P(t, 22.22); if (k) CL.chip(ctx, 'חוויית צפייה', 1320, 190, { size: 110, rot: .03, seed: 11, scale: k });
     // speedometer
-    const cx = 540, cy = 780, R = 360; k = P(t, 22.3);
+    const cx = 560, cy = 450, R = 320; k = P(t, 22.3);
     if (k) { const jj = CL.j(t, 3, 2), sh = CL.shake(t, 22.72, .6, 12);
       ctx.save(); ctx.translate(cx + jj[0] + sh[0], cy + jj[1] + sh[1]); ctx.scale(k, k); ctx.rotate(-.03);
       ctx.fillStyle = 'rgba(40,20,0,.3)'; ctx.beginPath(); ctx.arc(14, 20, R + 20, 0, TAU); ctx.fill(); ctx.fillStyle = C.white; ctx.beginPath(); ctx.arc(0, 0, R + 24, 0, TAU); ctx.fill(); ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(0, 0, R + 4, 0, TAU); ctx.fill(); ctx.fillStyle = C.cream; ctx.beginPath(); ctx.arc(0, 0, R - 18, 0, TAU); ctx.fill();
       const a0 = Math.PI * .8, a1 = Math.PI * 2.2, cols = [C.green, C.yellow, C.orange, C.red];
       for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.arc(0, 0, R - 70, lerp(a0, a1, i / 4) + .01, lerp(a0, a1, (i + 1) / 4) - .01); ctx.lineWidth = 60; ctx.lineCap = 'butt'; ctx.strokeStyle = cols[i]; ctx.stroke(); }
       ctx.strokeStyle = C.ink; ctx.lineWidth = 8; ctx.lineCap = 'round'; for (let i = 0; i <= 14; i++) { const a = lerp(a0, a1, i / 14), r0 = R - 118, r1 = R - (i % 2 ? 140 : 160); ctx.beginPath(); ctx.moveTo(Math.cos(a) * r0, Math.sin(a) * r0); ctx.lineTo(Math.cos(a) * r1, Math.sin(a) * r1); ctx.stroke(); }
-      ctx.font = '900 64px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = C.ink; ctx.direction = 'ltr'; ctx.fillText('0', Math.cos(a0) * (R - 200), Math.sin(a0) * (R - 200)); ctx.fillText('MAX', 0, 150);
+      ctx.font = '900 64px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = C.ink; ctx.direction = 'ltr'; ctx.fillText('0', Math.cos(a0) * (R - 200), Math.sin(a0) * (R - 200)); ctx.fillText('MAX', 0, 130);
       // needle: idle shiver, then whips to max on 'מהירה'
       const tq = step(t, 24), w = inv(22.72, 22.9, tq); let v = tq < 22.72 ? .04 + .02 * Math.sin(tq * 40) * inv(22.3, 22.7, tq) + .1 * inv(22.4, 22.72, tq) : lerp(.14, 1.0, ease.outBack(w) > 1 ? 1 + (ease.outBack(w) - 1) * .5 : ease.outBack(w));
       if (tq > 22.95) v = 1 + Math.sin(tq * 90) * .012; const an = lerp(a0, a1, clamp(v, 0, 1.04));
@@ -104,13 +104,13 @@
       if (t > 22.72 && t < 23.2) CL.sparks(ctx, cx + Math.cos(lerp(a0, a1, 1)) * 250, cy + Math.sin(a1) * 250, 60, 150, 9, t, { color: C.ink, lw: 10 });
     }
     // checkered ribbon
-    k = P(t, 22.4); if (k) { ctx.save(); ctx.translate(540, 1215); ctx.rotate(-.045); ctx.scale(k, 1); ctx.translate(-540, -1215); chequer(ctx, -30, 1110, 1215, 90, Math.floor(t * 12) * 18); ctx.restore(); }
+    k = P(t, 22.4); if (k) { ctx.save(); ctx.translate(960, 850); ctx.rotate(-.02); ctx.scale(k, 1); ctx.translate(-960, -850); chequer(ctx, -30, 1950, 850, 80, Math.floor(t * 12) * 18); ctx.restore(); }
     // MEHIRA
-    k = P(t, 22.72); if (k) CL.title(ctx, 'מהירה', 540, 1030, { size: 230, fill: C.red, rot: -.05, scale: k });
+    k = P(t, 22.72); if (k) CL.title(ctx, 'מהירה', 1320, 520, { size: 280, fill: C.red, rot: -.05, scale: k });
     // rocket zoom
     const rp = inv(22.66, 23.06, t);
-    if (rp > 0 && rp < 1) { const q = Math.floor(rp * 10) / 10, x = lerp(-380, 1500, q), y = lerp(430, 330, q);
-      for (let i = 1; i < 6; i++) { const u = q - i * .09; if (u > 0) cloud(ctx, lerp(-380, 1500, u), lerp(430, 330, u) + Math.sin(i * 2) * 20, 46 - i * 3); }
+    if (rp > 0 && rp < 1) { const q = Math.floor(rp * 10) / 10, x = lerp(-380, 2400, q), y = lerp(330, 200, q);
+      for (let i = 1; i < 6; i++) { const u = q - i * .09; if (u > 0) cloud(ctx, lerp(-380, 2400, u), lerp(330, 200, u) + Math.sin(i * 2) * 20, 46 - i * 3); }
       rocket(ctx, x, y, -.04, 1.4, t); }
   }
 
@@ -118,21 +118,21 @@
   const wave = (x, t, i) => Math.sin(x * .006 + t * (1.1 + i * .25) + i * 1.7) * (34 - i * 4) + Math.sin(x * .0023 - t * .7 + i) * 26;
   function phase3(ctx, t) {
     CL.paper(ctx, 'cream', { dots: C.blue, dotSize: 40, dotFade: 't', dotAlpha: .16 });
-    let k = P(t, 23.14); if (k) CL.title(ctx, 'חלקה', 540, 330, { size: 260, fill: C.blue, rot: .04, scale: k, outer: C.white });
-    const u = inv(23.3, 23.6, t); if (u > 0) CL.underline(ctx, 170, 910, 505, u, { color: C.red, seed: 6, lw: 14 });
+    let k = P(t, 23.14); if (k) CL.title(ctx, 'חלקה', 1300, 290, { size: 320, fill: C.blue, rot: .04, scale: k, outer: C.white });
+    const u = inv(23.3, 23.6, t); if (u > 0) CL.underline(ctx, 980, 1620, 450, u, { color: C.red, seed: 6, lw: 14 });
     // silky ribbon
     const ru = ease.out(inv(23.14, 23.6, t));
-    if (ru > 0) { ctx.save(); ctx.lineCap = 'round'; const n = 60; for (const pass of [[0, C.ink, 62, 12], [0, C.yellow, 44, 0], [-8, '#FFF08A', 14, 0]]) { ctx.beginPath(); for (let i = 0; i <= n * ru; i++) { const x = -40 + i / n * 1160; const y = 640 + Math.sin(x * .0075 + t * 2) * 60 + Math.sin(x * .003 - t) * 40 + pass[0]; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.strokeStyle = pass[1]; ctx.lineWidth = pass[2]; ctx.stroke(); } ctx.restore(); }
+    if (ru > 0) { ctx.save(); ctx.lineCap = 'round'; const n = 60; for (const pass of [[0, C.ink, 62, 12], [0, C.yellow, 44, 0], [-8, '#FFF08A', 14, 0]]) { ctx.beginPath(); for (let i = 0; i <= n * ru; i++) { const x = -40 + i / n * 2000; const y = 110 + Math.sin(x * .005 + t * 2) * 40 + Math.sin(x * .002 - t) * 30 + pass[0]; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.strokeStyle = pass[1]; ctx.lineWidth = pass[2]; ctx.stroke(); } ctx.restore(); }
     // river bands
     const rk = ease.out(inv(23.16, 23.5, t)), cols = ['#5D86FF', '#3A63F0', C.blue, '#1636C8', '#0F2A9C'];
-    for (let i = 0; i < 5; i++) { const y0 = lerp(H, 830 + i * 120, rk); ctx.save(); ctx.fillStyle = 'rgba(0,20,80,.25)'; ctx.beginPath(); ctx.moveTo(-10, H); for (let x = -10; x <= W + 10; x += 20) ctx.lineTo(x, y0 + wave(x, t, i) + 12); ctx.lineTo(W + 10, H); ctx.fill();
+    for (let i = 0; i < 5; i++) { const y0 = lerp(H, 560 + i * 90, rk); ctx.save(); ctx.fillStyle = 'rgba(0,20,80,.25)'; ctx.beginPath(); ctx.moveTo(-10, H); for (let x = -10; x <= W + 10; x += 20) ctx.lineTo(x, y0 + wave(x, t, i) + 12); ctx.lineTo(W + 10, H); ctx.fill();
       ctx.fillStyle = cols[i]; ctx.beginPath(); ctx.moveTo(-10, H); for (let x = -10; x <= W + 10; x += 20) ctx.lineTo(x, y0 + wave(x, t, i)); ctx.lineTo(W + 10, H); ctx.fill();
       ctx.strokeStyle = i === 0 ? C.ink : 'rgba(255,255,255,.55)'; ctx.lineWidth = i === 0 ? 8 : 5; ctx.beginPath(); for (let x = -10; x <= W + 10; x += 20) x < -5 ? ctx.moveTo(x, y0 + wave(x, t, i)) : ctx.lineTo(x, y0 + wave(x, t, i)); ctx.stroke(); ctx.restore(); }
     // boat gliding
-    const bx = lerp(-160, 1240, inv(23.2, 24.1, t)), by = 830 + wave(bx, t, 0) - 6, sl = (wave(bx + 10, t, 0) - wave(bx - 10, t, 0)) / 20;
+    const bx = lerp(-160, 2080, inv(23.2, 24.1, t)), by = 560 + wave(bx, t, 0) - 6, sl = (wave(bx + 10, t, 0) - wave(bx - 10, t, 0)) / 20;
     if (rk > .8) boat(ctx, bx, by, Math.atan(sl) * .9, 1.2);
     // progress bar with play head that never stops
-    k = P(t, 23.3, .35); if (k) { const y = 1250, x0 = 130, x1 = 950, ph = inv(23.3, 24.0, t); ctx.save(); ctx.translate(540, y); ctx.scale(k, k); ctx.translate(-540, -y);
+    k = P(t, 23.3, .35); if (k) { const y = 810, x0 = 300, x1 = 1500, ph = inv(23.3, 24.0, t); ctx.save(); ctx.translate(900, y); ctx.scale(k, k); ctx.translate(-900, -y);
       ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.roundRect(x0 + 8, y - 24 + 12, x1 - x0, 48, 24); ctx.fill(); ctx.fillStyle = C.white; ctx.beginPath(); ctx.roundRect(x0, y - 24, x1 - x0, 48, 24); ctx.fill(); ctx.lineWidth = 8; ctx.strokeStyle = C.ink; ctx.stroke();
       const px = lerp(x0 + 20, x1 - 20, ph); ctx.fillStyle = C.red; ctx.beginPath(); ctx.roundRect(x0 + 6, y - 18, px - x0, 36, 18); ctx.fill();
       ctx.fillStyle = C.yellow; ctx.beginPath(); ctx.arc(px, y, 46, 0, TAU); ctx.fill(); ctx.lineWidth = 8; ctx.stroke(); ctx.fillStyle = C.ink; ctx.beginPath(); ctx.moveTo(px - 12, y - 20); ctx.lineTo(px + 22, y); ctx.lineTo(px - 12, y + 20); ctx.fill(); ctx.restore(); }
@@ -142,51 +142,51 @@
   function inkBg(ctx, t) {
     CL.paper(ctx, 'ink');
     // spotlight made of halftone dots (no gradient)
-    const g = ease.out(inv(24.01, 25.1, t)); CL.halftone(ctx, 90, 250, 900, 1000, C.yellow, 36, .5, { alpha: .22 * (0.4 + g * .6), fade: 'radial' });
+    const g = ease.out(inv(24.01, 25.1, t)); CL.halftone(ctx, 360, 40, 1200, 800, C.yellow, 36, .5, { alpha: .22 * (0.4 + g * .6), fade: 'radial' });
   }
   function question(ctx, t) {
     // '?' grows, drumroll shake
-    const g = inv(24.01, 25.2, t), q = Math.floor(g * 14) / 14, size = lerp(120, 980, ease.in(q) * .55 + q * .45), tq = step(t, 24), amp = lerp(1, 16, g * g);
+    const g = inv(24.01, 25.2, t), q = Math.floor(g * 14) / 14, size = lerp(100, 800, ease.in(q) * .55 + q * .45), tq = step(t, 24), amp = lerp(1, 16, g * g);
     if (t < 24.01 || t >= 25.2) return;
     // marker circles building tension (on 'הדבר' 'שאנחנו' 'הכי' 'גאים')
-    const rings = [[24.01, 300], [24.27, 370], [24.56, 440], [24.82, 510]];
-    rings.forEach(([t0, r], i) => { const p = inv(t0, t0 + .16, t); if (p > 0) { const jj = CL.j(t, 20 + i, 4); CL.circle(ctx, 540 + jj[0], 760 + jj[1], r * 1.0, r * 1.12, p, { color: i % 2 ? C.yellow : C.red, lw: 14, seed: 3 + i }); } });
+    const rings = [[24.01, 200], [24.27, 250], [24.56, 300], [24.82, 350]];
+    rings.forEach(([t0, r], i) => { const p = inv(t0, t0 + .16, t); if (p > 0) { const jj = CL.j(t, 20 + i, 4); CL.circle(ctx, 960 + jj[0], 430 + jj[1], r * 1.0, r * 1.12, p, { color: i % 2 ? C.yellow : C.red, lw: 14, seed: 3 + i }); } });
     // small ? scraps popping on beats
-    [[24.28, 190, 430, -.3], [24.57, 900, 1010, .35], [24.82, 170, 1090, .25], [25.06, 920, 420, -.25]].forEach(([t0, x, y, r], i) => { const k = P(t, t0, .25); if (k) CL.chip(ctx, '?', x, y, { size: 120, rot: r, seed: 30 + i, fill: i % 2 ? C.yellow : C.white, dir: 'ltr', scale: k * (1 + .04 * Math.sin(tq * 20 + i)) }); });
-    ctx.save(); ctx.translate(540 + Math.sin(tq * 91) * amp, 770 + Math.cos(tq * 77) * amp); CL.title(ctx, '?', 0, 0, { size, fill: C.yellow, rot: Math.sin(tq * 13) * .04, dir: 'ltr', font: `900 ${size}px Bangers, Rubik` }); ctx.restore();
-    if (g > .5) CL.sparks(ctx, 540, 770, size * .36, size * .5, 12, t, { color: C.white, lw: 9 });
+    [[24.28, 470, 170, -.3], [24.57, 1460, 700, .35], [24.82, 440, 700, .25], [25.06, 1480, 190, -.25]].forEach(([t0, x, y, r], i) => { const k = P(t, t0, .25); if (k) CL.chip(ctx, '?', x, y, { size: 120, rot: r, seed: 30 + i, fill: i % 2 ? C.yellow : C.white, dir: 'ltr', scale: k * (1 + .04 * Math.sin(tq * 20 + i)) }); });
+    ctx.save(); ctx.translate(960 + Math.sin(tq * 91) * amp, 430 + Math.cos(tq * 77) * amp); CL.title(ctx, '?', 0, 0, { size, fill: C.yellow, rot: Math.sin(tq * 13) * .04, dir: 'ltr', font: `900 ${size}px Bangers, Rubik` }); ctx.restore();
+    if (g > .5) CL.sparks(ctx, 960, 430, size * .36, size * .5, 12, t, { color: C.white, lw: 9 });
   }
   // curtain panels. gap = half opening (0 = closed). pulses drive the drumroll
   function curtains(ctx, t) {
     let gap;
     if (t < 23.6) return;
-    if (t < 23.97) gap = lerp(560, 0, ease.in(Math.floor(inv(23.6, 23.97, t) * 7) / 7));
+    if (t < 23.97) gap = lerp(980, 0, ease.in(Math.floor(inv(23.6, 23.97, t) * 7) / 7));
     else if (t < 24.01) gap = 0;
-    else if (t < 25.2) { const g = inv(24.01, 25.2, t), tq = step(t, 24); gap = lerp(150, 340, g) + Math.sin(TAU * (1.6 * (tq - 24.01) + 2.2 * (tq - 24.01) * (tq - 24.01))) * lerp(14, 46, g); if (t < 24.14) gap = lerp(0, 150, ease.out(inv(24.01, 24.14, t))); }
-    else gap = lerp(340, 470, ease.out(clamp((t - 25.2) / .12)));
+    else if (t < 25.2) { const g = inv(24.01, 25.2, t), tq = step(t, 24); gap = lerp(260, 520, g) + Math.sin(TAU * (1.6 * (tq - 24.01) + 2.2 * (tq - 24.01) * (tq - 24.01))) * lerp(20, 70, g); if (t < 24.14) gap = lerp(0, 260, ease.out(inv(24.01, 24.14, t))); }
+    else gap = lerp(520, 860, ease.out(clamp((t - 25.2) / .12)));
     for (const sd of [-1, 1]) {
-      ctx.save(); ctx.translate(540, 0); ctx.scale(sd, 1);   // draw the right panel, mirrored for the left
-      const x0 = gap, x1 = 640; ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(x0 - 16, 0, x1 - x0 + 16, H);
+      ctx.save(); ctx.translate(960, 0); ctx.scale(sd, 1);   // draw the right panel, mirrored for the left
+      const x0 = gap, x1 = 1000; ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(x0 - 16, 0, x1 - x0 + 16, H);
       ctx.fillStyle = C.red; ctx.fillRect(x0, 0, x1 - x0, H);
       const fw = 64; for (let x = x0; x < x1; x += fw) { const i = Math.round((x - x0) / fw); ctx.fillStyle = i % 2 ? '#D42418' : '#FF5346'; ctx.fillRect(x, 0, Math.min(fw, x1 - x), H); ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.fillRect(x + fw - 8, 0, 8, H); }
       ctx.fillStyle = C.ink; ctx.beginPath(); ctx.moveTo(x0, 0); for (let y = 0; y <= H + 60; y += 60) ctx.lineTo(x0 - 8 + (y / 60 % 2 ? 22 : 0) + Math.sin(y * .02) * 6, y); ctx.lineTo(x0 + 14, H + 60); ctx.lineTo(x0 + 14, 0); ctx.closePath(); ctx.globalAlpha = 0; ctx.fill(); ctx.globalAlpha = 1;
       ctx.strokeStyle = C.ink; ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, H); ctx.stroke();
-      ctx.fillStyle = C.yellow; for (let y = 100; y < H; y += 260) { ctx.beginPath(); ctx.arc(x0 + 34, y, 16, 0, TAU); ctx.fill(); ctx.lineWidth = 5; ctx.stroke(); }
+      ctx.fillStyle = C.yellow; for (let y = 90; y < H; y += 200) { ctx.beginPath(); ctx.arc(x0 + 34, y, 16, 0, TAU); ctx.fill(); ctx.lineWidth = 5; ctx.stroke(); }
       ctx.restore();
     }
-    ctx.fillStyle = C.ink; ctx.fillRect(0, 0, W, 34);
+    ctx.fillStyle = C.ink; ctx.fillRect(0, 0, W, 26);
   }
 
   // ---------- phase 5: the held breath, a raised blank stamp
   function heldStamp(ctx, t) {
-    const up = ease.out(inv(25.2, 25.32, t)), by = lerp(1500, 0, up), tq = step(t, 12), jj = CL.j(t, 77, 1.2);
+    const up = ease.out(inv(25.2, 25.32, t)), by = lerp(800, 0, up), tq = step(t, 12), jj = CL.j(t, 77, 1.2);
     // target paper with dashed mark
-    CL.scrap(ctx, 540, 1130 + by * .1, 760, 420, { fill: C.cream, seed: 21, rot: -.03 });
-    ctx.save(); ctx.translate(540, 1130 + by * .1); ctx.rotate(-.03); ctx.setLineDash([26, 18]); ctx.lineWidth = 8; ctx.strokeStyle = C.red; ctx.lineCap = 'round'; ctx.strokeRect(-260, -120, 520, 240); ctx.setLineDash([]);
-    ctx.lineWidth = 8; ctx.strokeStyle = C.ink; [[-290, -150, 1, 1], [290, -150, -1, 1], [-290, 150, 1, -1], [290, 150, -1, -1]].forEach(([x, y, a, b]) => { ctx.beginPath(); ctx.moveTo(x, y + b * 50); ctx.lineTo(x, y); ctx.lineTo(x + a * 50, y); ctx.stroke(); }); ctx.restore();
+    CL.scrap(ctx, 960, 740 + by * .1, 800, 250, { fill: C.cream, seed: 21, rot: -.03 });
+    ctx.save(); ctx.translate(960, 740 + by * .1); ctx.rotate(-.03); ctx.setLineDash([26, 18]); ctx.lineWidth = 8; ctx.strokeStyle = C.red; ctx.lineCap = 'round'; ctx.strokeRect(-260, -80, 520, 160); ctx.setLineDash([]);
+    ctx.lineWidth = 8; ctx.strokeStyle = C.ink; [[-300, -105, 1, 1], [300, -105, -1, 1], [-300, 105, 1, -1], [300, 105, -1, -1]].forEach(([x, y, a, b]) => { ctx.beginPath(); ctx.moveTo(x, y + b * 50); ctx.lineTo(x, y); ctx.lineTo(x + a * 50, y); ctx.stroke(); }); ctx.restore();
     // stamp, raised in the air with hard shadow on the paper
-    const sx = 540 + jj[0], sy = 690 + jj[1] + by, hover = 0;
-    ctx.fillStyle = 'rgba(40,20,0,.32)'; ctx.beginPath(); ctx.roundRect(540 - 250 + 40, 1130 - 70 + by * .1, 500, 150, 26); ctx.fill();
+    const sx = 960 + jj[0], sy = 400 + jj[1] + by, hover = 0;
+    ctx.fillStyle = 'rgba(40,20,0,.32)'; ctx.beginPath(); ctx.roundRect(960 - 250 + 40, 740 - 50 + by * .1, 500, 110, 26); ctx.fill();
     ctx.save(); ctx.translate(sx, sy); ctx.rotate(-.045); ctx.lineJoin = 'round'; ctx.lineWidth = 9; ctx.strokeStyle = C.ink;
     ctx.fillStyle = 'rgba(40,20,0,.35)'; ctx.beginPath(); ctx.roundRect(-270 + 22, 185 + 30, 540, 96, 22); ctx.fill();
     ctx.fillStyle = C.red; ctx.beginPath(); ctx.roundRect(-270, 170, 540, 96, 22); ctx.fill(); ctx.stroke();   // rubber face
@@ -196,7 +196,7 @@
     ctx.fillStyle = '#E2A560'; ctx.beginPath(); ctx.arc(0, -150, 130, 0, TAU); ctx.fill(); ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.beginPath(); ctx.arc(-40, -190, 40, 0, TAU); ctx.fill();
     ctx.restore();
     // small tension ticks near the stamp: tiny, silent
-    if (up >= 1) { ctx.save(); ctx.strokeStyle = C.white; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.globalAlpha = .9; [[-1, 1], [1, 1]].forEach(([d]) => { for (let i = 0; i < 2; i++) { ctx.beginPath(); ctx.moveTo(540 + d * (330 + i * 34), 640 + i * 60 + jj[1]); ctx.lineTo(540 + d * (370 + i * 34), 610 + i * 60 + jj[1]); ctx.stroke(); } }); ctx.restore(); }
+    if (up >= 1) { ctx.save(); ctx.strokeStyle = C.white; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.globalAlpha = .9; [[-1, 1], [1, 1]].forEach(([d]) => { for (let i = 0; i < 2; i++) { ctx.beginPath(); ctx.moveTo(960 + d * (330 + i * 34), 330 + i * 60 + jj[1]); ctx.lineTo(960 + d * (370 + i * 34), 300 + i * 60 + jj[1]); ctx.stroke(); } }); ctx.restore(); }
   }
 
   A.scene({ name: 's5_smooth', start: 20.5, end: 25.9, draw(ctx, s) {

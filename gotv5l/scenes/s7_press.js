@@ -3,7 +3,7 @@
 // C: thumbs up + check + crossed-out buffering wheel.
 (() => {
   const { clamp, lerp, inv, ease, hash, rng, TAU } = A;
-  const C = CL.C, W = 1080, H = 1920;
+  const C = CL.C, W = CL.W, H = CL.H;
   const Q = (t, f = 12) => CL.q(t, f);
   const SKIN = '#F5B48A', SKIN_DK = '#D98F62';
 
@@ -117,19 +117,19 @@
   };
 
   // ============ PHASE A
-  const BTN = { x: 394, y: 906 }, HAND_ROT = -.55, DIR = [-Math.sin(HAND_ROT), Math.cos(HAND_ROT)];
+  const HS = .8, BTN = { x: 1127, y: 239 }, HAND_ROT = -.55, DIR = [-Math.sin(HAND_ROT), Math.cos(HAND_ROT)];
   function phaseA(ctx, t) {
     ctx.drawImage(CL.layer('s7bgA', W, H, g => CL.paper(g, 'blue', { dots: C.yellow, dotSize: 36, dotAlpha: .2, dotFade: 'radial' })), 0, 0);
     const jt = CL.j(t, 1, 2);
-    CL.scrap(ctx, 540 + jt[0], 430 + jt[1], 980, 720, { fill: C.cream, seed: 11, rot: -.03, tape: false });
-    CL.tape(ctx, 130, 110, -.5, 170, 50); CL.tape(ctx, 950, 760, -.45, 170, 50);
+    CL.scrap(ctx, 470 + jt[0], 450 + jt[1], 920, 700, { fill: C.cream, seed: 11, rot: -.03, tape: false });
+    CL.tape(ctx, 60, 130, -.5, 170, 50); CL.tape(ctx, 870, 750, -.45, 170, 50);
     const sh = CL.shake(t, 31.12, .5, 10);
-    tv(ctx, 540 + sh[0], 430 + sh[1], 860, 560, screenA, t);
-    if (t > 31.15 && t < 31.6) CL.sparks(ctx, 540, 430, 470, 560, 14, t, { color: C.ink, lw: 9 });
+    tv(ctx, 470 + sh[0], 470 + sh[1], 780, 520, screenA, t);
+    if (t > 31.15 && t < 31.6) CL.sparks(ctx, 470, 470, 440, 520, 14, t, { color: C.ink, lw: 9 });
     // remote
     const rs = CL.pop(t, 29.95, .3); const rj = CL.j(t, 2, 2);
     if (rs) {
-      ctx.save(); ctx.translate(410 + rj[0], 1120 + rj[1]); ctx.rotate(-.12); ctx.scale(.9 * rs, .9 * rs);
+      ctx.save(); ctx.translate(1150 + rj[0], 430 + rj[1]); ctx.rotate(-.12); ctx.scale(.8 * rs, .8 * rs);
       const rl = remoteLayer(); CL.sticker(ctx, rl, 0, 0, 360, 820, {});
       const tp = Q(t) - 30.34, sq = tp >= 0 && tp < .09 ? .5 : tp >= .09 && tp < .2 ? .62 : tp >= .2 && tp < .25 ? .78 : tp >= .25 && tp < .33 ? 1.14 : 1;
       ctx.translate(0, -240); ctx.scale(tp >= 0 && tp < .25 ? 1.12 : 1, sq);
@@ -141,17 +141,17 @@
     // finger
     const qt = Q(t), fd = A.key(qt, [[30.03, 1500], [30.27, 130, 'out'], [30.34, -14, 'lin'], [30.58, -14, 'lin'], [30.8, 1500, "in"]]);
     if (fd < 1400) { const hj = CL.j(t, 5, 3), tx = BTN.x + DIR[0] * fd + hj[0], ty = BTN.y + DIR[1] * fd + hj[1];
-      CL.sticker(ctx, handLayer(), tx + DIR[0] * 550, ty + DIR[1] * 550, 420, 1100, { rot: HAND_ROT }); }
+      CL.sticker(ctx, handLayer(), tx + DIR[0] * 550 * HS, ty + DIR[1] * 550 * HS, 420 * HS, 1100 * HS, { rot: HAND_ROT }); }
     // CLICK
     if (t > 30.34 && t < 30.85) {
       CL.sparks(ctx, BTN.x, BTN.y, 90, 170, 12, t, { color: C.ink, lw: 9 });
-      const s = CL.pop(t, 30.34, .25) || .01, j = CL.j(t, 7, 4); ctx.save(); ctx.translate(BTN.x - 170 + j[0], BTN.y - 190 + j[1]); ctx.scale(s, s); ctx.rotate(-.18);   // CUE 30.34 click
+      const s = CL.pop(t, 30.34, .25) || .01, j = CL.j(t, 7, 4); ctx.save(); ctx.translate(BTN.x - 200 + j[0], BTN.y - 105 + j[1]); ctx.scale(s * .78, s * .78); ctx.rotate(-.18);   // CUE 30.34 click
       CL.star(ctx, 0, 0, 170, 12, { fill: C.red, rot: .2 }); A.text(ctx, 'CLICK!', 0, 6, { font: '400 92px Bangers', fill: C.white, stroke: C.ink, lw: 16 }); ctx.restore();
     }
     // stars and confetti when TV comes on
-    confetti(ctx, t, 31.12, 34, 540, 430, 21);
+    confetti(ctx, t, 31.12, 34, 470, 470, 21);
     const st = CL.pop(t, 31.3, .3);
-    if (st) { const j = CL.j(t, 9, 3); CL.star(ctx, 110 + j[0], 720 + j[1], 60 * st, 8, { fill: C.pink, rot: .3 }); CL.star(ctx, 980 - j[0], 150 - j[1], 74 * st, 10, { fill: C.yellow, rot: -.2 }); }
+    if (st) { const j = CL.j(t, 9, 3); CL.star(ctx, 70 + j[0], 740 + j[1], 60 * st, 8, { fill: C.pink, rot: .3 }); CL.star(ctx, 1330 - j[0], 700 - j[1], 74 * st, 10, { fill: C.yellow, rot: -.2 }); }
   }
 
   // ============ PHASE B
@@ -165,66 +165,66 @@
   function phaseB(ctx, t) {
     ctx.drawImage(CL.layer('s7bgB', W, H, g => CL.paper(g, 'yellow', { dots: C.blue, dotSize: 40, dotAlpha: .16, dotFade: 'radial' })), 0, 0);
     const jt = CL.j(t, 3, 2);
-    CL.scrap(ctx, 540, 820, 990, 760, { fill: C.blue, seed: 14, rot: .02, tape: false, draw: (g, w, h) => CL.halftone(g, -w / 2, -h / 2, w, h, '#5B82FF', 30, .5, { fade: 'radial' }) });
+    CL.scrap(ctx, 740, 440, 1300, 700, { fill: C.blue, seed: 14, rot: .02, tape: false, draw: (g, w, h) => CL.halftone(g, -w / 2, -h / 2, w, h, '#5B82FF', 30, .5, { fade: 'radial' }) });
     const scr = t < 33.3 ? screenCarousel : screenPitch, sh = CL.shake(t, 33.44, .35, 8);
-    tv(ctx, 540 + jt[0] + sh[0], 830 + jt[1] + sh[1], 800, 560, scr, t);
+    tv(ctx, 740 + jt[0] + sh[0], 420 + jt[1] + sh[1], 660, 430, scr, t);
     // streamers (CUE 32.22 netflix, 32.42 disney, 32.62 appletv)
-    card(ctx, 'netflix', t, 32.2, 300, 270, 540, 270, -.08, 3);     // CUE 32.2 pop
-    card(ctx, 'disney', t, 32.42, 790, 330, 540, 270, .07, 4, '#0B1F5C');
-    card(ctx, 'appletv', t, 32.64, 560, 1260, 540, 270, .04, 5, C.ink);
+    card(ctx, 'netflix', t, 32.2, 280, 250, 540, 270, -.08, 3);     // CUE 32.2 pop
+    card(ctx, 'disney', t, 32.42, 1170, 270, 540, 270, .07, 4, '#0B1F5C');
+    card(ctx, 'appletv', t, 32.64, 740, 700, 540, 270, .04, 5, C.ink);
     // live / sport / football
     if (t >= 33.4) {
       const jf = CL.j(t, 8, 3);
       const c5 = CL.pop(t, 33.55, .3);
-      if (c5) { CL.logoCard(ctx, 'sport5', 300 + jf[0], 270 + jf[1], 560, 280, { rot: -.07, scale: c5, seed: 6, fill: C.ink }); if (t < 33.85) CL.sparks(ctx, 300, 270, 300, 400, 12, t, { color: C.ink, lw: 9 }); }
+      if (c5) { CL.logoCard(ctx, 'sport5', 280 + jf[0], 250 + jf[1], 560, 280, { rot: -.07, scale: c5, seed: 6, fill: C.ink }); if (t < 33.85) CL.sparks(ctx, 280, 250, 300, 400, 12, t, { color: C.ink, lw: 9 }); }
       const c1 = CL.pop(t, 34.3, .3);
-      if (c1) { CL.logoCard(ctx, 'sport1', 790 - jf[0], 300 + jf[1], 560, 280, { rot: .06, scale: c1, seed: 7 }); if (t < 34.6) CL.sparks(ctx, 790, 300, 300, 400, 12, t, { color: C.ink, lw: 9 }); }
+      if (c1) { CL.logoCard(ctx, 'sport1', 1170 - jf[0], 270 + jf[1], 560, 280, { rot: .06, scale: c1, seed: 7 }); if (t < 34.6) CL.sparks(ctx, 1170, 270, 300, 400, 12, t, { color: C.ink, lw: 9 }); }
       const lv = CL.pop(t, 33.95, .3);           // CUE 33.95 live
-      if (lv) { ctx.save(); ctx.translate(260 + jf[0], 585 + jf[1]); ctx.rotate(-.13); ctx.scale(lv * 1.15, lv * 1.15); CL.blob(ctx, 0, 0, 350, 140, { fill: C.red });
+      if (lv) { ctx.save(); ctx.translate(430 + jf[0], 560 + jf[1]); ctx.rotate(-.13); ctx.scale(lv, lv); CL.blob(ctx, 0, 0, 350, 140, { fill: C.red });
         ctx.fillStyle = C.white; ctx.strokeStyle = C.ink; ctx.lineWidth = 7; if (Math.floor(t * 3) % 2 === 0) { ctx.beginPath(); ctx.arc(-110, 0, 24, 0, TAU); ctx.fill(); ctx.stroke(); }
         A.text(ctx, 'LIVE', 30, 8, { font: '400 112px Bangers', fill: C.white, stroke: C.ink, lw: 16 }); ctx.restore(); }
       const bs = CL.pop(t, 33.44, .3);            // CUE 33.44 football
-      if (bs) { const qt = Q(t, 12), ph = ((qt - 33.44) % .6) / .6, hgt = Math.abs(Math.sin(ph * Math.PI)) * 190, sq = ph < .06 || ph > .94 ? .82 : 1;
-        ctx.save(); ctx.fillStyle = 'rgba(40,20,0,.25)'; ctx.beginPath(); ctx.ellipse(540 + 20, 1382, 120 - hgt * .25, 22, 0, 0, TAU); ctx.fill(); ctx.restore();
-        ctx.save(); ctx.translate(540, 1240 - hgt); ctx.scale(bs * (2 - sq), bs * sq); ctx.rotate(qt * 4); CL.sticker(ctx, ballLayer(), 0, 0, 300, 300, {}); ctx.restore(); }
+      if (bs) { const qt = Q(t, 12), ph = ((qt - 33.44) % .6) / .6, hgt = Math.abs(Math.sin(ph * Math.PI)) * 120, sq = ph < .06 || ph > .94 ? .82 : 1;
+        ctx.save(); ctx.fillStyle = 'rgba(40,20,0,.25)'; ctx.beginPath(); ctx.ellipse(1010 + 20, 858, 100 - hgt * .25, 18, 0, 0, TAU); ctx.fill(); ctx.restore();
+        ctx.save(); ctx.translate(1010, 710 - hgt); ctx.scale(bs * (2 - sq), bs * sq); ctx.rotate(qt * 4); CL.sticker(ctx, ballLayer(), 0, 0, 240, 240, {}); ctx.restore(); }
     }
-    confetti(ctx, t, 33.44, 26, 540, 1250, 33, 1.6, 900);
+    confetti(ctx, t, 33.44, 26, 1010, 700, 33, 1.6, 900);
   }
 
   // ============ PHASE C
   function phaseC(ctx, t) {
     ctx.drawImage(CL.layer('s7bgC', W, H, g => CL.paper(g, 'cream')), 0, 0);
-    ctx.save(); ctx.translate(0, 0); sunburst(ctx, 540, 700, 1800, 28, Q(t, 8) * .05, 'rgba(0,0,0,0)', C.yellow); ctx.restore();
+    ctx.save(); ctx.translate(0, 0); sunburst(ctx, 720, 440, 2200, 28, Q(t, 8) * .05, 'rgba(0,0,0,0)', C.yellow); ctx.restore();
     const shk = CL.shake(t, 36.39, .5, 16); ctx.save(); ctx.translate(shk[0], shk[1]);
     const j = CL.j(t, 12, 3), bc = CL.pop(t, 35.21, .3);
-    if (bc) { ctx.save(); ctx.translate(540, 640); ctx.scale(bc, bc);
+    if (bc) { ctx.save(); ctx.translate(420, 430); ctx.scale(bc, bc); ctx.scale(.78, .78);
       ctx.fillStyle = 'rgba(40,20,0,.3)'; ctx.beginPath(); ctx.arc(14, 24, 400, 0, TAU); ctx.fill(); ctx.fillStyle = C.white; ctx.beginPath(); ctx.arc(0, 0, 402, 0, TAU); ctx.fill();
       ctx.fillStyle = C.blue; ctx.beginPath(); ctx.arc(0, 0, 380, 0, TAU); ctx.fill(); ctx.lineWidth = 10; ctx.strokeStyle = C.ink; ctx.stroke(); ctx.save(); ctx.beginPath(); ctx.arc(0, 0, 376, 0, TAU); ctx.clip(); CL.halftone(ctx, -400, -400, 800, 800, '#5B82FF', 34, .5, { fade: 'radial' }); ctx.restore();
       CL.sticker(ctx, thumbLayer(), 10 + j[0], 20 + j[1], 700, 745, { rot: -.06 + j[2] }); ctx.restore(); }   // CUE 35.21 thumbs
-    if (t > 35.25 && t < 36.2) CL.sparks(ctx, 540, 640, 430, 520, 16, t, { color: C.ink, lw: 10 });
+    if (t > 35.25 && t < 36.2) CL.sparks(ctx, 420, 430, 320, 400, 16, t, { color: C.ink, lw: 10 });
     // check badge
     const ck = CL.pop(t, 35.63, .3);
-    if (ck) { ctx.save(); ctx.translate(850, 330); ctx.rotate(.18); ctx.scale(ck, ck); ctx.fillStyle = 'rgba(40,20,0,.3)'; ctx.beginPath(); ctx.arc(10, 16, 150, 0, TAU); ctx.fill(); ctx.fillStyle = C.white; ctx.beginPath(); ctx.arc(0, 0, 152, 0, TAU); ctx.fill();
+    if (ck) { ctx.save(); ctx.translate(790, 170); ctx.rotate(.18); ctx.scale(ck * .8, ck * .8); ctx.fillStyle = 'rgba(40,20,0,.3)'; ctx.beginPath(); ctx.arc(10, 16, 150, 0, TAU); ctx.fill(); ctx.fillStyle = C.white; ctx.beginPath(); ctx.arc(0, 0, 152, 0, TAU); ctx.fill();
       ctx.fillStyle = C.green; ctx.beginPath(); ctx.arc(0, 0, 136, 0, TAU); ctx.fill(); ctx.lineWidth = 10; ctx.strokeStyle = C.ink; ctx.stroke();
       ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(-64, 4); ctx.lineTo(-18, 52); ctx.lineTo(70, -50); ctx.strokeStyle = C.ink; ctx.lineWidth = 58; ctx.stroke(); ctx.strokeStyle = C.white; ctx.lineWidth = 36; ctx.stroke(); ctx.restore(); }
     // buffering wheel, crossed out
     const wh = CL.pop(t, 36.0, .3);
-    if (wh) { ctx.save(); ctx.translate(540, 1170); ctx.scale(wh, wh);
+    if (wh) { ctx.save(); ctx.translate(1030, 450); ctx.scale(wh * .95, wh * .95);
       ctx.fillStyle = 'rgba(40,20,0,.3)'; ctx.beginPath(); ctx.arc(12, 18, 215, 0, TAU); ctx.fill(); ctx.fillStyle = C.white; ctx.beginPath(); ctx.arc(0, 0, 215, 0, TAU); ctx.fill(); ctx.lineWidth = 10; ctx.strokeStyle = C.ink; ctx.stroke();
       const rot = Q(t, 12) * (TAU / 12) * (t > 36.45 ? 0 : 1); ctx.rotate(rot); ctx.lineCap = 'round';
       for (let i = 0; i < 12; i++) { ctx.save(); ctx.rotate(i * TAU / 12); ctx.strokeStyle = `rgba(20,20,20,${.12 + i / 12 * .88})`; ctx.lineWidth = 26; ctx.beginPath(); ctx.moveTo(0, -95); ctx.lineTo(0, -160); ctx.stroke(); ctx.restore(); }
       ctx.restore();
-      const cp = Q(inv(36.39, 36.63, t), 24); if (cp > 0) { CL.cross(ctx, 540, 1170, 190, cp, { lw: 44, color: C.red }); }    // CUE 36.39 cross-out
-      if (t > 36.39 && t < 36.8) CL.sparks(ctx, 540, 1170, 250, 330, 14, t, { color: C.ink, lw: 9 });
+      const cp = Q(inv(36.39, 36.63, t), 24); if (cp > 0) { CL.cross(ctx, 1030, 450, 180, cp, { lw: 44, color: C.red }); }    // CUE 36.39 cross-out
+      if (t > 36.39 && t < 36.8) CL.sparks(ctx, 1030, 450, 240, 310, 14, t, { color: C.ink, lw: 9 });
     }
     ctx.restore();
-    confetti(ctx, t, 35.21, 44, 540, 640, 41, 2, 1300);
-    const s1 = CL.pop(t, 35.4, .3), sj = CL.j(t, 13, 3); if (s1) { CL.star(ctx, 110 + sj[0], 1010, 70 * s1, 8, { fill: C.pink, rot: .3 }); CL.star(ctx, 980, 900 + sj[1], 80 * s1, 10, { fill: C.orange, rot: -.2 }); }
+    confetti(ctx, t, 35.21, 44, 500, 430, 41, 2, 1300);
+    const s1 = CL.pop(t, 35.4, .3), sj = CL.j(t, 13, 3); if (s1) { CL.star(ctx, 60 + sj[0], 700, 70 * s1, 8, { fill: C.pink, rot: .3 }); CL.star(ctx, 1300, 720 + sj[1], 80 * s1, 10, { fill: C.orange, rot: -.2 }); }
   }
 
   A.scene({ name: 's7_press', start: 29.9, end: 36.95, draw: (ctx, s) => {
     const t = s.t;
-    if (t < 32.0) wipe(ctx, 1, inv(29.9, 30.22, t), () => phaseA(ctx, t), 1);
+    if (t < 32.0) wipe(ctx, 2, inv(29.9, 30.22, t), () => phaseA(ctx, t), 1);
     else if (t < 35.12) { const p = inv(32.0, 32.3, t); if (p < 1) phaseA(ctx, t); wipe(ctx, 0, p, () => phaseB(ctx, t), 2); }
     else { const p = inv(35.12, 35.4, t); if (p < 1) phaseB(ctx, t); wipe(ctx, 2, p, () => phaseC(ctx, t), 3); }
   } });
