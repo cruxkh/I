@@ -39,26 +39,18 @@
       CL.underline(ctx, -d.w / 2 + 40, d.w / 2 - 40, 96, inv(37.8, 38.05, t), { color: C.red, lw: 13, seed: 3 }); ctx.restore(); }
 
     // smart TV with install animation
-    const ts = CL.pop(t, 37.65, .3);
+    const ts = CL.pop(t, 37.1, .3);
     if (ts) { const tj = CL.j(t, 6, 2), cx = 1500 + tj[0], cy = 430 + tj[1];
       ctx.save(); ctx.translate(cx, cy); ctx.scale(ts, ts); ctx.fillStyle = C.ink;
       ctx.beginPath(); ctx.moveTo(-220, 216); ctx.lineTo(-150, 216); ctx.lineTo(-180, 282); ctx.lineTo(-250, 282); ctx.closePath(); ctx.moveTo(220, 216); ctx.lineTo(150, 216); ctx.lineTo(180, 282); ctx.lineTo(250, 282); ctx.closePath(); ctx.fill();
       ctx.fillStyle = C.white; ctx.beginPath(); ctx.roundRect(-364, -249, 728, 498, 46); ctx.fill(); ctx.restore();
       CL.tv(ctx, cx, cy, 700, 470, { scale: ts, draw: (g, sw, sh) => {
-        g.fillStyle = C.cream; g.fillRect(0, 0, sw, sh); CL.halftone(g, 0, 0, sw, sh, '#E5D9BC', 24, .5, {});
-        const ip = CL.pop(t, 37.95, .3) || .01;
-        g.save(); g.translate(sw / 2, sh / 2 - 34); g.scale(ip, ip); g.fillStyle = 'rgba(40,20,0,.3)'; g.beginPath(); g.roundRect(-84 + 8, -84 + 12, 168, 168, 40); g.fill();
-        g.fillStyle = C.blue; g.strokeStyle = C.ink; g.lineWidth = 9; g.beginPath(); g.roundRect(-84, -84, 168, 168, 40); g.fill(); g.stroke();
-        const bob = t > 38.0 && t < 38.85 ? Math.sin(Q(t) * 14) * 5 : 0; g.translate(0, bob);
-        g.strokeStyle = C.ink; g.lineWidth = 34; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo(0, -46); g.lineTo(0, 24); g.moveTo(-36, -12); g.lineTo(0, 30); g.lineTo(36, -12); g.stroke();
-        g.strokeStyle = C.yellow; g.lineWidth = 20; g.beginPath(); g.moveTo(0, -46); g.lineTo(0, 24); g.moveTo(-36, -12); g.lineTo(0, 30); g.lineTo(36, -12); g.stroke();
-        g.translate(0, -bob); g.strokeStyle = C.white; g.lineWidth = 12; g.beginPath(); g.moveTo(-50, 56); g.lineTo(50, 56); g.stroke(); g.restore();
-        const pr = ease.out(inv(38.05, 38.85, Q(t, 12))); g.fillStyle = C.white; g.strokeStyle = C.ink; g.lineWidth = 7; g.beginPath(); g.roundRect(sw / 2 - 190, sh - 78, 380, 34, 17); g.fill(); g.stroke();
-        if (pr > 0) { g.fillStyle = C.green; g.beginPath(); g.roundRect(sw / 2 - 190, sh - 78, 380 * pr, 34, 17); g.fill(); g.stroke(); }
-        const ck = CL.pop(t, 38.9, .3); if (ck) { g.save(); g.translate(sw / 2 + 96, sh / 2 - 100); g.scale(ck, ck); g.fillStyle = C.green; g.strokeStyle = C.ink; g.lineWidth = 8; g.beginPath(); g.arc(0, 0, 44, 0, TAU); g.fill(); g.stroke();
-          g.strokeStyle = C.white; g.lineWidth = 15; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo(-20, 2); g.lineTo(-6, 16); g.lineTo(22, -14); g.stroke(); g.restore(); }
+        // client: a BEAR on the TV that says "GO TV!" with synced lips (bear.js)
+        g.fillStyle = '#FFE38A'; g.fillRect(0, 0, sw, sh); CL.halftone(g, 0, 0, sw, sh, '#F6C94A', 26, .5, { fade: 'radial' });
+        g.save(); g.globalAlpha = .35; g.translate(sw / 2, sh * .55); g.rotate(t * .25); for (let i = 0; i < 12; i++) { g.rotate(TAU / 12); g.fillStyle = i % 2 ? '#fff' : '#FFD60A'; g.beginPath(); g.moveTo(0, 0); g.lineTo(-60, -sw); g.lineTo(60, -sw); g.fill(); } g.restore();
+        const bp = CL.pop(t, 37.14, .35); if (bp) { g.save(); g.translate(sw / 2, sh * .54 + (1 - Math.min(1, bp)) * 80); g.scale(bp, bp); CL.bear(g, t, sh * .40); g.restore(); }
       } });
-      if (t > 38.9 && t < 39.3) CL.sparks(ctx, cx, cy - 20, 320, 400, 14, t, { color: C.ink, lw: 9 });
+      
     }
 
     // small parenthesised line on a paper tag
