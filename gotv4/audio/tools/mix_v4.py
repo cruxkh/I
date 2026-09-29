@@ -23,7 +23,7 @@ V_SIL0, V_SIL1 = 25.50, 25.61
 TARGET_LUFS = -14.0; TP_CEIL = -1.2
 MUSIC_GAIN = -12.0; DUCK_DB = -7.0; SFX_GAIN = -6.0; SFX_DUCK = -7.5; MAX_LOUD_OVERLAP = 3
 INTERLUDE_WAVS = [('anime_interlude.wav', 33.736), ('crowd_interlude.wav', 22.75)]
-GOD_GAIN_DB = -1.5; INTER_GAIN_DB = -1.0
+GOD_GAIN_DB = -3.0; INTER_GAIN_DB = -1.0
 MAXLEN = {'impact_boom': 6.0, 'crowd_roar': 2.4, 'goal_horn': 1.2, 'stadium_crowd_swell': 2.6, 'button_ripple_chime': 2.0, 'goal_crowd_roar': 3.2}
 maxlen = lambda nm: MAXLEN.get(nm, 3.6)
 
@@ -110,7 +110,7 @@ def build_music_raw():
             env = np.ones(tail.shape[1]); k = int(.25 * SR); env[-k:] = np.linspace(1, 0, k) ** 2
             # hold the tail with slow attack from the last sample so it 'freezes': time-stretch feel via slow decay
             dec = np.exp(-np.arange(tail.shape[1]) / SR / max(h['dur'] * 0.9, .5))
-            add(fx, tail * env[None, :] * dec[None, :], T0, db(-1))
+            add(fx, tail * env[None, :] * dec[None, :], T0, db(-13))
             # 3) riser + accent 0.25 s before the hold ends, music resumes on the beat at T1
             rs = riser(min(.30, h['dur'] * .8), r, 800, 9000, .55); add(fx, rs, T1 - rs.shape[1] / SR)
             add(fx, accent(r, .55), T1)

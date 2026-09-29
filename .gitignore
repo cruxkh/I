@@ -17,3 +17,9 @@ gotv4/out/
 gotv4/previews/
 gotv4/node_modules
 gotv4/audio/music/sf/
+gotv4/audio/*.npz
+gotv4/audio/sfx/
+gotv4/audio/music/
+gotv/audio/sfx/
+gotv/audio/music/
+gotv/audio/*.npz

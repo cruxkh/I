@@ -120,7 +120,7 @@ function spikePath(g, ax, ay, bx, by, tx, ty, bend = .25) {
 function eyePath(g, k, lower = 1) { g.beginPath(); g.moveTo(-46, 10); g.bezierCurveTo(-32, -60 * k - 6, 30, -70 * k - 6, 58, -3); g.bezierCurveTo(40, 46 * k * lower + 9, -18, 58 * k * lower + 9, -46, 10); g.closePath(); }
 function drawEye(g, c, side) {
   const E = c.eyes || {}, k = clamp((E.k ?? 1) * (1 - (E.blink || 0)), 0.02, 1.25), st = E.style || 'normal', id = c.id || 'kai', ic = IRIS[id];
-  const ex = 70 + (id === 'man' ? -4 : 0), ey = 34, turn = c.turn || 0, sc = (id === 'man' ? .86 : id === 'girl' ? 1.04 : 1) * (E.scale || 1);
+  const ex = 72 + (id === 'man' ? -4 : 0), ey = 32, turn = c.turn || 0, sc = (id === 'man' ? .92 : id === 'girl' ? 1.12 : 1.1) * (E.scale || 1);
   g.save(); g.translate(side * ex + turn * 20 * (1 - .25 * side * Math.sign(turn || 1)), ey); g.scale(side * sc, sc);
   if (st === 'shut' || k < .06) { g.lineWidth = 12; g.strokeStyle = INK; g.lineCap = 'round'; g.beginPath(); g.moveTo(-46, 12); g.quadraticCurveTo(6, 30, 58, 2); g.stroke(); g.beginPath(); g.moveTo(56, 2); g.lineTo(72, -12); g.stroke(); g.restore(); return; }
   if (st === 'happy') { g.lineWidth = 13; g.strokeStyle = INK; g.lineCap = 'round'; g.beginPath(); g.moveTo(-44, 22); g.quadraticCurveTo(6, -46, 58, 18); g.stroke(); g.beginPath(); g.moveTo(56, 16); g.lineTo(72, 4); g.stroke(); g.restore(); return; }
@@ -173,7 +173,7 @@ function drawMouth(g, c) {
   const cy = -curve * 13, lipc = id === 'girl' ? '#C93A55' : INK;
   if (open < .04) { g.strokeStyle = lipc; g.lineWidth = id === 'girl' ? 8 : 6; g.beginPath(); g.moveTo(-w, cy); g.quadraticCurveTo(0, cy + 8 + curve * 26, w, cy); g.stroke(); if (curve > .55) { g.lineWidth = 4; g.beginPath(); g.moveTo(w, cy); g.lineTo(w + 8, cy - 8); g.stroke(); } g.restore(); return; }
   const ww = w * (M.wide ?? 1) * (1 + open * .1), depth = open * (M.h ?? 62);
-  g.beginPath(); g.moveTo(-ww, cy); g.quadraticCurveTo(0, cy + 6 + curve * 8, ww, cy); g.bezierCurveTo(ww * .85, cy + depth * 1.3, -ww * .85, cy + depth * 1.3, -ww, cy); g.closePath();
+  const mp = () => { g.beginPath(); g.moveTo(-ww, cy); g.quadraticCurveTo(0, cy + 6 + curve * 8, ww, cy); g.bezierCurveTo(ww * .85, cy + depth * 1.3, -ww * .85, cy + depth * 1.3, -ww, cy); g.closePath(); }; mp();
   g.fillStyle = '#5A0F22'; g.fill(); g.save(); g.clip();
   if (M.teeth !== false) { g.fillStyle = '#fff'; g.fillRect(-ww, cy - 4, ww * 2, 15 + open * 8); }
   g.fillStyle = '#FF6F86'; g.beginPath(); g.ellipse(0, cy + depth * 1.05, ww * .62, depth * .5, 0, 0, TAU); g.fill(); g.restore();
@@ -188,8 +188,8 @@ function hairBack(g, c) {
   g.lineJoin = 'round';
   if (id === 'kai') {
     const N = 9; for (let i = 0; i < N; i++) {
-      const ang = PI + (i + .5) / N * PI, r0 = 132, rt = (285 + 90 * hash(i * 1.7)) * (1 + p * .34), ta = ang + (i - 4) * .02 - .06 + sway(i) * .006 * 6;
-      const ax = Math.cos(ang - .23) * r0, ay = Math.sin(ang - .23) * r0 - 6, bx = Math.cos(ang + .23) * r0, by = Math.sin(ang + .23) * r0 - 6, tx = Math.cos(ta) * rt + sway(i, 1.2), ty = Math.sin(ta) * rt * .96 - 6 - p * 30;
+      const ang = PI + (i + .5) / N * PI, r0 = 132, rt = (270 + 80 * hash(i * 1.7)) * (1 + p * .16), ta = ang + (i - 4) * .02 - .06 + sway(i) * .006 * 6;
+      const ax = Math.cos(ang - .3) * r0, ay = Math.sin(ang - .3) * r0 - 6, bx = Math.cos(ang + .3) * r0, by = Math.sin(ang + .3) * r0 - 6, tx = Math.cos(ta) * rt + sway(i, 1.2), ty = Math.sin(ta) * rt * .96 - 6 - p * 30;
       g.beginPath(); spikePath(g, ax, ay, bx, by, tx, ty, .34 * (i % 2 ? 1 : -1)); g.fillStyle = hc[1]; g.fill(); g.lineWidth = 6; g.strokeStyle = INK; g.stroke();
     }
   } else if (id === 'girl') {
@@ -206,8 +206,8 @@ function hairFront(g, c) {
   // cap
   const capPath = () => { g.beginPath(); g.moveTo(-152, 50); g.bezierCurveTo(-176, -70, -110, -200, 0, -204); g.bezierCurveTo(110, -200, 176, -70, 152, 50); g.lineTo(140, -30); g.bezierCurveTo(90, -60, -90, -60, -140, -30); g.closePath(); };
   let locks;
-  if (id === 'kai') locks = [[-118, -72, 64, -158, 110, .3], [-70, -86, 68, -104, 12, -.2], [-24, -92, 66, -34, 66, .25], [24, -92, 66, 38, 8, -.25], [70, -86, 66, 104, 16, .25], [118, -72, 64, 160, 112, -.3]];
-  else if (id === 'girl') locks = [[-112, -80, 80, -170, 240, .1], [-58, -92, 78, -52, 96, .2], [-4, -100, 70, -6, 10, 0], [50, -92, 78, 46, 92, -.2], [108, -80, 80, 168, 244, -.1]];
+  if (id === 'kai') locks = [[-118, -72, 64, -160, 112, .3], [-70, -86, 68, -94, -30, -.2], [-24, -92, 62, -16, 40, .25], [24, -92, 62, 24, -2, -.25], [70, -86, 66, 98, -30, .25], [118, -72, 64, 162, 114, -.3]];
+  else if (id === 'girl') locks = [[-112, -80, 80, -176, 250, .1], [-58, -92, 78, -44, 24, .2], [-4, -100, 70, -6, -10, 0], [50, -92, 78, 40, 20, -.2], [108, -80, 80, 176, 250, -.1]];
   else locks = [[-108, -74, 70, -140, 40, .3], [-54, -90, 70, -66, -30, -.2], [0, -96, 70, 12, -44, .2], [54, -90, 70, 86, -26, -.2], [108, -74, 70, 142, 44, -.3]];
   const L = locks.map((l, i) => { const [bx, by, w, tx, ty, bend] = l, ext = (id === 'kai' ? 1 + p * .15 : 1); return { ax: bx - w / 2, ay: by, bx: bx + w / 2, by, tx: tx + sw(i, 1.4), ty: ty * ext + sw(i + 4, 1) - p * 12, bend, i }; });
   // forehead shadow (skin shade) under the bangs
@@ -259,9 +259,8 @@ function drawHead(g, c) {
 A.scene({ name: 's4_series', start: 12.0, end: 16.11, draw(ctx, s) {
   ctx.fillStyle = '#7a5aa0'; ctx.fillRect(0, 0, W, H);
   const t = amb();
-  ctx.save(); ctx.translate(300, 500); ctx.scale(1.1, 1.1); drawHead(ctx, { id: 'kai', t, eyes: { style: 'sparkle', lx: 0, ly: -.3 }, mouth: { open: .7 }, brow: { ang: 0, raise: -8 }, blush: 1, sweat: 1 }); ctx.restore();
-  ctx.save(); ctx.translate(780, 500); ctx.scale(1.1, 1.1); drawHead(ctx, { id: 'kai', t, pow: 1, eyes: { style: 'fire', k: .8 }, mouth: { open: .9, w: 38, h: 70 }, brow: { ang: 1, raise: 4 }, anger: 1 }); ctx.restore();
-  ctx.save(); ctx.translate(300, 1100); ctx.scale(1.1, 1.1); drawHead(ctx, { id: 'girl', t, eyes: { style: 'sparkle', lx: .4 }, mouth: { open: 0, curve: -.3 }, brow: { ang: -.5, raise: 0 }, tear: .8 }); ctx.restore();
-  ctx.save(); ctx.translate(780, 1100); ctx.scale(1.1, 1.1); drawHead(ctx, { id: 'man', t, eyes: { style: 'normal', k: .8, lx: -.5 }, mouth: { open: 0, curve: -.2 }, brow: { ang: .8 } }); ctx.restore();
+  ctx.save(); ctx.translate(540, 500); ctx.scale(2.6, 2.6); drawHead(ctx, { id: 'kai', t, eyes: { style: 'sparkle', lx: 0, ly: -.3 }, mouth: { open: .7 }, brow: { ang: 0, raise: -8 }, blush: 1, sweat: 1 }); ctx.restore();
+  ctx.save(); ctx.translate(300, 1400); ctx.scale(1.1, 1.1); drawHead(ctx, { id: 'girl', t, eyes: { style: 'sparkle', lx: .4 }, mouth: { open: 0, curve: -.3 }, brow: { ang: -.5, raise: 0 }, tear: .8 }); ctx.restore();
+  ctx.save(); ctx.translate(780, 1400); ctx.scale(1.1, 1.1); drawHead(ctx, { id: 'man', t, eyes: { style: 'normal', k: .8, lx: -.5 }, mouth: { open: 0, curve: -.2 }, brow: { ang: .8 } }); ctx.restore();
 }});
 })();
