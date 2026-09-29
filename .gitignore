@@ -32,3 +32,5 @@ gotv4/yt2/*.mp4
 *.raw
 gotv5/out/
 gotv5/previews/
+gotv5l/out/
+gotv5l/previews/
