@@ -6,7 +6,7 @@ const _L = [
   [6.70, 9.00, 'תכנים מנטפליקס, תכנים מדיסני פלוס', 'Content from Netflix, content from Disney Plus'],
   [9.05, 10.20, 'כל ערוצי הספורט', 'All the sports channels'],
   [10.25, 13.08, "כולל ספורט 5 וצ'רלטון", 'including Sport 5 and Charlton'],
-  [13.10, 15.42, 'סדרות תורכיות, קוריאניות, אנימה ועוד המון תוכן', 'Turkish and Korean series, anime and lots more'],
+  [13.10, 15.42, 'סדרות טורקיות, קוריאניות, אנימה ועוד המון תוכן', 'Turkish and Korean series, anime and lots more'],
   [15.81, 18.55, 'והכי חשוב, הספרייה מתעדכנת לאורך כל השבוע', 'Most importantly, the library updates all week long'],
   [18.81, 20.40, 'ככה שתמיד יש משהו חדש לראות', "so there's always something new to watch"],
   [20.64, 23.50, 'יש לכם גם שידורים חיים, עם חוויית צפייה מהירה וחלקה', 'You also get live broadcasts, with a fast and smooth viewing experience'],
@@ -18,6 +18,6 @@ const _L = [
   [35.19, 36.88, 'וחוויית צפייה בלי תקיעות', 'and a viewing experience without freezing'],
 ];
 A.LINES = _L.map(([t, end, he, en]) => {
-  const ws = en.split(' '), d = (end - t - 0.1) / ws.length;
-  return { t, end, he, en, words: ws.map((w, i) => ({ w, t: t + 0.05 + i * d })) };
+  const ws = en.split(' '), wt = ws.map(w => w.length + 2.5), tot = wt.reduce((a, b) => a + b, 0); let acc = 0;
+  return { t, end, he, en, words: ws.map((w, i) => { const o = { w, t: t + 0.02 + (end - t - 0.08) * acc / tot }; acc += wt[i]; return o; }) };
 });

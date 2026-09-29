@@ -2,7 +2,7 @@
  {
   "t": 13.1,
   "sound": "whip_in_right",
-  "desc": "fast whoosh, scene whips in from the right",
+  "desc": "fast whoosh, scene whips in from the right with RGB glitch",
   "gain_db": -8,
   "pan": 0.3
  },
@@ -21,10 +21,24 @@
   "pan": 0
  },
  {
+  "t": 13.5,
+  "sound": "string_swell_rise",
+  "desc": "short romantic strings riser into the drama",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
   "t": 13.62,
   "sound": "soap_sting",
-  "desc": "dramatic soap-opera orchestral sting + flash",
+  "desc": "dramatic soap-opera orchestral sting, crash zoom + light leak",
   "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 13.62,
+  "sound": "glitch_rgb_hit",
+  "desc": "short digital glitch / RGB split zap",
+  "gain_db": -14,
   "pan": 0
  },
  {
@@ -43,22 +57,22 @@
  },
  {
   "t": 13.84,
-  "sound": "heartbeat_thump",
-  "desc": "heartbeat dub",
-  "gain_db": -10,
+  "sound": "crash_zoom_thud",
+  "desc": "punchy crash zoom thud on the second beat",
+  "gain_db": -11,
   "pan": 0
  },
  {
   "t": 13.945,
-  "sound": "heartbeat_thump",
-  "desc": "heartbeat lub, louder",
+  "sound": "crash_zoom_thud",
+  "desc": "harder crash zoom thud",
   "gain_db": -8,
   "pan": 0
  },
  {
   "t": 14.0,
   "sound": "wipe_whoosh_pink",
-  "desc": "neon wipe whoosh into Seoul",
+  "desc": "neon wipe whoosh into Seoul + glitch",
   "gain_db": -9,
   "pan": 0.2
  },
@@ -86,113 +100,169 @@
  {
   "t": 14.24,
   "sound": "chime_sparkle",
-  "desc": "pastel chime and sparkle",
-  "gain_db": -12,
+  "desc": "sparkle chime",
+  "gain_db": -16,
   "pan": 0.3
  },
  {
+  "t": 14.32,
+  "sound": "whip_zoom_cut",
+  "desc": "crash zoom cut whoosh into the neon close-up",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 14.32,
+  "sound": "glitch_rgb_hit",
+  "desc": "RGB split zap on the cut",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 14.38,
+  "sound": "heart_pop",
+  "desc": "second heart pop, close-up",
+  "gain_db": -10,
+  "pan": -0.3
+ },
+ {
+  "t": 14.5,
+  "sound": "chime_sparkle",
+  "desc": "eye glint sparkle ping",
+  "gain_db": -15,
+  "pan": 0.2
+ },
+ {
   "t": 14.6,
-  "sound": "anime_flash",
-  "desc": "white flash cut with sharp anime whoosh",
-  "gain_db": -6,
+  "sound": "anime_flash_whoosh",
+  "desc": "white flash + speed-line whoosh into anime",
+  "gain_db": -7,
   "pan": 0
  },
  {
   "t": 14.66,
-  "sound": "label_slam",
-  "desc": "manga burst label slam",
+  "sound": "comic_pop",
+  "desc": "star-burst label pop",
+  "gain_db": -9,
+  "pan": -0.3
+ },
+ {
+  "t": 14.7,
+  "sound": "power_charge_rise",
+  "desc": "rising energy charge whine",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 14.78,
+  "sound": "eye_zoom_slam",
+  "desc": "extreme eye close-up crash zoom slam with glitch",
   "gain_db": -8,
   "pan": 0
  },
  {
-  "t": 14.72,
-  "sound": "aura_charge_rise",
-  "desc": "energy aura charging riser",
-  "gain_db": -12,
-  "pan": 0
- },
- {
-  "t": 14.72,
-  "sound": "sakura_shimmer",
-  "desc": "sakura petal burst shimmer",
-  "gain_db": -12,
+  "t": 14.86,
+  "sound": "sakura_swish",
+  "desc": "sakura petals swirl",
+  "gain_db": -18,
   "pan": 0
  },
  {
   "t": 14.9,
-  "sound": "cut_flash_tick",
-  "desc": "black frame flash tick",
-  "gain_db": -12,
+  "sound": "speedline_cut",
+  "desc": "hard cut to black speed lines",
+  "gain_db": -10,
   "pan": 0
  },
  {
   "t": 14.94,
   "sound": "anime_impact_don",
-  "desc": "taiko hit DON impact",
+  "desc": "manga impact DON, low boom + ring",
   "gain_db": -4,
   "pan": 0
  },
  {
   "t": 15.05,
   "sound": "glass_shatter",
-  "desc": "frame shatters into shards",
-  "gain_db": -7,
+  "desc": "screen shatters",
+  "gain_db": -6,
   "pan": 0
  },
  {
   "t": 15.05,
-  "sound": "shockwave_whoosh",
-  "desc": "gold shockwave ring",
-  "gain_db": -9,
+  "sound": "glitch_rgb_hit",
+  "desc": "RGB split zap on shatter",
+  "gain_db": -14,
   "pan": 0
  },
  {
-  "t": 15.08,
-  "sound": "tiles_rush",
-  "desc": "posters tunnel rushing toward camera",
+  "t": 15.09,
+  "sound": "tunnel_rush_whoosh",
+  "desc": "fast 3D whoosh, logo plates fly at camera",
   "gain_db": -8,
   "pan": 0
  },
  {
   "t": 15.13,
-  "sound": "word_pop",
-  "desc": "title pops",
+  "sound": "title_pop_glass",
+  "desc": "glass title pops in",
   "gain_db": -10,
   "pan": 0
  },
  {
-  "t": 15.42,
-  "sound": "pullback_whoosh",
-  "desc": "pull-back reveal of the poster wall",
-  "gain_db": -8,
+  "t": 15.2,
+  "sound": "plate_flyby",
+  "desc": "glassy plate flyby swishes",
+  "gain_db": -16,
+  "pan": -0.3
+ },
+ {
+  "t": 15.28,
+  "sound": "plate_flyby",
+  "desc": "glassy plate flyby swishes",
+  "gain_db": -16,
+  "pan": 0.3
+ },
+ {
+  "t": 15.35,
+  "sound": "reverse_whoosh",
+  "desc": "pull-back reverse whoosh, decelerating",
+  "gain_db": -10,
   "pan": 0
  },
  {
-  "t": 15.46,
-  "sound": "tile_wall_pops",
-  "desc": "wall tiles pop in radially",
-  "gain_db": -10,
+  "t": 15.5,
+  "sound": "wall_pulse_boom",
+  "desc": "logo wall pulses on the beat, sub boom + shimmer",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 15.6,
+  "sound": "shimmer_sweep",
+  "desc": "light sweep shimmer across the wall",
+  "gain_db": -16,
   "pan": 0
  },
  {
   "t": 15.68,
-  "sound": "zoom_through",
-  "desc": "fast zoom-through into the wall",
-  "gain_db": -6,
+  "sound": "zoom_through_rise",
+  "desc": "riser into the zoom-through",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 15.75,
+  "sound": "wall_pulse_boom",
+  "desc": "second pulse, tighter",
+  "gain_db": -8,
   "pan": 0
  },
  {
   "t": 15.81,
-  "sound": "gold_burst_impact",
-  "desc": "light burst at the cut",
-  "gain_db": -6,
-  "pan": 0
- },
- {
-  "t": 15.85,
-  "sound": "white_out_swell",
-  "desc": "light fades to navy, radial streak tail",
-  "gain_db": -12,
+  "sound": "light_burst_hit",
+  "desc": "white light burst impact into the library",
+  "gain_db": -5,
   "pan": 0
  }
 ]

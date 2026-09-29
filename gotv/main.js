@@ -11,7 +11,7 @@
   const sortScenes = () => A.scenes.sort((a, b) => (a.start + a.shift) - (b.start + b.shift));
 
   // ---------------- captions v2
-  const EMPH = { 'מנטפליקס': '#FF5A66', 'מדיסני': '#6DB8FF', 'הספורט': '#4BE59A', 'ספורט': '#4BE59A', 'חיים': '#FF7A7A', 'השידורים': '#FF7A7A', 'שידורים': '#FF7A7A', 'תקיעות': '#FFC24A', 'נקודה': '#FFC24A', 'אנימה': '#FF8BE0', 'תורכיות': '#FFB347', 'קוריאניות': '#7DF2E6', "וצ'רלטון": '#FF9A3D' };
+  const EMPH = { 'מנטפליקס': '#FF5A66', 'מדיסני': '#6DB8FF', 'הספורט': '#4BE59A', 'ספורט': '#4BE59A', 'חיים': '#FF7A7A', 'השידורים': '#FF7A7A', 'שידורים': '#FF7A7A', 'תקיעות': '#FFC24A', 'נקודה': '#FFC24A', 'אנימה': '#FF8BE0', 'טורקיות': '#FFB347', 'קוריאניות': '#7DF2E6', "וצ'רלטון": '#FF9A3D' };
   const chunks = (() => {
     const out = []; let cur = []; const flush = () => { if (cur.length) out.push(cur); cur = []; };
     WORDS.forEach(w => { if (cur.length && (w.ph !== cur[0].ph || cur.length >= 3 || cur.reduce((s, q) => s + q.w.length, 0) + w.w.length > 17)) flush(); cur.push(w); if (/[,?]$/.test(w.w)) flush(); });
@@ -31,7 +31,7 @@
     c.translate(540, YB); c.rotate(tilt); c.scale(sc0, sc0);
     let x = total / 2;
     words.forEach((s, i) => {
-      const w = ch[i], wp = widths[i], cx = x - wp / 2, active = t >= w.t0 && t < w.t1 + 0.02, k = clamp((t - w.t0) / .14), scl = active ? 1 + .14 * Math.sin(k * Math.PI) : 1, em = EMPH[s] || EMPH[s.replace(/^ו/, '')];
+      const w = ch[i], wp = widths[i], cx = x - wp / 2, active = t >= w.t0 - 0.03 && t < w.t1 - 0.01, k = clamp((t - w.t0) / .14), scl = active ? 1 + .14 * Math.sin(k * Math.PI) : 1, em = EMPH[s] || EMPH[s.replace(/^ו/, '')];
       c.save(); c.translate(cx, 0); c.scale(scl, scl); c.font = `900 ${size}px Rubik`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineJoin = 'round';
       if (active && !big) { c.save(); c.shadowColor = 'rgba(255,190,60,.55)'; c.shadowBlur = 40; c.fillStyle = V.lin(c, 0, -size * .62, 0, size * .62, [[0, '#FFE9A8'], [1, '#FFB021']]); V.rr(c, -wp / 2 - 26, -size * .62, wp + 52, size * 1.24, size * .34); c.fill(); c.restore(); }
       c.shadowColor = 'rgba(0,8,40,.65)'; c.shadowBlur = 22; c.shadowOffsetY = 12;
@@ -50,6 +50,21 @@
     }
   }
 
+
+  // ---------------- global camera / edit layer: beat pulse, phrase punch, dutch swings, whips at cuts, impact shakes, RGB split
+  const CUTS = [[3.05, 1], [5.0, -1], [9.05, 1], [13.10, 1], [15.81, -1], [18.81, 1], [20.64, -1], [23.9, 1], [25.61, 0], [30.12, -1], [36.88, 0]];
+  const HITS = [[3.05, .7, 1], [25.61, 1.2, 1], [26.55, .8, 1], [29.28, .9, 1], [36.9, .6, 1], [9.35, .3, .5], [13.4, .3, .5], [31.6, .35, .5], [35.19, .4, .6]];
+  const starts = chunks.map(c => c.t0);
+  function camAt(t) {
+    let z = 1.0, rot = 0, dx = 0, dy = 0, rgb = 0, streak = 0, sdir = 0;
+    const beat = ((t % .5) / .5); z += .010 * Math.pow(Math.max(0, 1 - beat * 3.2), 2);
+    rot += .006 * Math.sin(t * .8);
+    starts.forEach((s, i) => { const u = t - s; if (u >= 0 && u < .7) { z += (i % 2 ? .05 : .035) * Math.exp(-u * 9); if (i % 3 === 1) rot += (i % 2 ? .04 : -.04) * Math.pow(Math.sin(Math.PI * clamp(u / .7)), 2); } });
+    CUTS.forEach(([c, dir]) => { const u = (t - (c - .07)) / .32; if (u >= 0 && u < 1) { const e = Math.sin(Math.PI * u), k = (1 - Math.cos(Math.PI * u)) / 2; dx += dir * 300 * e * e * (u < .5 ? -1 : 1) * .5; streak = Math.max(streak, e); sdir = dir; z += .05 * e; rgb = Math.max(rgb, 9 * e); } });
+    HITS.forEach(([h, dur, a]) => { const u = t - h; if (u >= 0 && u < dur) { const k = Math.exp(-u * 5 / dur) * a; dx += Math.sin(u * 71) * 20 * k; dy += Math.cos(u * 63) * 17 * k; rot += Math.sin(u * 47) * .012 * k; z += .04 * k; rgb = Math.max(rgb, 8 * k); } });
+    return { z, rot, dx, dy, rgb, streak, sdir };
+  }
+  const RGBF = { r: 'url(#fR)', g: 'url(#fG)', b: 'url(#fB)' };
   // ---------------- post
   const grain = []; for (let k = 0; k < 4; k++) { const g = mk(270, 480), gx = g.getContext('2d'), id = gx.createImageData(270, 480), r = rng(k + 11); for (let i = 0; i < id.data.length; i += 4) { const v = r() * 255; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; } gx.putImageData(id, 0, 0); grain.push(g); }
   const vig = mk(W, H); { const g = vig.getContext('2d'); g.fillStyle = V.rad(g, 540, 960, 700, 1500, [[0, 'rgba(0,0,0,0)'], [1, 'rgba(2,4,20,.55)']]); g.fillRect(0, 0, W, H); }
@@ -66,7 +81,7 @@
     if (window.G_OVERLAY) window.G_OVERLAY(c, t);
     const fb = Math.max(1 - inv(0, 0.22, t), inv(DURV - 0.3, DURV, t)); if (fb > 0) { c.fillStyle = `rgba(0,0,0,${fb})`; c.fillRect(0, 0, W, H); }
   }
-  let sorted = false;
+  let sorted = false, lastCam = { rgb: 0 };
   async function draw(f, opt = {}) {
     if (!sorted) { sortScenes(); sorted = true; }
     const N = opt.fast ? 1 : (opt.n || 3), shutter = 0.55, t = f / FPS;
@@ -74,12 +89,18 @@
     for (let k = 0; k < N; k++) {
       const ff = f + (N === 1 ? 0 : ((k + .5) / N - .5) * shutter);
       if (window.HOST) await HOST.prepare(ff / FPS);
-      A.renderFrame(ff); acx.globalAlpha = 1 / (k + 1); acx.drawImage(cv, 0, 0);
+      A.renderFrame(ff); if (window.HOST) HOST.overlay(ctx, ff / FPS);
+      const cm = camAt(ff / FPS), zz = Math.max(cm.z, 1 + 1.3 * Math.abs(cm.rot) + (Math.abs(cm.dx) + Math.abs(cm.dy)) / 540);
+      acx.save(); acx.globalAlpha = 1 / (k + 1); acx.translate(540 + cm.dx, 960 + cm.dy); acx.rotate(cm.rot); acx.scale(zz, zz); acx.translate(-540, -960); acx.drawImage(cv, 0, 0);
+      if (cm.streak > .3) { for (let q = 1; q <= 4; q++) { acx.globalAlpha = (1 / (k + 1)) * .16 * cm.streak; acx.drawImage(cv, -cm.sdir * q * 26, 0); } }
+      acx.restore(); lastCam = cm;
     }
     acx.globalAlpha = 1;
-    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none'; ctx.drawImage(ACC, 0, 0);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
+    const rg = opt.fast ? 0 : camAt(t).rgb;
+    if (rg > .6) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); ctx.globalCompositeOperation = 'lighter'; ctx.filter = RGBF.r; ctx.drawImage(ACC, rg, 0); ctx.filter = RGBF.g; ctx.drawImage(ACC, 0, 0); ctx.filter = RGBF.b; ctx.drawImage(ACC, -rg, 0); ctx.filter = 'none'; ctx.globalCompositeOperation = 'source-over'; } else ctx.drawImage(ACC, 0, 0);
     post(ctx, t, f);
   }
   window.G = { draw, W, H, FPS, DURV, chunks };
-  window.gReady = document.fonts.ready.then(() => Promise.all(['300 20px Rubik', '600 20px Rubik', '900 20px Rubik'].map(f => document.fonts.load(f, 'אבג abc'))));
+  window.gReady = Promise.all([V.logosReady, document.fonts.ready.then(() => Promise.all(['300 20px Rubik', '600 20px Rubik', '900 20px Rubik'].map(f => document.fonts.load(f, 'אבג abc'))))]);
 })();

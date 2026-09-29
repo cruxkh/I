@@ -7,17 +7,21 @@
   const C = V.C;
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
   const TC = mk(W, H), RC = mk(W, H), tctx = TC.getContext('2d'), rctx = RC.getContext('2d');
-  const SHOTS = Object.entries(PLAN).map(([k, v]) => ({ k, ...v })).filter(s => !['m3', 'm4'].includes(s.k)).sort((a, b) => a.t0 - b.t0);
-  const CAM = { m1: [1.16, 1.34, 0, 0, 0, 0], m2: [1.72, 1.82, -3, -3, 0, -18], m5: [1.5, 1.6, 2.5, 1.5, 0, 0], m6: [1.2, 1.85, 0, 0, 0, 0], m7: [1.4, 1.52, -2, -2.5, 0, 0], m8: [1.78, 1.9, 3, 3, 0, 0], m9: [1.25, 1.4, 0, 0, 0, 0], m10: [1.55, 1.8, 0, 0, 0, 0] };
-  const PIV = [0.49 * W, 0.35 * H], FACE_AT = [540, 690];
-  const cache = new Map(), load = src => { if (cache.has(src)) return cache.get(src); const p = new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; }); cache.set(src, p); if (cache.size > 60) cache.delete(cache.keys().next().value); return p; };
-  let cur = null;
-  const shotAt = t => SHOTS.find(s => t >= s.t0 && t < s.t1 + (s.k === 'm10' ? 0.3 : 0));
+  const ITEMS = Object.entries(HPLAN).map(([id, v]) => ({ id, ...v })).sort((a, b) => a.t0 - b.t0);
+  const FULLS = ITEMS.filter(i => i.mode === 'full'), CAMEOS = ITEMS.filter(i => i.mode === 'cameo');
+  const GROUP = id => id.startsWith('h10') ? 'm10' : id.startsWith('h1') ? 'm1' : id.startsWith('h2') ? 'm1' : id.startsWith('h3') ? 'm1' : id.startsWith('h4') ? 'm1' : id.startsWith('h5') ? 'm5' : id.startsWith('h6') ? 'm6' : id.startsWith('h7') ? 'm7' : id.startsWith('h8') ? 'm8' : id.startsWith('h9') ? 'm9' : id;
+  const GSTART = { m1: 0, m5: 18.81, m6: 23.9, m7: 30.12, m8: 32.04, m9: 33.42, m10: 35.19 };
+  const PIV = [0.49 * W, 0.35 * H];
+  const cache = new Map(), load = src => { if (cache.has(src)) return cache.get(src); const p = new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; }); cache.set(src, p); if (cache.size > 90) cache.delete(cache.keys().next().value); return p; };
+  let curs = [];   // active items with their decoded frames
+  const active = t => ITEMS.filter(i => t >= i.t0 && t < i.t1 + (i.id === 'h10b' ? 0.3 : 0));
   async function prepare(t) {
-    const s = shotAt(t); cur = null; if (!s) return;
-    const idx = s.src + Math.floor(clamp(t, s.t0, s.t1 - 1e-4) * 25 - s.t0 * 25 + 1e-6), nm = String(idx).padStart(4, '0');
-    const [im, mk2] = await Promise.all([load(`yt/src/f${nm}.jpg`), load(`yt/mask_rgba/f${nm}.png`)]);
-    cur = im && mk2 ? { im, mk: mk2, shot: s } : null;
+    curs = [];
+    for (const it of active(t)) {
+      const idx = it.src + Math.floor(clamp(t - it.t0, 0, it.t1 - it.t0 - 1e-4) * 25 * it.rate + 1e-6), nm = String(Math.min(idx, 894)).padStart(4, '0');
+      const [im, mk2] = await Promise.all([load(`yt/src/f${nm}.jpg`), load(`yt/mask_rgba/f${nm}.png`)]);
+      if (im && mk2) curs.push({ it, im, mk: mk2 });
+    }
   }
 
   // ------------------------------------------------ set (background)
@@ -29,26 +33,27 @@
     if (dark) { ctx.fillStyle = `rgba(3,5,18,${dark * .8})`; ctx.fillRect(0, 0, W, H); }
   }
   // ------------------------------------------------ host cutout with rim light
-  function drawHost(ctx, t, s, extra = {}) {
-    if (!cur || cur.shot !== s) return null;
-    const cam = CAM[s.k], u = (t - s.t0) / (s.t1 - s.t0), e = eio(u), beat = 1 + .012 * Math.pow(Math.max(0, 1 - ((t % .5) / .5) * 3), 2);
-    const cu = t - s.t0, shk = Math.exp(-cu * 14) * 16;
-    const z = lerp(cam[0], cam[1], e) * beat * (extra.zoomK || 1), rot = lerp(cam[2], cam[3], e) * Math.PI / 180, dx = lerp(cam[4], cam[5], e) + Math.sin(cu * 60) * shk, dy = Math.cos(cu * 53) * shk + (extra.dy || 0);
-    const xf = c => { c.setTransform(1, 0, 0, 1, 0, 0); c.translate(FACE_AT[0] + dx, FACE_AT[1] + dy); c.rotate(rot); c.scale(z, z); c.translate(-PIV[0], -PIV[1]); };
+  // cut(): builds the cut-out into TC/RC using layout (face anchor cx,cy; zoom z; rot deg; flip)
+  function cut(c, t, o) {
+    const it = c.it, u = clamp((t - it.t0) / (it.t1 - it.t0)), e = eio(u), beat = 1 + .012 * Math.pow(Math.max(0, 1 - ((t % .5) / .5) * 3), 2);
+    const cu = t - it.t0, shk = it.mode === 'full' ? Math.exp(-cu * 14) * 16 : 0;
+    const z = lerp(it.z0, it.z1, e) * beat * (o.zoomK || 1), rot = lerp(it.rot0, it.rot1, e) * Math.PI / 180, dx = (o.dx || 0) + Math.sin(cu * 60) * shk, dy = (o.dy || 0) + Math.cos(cu * 53) * shk;
+    const fx = it.flip ? -1 : 1;
+    const xf = cx => { cx.setTransform(1, 0, 0, 1, 0, 0); cx.translate(it.cx + dx, it.cy + dy); cx.rotate(rot); cx.scale(z * fx, z); cx.translate(-PIV[0], -PIV[1]); };
     tctx.setTransform(1, 0, 0, 1, 0, 0); tctx.clearRect(0, 0, W, H); tctx.globalCompositeOperation = 'source-over';
-    tctx.save(); xf(tctx); tctx.filter = 'contrast(1.14) saturate(1.5) brightness(1.08)'; tctx.drawImage(cur.im, 0, 0, W, H); tctx.restore();
-    tctx.save(); tctx.globalCompositeOperation = 'destination-in'; xf(tctx); tctx.filter = 'blur(1.2px)'; tctx.drawImage(cur.mk, 0, 0, W, H); tctx.restore();
-    // silhouette (colourised) for rim lights + halo
+    tctx.save(); xf(tctx); tctx.filter = 'contrast(1.14) saturate(1.5) brightness(1.08)'; tctx.drawImage(c.im, 0, 0, W, H); tctx.restore();
+    tctx.save(); tctx.globalCompositeOperation = 'destination-in'; xf(tctx); tctx.filter = 'blur(1.2px)'; tctx.drawImage(c.mk, 0, 0, W, H); tctx.restore();
     rctx.setTransform(1, 0, 0, 1, 0, 0); rctx.clearRect(0, 0, W, H); rctx.globalCompositeOperation = 'source-over'; rctx.drawImage(TC, 0, 0); rctx.globalCompositeOperation = 'source-in'; rctx.fillStyle = '#fff'; rctx.fillRect(0, 0, W, H); rctx.globalCompositeOperation = 'source-over';
-    const tint = (col, dxx, dyy, a, blur = 0) => { const c2 = mk(1, 1); ctx.save(); ctx.globalAlpha = a; if (blur) ctx.filter = `blur(${blur}px)`; ctx.drawImage(TINT(col), dxx, dyy); ctx.restore(); };
-    const hl = extra.halo ?? 1;
-    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .34 * hl; ctx.filter = 'blur(30px)'; ctx.drawImage(TINT('#5AA8FF'), -10, 0); ctx.globalAlpha = .26 * hl; ctx.drawImage(TINT('#FFC24A'), 14, 6); ctx.restore();
-    ctx.save(); ctx.shadowColor = 'rgba(0,10,50,.5)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 26; ctx.drawImage(TC, 0, 0); ctx.restore();
-    // crisp rim: shifted coloured silhouettes clipped to the outside edge of the body
-    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .9; ctx.drawImage(TINT('#38B6FF'), -5, -2); ctx.globalAlpha = .9; ctx.drawImage(TINT('#FFC24A'), 6, 3); ctx.restore();
-    ctx.drawImage(TC, 0, 0);
-    return { z, rot };
+    for (const k in tintCache) delete tintCache[k];
   }
+  function paintCut(ctx, halo = 1, outline = false) {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .34 * halo; ctx.filter = 'blur(30px)'; ctx.drawImage(TINT('#5AA8FF'), -10, 0); ctx.globalAlpha = .26 * halo; ctx.drawImage(TINT('#FFC24A'), 14, 6); ctx.restore();
+    ctx.save(); ctx.shadowColor = 'rgba(0,10,50,.5)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 26; ctx.drawImage(TC, 0, 0); ctx.restore();
+    if (outline) { ctx.save(); ctx.filter = 'brightness(0) invert(1)'; const R = 10; for (let i = 0; i < 14; i++) { const a = i / 14 * A.TAU; ctx.drawImage(TC, Math.cos(a) * R, Math.sin(a) * R); } ctx.restore(); }
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .9; ctx.drawImage(TINT('#38B6FF'), -5, -2); ctx.drawImage(TINT('#FFC24A'), 6, 3); ctx.restore();
+    ctx.drawImage(TC, 0, 0);
+  }
+  function drawHost(ctx, t, c, extra = {}) { cut(c, t, extra); paintCut(ctx, extra.halo ?? 1, false); return true; }
   const tintCache = {};
   function TINT(col) {
     const c = tintCache[col] || (tintCache[col] = mk(W, H)), x = c.getContext('2d');
@@ -66,7 +71,7 @@
 
   function stickers(ctx, t, s) {
     const k = s.k, u = t - s.t0;
-    if (k === 'm1' || k === 'm2') {                       // tornado of glass apps: far ones small+blurred, near ones big
+    if (k === 'm1') {                       // tornado of glass apps: far ones small+blurred, near ones big
       const freeze = t >= 2.0, tt = freeze ? 2.0 : t, pull = k === 'm2' ? clamp((t - 2.75) / .3) : 0;
       for (let layer = 0; layer < 2; layer++) for (let i = 0; i < 9; i++) {
         const id = i + layer * 9, ph = tt * 1.1 + id, a = ph * 2.05 + id * .55, rad = (layer ? 250 : 380) + 110 * Math.sin(id * 1.7 + tt * 1.3) + (freeze ? Math.sin(t * 5 + id) * 9 : 0);
@@ -77,7 +82,7 @@
         if (id % 4 === 0 && layer) spinner(ctx, x, y + 34 * sz, 28 * sz * p, t, '#fff', .9 * p);
       }
       qbubble(ctx, 170, 470, eob((t - .25) / .3), -.2, '#FFC24A'); qbubble(ctx, 900, 560, eob((t - .75) / .3) * 1.15, .25, '#5AD1FF'); qbubble(ctx, 260, 980, eob((t - 1.35) / .3) * .9, .15, '#FF6EC7');
-      if (k === 'm2') qbubble(ctx, 830, 460, eob((t - 2.1) / .3) * 1.5, .12, '#FF6EC7');
+      if (t >= 2.0) qbubble(ctx, 830, 460, eob((t - 2.1) / .3) * 1.5, .12, '#FF6EC7');
     }
     if (k === 'm5') {
       const p = eob(u / .35), pulse = 1 + .06 * Math.sin(t * 9);
@@ -115,19 +120,40 @@
       for (let i = 0; i < 10; i++) V.sparkle(ctx, 90 + hash(i + 70) * 900, 300 + hash(i + 80) * 900, 36 * Math.abs(Math.sin(t * 7 + i)), '#fff', t);
     }
   }
-  function scene(s) {
+  function scene(it) {
+    const g = GROUP(it.id), pseudo = { k: g, t0: GSTART[g] ?? it.t0, t1: it.t1 };
     A.scene({
-      name: 'host_' + s.k, start: s.t0, end: s.t1 + (s.k === 'm10' ? 0.3 : 0), shift: 0,
+      name: 'host_' + it.id, start: it.t0, end: it.t1 + (it.id === 'h10b' ? 0.3 : 0), shift: 0,
       draw(ctx, st) {
-        const t = st.t, dark = s.k === 'm6' ? clamp((t - 23.9) / 1.0) * .5 : 0;
-        set(ctx, t, dark, s.k >= 'm7' || s.k === 'm5' ? 1 : 0);
-        if (s.k === 'm6') V.beams(ctx, 540, -40, t, '#FFFFFF', 3, 1900, .5, .18 * eio(clamp((t - 23.9) / .8)));
-        drawHost(ctx, t, s, { halo: s.k === 'm6' ? .5 : 1 }); stickers(ctx, t, s);
-        if (s.k === 'm6') { if (t > 25.15) { const r = rng(Math.floor(t * 30)); const im = ctx.getImageData(0, 0, W, H); ctx.putImageData(im, 0, 0); for (let i = 0; i < 9; i++) { const y = r() * H | 0, h = 30 + r() * 140 | 0, dx = (r() - .5) * 160; ctx.drawImage(ctx.canvas, 0, y, W, h, dx, y, W, h); } } if (t > 25.32) { ctx.save(); ctx.globalCompositeOperation = 'saturation'; ctx.fillStyle = '#777'; ctx.fillRect(0, 0, W, H); ctx.restore(); } }
+        const t = st.t, dark = g === 'm6' ? clamp((t - 23.9) / 1.0) * .5 : 0;
+        set(ctx, t, dark, g >= 'm7' || g === 'm5' ? 1 : 0);
+        if (g === 'm6') V.beams(ctx, 540, -40, t, '#FFFFFF', 3, 1900, .5, .18 * eio(clamp((t - 23.9) / .8)));
+        const c = curs.find(q => q.it === it); if (c) drawHost(ctx, t, c, { halo: g === 'm6' ? .5 : 1 });
+        stickers(ctx, t, pseudo);
+        if (g === 'm6') { if (t > 25.15) { const r = rng(Math.floor(t * 30)); for (let i = 0; i < 9; i++) { const y = r() * H | 0, h = 30 + r() * 140 | 0, dx = (r() - .5) * 160; ctx.drawImage(ctx.canvas, 0, y, W, h, dx, y, W, h); } } if (t > 25.32) { ctx.save(); ctx.globalCompositeOperation = 'saturation'; ctx.fillStyle = '#777'; ctx.fillRect(0, 0, W, H); ctx.restore(); } }
+        if (st.lt < 0.12 && it.t0 > 0.1 && !['h6'].includes(it.id)) V.flash(ctx, t, it.t0, .12, '#fff', .55);   // jump-cut flash
       },
     });
   }
-  SHOTS.forEach(scene);
+  FULLS.forEach(scene);
   A.scene({ name: 'blackhold', start: 25.5, end: 25.61, shift: 0, draw(ctx) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); } });
-  window.HOST = { prepare, SHOTS };
+  // ---- cameo overlay: the host pops in from the frame edges over the animation scenes
+  function overlay(ctx, t) {
+    for (const c of curs) {
+      const it = c.it; if (it.mode !== 'cameo') continue;
+      const ein = eob((t - it.t0) / .26), eout = ein_(clamp((t - (it.t1 - .22)) / .22)), e = Math.min(ein, 1 - eout);
+      const off = it.dist * (1 - e), dx = it.dir === 'l' ? -off : it.dir === 'r' ? off : 0, dy = it.dir === 't' ? -off : it.dir === 'b' ? off : 0;
+      const sq = 1 + .05 * Math.sin(clamp((t - it.t0) / .3) * Math.PI * 2);
+      ctx.save();
+      // glow disc + entry burst
+      const gx = it.cx + dx, gy = it.cy + dy; V.glow(ctx, gx, gy, 420, '#FFC24A', .5 * e); V.glow(ctx, gx, gy, 320, '#2F6BFF', .35 * e);
+      const q = (t - it.t0) / .4; if (q > 0 && q < 1) { V.ring(ctx, it.cx, it.cy, 100 + q * 330, 14 * (1 - q), '#fff', .9 * (1 - q)); for (let i = 0; i < 8; i++) { const a = i / 8 * A.TAU + .3; V.sparkle(ctx, it.cx + Math.cos(a) * (140 + q * 260), it.cy + Math.sin(a) * (140 + q * 260), 26 * (1 - q), '#fff', a); } }
+      cut(c, t, { dx, dy, zoomK: sq }); paintCut(ctx, .7, true);
+      // speed streaks trailing the entry direction
+      if (e < .98 && ein < 1) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .5 * (1 - e); for (let i = 0; i < 6; i++) { const yy = it.cy + (i - 2.5) * 70, len = 260 + 120 * hash(i); ctx.fillStyle = '#fff'; if (it.dir === 'l' || it.dir === 'r') ctx.fillRect(it.dir === 'l' ? gx - len - 200 : gx + 200, yy, len, 6); } ctx.restore(); }
+      ctx.restore();
+    }
+  }
+  const ein_ = t => ease.in(clamp(t));
+  window.HOST = { prepare, overlay, ITEMS };
 })();

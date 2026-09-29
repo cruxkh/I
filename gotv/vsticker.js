@@ -1,0 +1,1 @@
+// vsticker placeholder

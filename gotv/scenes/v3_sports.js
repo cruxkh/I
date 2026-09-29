@@ -132,6 +132,8 @@ function bodyParts(c, P, K, flat, o) {
   // torso
   limb(c, nk, hp, 92, 58, 0, 1, F(K.shirt)); limb(c, nk, hp, 92, 58, .55, 1, F(K.shirt2));
   if (o.stripe && !flat) { c.fillStyle = o.stripe; c.beginPath(); c.moveTo(nk[0] - 30, nk[1] + 40); c.lineTo(nk[0] + 30, nk[1] + 28); c.lineTo(nk[0] + 30, nk[1] + 48); c.lineTo(nk[0] - 30, nk[1] + 60); c.fill(); }
+  if (o.cloth) { const cw = o.cloth, sw = Math.sin(cw * 44) * 12; c.fillStyle = F(K.shirt2); c.beginPath(); c.moveTo(nk[0] - 40, hp[1] - 60); c.quadraticCurveTo(hp[0] - 70 - 30 * o.dirx, hp[1] + 10 + sw, hp[0] - 46 - 46 * o.dirx, hp[1] + 44 + sw * 1.4); c.quadraticCurveTo(hp[0] - 10, hp[1] + 20, hp[0] + 34, hp[1] + 12); c.lineTo(nk[0] + 30, hp[1] - 60); c.closePath(); c.fill();
+    c.fillStyle = F(K.short); c.beginPath(); c.moveTo(hp[0] - 44, hp[1] - 10); c.quadraticCurveTo(hp[0] - 62, hp[1] + 40 + sw, hp[0] - 20, hp[1] + 58); c.lineTo(hp[0] + 40, hp[1] + 40 - sw * .5); c.lineTo(hp[0] + 40, hp[1] - 10); c.fill(); }
   limb(c, nk, hd, 28, 26, 0, 1, F(K.skin));
   // head
   c.fillStyle = F(K.skin); c.beginPath(); c.ellipse(hd[0], hd[1], 31, 37, 0, 0, TAU); c.fill();
@@ -157,8 +159,12 @@ function figure(ctx, P, K, x, y, s, flip = 1, o = {}) {
     g.globalAlpha = a; g.drawImage(rc, 0, 0); g.globalAlpha = 1;
   };
   rim(-9 * s / 2, 9 * s / 2, o.rim1 || '#9FD4FF', 1); rim(8 * s / 2, 5 * s / 2, o.rim2 || '#FFB05A', .9);
-  ctx.save(); ctx.translate(x, y); ctx.scale(flip, 1); ctx.drawImage(tc, -OX, -OY); ctx.restore();
+  ctx.save(); ctx.translate(x, y); ctx.scale(flip, 1);
+  if (o.shadow !== false) { ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.beginPath(); ctx.ellipse(0, (feetY(P) * s) + 10, 150 * s * .7, 20 * s * .7, 0, 0, TAU); ctx.fill(); }
+  if (o.ghosts) for (const [gx, gy, ga] of o.ghosts) { ctx.globalAlpha = ga; ctx.drawImage(tc, -OX + gx, -OY + gy); }
+  ctx.globalAlpha = 1; ctx.drawImage(tc, -OX, -OY); ctx.restore();
 }
+const feetY = P => Math.max(P[15], P[21]);
 const feet = (P, s, y) => y + Math.max(P[15], P[21]) * s;
 
 // ================================================================ MONTAGE SHOTS (k = seconds since the beat start, 0..0.3)
@@ -167,11 +173,14 @@ function bgWord(ctx, y) {
   if (!CURW) return; const { i, k } = CURW, [txt, dir, size] = WORDS[i];
   slam(ctx, txt, 540, y, size * 1.12, k - .01, { dir, grad: WCOL[i], stroke: WSTK[i], glowCol: 'rgba(0,0,0,.55)', rot: i % 2 ? .05 : -.05, sw: .17, back: 'rgba(255,255,255,.9)' });
 }
+const gh = (k, ti, d) => (k > ti - .09 && k < ti + .12) ? [[d[0] * 1.8, d[1] * 1.8, .16], [d[0], d[1], .28]] : null;   // afterimage smear
 const warp = (k, ti) => k < ti ? k : ti + (k - ti) * .5;   // slow-mo follow-through after the impact instant
 function cam(ctx, k, o) {
-  const z = lerp(o.z0 ?? 1.04, o.z1 ?? 1.24, eo(k / .3)) * (1 + (o.pop || 0) * Math.exp(-Math.max(0, k - o.ti) * 18) * (k > o.ti ? 1 : 0));
+  const kc = o.crash && k > o.ti ? eo((k - o.ti) / .045) : 0, kr = k > .255 ? ein((k - .255) / .045) : 0;   // crash-zoom onto the impact, released just before the cut
+  const z = lerp(o.z0 ?? 1.04, o.z1 ?? 1.24, eo(k / .3)) * (1 + (o.pop || 0) * Math.exp(-Math.max(0, k - o.ti) * 18) * (k > o.ti ? 1 : 0)) * lerp(1, o.crash || 1, kc * (1 - kr * .6));
   const sh = k > o.ti ? (o.shake ?? 1) * Math.exp(-(k - o.ti) * 10) : 0, R = rng(Math.floor(k * 60) + 3);
-  ctx.translate(540 + (R() - .5) * 26 * sh, 940 + (R() - .5) * 26 * sh); ctx.rotate((o.rot0 ?? 0) + ((o.rot1 ?? 0) - (o.rot0 ?? 0)) * k / .3); ctx.scale(z, z); ctx.translate(-(o.cx ?? 540), -(o.cy ?? 940));
+  const cx = lerp(o.cx ?? 540, o.ix ?? o.cx ?? 540, kc), cy = lerp(o.cy ?? 940, o.iy ?? o.cy ?? 940, kc);
+  ctx.translate(540 + (R() - .5) * 26 * sh, 940 + (R() - .5) * 26 * sh); ctx.rotate((o.rot0 ?? 0) + ((o.rot1 ?? 0) - (o.rot0 ?? 0)) * k / .3 + kc * (o.crot || 0)); ctx.scale(z, z); ctx.translate(-cx, -cy);
 }
 function crowdDots(g, y0, y1, n, seed, cols) {
   const R = rng(seed); g.save(); g.globalCompositeOperation = 'lighter';
@@ -192,7 +201,7 @@ const bgFootball = () => A.layer('bgFb', W, H, g => {
 });
 function shotFootball(ctx, k, t) {
   const ti = .17, kw = warp(k, ti);
-  ctx.save(); cam(ctx, k, { z0: 1.02, z1: 1.22, cx: 500, cy: 760, ti, shake: 1.4, rot0: -.03, rot1: .02, pop: .04 });
+  ctx.save(); cam(ctx, k, { z0: 1.02, z1: 1.22, cx: 500, cy: 760, ti, shake: 1.6, rot0: -.07, rot1: .05, pop: .05, crash: 1.45, ix: 700, iy: 600, crot: .08 });
   ctx.drawImage(bgFootball(), 0, 0); bgWord(ctx, 520);
   // floodlights + flares
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
@@ -209,7 +218,7 @@ function shotFootball(ctx, k, t) {
   const jump = -60 * Math.sin(cl(kw / .27) * Math.PI) - 18, FX = 400, FY = 900 + jump;
   // motion streak behind striker
   glow(ctx, FX, FY - 150, 520, '#5AD1FF', .2);
-  figure(ctx, pose, KIT.yb, FX, FY, 2.0, 1, { band: '#1743C9', stripe: '#1743C9' });
+  figure(ctx, pose, KIT.yb, FX, FY, 2.0, 1, { band: '#1743C9', stripe: '#1743C9', cloth: k + .3, dirx: 1, ghosts: gh(k, ti, [-70, 40]) });
   // ball
   const s = 2.0, C = [FX + 175 * s, FY - 112 * s];
   let bx, by, br = 33;
@@ -234,7 +243,7 @@ const bgArena = () => A.layer('bgBb', W, H, g => {
 });
 function shotDunk(ctx, k, t) {
   const ti = .15, kw = warp(k, ti);
-  ctx.save(); cam(ctx, k, { z0: 1.03, z1: 1.2, cx: 560, cy: 640, ti, shake: 1.5, rot0: .025, rot1: -.02, pop: .05 });
+  ctx.save(); cam(ctx, k, { z0: 1.03, z1: 1.2, cx: 560, cy: 640, ti, shake: 1.6, rot0: .07, rot1: -.05, pop: .06, crash: 1.4, ix: 640, iy: 380, crot: -.07 });
   ctx.drawImage(bgArena(), 0, 0); bgWord(ctx, 560);
   for (let i = 0; i < 3; i++) V.beams(ctx, 200 + i * 340, 40, t + i, i === 1 ? 'rgba(255,180,90,1)' : 'rgba(150,170,255,1)', 3, 1500, .35, .14);
   const R = rng(9); ctx.save(); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 26; i++) { const x = R() * W, y = 400 + R() * 500, ph = R() * 4; const a = Math.max(0, Math.sin(t * 22 + ph * 9)); if (a > .8) { ctx.globalAlpha = a; ctx.fillStyle = '#fff'; V.sparkle(ctx, x, y, 26 + R() * 20, '#fff', 0, .9); } } ctx.restore();
@@ -254,7 +263,7 @@ function shotDunk(ctx, k, t) {
   // player
   const m = eio(kw / ti), pose = mixArr(POSE.dunkA, POSE.dunkB, m), FX = 430, FY = 930 - 70 * Math.sin(cl(kw / .3) * Math.PI * .9) + 10, s = 1.9;
   glow(ctx, FX + 40, FY - 200, 420, '#FFB05A', .22);
-  figure(ctx, pose, KIT.bb, FX, FY, s, 1, { band: '#fff', stripe: '#fff', rim1: '#9FD4FF', rim2: '#FFB05A', lightX: -1 });
+  figure(ctx, pose, KIT.bb, FX, FY, s, 1, { band: '#fff', stripe: '#fff', rim1: '#9FD4FF', rim2: '#FFB05A', lightX: -1, cloth: k + .1, dirx: 1, ghosts: gh(k, ti, [-40, 70]) });
   // ball
   const hx = FX + pose[8] * s, hy = FY + pose[9] * s;
   let bx = hx + 26, by = hy - 36, sc = 1;
@@ -278,13 +287,13 @@ const bgTennis = () => A.layer('bgTn', W, H, g => {
 });
 function shotTennis(ctx, k, t) {
   const ti = .16, kw = warp(k, ti);
-  ctx.save(); cam(ctx, k, { z0: 1.02, z1: 1.24, cx: 570, cy: 620, ti, shake: 1.1, rot0: -.02, rot1: .03, pop: .05 });
+  ctx.save(); cam(ctx, k, { z0: 1.02, z1: 1.24, cx: 570, cy: 620, ti, shake: 1.3, rot0: -.06, rot1: .06, pop: .06, crash: 1.45, ix: 600, iy: 300, crot: .07 });
   ctx.drawImage(bgTennis(), 0, 0); bgWord(ctx, 560);
   for (const [x, y] of [[170, 190], [910, 150]]) lightBank(ctx, x, y, 170, 120, '#fff', .95);
   V.beams(ctx, 170, 210, t, 'rgba(170,205,255,1)', 4, 1800, .5, .10); V.beams(ctx, 910, 170, t, 'rgba(170,205,255,1)', 4, 1800, .5, .10);
   const m = eio(kw / ti), pose = mixArr(POSE.serA, POSE.serB, m), FX = 470, FY = 1010 - 24 * Math.sin(cl(kw / .3) * Math.PI), s = 1.9;
   glow(ctx, FX, 1140, 380, '#7FC0FF', .22);
-  figure(ctx, pose, KIT.tn, FX, FY, s, 1, { band: '#38D9F5', stripe: '#38D9F5', rim1: '#9FE0FF', rim2: '#FFC080' });
+  figure(ctx, pose, KIT.tn, FX, FY, s, 1, { band: '#38D9F5', stripe: '#38D9F5', rim1: '#9FE0FF', rim2: '#FFC080', cloth: k + .2, dirx: 1, ghosts: gh(k, ti, [-30, 60]) });
   // racket (hand of arm1 = pose[8],[9]; elbow = [6],[7])
   const ex = FX + pose[6] * s, ey = FY + pose[7] * s, hx = FX + pose[8] * s, hy = FY + pose[9] * s;
   const an = Math.atan2(hy - ey, hx - ex), ux = Math.cos(an), uy = Math.sin(an), hc = [hx + ux * 130, hy + uy * 130];
@@ -323,7 +332,7 @@ const bgRing = () => A.layer('bgBx', W, H, g => {
 });
 function shotBox(ctx, k, t) {
   const ti = .15, kw = warp(k, ti);
-  ctx.save(); cam(ctx, k, { z0: 1.03, z1: 1.26, cx: 640, cy: 660, ti, shake: 2.2, rot0: .03, rot1: -.015, pop: .07 });
+  ctx.save(); cam(ctx, k, { z0: 1.03, z1: 1.26, cx: 640, cy: 660, ti, shake: 2.4, rot0: .08, rot1: -.04, pop: .08, crash: 1.5, ix: 760, iy: 560, crot: -.08 });
   ctx.drawImage(bgRing(), 0, 0); bgWord(ctx, 470);
   V.beams(ctx, 540, 0, t, 'rgba(255,200,150,1)', 3, 1500, .5, .18); glow(ctx, 540, 520, 700, '#FF8A4A', .16);
   // haze
@@ -334,7 +343,7 @@ function shotBox(ctx, k, t) {
   figure(ctx, dPose, KIT.bx2, 740 + dx, 900, s, -1, { glove: true, dim: true, rim1: '#FFB07A', rim2: '#7FB6FF', band: '#3D7BFF', sock: false });
   const aPose = mixArr(POSE.bxA, POSE.bxB, m);
   glow(ctx, 380, 700, 500, '#FF7A3C', .22);
-  figure(ctx, aPose, KIT.bx1, 300 + 40 * m, 900, s, 1, { glove: true, rim1: '#FFB07A', rim2: '#7FB6FF', sock: false });
+  figure(ctx, aPose, KIT.bx1, 300 + 40 * m, 900, s, 1, { glove: true, rim1: '#FFB07A', rim2: '#7FB6FF', sock: false, ghosts: gh(k, ti, [-90, 10]) });
   // impact
   const IX = 790 + dx * .5, IY = 560;
   burst(ctx, IX, IY, (k - ti) / .15, '#FFC078', 640, 22, 12);
@@ -348,62 +357,76 @@ let CURW = null;
 const WORDS = [['ספורט', 'rtl', 215], ['SPORT', 'ltr', 184], ['ספורט', 'rtl', 215], ['SPORT', 'ltr', 184]];
 const WCOL = [[[0, '#FFF3C4'], [.5, '#FFC24A'], [1, '#E48A12']], [[0, '#FFFFFF'], [.5, '#BFE3FF'], [1, '#5AA8FF']], [[0, '#F4FFB0'], [.5, '#B8F03A'], [1, '#4FA80F']], [[0, '#FFFFFF'], [.5, '#FFB37A'], [1, '#FF4A2A']]];
 const WSTK = ['#3A1A00', '#06124a', '#0b3a10', '#4a0a08'];
+// ================================================================ REAL-LOGO BROADCAST PLATES
+const PL = { sport1: '#22F08C', sport2: '#FF3040', sport3: '#FFE41F', sport4: '#22F2F2', one: '#3D8BFF', sport5: '#7FD0FF' };
+const PORDER = ['sport1', 'sport2', 'sport3', 'sport4', 'one', 'sport5'];
+function pdim(n) {
+  const im = V.logoImg(n); if (!im) return { w: 640, h: 200, lh: 150, lw: 500, wide: true };
+  const asp = im.width / im.height, wide = asp > 2, lh = wide ? 150 : 210, lw = lh * asp;
+  return { w: lw + (wide ? 80 : 130), h: lh + (wide ? 58 : 60), lh, lw, wide };
+}
+const chipScale = n => { const d = pdim(n); return (d.wide ? 34 : 46) / d.lh; };
+const CHIPY = 1148;
+const SLOTX = (() => { const ws = PORDER.map(n => pdim(n).w * chipScale(n)), gap = 12, tot = ws.reduce((a, b) => a + b, 0) + gap * 5; let x = 540 - tot / 2; return ws.map(w => { const c = x + w / 2; x += w + gap; return c; }); })();
+function plate(ctx, n, x, y, sc, k, o = {}) {
+  const im = V.logoImg(n); if (!im || k < 0) return; const d = pdim(n), col = PL[n];
+  const pop = o.nopop ? 1 : (k < .06 ? lerp(2.8, 1, eo(k / .06)) : 1 + .06 * Math.exp(-(k - .06) * 16) * Math.sin((k - .06) * 55));
+  ctx.save(); ctx.translate(x, y); ctx.rotate(o.rot || 0); ctx.scale(sc * pop, sc * pop); ctx.globalAlpha = o.nopop ? 1 : cl(k / .025);
+  glow(ctx, 0, 0, d.w * .8, col, .42 * (o.glow ?? 1));
+  ctx.shadowColor = 'rgba(0,0,0,.65)'; ctx.shadowBlur = 44; ctx.shadowOffsetY = 18;
+  ctx.fillStyle = LIN(ctx, 0, -d.h / 2, 0, d.h / 2, [[0, 'rgba(22,32,86,.94)'], [1, 'rgba(4,8,30,.96)']]); V.rr(ctx, -d.w / 2, -d.h / 2, d.w, d.h, d.h * .2); ctx.fill(); ctx.shadowColor = 'transparent';
+  ctx.save(); V.rr(ctx, -d.w / 2, -d.h / 2, d.w, d.h, d.h * .2); ctx.clip();
+  ctx.fillStyle = LIN(ctx, 0, -d.h / 2, 0, 0, [[0, 'rgba(255,255,255,.2)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-d.w / 2, -d.h / 2, d.w, d.h / 2);
+  ctx.fillStyle = col; ctx.globalAlpha *= .9; ctx.fillRect(-d.w / 2, d.h / 2 - 9, d.w, 9); ctx.restore();
+  ctx.lineWidth = 6; ctx.strokeStyle = col; ctx.shadowColor = col; ctx.shadowBlur = 26; V.rr(ctx, -d.w / 2 + 3, -d.h / 2 + 3, d.w - 6, d.h - 6, d.h * .2); ctx.stroke(); ctx.shadowBlur = 0;
+  // real logo + sweep clipped to the logo alpha
+  const ly = -4;
+  ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 24; ctx.drawImage(im, -d.lw / 2, ly - d.lh / 2, d.lw, d.lh); ctx.restore();
+  const sk = o.sweepK ?? (k - .05) / .17;
+  if (sk > 0 && sk < 1) {
+    const tc = tmp('plg', 860, 260), g = tc.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, 860, 260);
+    g.drawImage(im, 430 - d.lw / 2, 130 - d.lh / 2, d.lw, d.lh); g.globalCompositeOperation = 'source-atop';
+    const bx = lerp(430 - d.lw / 2 - 120, 430 + d.lw / 2 + 120, sk); g.fillStyle = LIN(g, bx - 70, 0, bx + 70, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,1)'], [1, 'rgba(255,255,255,0)']]); g.fillRect(0, 0, 860, 260);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.drawImage(tc, -430, ly - 130); ctx.restore();
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; V.sparkle(ctx, lerp(-d.lw / 2, d.lw / 2, sk), ly - d.lh * .1, 48 * Math.sin(sk * Math.PI), '#fff', sk * 3, .95); ctx.restore();
+  }
+  ctx.restore();
+}
+const BEATS = [{ n: 'sport1', t: 9.05, hold: .17 }, { n: 'sport2', t: 9.35, hold: .17 }, { n: 'sport3', t: 9.65, hold: .17 }, { n: 'sport4', t: 9.95, hold: .04 }, { n: 'one', t: 10.05, hold: .04 }, { n: 'sport5', t: 10.15, hold: .06 }];
+const FLY = .09, HEROY = 985;
+function plates(ctx, t) {
+  // landed chips (the lineup bar)
+  BEATS.forEach((b, j) => {
+    const k = t - b.t; if (k < 0) return; const d = pdim(b.n), hs = j === 5 ? .85 : (d.wide ? .86 : .85), cs = chipScale(b.n);
+    if (k < b.hold + FLY) {   // hero: pop, hold, fly down to the slot
+      const u = eio((k - b.hold) / FLY), x = lerp(540, SLOTX[j], u), y = lerp(HEROY, CHIPY, u), sc = lerp(hs, cs, u);
+      plate(ctx, b.n, x, y, sc, k, { rot: (j % 2 ? .05 : -.05) * (1 - u) });
+      if (k < .1) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ring(ctx, 540, HEROY, 80 + k * 2600, 12, PL[b.n], Math.max(0, 1 - k / .1)); ctx.restore(); }
+    } else plate(ctx, b.n, SLOTX[j], CHIPY, cs, 9, { nopop: true, glow: .5, sweepK: fmod(t * 2.6 - j * .45, 4) });
+  });
+}
 function montage(ctx, t) {
   const B = LT.b; let i = B.findIndex((b, j) => j < 4 && t >= b && t < B[j + 1]); if (i < 0) return;
   const k = t - B[i]; CURW = { i, k }; const fn = [shotFootball, shotDunk, shotTennis, shotBox][i];
+  ctx.save();
+  if (i > 0 && k < .07) { const u = 1 - eo(k / .07), dir = i % 2 ? 1 : -1; ctx.fillStyle = '#050a1e'; ctx.fillRect(0, 0, W, H); ctx.translate(dir * W * .7 * u * u, 0); }
   fn(ctx, k, t);
-  // cinematic grade: vignette + bottom shade for word legibility
-  ctx.save(); ctx.fillStyle = LIN(ctx, 0, 1000, 0, 1240, [[0, 'rgba(2,4,20,0)'], [1, 'rgba(2,4,20,.6)']]); ctx.fillRect(0, 1000, W, 300); ctx.restore();
-  speedLines(ctx, 540, 800, t, 34, i === 3 ? '#ffd2a8' : '#cfe4ff', 380, 1300, .32, 6);
-  // cut flash + chroma kick on the first frames of each beat
+  ctx.restore();
+  ctx.save(); ctx.fillStyle = LIN(ctx, 0, 1000, 0, 1240, [[0, 'rgba(2,4,20,0)'], [1, 'rgba(2,4,20,.65)']]); ctx.fillRect(0, 1000, W, 300); ctx.restore();
+  const imp = [.17, .15, .16, .15][i], kc = k - imp;
+  speedLines(ctx, 540, 760, t, kc > 0 && kc < .1 ? 60 : 34, i === 3 ? '#ffd2a8' : '#cfe4ff', 380, 1300, kc > 0 && kc < .1 ? .5 : .3, 6);
+  if (i > 0 && k < .07) { ctx.save(); ctx.translate(0, 0); whipBand(ctx, i % 2 ? W * (1 - k / .07 * .8) : W * (k / .07 * .8), i % 2 ? 1 : -1, .8 * (1 - k / .07)); ctx.restore(); }
   V.flash(ctx, t, B[i], .07, '#ffffff', i === 0 ? .0 : .9);
-  if (k < .09) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k / .09) * .5; ctx.fillStyle = 'rgba(255,60,90,1)'; ctx.fillRect(0, 0, 14, H); ctx.fillStyle = 'rgba(60,170,255,1)'; ctx.fillRect(W - 14, 0, 14, H); ctx.restore(); }
+  if (kc > 0 && kc < .08) V.flash(ctx, t, B[i] + imp, .08, '#fff8e0', .5);
+  if (k < .09) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (1 - k / .09) * .55; ctx.fillStyle = 'rgba(255,60,90,1)'; ctx.fillRect(0, 0, 16, H); ctx.fillStyle = 'rgba(60,170,255,1)'; ctx.fillRect(W - 16, 0, 16, H); ctx.restore(); }
+  plates(ctx, t);
+  // bar backing plate
+  return;
 }
-
-// ================================================================ SPORT 5 BUMPER
-const C5 = { blue: '#1E5BFF', navy: '#071A6B', red: '#FF2D3D', white: '#FFFFFF', sky: '#6CC8FF' };
 function ribbon(ctx, cx, cy, rx, ry, rot, a0, a1, wMax, fill) {   // tapered orbit swoosh
   const N = 40, out = [], inn = [];
   for (let i = 0; i <= N; i++) { const u = i / N, an = lerp(a0, a1, u), w = wMax * Math.sin(u * Math.PI) ** .8, ca = Math.cos(an), sa = Math.sin(an); out.push([ca * (rx + w / 2), sa * (ry + w / 2)]); inn.push([ca * (rx - w / 2), sa * (ry - w / 2)]); }
   ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot); ctx.beginPath(); out.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); for (let i = N; i >= 0; i--) ctx.lineTo(inn[i][0], inn[i][1]); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.restore();
-}
-function badge(ctx, cx, cy, R, o = {}) {
-  const sw = o.shine ?? 0; ctx.save(); ctx.translate(cx, cy); ctx.scale(R / 100, R / 100);
-  glow(ctx, 0, 0, 200, '#3D7BFF', .5);
-  // orbit swooshes behind
-  ribbon(ctx, 0, 0, 132, 44, -.5, Math.PI * 1.02, Math.PI * 2.02, 18, LIN(ctx, -140, 0, 140, 0, [[0, '#FF2D3D'], [1, '#FF7A85']]));
-  ctx.save(); ctx.shadowColor = 'rgba(0,10,80,.7)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 18;
-  ctx.fillStyle = LIN(ctx, -100, -100, 100, 100, [[0, '#E6EEFF'], [.5, '#9FB4E8'], [1, '#5E78C4']]); ctx.beginPath(); ctx.arc(0, 0, 100, 0, TAU); ctx.fill(); ctx.restore();
-  ctx.fillStyle = RAD(ctx, -30, -50, 10, 110, [[0, '#2A5FE8'], [.5, '#0B2AA8'], [1, '#040F4E']]); ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.fill();
-  ctx.save(); ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.clip();
-  // inner swooshes: white + red sweep
-  ctx.fillStyle = LIN(ctx, -90, 60, 90, -40, [[0, '#9FD0FF'], [1, '#3D86FF']]); ctx.beginPath(); ctx.moveTo(-100, 46); ctx.bezierCurveTo(-40, 76, 46, 44, 100, -30); ctx.bezierCurveTo(50, 30, -40, 44, -100, 46); ctx.fill();
-  ctx.fillStyle = LIN(ctx, -90, 60, 90, -40, [[0, '#FF2D3D'], [1, '#FF6470']]); ctx.beginPath(); ctx.moveTo(-100, 58); ctx.bezierCurveTo(-30, 104, 60, 64, 100, -6); ctx.bezierCurveTo(56, 40, -40, 70, -100, 58); ctx.fill();
-  // stadium light streaks
-  ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .07; ctx.fillStyle = '#9FD4FF'; for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.moveTo(-90 + i * 40, -90); ctx.lineTo(-60 + i * 40, -90); ctx.lineTo(-20 + i * 60, 90); ctx.lineTo(-40 + i * 60, 90); ctx.fill(); }
-  ctx.restore();
-  // numeral 5
-  ctx.save(); ctx.transform(1, 0, -.16, 1, 0, 0); ctx.font = '900 132px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.lineJoin = 'round';
-  ctx.shadowColor = 'rgba(0,10,90,.7)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 8; ctx.strokeStyle = '#03104A'; ctx.lineWidth = 26; ctx.strokeText('5', 4, -12); ctx.shadowColor = 'transparent';
-  ctx.fillStyle = LIN(ctx, 0, -70, 0, 50, [[0, '#FFFFFF'], [1, '#A8C4FF']]); ctx.fillText('5', 4, -12); ctx.restore();
-  // gloss
-  ctx.save(); ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.clip(); ctx.fillStyle = LIN(ctx, 0, -90, 0, 10, [[0, 'rgba(255,255,255,.16)'], [1, 'rgba(255,255,255,0)']]); ctx.beginPath(); ctx.ellipse(0, -60, 78, 34, 0, 0, TAU); ctx.fill();
-  if (sw > 0 && sw < 1) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.rotate(.5); const bx = lerp(-190, 190, sw); ctx.fillStyle = LIN(ctx, bx - 26, 0, bx + 26, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.7)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(bx - 26, -200, 52, 400); ctx.restore(); }
-  ctx.restore();
-  ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.stroke();
-  // front orbit swoosh (white) over badge
-  ribbon(ctx, 0, 0, 132, 44, -.5, Math.PI * .02, Math.PI * 1.02, 13, LIN(ctx, -140, 0, 140, 0, [[0, '#E8F4FF'], [1, '#7FC0FF']]));
-  ctx.restore();
-}
-function wordmark5(ctx, x, y, size, k) {   // "ספורט 5"
-  if (k < 0) return; const sc = k < .16 ? eob(k / .16) : 1;
-  ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc); ctx.font = `900 ${size}px Rubik`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'rtl'; ctx.lineJoin = 'round';
-  ctx.shadowColor = 'rgba(0,10,80,.7)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 16; ctx.strokeStyle = '#08195f'; ctx.lineWidth = size * .2; ctx.strokeText('ספורט 5', 0, 0); ctx.shadowColor = 'transparent';
-  ctx.fillStyle = LIN(ctx, 0, -size * .5, 0, size * .5, [[0, '#FFFFFF'], [.55, '#EAF1FF'], [1, '#9FC2FF']]); ctx.fillText('ספורט 5', 0, 0);
-  // red underline swoosh
-  ctx.fillStyle = LIN(ctx, -size * 1.6, 0, size * 1.6, 0, [[0, 'rgba(255,45,61,0)'], [.2, '#FF2D3D'], [.8, '#FF2D3D'], [1, 'rgba(255,45,61,0)']]);
-  ctx.beginPath(); ctx.moveTo(-size * 1.7, size * .68); ctx.quadraticCurveTo(0, size * .5, size * 1.7, size * .7); ctx.quadraticCurveTo(0, size * .82, -size * 1.7, size * .68); ctx.fill();
-  ctx.restore();
 }
 function confetti(ctx, k, orig, n, seed, cols, spd = 1300, life = 1.6) {
   if (k < 0) return; const R = rng(seed);
@@ -445,6 +468,7 @@ function scoreboard(ctx, x, y, kIn, kGoal) {
   ctx.fillStyle = LIN(ctx, 0, -h / 2, 0, h / 2, [[0, '#FFE04A'], [1, '#F0B000']]); ctx.beginPath(); ctx.moveTo(-w / 2, -h / 2); ctx.lineTo(-90, -h / 2); ctx.lineTo(-130, h / 2); ctx.lineTo(-w / 2, h / 2); ctx.fill();
   ctx.fillStyle = LIN(ctx, 0, -h / 2, 0, h / 2, [[0, '#FF5A5F'], [1, '#D01A28']]); ctx.beginPath(); ctx.moveTo(w / 2, -h / 2); ctx.lineTo(90, -h / 2); ctx.lineTo(130, h / 2); ctx.lineTo(w / 2, h / 2); ctx.fill();
   ctx.fillStyle = LIN(ctx, 0, -h / 2, 0, 0, [[0, 'rgba(255,255,255,.22)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-w / 2, -h / 2, w, h / 2); ctx.restore();
+  ctx.save(); ctx.translate(-w / 2 + 132, -h / 2 - 34); ctx.fillStyle = 'rgba(6,14,60,.95)'; V.rr(ctx, -112, -34, 224, 68, 18); ctx.fill(); ctx.strokeStyle = '#7FD0FF'; ctx.lineWidth = 3; ctx.stroke(); V.drawLogo(ctx, 'sport5live', 0, 0, 96, 54, { shadow: false, glow: '#7FD0FF', glowBlur: 16 }); ctx.restore();
   ctx.font = '900 54px Rubik'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center'; ctx.direction = 'ltr';
   ctx.fillStyle = '#1743C9'; ctx.fillText('YEL', -w / 2 + 130, 4); ctx.fillStyle = '#fff'; ctx.fillText('RED', w / 2 - 130, 4);
   // score
@@ -457,63 +481,6 @@ function scoreboard(ctx, x, y, kIn, kGoal) {
   ctx.fillStyle = '#FF2D3D'; ctx.beginPath(); ctx.arc(-44, -h / 2 - 22, 8 * (.8 + .2 * Math.sin(kIn * 20)), 0, TAU); ctx.fill(); ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.fillText('LIVE', -28, -h / 2 - 20);
   ctx.restore();
 }
-function sport5(ctx, t) {
-  const k = t - LT.s5, HERO = eio((k - .78) / .3);
-  // background
-  ctx.fillStyle = RAD(ctx, 540, 640, 60, 1500, [[0, '#2358FF'], [.35, '#0B2BB0'], [1, '#040B3A']]); ctx.fillRect(0, 0, W, H);
-  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(540, lerp(600, 380, HERO));
-  for (let i = 0; i < 14; i++) { const an = i * TAU / 14 + t * .25; ctx.rotate(0); ctx.save(); ctx.rotate(an); ctx.fillStyle = LIN(ctx, 0, 0, 0, -1900, [[0, 'rgba(120,170,255,.16)'], [1, 'rgba(140,190,255,0)']]); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-70, -1900); ctx.lineTo(70, -1900); ctx.fill(); ctx.restore(); }
-  ctx.restore();
-  // diagonal energy bands
-  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.rotate(-.42);
-  const bands = [['#FF2D3D', 1000, 90, .30], ['#FFFFFF', 1120, 42, .22], ['#2F6BFF', 1220, 130, .35]];
-  bands.forEach(([c, y, hh, a], i) => { const off = fmod(t * (900 + i * 300) + i * 500, 2600) - 700; ctx.globalAlpha = a; ctx.fillStyle = LIN(ctx, off - 900, 0, off + 300, 0, [[0, 'rgba(0,0,0,0)'], [.7, c], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(off - 900, y - hh / 2 - 500 + i * 60, 1200, hh); });
-  ctx.restore();
-  V.bokeh(ctx, t, { seed: 12, alpha: .8, cols: ['#6CC8FF', '#FFFFFF', '#FF5A64', '#3D7BFF'] });
-  V.flash(ctx, t, LT.s5, .1, '#CFE4FF', 1);
-  // ---- racing ball reveal (0.02 .. 0.30)
-  const rk = inv(.02, .3, k);
-  if (k < .34) {
-    const P0 = [-160, 1420], P1 = [120, 520], P2 = [980, 1000], P3 = [540, 590], u = E.inOut(rk) * .75 + rk * .25, bez = (u, a, b, c, d) => Math.pow(1 - u, 3) * a + 3 * Math.pow(1 - u, 2) * u * b + 3 * (1 - u) * u * u * c + u * u * u * d;
-    const pos = u2 => [bez(u2, P0[0], P1[0], P2[0], P3[0]), bez(u2, P0[1], P1[1], P2[1], P3[1])];
-    const cols = [['#FF2D3D', 26], ['#FFFFFF', 18], ['#2F6BFF', 30]];
-    cols.forEach(([c, wdt], ci) => { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = c; ctx.lineCap = 'round'; const n = 26; for (let i = 0; i < n; i++) { const a = u * (i / n) * .0 + Math.max(0, u - .55 * (1 - i / n) * Math.min(1, u * 2.2)), b = Math.max(0, u - .55 * (1 - (i + 1) / n) * Math.min(1, u * 2.2)); if (b <= a) continue; const p = pos(a), q = pos(b); ctx.globalAlpha = (i / n) * .95 * (1 - cl((k - .3) / .06)); ctx.lineWidth = wdt * (i / n) * (1 + .3 * Math.sin(k * 60 + ci)); ctx.beginPath(); ctx.moveTo(p[0] + (ci - 1) * 14, p[1] + (ci - 1) * 8); ctx.lineTo(q[0] + (ci - 1) * 14, q[1] + (ci - 1) * 8); ctx.stroke(); } ctx.restore(); });
-    const bp = pos(u); if (u < 1) { ball(ctx, bp[0], bp[1], 56 + 40 * u, k * 60); glow(ctx, bp[0], bp[1], 260, '#9FD4FF', .6); }
-  }
-  // badge pop @ .30
-  const bk = k - .30;
-  if (bk >= 0) {
-    const pos = lerp(1, 0, HERO), cy = lerp(600, 350, HERO), R = lerp(270, 168, HERO) * (bk < .3 ? eob(bk / .3) : 1);
-    ctx.save(); ctx.translate(540, cy); ctx.rotate((1 - eo(bk / .4)) * -.35); ctx.translate(-540, -cy);
-    badge(ctx, 540, cy, R, { shine: cl((bk - .12) / .35) }); ctx.restore(); void pos;
-    ring(ctx, 540, cy, 200 + bk * 2400, 16, 'rgba(255,255,255,.9)', Math.max(0, 1 - bk / .16));
-    ring(ctx, 540, cy, 120 + bk * 1600, 30, 'rgba(255,45,61,.8)', Math.max(0, 1 - bk / .2));
-    wordmark5(ctx, 540, lerp(1000, 590, HERO), lerp(210, 120, HERO), k - .40);
-    ctx.save(); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 6; i++) { const R2 = rng(i + 30), ax = 540 + (R2() - .5) * 700, ay = cy + (R2() - .5) * 500, kk = (k * 2 + i * .37) % 1; V.sparkle(ctx, ax, ay, 26 * Math.sin(kk * Math.PI), '#fff', kk * 2, .9 * (bk > .1 ? 1 : 0)); } ctx.restore();
-  }
-  // scoreboard + goal
-  const kS = k - .86, kI = k - 1.14, IMP = [560, 1030];
-  const ny = eo((k - .85) / .3);
-  if (k > .82) { ctx.save(); ctx.globalAlpha = ny; ctx.translate(0, (1 - ny) * 400); net(ctx, kI, IMP); ctx.restore(); }
-  scoreboard(ctx, 0, 800, kS, kI);
-  // ball into net
-  if (k > .95 && k < 1.32) {
-    const u = cl((k - .95) / .19), e = ein(u * .9 + .1), sx = 1240, sy = 1500, pos = [lerp(sx, IMP[0], e), lerp(sy, IMP[1] + 30, e) - Math.sin(u * Math.PI) * 220];
-    const prev = [lerp(sx, IMP[0], ein(cl(u - .16) * .9 + .1)), lerp(sy, IMP[1] + 30, ein(cl(u - .16) * .9 + .1)) - Math.sin(cl(u - .16) * Math.PI) * 220];
-    if (k < 1.14) { trail(ctx, prev[0], prev[1], pos[0], pos[1], 70, '#8fd0ff', 1); ball(ctx, pos[0], pos[1], lerp(64, 42, u), k * 50); }
-    else { const dd = k - 1.14; ball(ctx, IMP[0] + dd * 60, IMP[1] + 30 + Math.min(dd * 260, 40) + 60 * dd * dd * 8, 42, k * 20); }
-  }
-  if (kI >= 0) {
-    burst(ctx, IMP[0], IMP[1], kI / .22, '#BFE0FF', 700, 20, 22); V.flash(ctx, t, LT.s5 + 1.14, .12, '#ffffff', .55);
-    // GOAL slam
-    if (kI > .1) slam(ctx, 'GOAL', 540, 1010, 290, kI - .1, { dir: 'ltr', grad: [[0, '#FFFFFF'], [.5, '#FFF3C4'], [1, '#FFC24A']], stroke: '#E01E2E', sw: .2, back: '#071A6B', rot: -.07, glowCol: 'rgba(255,45,61,.6)', weight: 900, font: 'Rubik' });
-  }
-  confetti(ctx, kI, [[60, 1500, -1.15, .7], [1020, 1500, -2.0, .7], [540, 1240, -1.57, 1.2]], 130, 5, ['#2F6BFF', '#FFFFFF', '#FF2D3D', '#FFC24A', '#6CC8FF'], 1700, 1.5);
-  // exit flash into Charlton
-  V.flash(ctx, t, 11.96, .09, '#FF8A1F', .9);
-}
-
-// ================================================================ CHARLTON BUMPER
 const CH = { or: '#FF6A00', or2: '#FF9A2E', bk: '#0A0A0C' };
 function fit(ctx, txt, font, maxW, size0) { ctx.save(); ctx.font = font.replace('%', size0); ctx.direction = 'rtl'; const w = ctx.measureText(txt).width; ctx.restore(); return Math.min(size0, size0 * maxW / w); }
 function stripes(ctx, t, col, a = 1, ang = -.5, wd = 86, spd = 600, bg = null) {
@@ -561,60 +528,178 @@ function glove(ctx, x, y, s, rot = 0) {
   ctx.lineWidth = 6; ctx.strokeStyle = '#0A0A0C'; ctx.beginPath(); ctx.moveTo(-170, 140); ctx.bezierCurveTo(-230, -60, -190, -230, 0, -240); ctx.bezierCurveTo(190, -230, 230, -60, 170, 140); ctx.stroke();
   ctx.restore();
 }
-function chLockup(ctx, k, o = {}) {
-  const sc = k < .1 ? lerp(2.4, 1, eo(k / .1)) : 1 + .05 * Math.exp(-(k - .1) * 12) * Math.sin((k - .1) * 50);
-  ctx.save(); ctx.translate(540, 900); ctx.scale(sc, sc);
-  const size = fit(ctx, 'CHARLTON', '900 %px Rubik', 960, 188);
-  ctx.transform(1, 0, -.2, 1, 0, 0); ctx.font = `900 ${size}px Rubik`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.lineJoin = 'round'; ctx.miterLimit = 2;
-  const mode = o.mode || 0;
-  for (let i = 18; i >= 1; i--) { ctx.fillStyle = i % 6 < 3 ? '#C24A00' : '#8A3200'; ctx.fillText('CHARLTON', i * 1.3, i * 1.3); }
-  ctx.strokeStyle = '#0A0A0C'; ctx.lineWidth = size * .09; ctx.strokeText('CHARLTON', 0, 0);
-  ctx.fillStyle = mode === 1 ? '#00E5FF' : mode === 2 ? '#FF2D6A' : LIN(ctx, 0, -size * .5, 0, size * .5, [[0, '#FFFFFF'], [.55, '#FFF0DC'], [1, '#FFB060']]); ctx.fillText('CHARLTON', 0, 0);
+// ================================================================ SPORT 5  (real logos)
+const tint = (n, col) => A.layer('tint_' + n + col, 512, 660, g => { const im = V.logoImg(n); if (im) g.drawImage(im, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = col; g.fillRect(0, 0, 512, 660); });
+// hero canvas: extruded (red/blue depth) real logo with a light sweep clipped to its alpha
+function heroCanvas(n, sk, ext = 1) {
+  const im = V.logoImg(n), c = tmp('h5', 760, 900), g = c.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, 760, 900);
+  if (!im) return c; const L = 560, sc = L / im.width, w = L, h = im.height * sc, ox = (760 - w) / 2 - 12, oy = (900 - h) / 2 - 12;
+  const T = [tint(n, '#061A70'), tint(n, '#1E5BFF'), tint(n, '#FF2D3D')];
+  for (let i = Math.round(24 * ext); i >= 1; i--) g.drawImage(T[i > 14 ? 0 : i > 7 ? 1 : 2], 0, 0, 512, im.height, ox + i * 1.0, oy + i * 1.25, w, h);
+  const f = tmp('h5f', 760, 900), q = f.getContext('2d'); q.setTransform(1, 0, 0, 1, 0, 0); q.globalCompositeOperation = 'source-over'; q.clearRect(0, 0, 760, 900);
+  q.drawImage(im, ox + 12, oy + 12, w, h); q.globalCompositeOperation = 'source-atop';
+  q.fillStyle = LIN(q, 0, oy, 0, oy + h, [[0, '#F4F8FF'], [.55, '#BFD6FF'], [1, '#7FA8FF']]); q.fillRect(0, 0, 760, 900);
+  if (sk > 0 && sk < 1) { const bx = lerp(-160, 920, sk); q.fillStyle = LIN(q, bx - 110, 0, bx + 110, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,1)'], [1, 'rgba(255,255,255,0)']]); q.globalAlpha = 1; q.transform(1, 0, -.35, 1, 0, 0); q.fillRect(bx - 110 + .35 * 450, 0, 220, 900); q.setTransform(1, 0, 0, 1, 0, 0); }
+  g.drawImage(f, 0, 0); return c;
+}
+const FAM = [['sport5', '#FF2D3D'], ['sport5live', '#FF3D9A'], ['sport5plus', '#38D9F5'], ['sport5gold', '#FFC24A'], ['sport5_4k', '#8A5BFF']];
+function famTile(ctx, i, x, y, k, sweep) {
+  const [n, col] = FAM[i]; if (k < 0) return; const p = eob(k / .22), w = 190, h = 236;
+  ctx.save(); ctx.translate(x, y + (1 - eo(k / .2)) * 380); ctx.rotate((1 - eo(k / .25)) * (i % 2 ? .5 : -.5)); const sc = p * (1 + (sweep > 0 && sweep < 1 ? .08 * Math.sin(sweep * Math.PI) : 0)); ctx.scale(sc, sc);
+  glow(ctx, 0, 0, 230, col, .32);
+  ctx.shadowColor = 'rgba(0,0,30,.6)'; ctx.shadowBlur = 36; ctx.shadowOffsetY = 16; ctx.fillStyle = LIN(ctx, 0, -h / 2, 0, h / 2, [[0, 'rgba(34,70,200,.95)'], [1, 'rgba(6,20,100,.97)']]); V.rr(ctx, -w / 2, -h / 2, w, h, 34); ctx.fill(); ctx.shadowColor = 'transparent';
+  ctx.save(); V.rr(ctx, -w / 2, -h / 2, w, h, 34); ctx.clip(); ctx.fillStyle = LIN(ctx, 0, -h / 2, 0, 0, [[0, 'rgba(255,255,255,.25)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-w / 2, -h / 2, w, h / 2); ctx.fillStyle = col; ctx.fillRect(-w / 2, h / 2 - 12, w, 12);
+  if (sweep > 0 && sweep < 1) { const bx = lerp(-w, w, sweep); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = LIN(ctx, bx - 40, 0, bx + 40, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.55)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(bx - 40, -h / 2, 80, h); } ctx.restore();
+  ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(190,225,255,.9)'; V.rr(ctx, -w / 2, -h / 2, w, h, 34); ctx.stroke();
+  V.drawLogo(ctx, n, 0, -6, w * .8, h * .8, { shadow: false, glow: 'rgba(160,210,255,.8)', glowBlur: 14 });
   ctx.restore();
-  // Hebrew chip
-  ctx.save(); ctx.translate(540, 1075); const ck = cl((k - .08) / .12), cs = eob(ck); ctx.scale(cs, cs); ctx.transform(1, 0, -.2, 1, 0, 0);
-  ctx.fillStyle = mode === 1 ? '#00E5FF' : mode === 2 ? '#FF2D6A' : CH.or; ctx.shadowColor = 'rgba(255,106,0,.8)'; ctx.shadowBlur = 40; V.rr(ctx, -300, -84, 600, 168, 18); ctx.fill(); ctx.shadowColor = 'transparent';
-  ctx.fillStyle = '#0A0A0C'; ctx.font = '900 140px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'rtl'; ctx.fillText("צ'רלטון", 0, 6);
+}
+function sport5(ctx, t) {
+  const k = t - LT.s5, bk = k - .30, HERO = eio((k - .66) / .3), kI = k - 1.36;
+  // camera: crash zoom on the logo hit, dutch drift, goal punch
+  const zoom = 1.06 + (bk > 0 ? .34 * Math.exp(-bk * 8) : 0) + .05 * k / 1.8 + (kI > 0 ? .1 * Math.exp(-kI * 9) : 0) + (k < .3 ? .18 * (1 - k / .3) : 0);
+  const rot = .05 * Math.sin(k * 2.6 + .5) + (bk > 0 ? -.08 * Math.exp(-bk * 6) : .05) + (kI > 0 ? .03 * Math.exp(-kI * 8) * Math.sin(kI * 40) : 0);
+  ctx.save(); A.camera(ctx, { x: 540, y: 960 - HERO * 60, zoom, rot, shake: (bk > 0 ? .9 * Math.exp(-bk * 9) : 0) + (kI > 0 ? 1.3 * Math.exp(-kI * 7) : 0), t });
+  ctx.fillStyle = RAD(ctx, 540, 640, 60, 1600, [[0, '#2A62FF'], [.35, '#0B2BB0'], [1, '#040B3A']]); ctx.fillRect(-300, -300, W + 600, H + 600);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(540, lerp(600, 380, HERO));
+  for (let i = 0; i < 16; i++) { ctx.save(); ctx.rotate(i * TAU / 16 + t * .3); ctx.fillStyle = LIN(ctx, 0, 0, 0, -2100, [[0, 'rgba(120,170,255,.2)'], [1, 'rgba(140,190,255,0)']]); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-64, -2100); ctx.lineTo(64, -2100); ctx.fill(); ctx.restore(); }
+  ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.rotate(-.42);
+  [['#FF2D3D', 1000, 90, .34], ['#FFFFFF', 1120, 42, .26], ['#2F6BFF', 1220, 130, .4], ['#FF2D3D', 700, 50, .25]].forEach(([c, y, hh, a], i) => { const off = fmod(t * (1100 + i * 300) + i * 500, 2800) - 800; ctx.globalAlpha = a; ctx.fillStyle = LIN(ctx, off - 900, 0, off + 300, 0, [[0, 'rgba(0,0,0,0)'], [.7, c], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(off - 900, y - hh / 2 - 500 + i * 60, 1200, hh); });
+  ctx.restore();
+  V.bokeh(ctx, t, { seed: 12, alpha: .8, cols: ['#6CC8FF', '#FFFFFF', '#FF5A64', '#3D7BFF'] });
+  V.flash(ctx, t, LT.s5, .1, '#CFE4FF', 1);
+  // ---- ball racing through with energy trails
+  const rk = inv(.0, .3, k);
+  if (k < .34) {
+    const P0 = [-200, 1500], P1 = [80, 460], P2 = [1000, 1050], P3 = [540, 560], u = E.inOut(rk) * .7 + rk * .3, bez = (u, a, b, c, d) => Math.pow(1 - u, 3) * a + 3 * Math.pow(1 - u, 2) * u * b + 3 * (1 - u) * u * u * c + u * u * u * d;
+    const pos = u2 => [bez(u2, P0[0], P1[0], P2[0], P3[0]), bez(u2, P0[1], P1[1], P2[1], P3[1])];
+    [['#FF2D3D', 30], ['#FFFFFF', 20], ['#2F6BFF', 36]].forEach(([c, wdt], ci) => { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = c; ctx.lineCap = 'round'; const n = 26; for (let i = 0; i < n; i++) { const a = Math.max(0, u - .6 * (1 - i / n) * Math.min(1, u * 2.2)), b = Math.max(0, u - .6 * (1 - (i + 1) / n) * Math.min(1, u * 2.2)); if (b <= a) continue; const p = pos(a), q = pos(b); ctx.globalAlpha = (i / n) * .95 * (1 - cl((k - .3) / .06)); ctx.lineWidth = wdt * (i / n) * (1 + .3 * Math.sin(k * 60 + ci)); ctx.beginPath(); ctx.moveTo(p[0] + (ci - 1) * 16, p[1] + (ci - 1) * 9); ctx.lineTo(q[0] + (ci - 1) * 16, q[1] + (ci - 1) * 9); ctx.stroke(); } ctx.restore(); });
+    const bp = pos(u); if (u < 1) { glow(ctx, bp[0], bp[1], 300, '#9FD4FF', .7); ball(ctx, bp[0], bp[1], 60 + 46 * u, k * 60); }
+  }
+  // ---- HERO real logo: 3D tilt reveal, sweep, orbit energy ribbons
+  if (bk >= 0) {
+    const cy = lerp(560, 300, HERO), S = lerp(1.12, .70, HERO) * (bk < .25 ? lerp(.25, 1, eob(bk / .25)) : 1), rotY = (1 - eob(bk / .5)) * -1.3 + Math.sin(k * 2.2) * .07 * HERO, rotX = (1 - eo(bk / .5)) * .4 + Math.sin(k * 2.9) * .05;
+    glow(ctx, 540, cy, 620 * S, '#3D7BFF', .55); glow(ctx, 540, cy, 320 * S, '#9FD4FF', .35);
+    const fade = 1 - cl((bk - .05) / .4);
+    if (fade > 0) [['#FF2D3D', 0], ['#FFFFFF', 2.1], ['#5AD1FF', 4.2]].forEach(([c, ph], i) => { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = fade * .9; ribbon(ctx, 540, cy, 420 * S * (1 - bk * .5), 150 * S, k * 7 + ph, 0, Math.PI * 1.25, 34 * S, c); ctx.restore(); });
+    const hc = heroCanvas('sport5', (bk - .16) / .34), sh = cl((bk - .16) / .34);
+    ctx.save(); ctx.translate(540, cy); ctx.rotate((1 - eo(bk / .4)) * -.3); ctx.translate(-540, -cy); ctx.shadowColor = 'rgba(0,10,80,.6)'; ctx.shadowBlur = 40;
+    V.card3d(ctx, hc, 540, cy, 760 * S, 900 * S, rotY, rotX, 1500, 12, 16); ctx.restore();
+    if (sh > 0 && sh < 1) flare(ctx, lerp(300, 780, sh), cy - 160 * S + sh * 330 * S, 200 * Math.sin(sh * Math.PI), '#9CC8FF', .9);
+    ring(ctx, 540, cy, 200 + bk * 2600, 18, 'rgba(255,255,255,.9)', Math.max(0, 1 - bk / .16)); ring(ctx, 540, cy, 120 + bk * 1700, 34, 'rgba(255,45,61,.8)', Math.max(0, 1 - bk / .2));
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 7; i++) { const R2 = rng(i + 30), ax = 540 + (R2() - .5) * 760, ay = cy + (R2() - .5) * 600, kk = (k * 2 + i * .37) % 1; V.sparkle(ctx, ax, ay, 28 * Math.sin(kk * Math.PI), '#fff', kk * 2, .9); } ctx.restore();
+  }
+  // ---- channel family cascade
+  const cy2 = 790;
+  if (k > .66) {
+    const out = ein((k - 1.16) / .12);
+    ctx.save(); ctx.translate(0, out * 520); ctx.globalAlpha = 1 - out * .6;
+    if (k > .66) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .5 * cl((k - .66) / .1); ctx.fillStyle = LIN(ctx, 0, cy2 - 150, 0, cy2 + 150, [[0, 'rgba(90,160,255,0)'], [.5, 'rgba(120,190,255,.5)'], [1, 'rgba(90,160,255,0)']]); ctx.fillRect(0, cy2 - 150, W, 300); ctx.restore(); }
+    for (let i = 0; i < 5; i++) famTile(ctx, i, 540 + (i - 2) * 200, cy2 + Math.sin(k * 5 + i) * 6, k - .68 - i * .05, (k - .98 - i * .05) / .16);
+    ctx.restore();
+  }
+  // ---- scoreboard + goal (real Sport 5 LIVE bug)
+  const kS = k - 1.12, IMP = [560, 1030];
+  const ny = eo((k - 1.1) / .25);
+  if (k > 1.08) { ctx.save(); ctx.globalAlpha = ny; ctx.translate(0, (1 - ny) * 400); net(ctx, kI, IMP); ctx.restore(); }
+  scoreboard(ctx, 0, 690, kS, kI);
+  if (k > 1.16 && k < 1.5) {
+    const u = cl((k - 1.16) / .2), e = ein(u * .9 + .1), sx = 1240, sy = 1500, f2 = uu => [lerp(sx, IMP[0], ein(cl(uu) * .9 + .1)), lerp(sy, IMP[1] + 30, ein(cl(uu) * .9 + .1)) - Math.sin(cl(uu) * Math.PI) * 220], pos = f2(u), prev = f2(u - .16);
+    if (kI < 0) { trail(ctx, prev[0], prev[1], pos[0], pos[1], 76, '#8fd0ff', 1); ball(ctx, pos[0], pos[1], lerp(64, 42, u), k * 50); }
+    else { const dd = kI; ball(ctx, IMP[0] + dd * 60, IMP[1] + 30 + Math.min(dd * 260, 40) + 60 * dd * dd * 8, 42, k * 20); }
+  }
+  if (kI >= 0) {
+    burst(ctx, IMP[0], IMP[1], kI / .22, '#BFE0FF', 700, 20, 22); V.flash(ctx, t, LT.s5 + 1.36, .1, '#ffffff', .5);
+    if (kI > .04) slam(ctx, 'GOAL', 540, 1000, 300, kI - .04, { dir: 'ltr', grad: [[0, '#FFFFFF'], [.5, '#FFF3C4'], [1, '#FFC24A']], stroke: '#E01E2E', sw: .2, back: '#071A6B', rot: -.07, glowCol: 'rgba(255,45,61,.6)' });
+  }
+  confetti(ctx, kI, [[60, 1500, -1.15, .7], [1020, 1500, -2.0, .7], [540, 1240, -1.57, 1.2]], 130, 5, ['#2F6BFF', '#FFFFFF', '#FF2D3D', '#FFC24A', '#6CC8FF'], 1700, 1.4);
+  ctx.restore();
+  V.flash(ctx, t, 11.96, .09, '#FF8A1F', .9);
+}
+// ================================================================ CHARLTON BUMPER (typographic, premium)
+function marquee(ctx, t, o) {
+  ctx.save(); ctx.translate(540, 960); ctx.rotate(o.ang ?? -.35); ctx.font = '900 260px Rubik'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.direction = 'ltr'; ctx.lineJoin = 'round'; ctx.lineWidth = o.lw ?? 4; ctx.strokeStyle = o.col; ctx.globalAlpha = o.a ?? .3;
+  const word = 'CHARLTON   ', wd = ctx.measureText(word).width;
+  for (let r = -5; r <= 5; r++) { const off = fmod(t * (o.spd ?? 500) * (r % 2 ? -1 : 1) + r * 170, wd); for (let x = -off - wd; x < 1900; x += wd) { if (o.fillRow && r === 0) { ctx.fillStyle = o.fillRow; ctx.fillText(word, x - 900, r * 250); } ctx.strokeText(word, x - 900, r * 250); } }
+  ctx.restore();
+}
+function chLockup(ctx, kk, o = {}) {
+  const mode = o.mode || 0, size = fit(ctx, 'CHARLTON', '900 %px Rubik', 940, 200);
+  ctx.save(); ctx.translate(540, 900); ctx.transform(1, 0, -.2, 1, 0, 0); ctx.font = `900 ${size}px Rubik`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.lineJoin = 'round'; ctx.miterLimit = 2;
+  const chars = [...'CHARLTON'], ws = chars.map(c => ctx.measureText(c).width), tot = ws.reduce((a, b) => a + b, 0); let x = -tot / 2;
+  chars.forEach((ch, i) => {
+    const ki = kk - i * .026, cx = x + ws[i] / 2; x += ws[i]; if (ki < 0) return;
+    const p = eo(ki / .08), sc = lerp(2.4, 1, p), dy = lerp(-300, 0, p);
+    ctx.save(); ctx.translate(cx, dy); ctx.scale(sc, sc); ctx.globalAlpha = cl(ki / .025);
+    for (let j = 20; j >= 1; j--) { ctx.fillStyle = j % 6 < 3 ? '#C24A00' : '#7A2C00'; ctx.fillText(ch, j * 1.3, j * 1.5); }
+    ctx.strokeStyle = '#0A0A0C'; ctx.lineWidth = size * .1; ctx.strokeText(ch, 0, 0);
+    ctx.fillStyle = mode === 1 ? '#00E5FF' : mode === 2 ? '#FF2D6A' : LIN(ctx, 0, -size * .5, 0, size * .5, [[0, '#FFFFFF'], [.5, '#FFE6C8'], [1, '#FF9A3D']]); ctx.fillText(ch, 0, 0);
+    ctx.restore();
+  });
+  ctx.restore();
+}
+function chLockupFX(ctx, kk, o = {}) {   // lockup with a light sweep clipped to the letters' alpha
+  const tc = tmp('chl', 1080, 760), g = tc.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, 1080, 760);
+  g.setTransform(1, 0, 0, 1, 0, -520); chLockup(g, kk, o); g.setTransform(1, 0, 0, 1, 0, 0);
+  const sk = (kk - .22) / .22; if (sk > 0 && sk < 1) { g.globalCompositeOperation = 'source-atop'; const bx = lerp(-200, 1300, sk); g.fillStyle = LIN(g, bx - 120, 0, bx + 120, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.95)'], [1, 'rgba(255,255,255,0)']]); g.fillRect(0, 0, 1080, 760); }
+  ctx.drawImage(tc, 0, 520);
+}
+function flag(ctx, cx, cy, s, t) {
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(s, s); ctx.fillStyle = '#3a2a1a'; V.rr(ctx, -330, -300, 24, 640, 8); ctx.fill();
+  const cols = 8, rows = 6, cw = 80;
+  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const x0 = -300 + i * cw, wv = a => Math.sin((x0 + a) * .012 - t * 16) * 26, y0 = -300 + j * cw + wv(0), y1 = -300 + j * cw + wv(cw); ctx.fillStyle = (i + j) % 2 ? '#0A0A0C' : '#fff'; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x0 + cw, y1); ctx.lineTo(x0 + cw, y1 + cw); ctx.lineTo(x0, y0 + cw); ctx.fill(); }
   ctx.restore();
 }
 function charlton(ctx, t) {
   const k = t - LT.ch;
-  ctx.fillStyle = CH.bk; ctx.fillRect(0, 0, W, H);
-  if (k < .27) {   // A: orange slab + Hebrew slam
-    stripes(ctx, t, '#E85A00', 1, -.5, 90, 500, CH.or);
-    const wp = eo(k / .1); ctx.save(); ctx.fillStyle = CH.bk; ctx.translate(0, 0); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W * (1 - wp) + 0, 0); ctx.lineTo(W * (1 - wp) - 300, H); ctx.lineTo(0, H); ctx.fill(); ctx.restore();
-    const size = fit(ctx, "צ'רלטון", '900 %px Rubik', 960, 270);
-    slam(ctx, "צ'רלטון", 540, 900, size, k - .02, { dir: 'rtl', fill: CH.bk, stroke: '#fff', sw: .09, shadow: false, rot: -.05, back: '#000' });
-    V.flash(ctx, t, LT.ch, .08, '#fff', .9);
-    speedLines(ctx, 540, 900, t, 30, '#fff', 400, 1400, .3, 8);
-  } else if (k < .63) {   // B: three quick cuts
-    const q = Math.min(2, Math.floor((k - .27) / .12)), kq = (k - .27) - q * .12;
-    stripes(ctx, t, 'rgba(255,106,0,.22)', 1, -.5, 90, 900, CH.bk);
-    ctx.save(); ctx.translate((A.hash(q + 4) - .5) * 14 * Math.exp(-kq * 12), 0);
-    speedLines(ctx, 540, 860, t, 40, CH.or2, 260, 1300, .5, 8);
-    if (q === 0) { stopwatch(ctx, 540, 830, 330 * lerp(.75, 1.08, eo(kq / .12)), k * 1.4); }
-    else if (q === 1) { const cx = lerp(1500, -300, eo(kq / .12)); for (let i = 0; i < 12; i++) { ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(cx + 180 + i * 60, 820 + (i % 4) * 30 - 40, 420 + hash(i) * 400, 8); } raceCar(ctx, cx, 860, 1.5, t); }
-    else { glove(ctx, 540, 860, lerp(.55, 1.05, ein(kq / .12)), -.4); burst(ctx, 540, 820, kq / .12, '#FF9A2E', 420, 18, 5); }
-    ctx.restore();
-    ctx.fillStyle = CH.or; ctx.fillRect(0, 150, W, 14); ctx.fillRect(0, 1160, W, 14);
-    V.flash(ctx, t, LT.ch + .27 + q * .12, .05, '#FFE0C0', .5);
-    ctx.save(); ctx.font = '900 60px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff'; ctx.direction = 'ltr'; ctx.transform(1, 0, -.2, 1, 0, 0); ctx.fillText('CHARLTON', 540 + 90, 240); ctx.restore();
-  } else {   // C: lockup + glitch out
-    const kk = k - .63;
-    stripes(ctx, t, 'rgba(255,106,0,.28)', 1, -.5, 90, 300, CH.bk);
-    ctx.fillStyle = CH.or; ctx.beginPath(); ctx.moveTo(0, 540); ctx.lineTo(W, 380); ctx.lineTo(W, 420); ctx.lineTo(0, 580); ctx.fill(); ctx.beginPath(); ctx.moveTo(0, 1180); ctx.lineTo(W, 1020); ctx.lineTo(W, 1060); ctx.lineTo(0, 1220); ctx.fill();
-    glow(ctx, 540, 900, 800, '#FF6A00', .35 * Math.exp(-kk * 4) + .12);
-    const gl = kk > .34 ? Math.min(1, (kk - .34) / .1) : 0;
+  const ph = k < .12 ? 0 : k < .44 ? 1 : 2, q = Math.min(3, Math.floor((k - .12) / .08)), kq = (k - .12) - q * .08;
+  const t0 = ph === 0 ? 0 : ph === 1 ? .12 + q * .08 : .44, kp = k - t0;
+  const zoom = 1 + (ph === 1 ? .5 * Math.exp(-kp * 30) : ph === 0 ? .25 * (1 - k / .12) : .32 * Math.exp(-kp * 12) + .06 * kp), rot = ph === 1 ? (q % 2 ? .1 : -.1) * Math.exp(-kp * 9) + (q % 2 ? -.03 : .03) : ph === 0 ? -.07 : -.05 * Math.exp(-kp * 3);
+  ctx.save(); A.camera(ctx, { x: 540 + (ph === 1 ? (q % 2 ? 40 : -40) : 0), y: 960, zoom, rot, shake: ph === 1 ? 1.4 * Math.exp(-kp * 14) : ph === 2 ? .8 * Math.exp(-kp * 10) : 0, t });
+  ctx.fillStyle = CH.bk; ctx.fillRect(-300, -300, W + 600, H + 600);
+  if (ph === 0) {
+    stripes(ctx, t, '#E85A00', 1, -.5, 90, 700, CH.or);
+    const wp = eo(k / .05); ctx.fillStyle = CH.bk; ctx.beginPath(); ctx.moveTo(-300, -300); ctx.lineTo(W * (1 - wp), -300); ctx.lineTo(W * (1 - wp) - 300, H + 300); ctx.lineTo(-300, H + 300); ctx.fill();
+    const size = fit(ctx, "צ'רלטון", '900 %px Rubik', 980, 300);
+    slam(ctx, "צ'רלטון", 540, 900, size, k - .005, { dir: 'rtl', fill: CH.bk, stroke: '#fff', sw: .1, shadow: false, rot: -.06, back: '#000' });
+    speedLines(ctx, 540, 900, t, 36, '#fff', 400, 1400, .35, 8);
+  } else if (ph === 1) {
+    marquee(ctx, t, { col: CH.or, a: .5, spd: 900, ang: q % 2 ? .3 : -.3, lw: 5, fillRow: 'rgba(255,106,0,.12)' });
+    stripes(ctx, t, 'rgba(255,106,0,.14)', 1, -.5, 90, 1100);
+    speedLines(ctx, 540, 860, t, 46, CH.or2, 260, 1300, .5, 8);
+    if (q === 0) stopwatch(ctx, 540, 840, 330 * lerp(.7, 1.1, eo(kq / .08)), k * 1.4);
+    else if (q === 1) { const cx = lerp(1600, -400, eo(kq / .08)); for (let i = 0; i < 12; i++) { ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(cx + 180 + i * 60, 820 + (i % 4) * 30 - 40, 420 + hash(i) * 400, 8); } raceCar(ctx, cx, 860, 1.6, t); }
+    else if (q === 2) { glove(ctx, 540, 860, lerp(.5, 1.15, ein(kq / .08)), -.4); burst(ctx, 540, 820, kq / .08, '#FF9A2E', 460, 18, 5); }
+    else flag(ctx, 540, 860, lerp(.7, 1.15, eo(kq / .08)), t);
+    ctx.fillStyle = CH.or; ctx.fillRect(-300, 150, W + 600, 14); ctx.fillRect(-300, 1160, W + 600, 14);
+    ctx.save(); ctx.font = '900 64px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff'; ctx.direction = 'ltr'; ctx.transform(1, 0, -.2, 1, 0, 0); ctx.fillText('CHARLTON', 540 + 90, 240); ctx.restore();
+    V.flash(ctx, t, LT.ch + t0, .05, '#FFE0C0', .6);
+  } else {
+    const kk = k - .44;
+    marquee(ctx, t, { col: 'rgba(255,140,50,1)', a: .28, spd: 260, ang: -.35, lw: 3 });
+    stripes(ctx, t, 'rgba(255,106,0,.2)', 1, -.5, 90, 300);
+    ctx.fillStyle = CH.or; ctx.beginPath(); ctx.moveTo(-100, 540); ctx.lineTo(W + 100, 380); ctx.lineTo(W + 100, 422); ctx.lineTo(-100, 582); ctx.fill(); ctx.beginPath(); ctx.moveTo(-100, 1200); ctx.lineTo(W + 100, 1040); ctx.lineTo(W + 100, 1082); ctx.lineTo(-100, 1242); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fillRect(-100, 560, W + 200, 3); glow(ctx, 540, 900, 900, '#FF6A00', .38 * Math.exp(-kk * 3) + .14);
+    const gl = kk > .4 ? Math.min(1, (kk - .4) / .1) : 0;
     if (gl > 0) {
       const R = rng(Math.floor(t * 30) + 2);
-      for (let i = 0; i < 6; i++) { const y0 = R() * 700 + 500, hh = 40 + R() * 140, dx = (R() - .5) * 220 * gl; ctx.save(); ctx.beginPath(); ctx.rect(0, y0, W, hh); ctx.clip(); ctx.translate(dx, 0); chLockup(ctx, kk, { mode: 1 + (i % 2) }); ctx.restore(); }
-      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .55; ctx.translate(-16 * gl, 0); chLockup(ctx, kk, { mode: 1 }); ctx.translate(32 * gl, 0); chLockup(ctx, kk, { mode: 2 }); ctx.restore();
-      ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, 1920); ctx.clip(); const y1 = R() * 1000 + 300; ctx.globalAlpha = .9; ctx.fillStyle = '#fff'; ctx.fillRect(0, y1, W, 5); ctx.restore();
-    } else chLockup(ctx, kk);
+      for (let i = 0; i < 6; i++) { const y0 = R() * 700 + 500, hh = 40 + R() * 140, dx = (R() - .5) * 240 * gl; ctx.save(); ctx.beginPath(); ctx.rect(0, y0, W, hh); ctx.clip(); ctx.translate(dx, 0); chLockup(ctx, kk, { mode: 1 + (i % 2) }); ctx.restore(); }
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .6; ctx.translate(-18 * gl, 0); chLockup(ctx, kk, { mode: 1 }); ctx.translate(36 * gl, 0); chLockup(ctx, kk, { mode: 2 }); ctx.restore();
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, R() * 1000 + 300, W, 5);
+    } else chLockupFX(ctx, kk);
+    // Hebrew chip with shine
+    const ck = cl((kk - .1) / .1), cs = eob(ck);
+    if (ck > 0) { ctx.save(); ctx.translate(540, 1085); ctx.scale(cs, cs); ctx.transform(1, 0, -.2, 1, 0, 0);
+      ctx.fillStyle = CH.or; ctx.shadowColor = 'rgba(255,106,0,.85)'; ctx.shadowBlur = 44; V.rr(ctx, -310, -88, 620, 176, 20); ctx.fill(); ctx.shadowColor = 'transparent';
+      ctx.save(); V.rr(ctx, -310, -88, 620, 176, 20); ctx.clip(); const sx = lerp(-500, 500, cl((kk - .3) / .2)); ctx.fillStyle = LIN(ctx, sx - 60, 0, sx + 60, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.7)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-320, -90, 640, 180); ctx.restore();
+      ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; V.rr(ctx, -310, -88, 620, 176, 20); ctx.stroke();
+      ctx.fillStyle = '#0A0A0C'; ctx.font = '900 146px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'rtl'; ctx.fillText("צ'רלטון", 0, 6); ctx.restore(); }
     burst(ctx, 540, 900, kk / .2, '#FF9A2E', 760, 24, 3);
-    V.flash(ctx, t, LT.ch + .63, .08, '#fff', .7);
     if (kk < .3) speedLines(ctx, 540, 900, t, 26, '#FFB060', 400, 1400, .35 * (1 - kk / .3), 8);
   }
+  ctx.restore();
+  V.flash(ctx, t, LT.ch, .08, '#fff', .9); if (ph === 2) V.flash(ctx, t, LT.ch + .44, .08, '#fff', .7);
 }
 
 // ================================================================ MAIN
@@ -634,5 +719,5 @@ A.scene({
     if (edge === -1) { ctx.save(); ctx.translate(dx + W, 0); whipBand(ctx, 0, 1, 1); ctx.restore(); }
   }
 });
-A.V3 = { badge, flare, burst, ball, trail, slam, speedLines, figure, POSE, KIT, whipBand, lightBank, feet };
+A.V3 = { flare, burst, ball, trail, slam, speedLines, figure, POSE, KIT, whipBand, lightBank, feet, plate };
 })();
