@@ -3,7 +3,7 @@
 > **בעברית בקצרה:** זה המסמך המלא של הסרטון של GOTV (גרסה 7): הסגנון, הכלים, הסוכנים, סדר העבודה, הפקודות המדויקות, מה עבד ומה לא.
 > **לסשן חדש:** פותחים סשן, מדביקים את הפרומפט מסעיף 12 ומצרפים קובץ קריינות (WAV) וסרטון של עצמך.
 
-Reference result: GOTV ad v8 (smooth motion; earlier v7 = same film with stop-motion stepping). Files: `gotv5/out/gotv_v8_mobile.mp4` (vertical) and `gotv5l/out/gotv_v8_landscape_tv.mp4` (landscape). Both are 46.2 s long and use one audio master, `gotv5/audio/v7/master_v7.wav`.
+Reference result: GOTV ad v9 (smooth motion, flowing holds). Files: `gotv5/out/gotv_v9_mobile.mp4` (vertical) and `gotv5l/out/gotv_v9_landscape_tv.mp4` (landscape). Both are 44.6 s long and use one audio master, `gotv5/audio/v7/master_v7t.wav`, which is `master_v7.wav` after `tighten_v7.py`.
 Code: `/home/user/I/gotv5` (vertical 1080x1920) and `/home/user/I/gotv5l` (landscape 1920x1080). Git branch `claude/israeli-iptv-animation-8qu3xo` of `cruxkh/I`.
 
 ---
@@ -44,7 +44,7 @@ Code: `/home/user/I/gotv5` (vertical 1080x1920) and `/home/user/I/gotv5l` (lands
 | Fast and smooth (speedometer, river, progress bar), then suspense curtains and "?" | 20.5-25.9 |
 | "אין תקיעות. נקודה." giant stamps, buffering wheel crossed out, goal that never freezes | 25.4-30.5 |
 | Remote press, TV on, recap of logos, thumbs up | 29.9-36.9 |
-| End card: GOTV logo, "הטלוויזיה של ישראל", "(התקנת אפליקציה על המסך החכם)" | 36.9-40 (+ holds = 46.2 total) |
+| End card: GOTV logo, "הטלוויזיה של ישראל", "(התקנת אפליקציה על המסך החכם)" | 36.9-40 (+ holds = 44.6 total) |
 
 ## 2. Client rules learned (keep them)
 
@@ -227,6 +227,12 @@ Brief template for a scene agent (worked well):
 
 - **Repeated small events (calendar days, list items): make them MUSIC, not UI sounds.** Synthetic clicks and notification dings sounded "metallic, not professional". The fix was `audio/v7/cal_week.py`: each torn day page plays one note of a rising phrase in the score's key, on real harp plus violin pizzicato samples, with a piano chord and a harp glissando on the last day.
 
+### 8.2 Continuity rules (v9, client: "it feels like the film ends" / "a pause after every word")
+- **A hold must never end in a hush.** A near-silent tail makes the film feel finished. Instead, end every hold with a forward pickup that lands on the downbeat where the narrator resumes. The cinema hold uses an accelerating violin/viola/cello spiccato run up the scale (16ths, then 32nds), a snare roll crescendo and a sustained choir, landing on a tutti hit plus crash, with a whoosh (`score_v7.py` `cin()`, `mix_v7.py` 13.19 whip).
+- **Keep the music energy up until the narrator actually speaks again.** In `mix_v7.py` the hold envelope stays at +6 dB until 0.35 s before the next spoken word (`nxt`), not until the hold end. Otherwise the level drops about 9 dB in the gap and reads as an ending. Re-check that the worst word keeps VO-music of at least 5 dB.
+- **Genre holds are short: about 1.0-1.2 s.** The zoom starts on the word, the genre line plays immediately, and the narrator continues. The tail after the genre line is dead air. `tighten_v7.py` splices the tails out of the finished master with 60 ms equal-power crossfades (XF-compensated so the length is exact), and `timeline.js` HOLDS d values must be changed to match (tur 1.0, kor 1.0, ani 1.2). Then re-render the video.
+- Next time, design the holds at about 1.0-1.2 s from the start, so no splicing is needed.
+
 ## 9. Known pitfalls and fixes
 
 - The canvas state leaked between frames. Fix: `cv.width = W` at the start of every frame.
@@ -245,8 +251,9 @@ Brief template for a scene agent (worked well):
 
 ```
 T = output time, v = voice clock (words.js and // CUE comments are in v)
-HOLDS (v, d): cin 11.79 1.4 | tur 13.065 1.6 | kor 13.94 1.6 | ani 14.53 1.6   -> total 40.0 + 6.2 = 46.2 s
-T = v + sum(d for holds with hold.v < v)      (VO ends v 36.9 -> T 43.1; big hit v 25.64 -> T 31.84)
+HOLDS (v, d): cin 11.79 1.4 | tur 13.065 1.0 | kor 13.94 1.0 | ani 14.53 1.2   -> total 40.0 + 4.6 = 44.6 s  (v9)
+T = v + sum(d for holds with hold.v < v)      (VO ends v 36.9 -> T 41.5; big hit v 25.64 -> T 30.24)
+The score and mix were built on the v7 hold lengths (1.6 s each) and then tightened by splicing: see section 8.2.
 ```
 
 ## 11. Checklist before sending
