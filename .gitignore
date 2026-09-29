@@ -8,3 +8,8 @@ promo/audio/vo.wav.bak
 promo/yt/src/
 promo/yt/mask/
 promo/yt/mask_rgba/
+gotv/out/
+gotv/previews/
+gotv/node_modules
+gotv/audio/music/sf/
+gotv/audio/_mix_stems_v2.npz
