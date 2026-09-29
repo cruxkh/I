@@ -6,7 +6,7 @@ const _L = [
   [6.70, 9.00, 'תכנים מנטפליקס, תכנים מדיסני פלוס', 'Content from Netflix, content from Disney Plus'],
   [9.05, 10.20, 'כל ערוצי הספורט', 'All the sports channels'],
   [10.25, 13.08, "כולל ספורט 5 וצ'רלטון", 'including Sport 5 and Charlton'],
-  [13.10, 15.42, 'סדרות תורכיות, קוריאניות, אנימה ועוד המון תוכן', 'Turkish and Korean series, anime and lots more'],
+  [13.10, 15.42, 'סדרות טורקיות, קוריאניות, אנימה ועוד המון תוכן', 'Turkish and Korean series, anime and lots more'],
   [15.81, 18.55, 'והכי חשוב, הספרייה מתעדכנת לאורך כל השבוע', 'Most importantly, the library updates all week long'],
   [18.81, 20.40, 'ככה שתמיד יש משהו חדש לראות', "so there's always something new to watch"],
   [20.64, 23.50, 'יש לכם גם שידורים חיים, עם חוויית צפייה מהירה וחלקה', 'You also get live broadcasts, with a fast and smooth viewing experience'],

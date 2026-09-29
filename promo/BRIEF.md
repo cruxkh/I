@@ -25,7 +25,7 @@ Goal: BLOW THE VIEWER AWAY. Rich, polished, motion-designed, clear reads, lots o
  5.00-6.63  "כל השידורים החיים בישראל" (all live broadcasts in Israel)
  6.70-7.95  "תכנים מנטפליקס" (content from Netflix)     8.00-9.00 "תכנים מדיסני פלוס" (Disney Plus)
  9.05-10.20 "כל ערוצי הספורט" (all sports channels)     10.25-12.0 "כולל ספורט חמש" (Sport 5)   12.05-13.08 "וצ'רלטון" (Charlton)
- 13.10-13.99 "סדרות תורכיות" (Turkish series)   14.00-14.6 "קוריאניות" (Korean)   14.6-15.05 "אנימה" (anime)   15.05-15.42 "ועוד המון תוכן" (and lots more content); pause to 15.81
+ 13.10-13.99 "סדרות טורקיות" (Turkish series)   14.00-14.6 "קוריאניות" (Korean)   14.6-15.05 "אנימה" (anime)   15.05-15.42 "ועוד המון תוכן" (and lots more content); pause to 15.81
  15.81-18.55 "והכי חשוב, הספרייה מתעדכנת לאורך כל השבוע" (most important: the library updates all week long)
  18.81-20.40 "ככה שתמיד יש משהו חדש לראות" (so there's always something new to watch)
  20.64-23.50 "יש לכם גם שידורים חיים, עם חוויית צפייה מהירה וחלקה" (live broadcasts too, fast smooth viewing)

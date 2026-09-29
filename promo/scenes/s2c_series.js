@@ -274,7 +274,7 @@ function turkSoap(ctx, t) {
 }
 function turkAll(ctx, t) {
   if (t < 13.62) turkBosphorus(ctx, t); else turkSoap(ctx, t);
-  ribbon(ctx, 'סדרות תורכיות', 960, 800, t, 13.34, { pulse: pulse(t, 13.62, 0.12) + pulse(t, 13.75, 0.12) + pulse(t, 13.88, 0.12) });
+  ribbon(ctx, 'סדרות טורקיות', 960, 800, t, 13.34, { pulse: pulse(t, 13.62, 0.12) + pulse(t, 13.75, 0.12) + pulse(t, 13.88, 0.12) });
 }
 
 // ============================================================================
@@ -579,7 +579,7 @@ function shards(ctx, t) {
   const t0 = 15.13; if (t >= 15.5) return;
   const frames = [[330, 470, -0.07, 'tk'], [960, 470, 0.0, 'kr'], [1590, 470, 0.07, 'an']];
   const FW = 560, FH = 315;
-  const snaps = { tk: A.layer('s2c_snap_tk', 640, 360, c => { c.scale(1 / 3, 1 / 3); turkBosphorus(c, 13.5); ribbon(c, 'סדרות תורכיות', 960, 800, 13.6, 13.34); }),
+  const snaps = { tk: A.layer('s2c_snap_tk', 640, 360, c => { c.scale(1 / 3, 1 / 3); turkBosphorus(c, 13.5); ribbon(c, 'סדרות טורקיות', 960, 800, 13.6, 13.34); }),
     kr: A.layer('s2c_snap_kr', 640, 360, c => { c.scale(1 / 3, 1 / 3); koreaFull(c, 14.45); }),
     an: A.layer('s2c_snap_an', 640, 360, c => { c.scale(1 / 3, 1 / 3); animeShot1(c, 14.75); }) };
   frames.forEach(([fx, fy, fr, key], fi) => {
