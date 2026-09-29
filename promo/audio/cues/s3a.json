@@ -1,0 +1,205 @@
+[
+ {
+  "t": 15.81,
+  "sound": "iris_burst_whoosh",
+  "desc": "bright rising whoosh with a sparkly pop as a golden circle bursts open",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 15.97,
+  "sound": "tile_wall_pops",
+  "desc": "rapid cascade of soft bubbly pops as a wall of coloured tiles appears then scatters",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 16.03,
+  "sound": "calendar_flip",
+  "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+  "gain_db": -11,
+  "pan": 0.3
+ },
+ {
+  "t": 16.26,
+  "sound": "poster_thud",
+  "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+  "gain_db": -14,
+  "pan": 0.3
+ },
+ {
+  "t": 16.42,
+  "sound": "poster_thud_double",
+  "desc": "two quick soft thuds and sparkle shimmer as posters land",
+  "gain_db": -15,
+  "pan": 0.3
+ },
+ {
+  "t": 16.36,
+  "sound": "calendar_flip",
+  "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+  "gain_db": -11,
+  "pan": 0.19999999999999998
+ },
+ {
+  "t": 16.59,
+  "sound": "poster_thud",
+  "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+  "gain_db": -14,
+  "pan": 0.19999999999999998
+ },
+ {
+  "t": 16.69,
+  "sound": "calendar_flip",
+  "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+  "gain_db": -11,
+  "pan": 0.09999999999999998
+ },
+ {
+  "t": 16.92,
+  "sound": "poster_thud",
+  "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+  "gain_db": -14,
+  "pan": 0.09999999999999998
+ },
+ {
+  "t": 17.08,
+  "sound": "poster_thud_double",
+  "desc": "two quick soft thuds and sparkle shimmer as posters land",
+  "gain_db": -15,
+  "pan": 0.09999999999999998
+ },
+ {
+  "t": 17.02,
+  "sound": "calendar_flip",
+  "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+  "gain_db": -11,
+  "pan": -5.551115123125783e-17
+ },
+ {
+  "t": 17.25,
+  "sound": "poster_thud",
+  "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+  "gain_db": -14,
+  "pan": -5.551115123125783e-17
+ },
+ {
+  "t": 17.35,
+  "sound": "calendar_flip",
+  "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+  "gain_db": -11,
+  "pan": -0.10000000000000003
+ },
+ {
+  "t": 17.58,
+  "sound": "poster_thud",
+  "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+  "gain_db": -14,
+  "pan": -0.10000000000000003
+ },
+ {
+  "t": 17.74,
+  "sound": "poster_thud_double",
+  "desc": "two quick soft thuds and sparkle shimmer as posters land",
+  "gain_db": -15,
+  "pan": -0.10000000000000003
+ },
+ {
+  "t": 17.68,
+  "sound": "calendar_flip",
+  "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+  "gain_db": -11,
+  "pan": -0.2
+ },
+ {
+  "t": 17.91,
+  "sound": "poster_thud",
+  "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+  "gain_db": -14,
+  "pan": -0.2
+ },
+ {
+  "t": 18.01,
+  "sound": "calendar_flip",
+  "desc": "crisp paper page flip with a light snap, pitch rising slightly each day",
+  "gain_db": -11,
+  "pan": -0.3000000000000001
+ },
+ {
+  "t": 18.24,
+  "sound": "poster_thud",
+  "desc": "soft wooden thud + tiny glassy sparkle as a poster lands on the shelf",
+  "gain_db": -14,
+  "pan": -0.3000000000000001
+ },
+ {
+  "t": 18.4,
+  "sound": "poster_thud_double",
+  "desc": "two quick soft thuds and sparkle shimmer as posters land",
+  "gain_db": -15,
+  "pan": -0.3000000000000001
+ },
+ {
+  "t": 18.52,
+  "sound": "today_marker_out",
+  "desc": "tiny soft pop as the today marker vanishes",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 18.85,
+  "sound": "pullback_whoosh",
+  "desc": "big airy rising whoosh as the camera pulls back",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 19.0,
+  "sound": "library_lights_shimmer",
+  "desc": "warm glowing shimmer sweep, chimes rippling outward as shelves light up",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 19.3,
+  "sound": "cursor_appear",
+  "desc": "small UI blip as cursor appears",
+  "gain_db": -14,
+  "pan": 0.3
+ },
+ {
+  "t": 19.6,
+  "sound": "hero_badge_pop",
+  "desc": "cute pop with a sparkle as the new badge stamps on",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 19.95,
+  "sound": "cursor_click",
+  "desc": "clean UI click",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 19.98,
+  "sound": "hero_pop_out",
+  "desc": "springy boing whoosh with bright chime as the poster pops toward camera",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 20.3,
+  "sound": "zoom_in_whoosh",
+  "desc": "fast rising zoom-in whoosh with light impact",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 20.5,
+  "sound": "poster_expand",
+  "desc": "warm swelling sweep as poster expands to fill the screen, ends on soft boom",
+  "gain_db": -9,
+  "pan": 0
+ }
+]

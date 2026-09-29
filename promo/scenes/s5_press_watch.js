@@ -318,7 +318,7 @@
     const a = i / NP * A.TAU + 0.6 + (t - 32.04) * om;
     const ox = RING.x + Math.cos(a) * RING.rx, oy = RING.y + Math.sin(a) * RING.ry * (1 + 0.05 * Math.sin(t * 2 + i));
     const dep = (Math.sin(a) + 1) / 2;         // 0 back .. 1 front
-    const sc = 0.62 + dep * 0.62;
+    const sc = 0.6 + dep * 0.42;
     const e = ease.out(q0), sp = 1 - Math.pow(1 - q0, 3);
     let x = A.lerp(TVC.x, ox, e), y = A.lerp(TVC.y, oy, e) - Math.sin(q0 * Math.PI) * 120 * (i % 2 ? 1 : -0.3);
     let s = A.lerp(0.12, sc, ease.outBack(q0));
@@ -399,7 +399,7 @@
     let x = A.key(t, [[31.10, 940], [32.04, 960], [35.19, 970, 'inOut'], [36.17, 960, 'inOut']]);
     let y = A.key(t, [[31.10, 520], [32.04, 540], [35.19, 530, 'inOut'], [36.17, 470, 'inOut']]);
     const rot = 0.012 * Math.sin(t * 0.9) + A.key(t, [[35.19, 0], [35.7, -0.02, 'inOut'], [36.17, 0, 'inOut']]);
-    const shake = 0.7 * Math.exp(-Math.max(0, t - 36.44) * 12) * (t > 36.44 ? 1 : 0) + 0.25 * Math.exp(-Math.max(0, t - 31.1) * 8) * (t > 31.1 ? 1 : 0);
+    const shake = 0.7 * Math.exp(-Math.max(0, t - 36.31) * 12) * (t > 36.31 ? 1 : 0) + 0.25 * Math.exp(-Math.max(0, t - 31.1) * 8) * (t > 31.1 ? 1 : 0);
     return { x, y, zoom, rot, shake };
   }
 
@@ -408,7 +408,7 @@
   // ============================================================
   function spinner(ctx, x, y, s, a, t) {
     ctx.save(); ctx.translate(x, y); ctx.scale(s.x, s.y); ctx.globalAlpha = a;
-    ctx.beginPath(); ctx.arc(0, 0, 62, 0, A.TAU); ctx.fillStyle = 'rgba(20,14,40,0.75)'; ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = OL(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, 62, 0, A.TAU); ctx.fillStyle = 'rgba(30,22,60,0.95)'; ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = OL(); ctx.stroke();
     for (let i = 0; i < 10; i++) { const ang = i / 10 * A.TAU + t * 9; ctx.beginPath(); ctx.arc(Math.cos(ang) * 38, Math.sin(ang) * 38, 8 - i * 0.5, 0, A.TAU); ctx.fillStyle = `rgba(255,255,255,${0.95 - i * 0.09})`; ctx.fill(); }
     ctx.restore();
   }
@@ -471,33 +471,29 @@
   // ============================================================
   // MAIN
   // ============================================================
-  function worldOverlay(ctx, t, cam) {
-    // spinner + thumbs-up in world space next to TV top-right corner
-    const c = cam(t);
-    ctx.save(); A.camera(ctx, { x: c.x, y: c.y, zoom: c.zoom, rot: c.rot, shake: c.shake, t });
-    const sx = TVC.x + TVW / 2 + 10, sy = TVC.y - TVH / 2 + 10;
-    const ap = inv(36.22, 36.38, t), sq = inv(36.44, 36.5, t);
-    if (ap > 0 && t < 36.7) {
-      const squash = sq > 0 ? { x: 1 + 0.9 * ease.out(sq), y: 0.12 } : { x: 0.6 + 0.4 * ease.outBack(ap), y: 0.6 + 0.4 * ease.outBack(ap) };
-      const fade = 1 - inv(36.55, 36.68, t);
-      spinner(ctx, sx + 20, sy + (sq > 0 ? 40 : 0), squash, ap * fade, t);
+  function worldOverlay() {}
+  const GX = 1650, GY = 300;
+  function screenGag(ctx, t) {
+    const ap = inv(36.1, 36.24, t); if (ap <= 0) return;
+    const q = inv(36.2, 36.31, t), sq = inv(36.31, 36.37, t);
+    const fade = 1 - inv(36.6, 36.72, t);
+    ctx.save(); ctx.globalAlpha = fade;
+    // spinner ghost tries to appear, gets flattened
+    if (sq < 1 || t < 36.5) {
+      const sc = 0.5 + 0.5 * ease.outBack(ap);
+      const squash = sq > 0 ? { x: sc * (1 + 0.7 * ease.out(sq)), y: sc * (1 - 0.88 * ease.out(sq)) } : { x: sc, y: sc };
+      spinner(ctx, GX, GY + 30 * sq, squash, ap * (1 - 0.3 * sq), t);
+    }
+    // giant thumbs-up from Tom
+    if (q > 0) {
+      const y = A.lerp(1350, 560, ease.out(q)), pop = 1 + 0.1 * Math.sin(inv(36.31, 36.5, t) * Math.PI);
+      thumbsUp(ctx, GX + 10, y, 1.3 * pop, -0.12 + 0.12 * ease.outBack(inv(36.3, 36.45, t)));
     }
     ctx.restore();
-  }
-  function screenGag(ctx, t) {
-    // giant thumbs-up slams in from lower right
-    const q = inv(36.3, 36.44, t); if (q <= 0) return;
-    const hold = 1 - inv(36.62, 36.75, t);
-    const e = ease.in(q);
-    const x = A.lerp(2100, 1400, ease.out(inv(36.3, 36.44, t))), y = A.lerp(1250, 470, ease.out(q));
-    const pop = 1 + 0.12 * Math.sin(inv(36.44, 36.6, t) * Math.PI);
-    ctx.save(); ctx.globalAlpha = hold; void e;
-    thumbsUp(ctx, x, y, 1.5 * pop, -0.25 + 0.2 * ease.outBack(inv(36.44, 36.6, t)));
-    ctx.restore();
-    const ip = inv(36.44, 36.75, t);
+    const ip = inv(36.31, 36.62, t);
     if (ip > 0 && ip < 1) {
-      ring(ctx, 1400, 470, 60 + ip * 300, 14 * (1 - ip), '#fff', 1 - ip);
-      for (let i = 0; i < 8; i++) { const a = i / 8 * A.TAU; sparkle(ctx, 1400 + Math.cos(a) * (120 + ip * 260), 470 + Math.sin(a) * (120 + ip * 260), 30 * (1 - ip), a, '#FFE08A', 1 - ip); }
+      ring(ctx, GX, GY + 20, 40 + ip * 280, 14 * (1 - ip), '#fff', 1 - ip);
+      for (let i = 0; i < 8; i++) { const a = i / 8 * A.TAU + 0.2; sparkle(ctx, GX + Math.cos(a) * (90 + ip * 230), GY + Math.sin(a) * (90 + ip * 230), 34 * (1 - ip), a, '#FFE08A', 1 - ip); }
     }
   }
 
@@ -508,10 +504,9 @@
       const wp = inv(T0, 30.42, t);
       const whip = 1 - ease.out(wp);   // 1 -> 0
       const drawAll = (c) => {
-        if (t < 31.1) remoteScene(c, t); else { roomScene(c, t, camFn); worldOverlay(c, t, camFn); }
+        if (t < 31.1) remoteScene(c, t); else { roomScene(c, t, camFn);  }
       };
       // fully opaque base so the whip covers everything
-      ctx.fillStyle = '#2a1140'; ctx.fillRect(0, 0, 1920, 1080);
       if (whip > 0.002) {
         const off = -whip * 2200;
         // motion-blur ghosts trailing behind (to the left of leading edge)
@@ -524,7 +519,7 @@
         ctx.save(); ctx.globalAlpha = whip * 0.5; for (let i = 0; i < 14; i++) { const y = A.hash(i * 3) * 1080, h = 6 + A.hash(i) * 26; ctx.fillStyle = i % 2 ? '#FFE08A' : '#fff'; ctx.fillRect(0, y, 1920, h * 0.5); } ctx.restore();
       } else drawAll(ctx);
       // end layer + gag in screen space
-      if (t >= 31.1) { screenGag(ctx, t); endLayer(ctx, t); }
+      if (t >= 31.1) { endLayer(ctx, t); screenGag(ctx, t); }
     },
   });
 })();

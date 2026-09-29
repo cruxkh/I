@@ -1,0 +1,22 @@
+[
+{"t":30.12,"sound":"whip_in_left","desc":"fast airy whoosh sweeping left to right, short 0.3s, with a soft tail","gain_db":-8,"pan":0},
+{"t":30.45,"sound":"thumb_slide_in","desc":"soft fabric/skin slide, subtle low swish as the thumb enters","gain_db":-18,"pan":0.2},
+{"t":30.72,"sound":"remote_ok_click","desc":"crisp plastic remote button click with a tiny rubbery thunk","gain_db":-6,"pan":0},
+{"t":30.74,"sound":"button_ripple_chime","desc":"bright glassy magical chime with expanding shimmer as ripple rings spread","gain_db":-10,"pan":0},
+{"t":31.00,"sound":"power_on_riser","desc":"fast rising electric swell into white flash, 0.1s","gain_db":-10,"pan":0},
+{"t":31.10,"sound":"tv_power_on","desc":"CRT style tv turn-on zap and warm hum, then soft low thump","gain_db":-8,"pan":0},
+{"t":31.16,"sound":"stadium_crowd_swell","desc":"live stadium crowd murmur and cheer swelling from the tv, bright and warm","gain_db":-16,"pan":0},
+{"t":31.60,"sound":"goal_crowd_roar","desc":"big goal roar from the tv with a short horn, roomy","gain_db":-14,"pan":0},
+{"t":32.04,"sound":"tiles_burst_out","desc":"sparkly whoosh burst as posters fly out of the tv, rapid pops staggered","gain_db":-10,"pan":0},
+{"t":32.4,"sound":"orbit_swirl","desc":"gentle airy circular whoosh loop as posters orbit, subtle glitter","gain_db":-20,"pan":0},
+{"t":33.42,"sound":"card_flip_cascade","desc":"rapid series of ten card flips, snappy paper whips, 0.7s spread","gain_db":-10,"pan":0},
+{"t":33.75,"sound":"live_badge_pops","desc":"cascade of small bubbly UI pops as red LIVE badges appear, rising pitch","gain_db":-12,"pan":0},
+{"t":34.60,"sound":"news_match_blips","desc":"short broadcast beep and crowd chatter fragments under the live screens","gain_db":-22,"pan":0},
+{"t":34.95,"sound":"tiles_suck_in","desc":"reverse whoosh as all screens fly back into the tv, then a soft thump","gain_db":-10,"pan":0},
+{"t":35.19,"sound":"camera_glide_whoosh","desc":"long silky rising whoosh with warm swell for the push-in, 1s","gain_db":-9,"pan":0},
+{"t":36.10,"sound":"cheer_laugh_family","desc":"three people laughing and cheering happily, warm room, short","gain_db":-11,"pan":0},
+{"t":36.12,"sound":"spinner_ghost_appear","desc":"thin eerie loading blip, descending wobble, comic","gain_db":-16,"pan":0.5},
+{"t":36.20,"sound":"end_line_pop_sparkle","desc":"punchy pop hit with golden sparkle shimmer and airy sub boom for the end line","gain_db":-6,"pan":0},
+{"t":36.31,"sound":"thumbs_up_slam_squish","desc":"cartoon slam thud with squeaky squish and small bell ding, funny","gain_db":-8,"pan":0.5},
+{"t":36.40,"sound":"final_sparkle_tail","desc":"glittering shimmer tail fading with the fade to black","gain_db":-14,"pan":0}
+]
