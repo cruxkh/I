@@ -175,12 +175,17 @@
     // live / sport / football
     if (t >= 33.4) {
       const jf = CL.j(t, 8, 3);
-      const c5 = CL.pop(t, 33.55, .3);
-      if (c5) { CL.logoCard(ctx, 'sport5', 300 + jf[0], 270 + jf[1], 560, 280, { rot: -.07, scale: c5, seed: 6, fill: C.ink }); if (t < 33.85) CL.sparks(ctx, 300, 270, 300, 400, 12, t, { color: C.ink, lw: 9 }); }
-      const c1 = CL.pop(t, 34.3, .3);
-      if (c1) { CL.logoCard(ctx, 'sport1', 790 - jf[0], 300 + jf[1], 560, 280, { rot: .06, scale: c1, seed: 7 }); if (t < 34.6) CL.sparks(ctx, 790, 300, 300, 400, 12, t, { color: C.ink, lw: 9 }); }
+      // TV providers on "השידורים החיים שאתם צריכים" (client request): yes, HOT (real logos), FreeTV, Cellcom tv, Partner TV (paper wordmarks)
+      const PROV = [['yesbrand',33.44,190,210,-.07],['hotbrand',33.72,540,190,.05],['freetv',33.99,890,215,-.04],['cellcom',34.36,330,450,.06],['partner',34.63,760,455,-.06]];
+      PROV.forEach(([k, t0, x, y, rot], i) => { const sc = CL.pop(t, t0, .3); if (!sc) return;      // CUE pop
+        const j2 = CL.j(t, 20 + i, 3), w = 320, h = 170;
+        if (k === 'yesbrand' || k === 'hotbrand') CL.logoCard(ctx, k, x + j2[0], y + j2[1], w, h, { rot: rot + j2[2], scale: sc, seed: 30 + i, fill: k === 'hotbrand' ? C.ink : '#0A2A6B', pad: .2 });
+        else { const st = { freetv: ['freetv', '#FF6B00', C.white], cellcom: ['cellcom tv', '#6B2C91', C.white], partner: ['partner tv', '#00A3AD', C.ink] }[k];
+          ctx.save(); ctx.translate(x + j2[0], y + j2[1]); ctx.rotate(rot + j2[2]); ctx.scale(sc, sc); CL.scrap(ctx, 0, 0, w, h, { fill: st[2], seed: 30 + i }); CL.tape(ctx, -w * .3, -h / 2, -.3, 110, 36);
+          ctx.font = `800 ${Math.round(h * .36)}px Rubik`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; const tw = ctx.measureText(st[0]).width, f = Math.min(1, w * .84 / tw); ctx.scale(f, f); ctx.fillStyle = st[1]; ctx.fillText(st[0], 0, 4); ctx.restore(); }
+        if (t < t0 + .3) CL.sparks(ctx, x, y, w * .55, w * .75, 10, t, { color: C.ink, lw: 8 }); });
       const lv = CL.pop(t, 33.95, .3);           // CUE 33.95 live
-      if (lv) { ctx.save(); ctx.translate(260 + jf[0], 585 + jf[1]); ctx.rotate(-.13); ctx.scale(lv * 1.15, lv * 1.15); CL.blob(ctx, 0, 0, 350, 140, { fill: C.red });
+      if (lv) { ctx.save(); ctx.translate(830 + jf[0], 1150 + jf[1]); ctx.rotate(-.13); ctx.scale(lv * .95, lv * .95); CL.blob(ctx, 0, 0, 350, 140, { fill: C.red });
         ctx.fillStyle = C.white; ctx.strokeStyle = C.ink; ctx.lineWidth = 7; if (Math.floor(t * 3) % 2 === 0) { ctx.beginPath(); ctx.arc(-110, 0, 24, 0, TAU); ctx.fill(); ctx.stroke(); }
         A.text(ctx, 'LIVE', 30, 8, { font: '400 112px Bangers', fill: C.white, stroke: C.ink, lw: 16 }); ctx.restore(); }
       const bs = CL.pop(t, 33.44, .3);            // CUE 33.44 football

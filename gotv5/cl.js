@@ -84,7 +84,7 @@
   const FILES = { netflix: 'netflix.png', disney: 'disney-plus.png', appletv: 'apple-tv-plus.png', prime: 'amazon-prime-video.png', hbo: 'hbo-max.png', hulu: 'hulu.png', paramount: 'paramount-plus.png',
     sport5: '5sport-il.png', sport5live: '5live-il.png', sport5plus: '5plus-il.png', sport5gold: '5gold-il.png', sport5stars: '5stars-il.png', sport5_4k: '5sport4k-il.png', hotzone: 'hot-zone-il.png',
     sport1: 'sport1-il.png', sport2: 'sport2-il.png', sport3: 'sport3-il.png', sport4: 'sport4-il.png', one: 'one-il.png', one2: 'one2-il.png',
-    kan11: 'kan11-il.png', keshet12: 'keshet12-il.png', reshet13: 'reshet13-il.png', ch14: 'channel14-il.png', ch9: 'channel9-il.png', i24: 'i24-news-il.png', yes: 'yes-israel-il.png', hot: 'hot3-il.png' };
+    kan11: 'kan11-il.png', keshet12: 'keshet12-il.png', reshet13: 'reshet13-il.png', ch14: 'channel14-il.png', ch9: 'channel9-il.png', i24: 'i24-news-il.png', yes: 'yes-israel-il.png', yesbrand: 'yes-brand.png', hotbrand: 'hot-brand.png', hot: 'hot3-il.png' };
   const IMGS = {}; CL.logoNames = Object.keys(FILES);
   CL.logosReady = Promise.all(Object.entries(FILES).map(([k, f]) => new Promise(res => { const im = new Image(); im.onload = () => { IMGS[k] = im; res(); }; im.onerror = () => res(); im.src = 'assets/logos/' + f; })));
   CL.logoImg = k => IMGS[k] || null;
