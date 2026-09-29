@@ -30,7 +30,7 @@
  {
   "t": 25.71,
   "sound": "headline_slam",
-  "desc": "gold 3D slam of \"אין\"",
+  "desc": "gold 3D slam of the first word, heavy metal thud",
   "gain_db": -5,
   "pan": 0
  },
@@ -51,211 +51,246 @@
  {
   "t": 25.99,
   "sound": "impact_boom",
-  "desc": "deep impact boom, \"תקיעות\" slam",
+  "desc": "second slam, deeper extrusion lands",
   "gain_db": -2,
   "pan": 0
  },
  {
   "t": 25.99,
   "sound": "glass_shatter",
-  "desc": "huge glass/ice shatter, shards fly at camera",
+  "desc": "spinner shatters into shards",
   "gain_db": -4,
   "pan": 0
  },
  {
   "t": 26.02,
   "sound": "shockwave_ring",
-  "desc": "second shockwave",
+  "desc": "shockwave ring",
   "gain_db": -8,
   "pan": 0
  },
  {
   "t": 26.1,
   "sound": "sparkle_shower",
-  "desc": "glass dust and gold sparks fall",
+  "desc": "glass sparkle shower",
   "gain_db": -14,
-  "pan": 0.2
+  "pan": 0
  },
  {
-  "t": 26.2,
-  "sound": "glint_sweep",
-  "desc": "shards catch the light",
+  "t": 26.35,
+  "sound": "foil_shimmer",
+  "desc": "bright foil sweep glides across the gold letters",
   "gain_db": -16,
-  "pan": -0.3
+  "pan": 0
  },
  {
   "t": 26.44,
   "sound": "whoosh_fast_push_in",
-  "desc": "giant dot rushes in from camera",
+  "desc": "giant period rushes in",
   "gain_db": -8,
   "pan": 0
  },
  {
   "t": 26.55,
   "sound": "dot_slam",
-  "desc": "giant gold period slams with squash",
+  "desc": "giant gold period slams down",
   "gain_db": -3,
   "pan": 0
  },
  {
   "t": 26.57,
   "sound": "shockwave_whoosh",
-  "desc": "second big shockwave from the dot",
+  "desc": "period shock ring",
   "gain_db": -8,
   "pan": 0
  },
  {
   "t": 26.62,
   "sound": "settle_thud",
-  "desc": "dot settles, dust ring",
+  "desc": "settle thud",
   "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 26.85,
+  "sound": "foil_shimmer",
+  "desc": "second foil sweep",
+  "gain_db": -18,
   "pan": 0
  },
  {
   "t": 27.0,
   "sound": "whip_zoom",
-  "desc": "type zoom-blur whoosh past camera",
+  "desc": "zoom whip from the type into the stadium",
   "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 27.05,
+  "sound": "low_swoosh_rise",
+  "desc": "low-angle camera swoops up from the turf",
+  "gain_db": -10,
   "pan": 0
  },
  {
   "t": 27.12,
   "sound": "white_out_swell",
-  "desc": "gold whiteout into the stadium",
+  "desc": "gold dissolves into stadium light",
   "gain_db": -8,
   "pan": 0
  },
  {
   "t": 27.15,
   "sound": "stadium_crowd_swell",
-  "desc": "roaring stadium fades in, slow-mo",
+  "desc": "crowd swells",
   "gain_db": -10,
   "pan": 0
  },
  {
   "t": 27.2,
   "sound": "crowd_tense_bed",
-  "desc": "tense crowd bed under slow-mo run-up",
+  "desc": "tense crowd hush bed",
   "gain_db": -16,
   "pan": 0
  },
  {
   "t": 27.35,
   "sound": "sprint_footsteps",
-  "desc": "slow-mo footfalls, run-up",
+  "desc": "run-up footsteps on grass",
   "gain_db": -16,
-  "pan": -0.2
+  "pan": 0
  },
  {
   "t": 27.68,
   "sound": "sprint_footsteps",
-  "desc": "last footfalls",
+  "desc": "run-up steps quicken",
   "gain_db": -16,
-  "pan": -0.2
+  "pan": 0
  },
  {
-  "t": 28.02,
+  "t": 27.86,
   "sound": "power_charge",
-  "desc": "wind-up, plant foot",
+  "desc": "rising charge before the strike",
   "gain_db": -14,
   "pan": 0
  },
  {
-  "t": 28.15,
+  "t": 27.98,
+  "sound": "orbit_whoosh",
+  "desc": "camera orbits the striker, slow-mo ramp begins",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 28.05,
   "sound": "boot_kick",
-  "desc": "boot hits the ball",
+  "desc": "boot hits ball, crash zoom thump",
   "gain_db": -2,
   "pan": 0
  },
  {
-  "t": 28.16,
+  "t": 28.06,
   "sound": "ball_whoosh_trail",
-  "desc": "gold and cyan ball trail",
+  "desc": "ball whoosh with glowing trail, slowed",
   "gain_db": -8,
   "pan": 0
  },
  {
   "t": 28.27,
   "sound": "spinner_ghost_appear",
-  "desc": "ghost spinner glitches in over the ball path",
+  "desc": "ghost spinner glass fades in ahead of the ball",
   "gain_db": -12,
-  "pan": 0.3
+  "pan": 0
  },
  {
   "t": 28.46,
   "sound": "spinner_smash",
-  "desc": "ball smashes through the ghost spinner",
+  "desc": "ball smashes the frozen spinner, freeze frame",
   "gain_db": -4,
-  "pan": 0.3
+  "pan": 0
  },
  {
   "t": 28.46,
   "sound": "glass_shatter",
-  "desc": "tiny glass burst",
+  "desc": "glass shatter frozen mid-air",
   "gain_db": -12,
-  "pan": 0.3
+  "pan": 0
  },
  {
   "t": 28.5,
   "sound": "silence_cut",
-  "desc": "tiny freeze frame gap",
+  "desc": "hold and dull ring-out in the freeze",
   "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 28.54,
+  "sound": "time_resume_whoosh",
+  "desc": "slow-mo releases, speed ramp back",
+  "gain_db": -12,
   "pan": 0
  },
  {
   "t": 28.6,
   "sound": "keeper_dive",
-  "desc": "keeper dives",
+  "desc": "keeper launches into full-extension dive",
   "gain_db": -10,
-  "pan": 0.3
+  "pan": 0
  },
  {
   "t": 29.28,
   "sound": "net_swish",
-  "desc": "ball hits the net, net ripples",
+  "desc": "ball hits the net",
   "gain_db": -2,
-  "pan": 0.3
+  "pan": 0
  },
  {
   "t": 29.28,
   "sound": "goal_flash_hit",
-  "desc": "goal flash pop",
-  "gain_db": -4,
+  "desc": "tasteful golden goal pop",
+  "gain_db": -6,
   "pan": 0
  },
  {
   "t": 29.29,
   "sound": "goal_crowd_roar",
-  "desc": "crowd eruption",
+  "desc": "stadium erupts",
   "gain_db": -3,
   "pan": 0
  },
  {
   "t": 29.3,
   "sound": "confetti_cannon",
-  "desc": "confetti and flares burst",
+  "desc": "confetti cannons",
   "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 29.32,
+  "sound": "score_bug_pop",
+  "desc": "broadcast score bug ticks to 1-0",
+  "gain_db": -14,
   "pan": 0
  },
  {
   "t": 29.55,
   "sound": "confetti_burst",
-  "desc": "second confetti wave",
+  "desc": "confetti second wave",
   "gain_db": -14,
   "pan": 0
  },
  {
   "t": 29.75,
   "sound": "pullback_whoosh",
-  "desc": "camera pulls back and speeds up",
+  "desc": "camera pulls back into brightness",
   "gain_db": -8,
   "pan": 0
  },
  {
   "t": 30.1,
-  "sound": "whip_out_left",
-  "desc": "fast bright whip to the right into the host",
+  "sound": "whip_out_right",
+  "desc": "whip pan right into the host",
   "gain_db": -6,
-  "pan": 0.3
+  "pan": 0
  }
 ]

@@ -89,7 +89,7 @@
     for (let k = 0; k < N; k++) {
       const ff = f + (N === 1 ? 0 : ((k + .5) / N - .5) * shutter);
       if (window.HOST) await HOST.prepare(ff / FPS);
-      A.renderFrame(ff); if (window.HOST) HOST.overlay(ctx, ff / FPS);
+      A.renderFrame(ff); if (window.HOST) HOST.overlay(ctx, ff / FPS); if (window.FXL) FXL.overlay(ctx, ff / FPS);
       const cm = camAt(ff / FPS), zz = Math.max(cm.z, 1 + 1.3 * Math.abs(cm.rot) + (Math.abs(cm.dx) + Math.abs(cm.dy)) / 540);
       acx.save(); acx.globalAlpha = 1 / (k + 1); acx.translate(540 + cm.dx, 960 + cm.dy); acx.rotate(cm.rot); acx.scale(zz, zz); acx.translate(-540, -960); acx.drawImage(cv, 0, 0);
       if (cm.streak > .3) { for (let q = 1; q <= 4; q++) { acx.globalAlpha = (1 / (k + 1)) * .16 * cm.streak; acx.drawImage(cv, -cm.sdir * q * 26, 0); } }

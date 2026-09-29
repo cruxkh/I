@@ -25,11 +25,11 @@
     g.restore();
   }
   // tapered marker stroke from polyline
-  function marker(g, pts, W, col, edge) {
+  function marker(g, pts, W, col, edge, prof) {
     const n = pts.length; if (n < 2) return; const L = [], R = [];
     for (let i = 0; i < n; i++) {
       const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)]; let dx = b[0] - a[0], dy = b[1] - a[1]; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
-      const f = i / (n - 1), w = W * Math.min(1, .28 + f * 6, .28 + (1 - f) * 2.2) / 2;
+      const f = i / (n - 1), w = W * (prof === 'swoosh' ? Math.min(.14 + f * 1.3, 1, .05 + (1 - f) * 2.4) : Math.min(1, .28 + f * 6, .28 + (1 - f) * 2.2)) / 2;
       L.push([pts[i][0] - dy * w, pts[i][1] + dx * w]); R.push([pts[i][0] + dy * w, pts[i][1] - dx * w]);
     }
     g.beginPath(); L.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); for (let i = n - 1; i >= 0; i--) g.lineTo(R[i][0], R[i][1]); g.closePath();
@@ -64,8 +64,8 @@
   };
   S.underline = (g, u, o) => {
     const col = o.color || '#FFC24A';
-    const line = (p, off, wd, sd) => { const pts = [], N = 34; for (let i = 0; i <= Math.round(N * p); i++) { const f = i / N, q = bez([-135, 20 + off], [-40, -10 + off], [60, 30 + off], [138, -22 + off], f); pts.push([q[0], q[1] + wob(i, sd, 2)]); } marker(g, pts, wd, col); };
-    line(ease.out(clamp(u / .32)), 0, 26, 1); line(ease.out(clamp((u - .12) / .3)), 44, 17, 2);
+    const line = (p, off, wd, sd) => { const pts = [], N = 70; for (let i = 0; i <= Math.round(N * p); i++) { const f = i / N, q = bez([-140, -8 + off], [-70, 66 + off], [40, 62 + off], [146, -50 + off], f); pts.push([q[0], q[1] + wob(i * .5, sd, 1.4)]); } marker(g, pts, wd, col, null, 'swoosh'); };
+    line(ease.out(clamp(u / .32)), -20, 30, 1); line(ease.out(clamp((u - .14) / .3)) * .6, 26, 16, 2);
   };
   // comic bursts
   const BURST = {
@@ -308,8 +308,8 @@
   const NOOUT = { speedlines: 1 };
 
   // pooled offscreen canvases
-  const pool = [];
-  const getCv = (i, n) => { let c = pool[i]; if (!c) c = pool[i] = document.createElement('canvas'); if (c.width !== n || c.height !== n) { c.width = n; c.height = n; } else c.getContext('2d').clearRect(0, 0, n, n); return c; };
+  const pool = [], CACHE = new Map(), SPARE = [];
+  const getCv = (i, n) => { let c = pool[i]; if (!c) c = pool[i] = document.createElement('canvas'); if (c.width < n || c.height < n) { c.width = n; c.height = n; } else { const g = c.getContext('2d'); if (g.reset) g.reset(); else c.width = c.width; } return c; };
 
   V.stickerNames = Object.keys(S);
   V.sticker = function (ctx, name, x, y, s = 1, o = {}) {
@@ -319,19 +319,25 @@
     if (o.tOut != null && t > o.tOut) { const w = (t - o.tOut) / .26; if (w >= 1) return; if (!NOOUT[name]) sc *= 1 - ease.inBack(clamp(w)); else alpha *= 1 - w; alpha *= 1 - A.smooth(.6, 1, w); }
     if (sc <= .002 || alpha <= .002) return;
     if (!NOFLOAT[name] && o.t0 != null && u > .5) { dy += Math.sin(t * 2.6 + (o.seed || 0) * 3) * 4; rot += Math.sin(t * 1.7 + (o.seed || 0)) * .015; }
-    const ext = EXT[name] || 200, k = clamp(s * Math.min(1.4, sc + .2) * 1, .5, 2.4), n = Math.ceil(ext * 2 * k);
-    const ca = getCv(0, n), ga = ca.getContext('2d'); ga.setTransform(k, 0, 0, k, ext * k, ext * k);
-    const uu = o.t0 == null ? (o.freeze ?? 3.3 + (o.seed || 0)) : u; def(ga, uu, o); ga.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.save(); ctx.translate(x + dx * s, y + dy * s); ctx.rotate(rot); ctx.scale(s * sc * (an.sx || 1), s * sc * (an.sy || 1)); ctx.globalAlpha *= alpha;
-    if (o.outline === false || name === 'speedlines') { ctx.shadowColor = 'rgba(0,10,40,.35)'; ctx.shadowBlur = 14 * s; ctx.shadowOffsetY = 8 * s; ctx.drawImage(ca, -ext, -ext, ext * 2, ext * 2); }
-    else {
-      const cb = getCv(1, n), gb = cb.getContext('2d'); gb.drawImage(ca, 0, 0); gb.globalCompositeOperation = 'source-in'; gb.fillStyle = '#fff'; gb.fillRect(0, 0, n, n); gb.globalCompositeOperation = 'source-over';
-      const ow = 9, E = ext * 2;
-      ctx.save(); ctx.shadowColor = 'rgba(0,10,50,.55)'; ctx.shadowBlur = 20 * s * Math.max(sc, .3); ctx.shadowOffsetY = 12 * s * sc; ctx.drawImage(cb, -ext + ow * .5, -ext + ow * .5, E, E); ctx.drawImage(cb, -ext - ow * .5, -ext - ow * .5, E, E); ctx.restore();
-      for (let i = 0; i < 16; i++) { const a = i / 16 * TAU; ctx.drawImage(cb, -ext + Math.cos(a) * ow, -ext + Math.sin(a) * ow, E, E); }
-      for (let i = 0; i < 8; i++) { const a = i / 8 * TAU + .2; ctx.drawImage(cb, -ext + Math.cos(a) * ow * .55, -ext + Math.sin(a) * ow * .55, E, E); }
-      ctx.drawImage(ca, -ext, -ext, E, E);
+    const ext = EXT[name] || 200, k = Math.ceil(clamp(s * 1.05, .5, 2.4) * 4) / 4, n = Math.ceil(ext * 2 * k), E = ext * 2;
+    const uu = o.t0 == null ? (o.freeze ?? 3.3 + (o.seed || 0)) : u, plain = o.outline === false || name === 'speedlines';
+    const key = [name, o.text, o.color, o.count, o.from, o.name, o.sub, Math.round(uu * 40), k, plain].join('|');
+    let cc = CACHE.get(key);
+    if (!cc) {
+      if (CACHE.size >= 36) { const k0 = CACHE.keys().next().value; SPARE.push(CACHE.get(k0)); CACHE.delete(k0); }
+      cc = SPARE.pop() || document.createElement('canvas'); cc.width = n; cc.height = n; const gc = cc.getContext('2d');
+      const ca = getCv(0, n), ga = ca.getContext('2d'); ga.setTransform(k, 0, 0, k, ext * k, ext * k); def(ga, uu, o); ga.setTransform(1, 0, 0, 1, 0, 0);
+      if (!plain) {
+        const nb = n <= 580 ? n : Math.ceil(n * Math.max(.6, 580 / n)), cb = getCv(1, nb), gb = cb.getContext('2d'); gb.drawImage(ca, 0, 0, n, n, 0, 0, nb, nb); gb.globalCompositeOperation = 'source-in'; gb.fillStyle = '#fff'; gb.fillRect(0, 0, nb, nb); gb.globalCompositeOperation = 'source-over';
+        const ow = 9;
+        for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; gc.drawImage(cb, 0, 0, nb, nb, (Math.cos(a) * ow) * k, (Math.sin(a) * ow) * k, n, n); }
+        for (let i = 0; i < 4; i++) { const a = i / 4 * TAU + .3; gc.drawImage(cb, 0, 0, nb, nb, (Math.cos(a) * ow * .55) * k, (Math.sin(a) * ow * .55) * k, n, n); }
+      }
+      gc.drawImage(ca, 0, 0, n, n, 0, 0, n, n); CACHE.set(key, cc);
     }
+    ctx.save(); ctx.translate(x + dx * s, y + dy * s); ctx.rotate(rot); ctx.scale(s * sc * (an.sx || 1), s * sc * (an.sy || 1)); ctx.globalAlpha *= alpha;
+    ctx.shadowColor = plain ? 'rgba(0,10,40,.35)' : 'rgba(0,10,50,.55)'; ctx.shadowBlur = (plain ? 14 : 20) * s * Math.max(sc, .3); ctx.shadowOffsetY = (plain ? 8 : 12) * s * sc;
+    ctx.drawImage(cc, -ext, -ext, E, E);
     ctx.restore();
   };
 })();

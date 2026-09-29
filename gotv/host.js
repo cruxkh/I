@@ -42,14 +42,17 @@
     const xf = cx => { cx.setTransform(1, 0, 0, 1, 0, 0); cx.translate(it.cx + dx, it.cy + dy); cx.rotate(rot); cx.scale(z * fx, z); cx.translate(-PIV[0], -PIV[1]); };
     tctx.setTransform(1, 0, 0, 1, 0, 0); tctx.clearRect(0, 0, W, H); tctx.globalCompositeOperation = 'source-over';
     tctx.save(); xf(tctx); tctx.filter = 'contrast(1.14) saturate(1.5) brightness(1.08)'; tctx.drawImage(c.im, 0, 0, W, H); tctx.restore();
-    tctx.save(); tctx.globalCompositeOperation = 'destination-in'; xf(tctx); tctx.filter = 'blur(1.2px)'; tctx.drawImage(c.mk, 0, 0, W, H); tctx.restore();
+    tctx.save(); tctx.globalCompositeOperation = 'destination-in'; xf(tctx); tctx.drawImage(c.mk, 0, 0, W, H); tctx.restore();
     rctx.setTransform(1, 0, 0, 1, 0, 0); rctx.clearRect(0, 0, W, H); rctx.globalCompositeOperation = 'source-over'; rctx.drawImage(TC, 0, 0); rctx.globalCompositeOperation = 'source-in'; rctx.fillStyle = '#fff'; rctx.fillRect(0, 0, W, H); rctx.globalCompositeOperation = 'source-over';
     for (const k in tintCache) delete tintCache[k];
   }
+  const HALO = document.createElement('canvas'); HALO.width = 270; HALO.height = 480; const hx = HALO.getContext('2d');
   function paintCut(ctx, halo = 1, outline = false) {
-    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .34 * halo; ctx.filter = 'blur(30px)'; ctx.drawImage(TINT('#5AA8FF'), -10, 0); ctx.globalAlpha = .26 * halo; ctx.drawImage(TINT('#FFC24A'), 14, 6); ctx.restore();
-    ctx.save(); ctx.shadowColor = 'rgba(0,10,50,.5)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 26; ctx.drawImage(TC, 0, 0); ctx.restore();
-    if (outline) { ctx.save(); ctx.filter = 'brightness(0) invert(1)'; const R = 10; for (let i = 0; i < 14; i++) { const a = i / 14 * A.TAU; ctx.drawImage(TC, Math.cos(a) * R, Math.sin(a) * R); } ctx.restore(); }
+    // soft halo from a 1/4-res tinted silhouette (cheap blur)
+    hx.setTransform(1, 0, 0, 1, 0, 0); hx.clearRect(0, 0, 270, 480); hx.globalCompositeOperation = 'source-over'; hx.filter = 'blur(5px)'; hx.drawImage(TINT('#38B6FF'), -3, 0, 270, 480); hx.filter = 'none';
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .5 * halo; ctx.drawImage(HALO, 0, 0, W, H); ctx.restore();
+    ctx.save(); ctx.shadowColor = 'rgba(0,10,50,.5)'; ctx.shadowBlur = 36; ctx.shadowOffsetY = 20; ctx.drawImage(TC, 0, 0); ctx.restore();
+    if (outline) { const R = 10; for (let i = 0; i < 8; i++) { const a = i / 8 * A.TAU; ctx.drawImage(RC, Math.cos(a) * R, Math.sin(a) * R); } }
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .9; ctx.drawImage(TINT('#38B6FF'), -5, -2); ctx.drawImage(TINT('#FFC24A'), 6, 3); ctx.restore();
     ctx.drawImage(TC, 0, 0);
   }
