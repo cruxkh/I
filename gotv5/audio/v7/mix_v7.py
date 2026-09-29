@@ -70,7 +70,7 @@ def words():
     return W
 
 
-GENRE = [('Neden?!', 14.52, 15.45), ('사랑해요!', 16.99, 17.95), ('すごい…！', 19.18, 19.92)]   # genre voice lines (T)
+GENRE = [('Neden?!', 14.52, 15.45), ('사랑해요!', 16.99, 17.95), ('すごい…！', 19.18, 19.92), ('GO TV', 43.45, 44.6)]   # genre voice lines (T)
 
 
 # ------------------------------------------------------------------ key detection (pitched SFX follow the score)

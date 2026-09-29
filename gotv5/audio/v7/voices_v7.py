@@ -253,6 +253,27 @@ def main():
     GV[:, tend - int(0.15 * SR):tend] *= np.linspace(1, 0, int(0.15 * SR))
     GV[:, tend:int(16.9 * SR)] = 0
 
+
+    # ---- 4. END CARD: the narrator says "GO TV" in the same movie-trailer voice (T 43.45), echo "TV... TV..." into the hall
+    GO_T = 43.45
+    gy = trim(kokoro('ɡˈoʊ, tˈiː vˈiː!', 'am_onyx', speed=0.85))
+    gd = world(gy, SR, lambda f0, t: f0 * 2 ** (-4.0 / 12), warp=0.95)[:len(gy)]
+    gd = peq(gd, 110, 0.8, 6.0); gd = peq(gd, 250, 1.0, 2.5); gd = peq(gd, 3200, 1.2, 2.5)
+    gd = sat(gd / (np.max(np.abs(gd)) + 1e-9) * 1.4, 1.5)
+    gd = gd / (np.max(np.abs(gd)) + 1e-9) * np.max(np.abs(nar)) * 0.95
+    ig = int(GO_T * SR); Lg = min(len(gd), NS - ig)
+    FX[0, ig:ig + Lg] += gd[:Lg]; FX[1, ig:ig + Lg] += gd[:Lg]
+    hall2 = hall_ir(3.8, 5000, 75)
+    wg = conv(gd, hall2) * 0.45; Lw = min(wg.shape[1], NS - ig); FX[:, ig:ig + Lw] += wg[:, :Lw]
+    tv = gd[int(len(gd) * 0.42):]
+    for k, (t_e, g) in enumerate(((GO_T + 0.95, 0.40), (GO_T + 1.55, 0.2))):
+        e = lp(tv, 2600 - 900 * k, 2) * g
+        ew = conv(e, hall_ir(4.2, 3200 - 800 * k, 76 + k)); i = int(t_e * SR); L = min(ew.shape[1], NS - i)
+        FX[:, i:i + L] += ew[:, :L] * 1.2
+        L2 = min(len(e), NS - i); FX[0, i:i + L2] += e[:L2] * (0.6 if k == 0 else 0.25); FX[1, i:i + L2] += e[:L2] * (0.25 if k == 0 else 0.6)
+    fe = int(46.05 * SR); FX[:, fe - int(0.5 * SR):fe] *= np.linspace(1, 0, int(0.5 * SR)); FX[:, fe:] = 0
+    print('GO TV asr:', asr_check(gd, 'en'))
+
     sf.write(os.path.join(OUT, 'narrator_48k.wav'), nar.astype(np.float32), SR, subtype='FLOAT')
     sf.write(os.path.join(OUT, 'cinema_fx.wav'), FX.T.astype(np.float32), SR, subtype='FLOAT')
     sf.write(os.path.join(OUT, 'genre_voices.wav'), GV.T.astype(np.float32), SR, subtype='FLOAT')
