@@ -16,6 +16,23 @@
     }
   }
 
+
+  // client: the blue GOTV panel waves slowly like a flag (no pole). Panel is drawn into FL, then re-drawn in thin vertical
+  // strips displaced by a travelling sine wave, with soft light/shadow folds (source-atop, only on the panel's pixels).
+  const FL = document.createElement('canvas'), FL2 = document.createElement('canvas');
+  function flagDraw(ctx, t, x0, y0, bw, bh) {
+    const k = ease.inOut(clamp((t - 37.55) / .9));
+    if (k <= 0) { ctx.drawImage(FL, 0, 0); return; }
+    FL2.width = FL.width; FL2.height = FL.height; const g2 = FL2.getContext('2d');
+    g2.drawImage(FL, 0, 0, FL.width, y0, 0, 0, FL.width, y0); g2.drawImage(FL, 0, y0 + bh, FL.width, FL.height - y0 - bh, 0, y0 + bh, FL.width, FL.height - y0 - bh);
+    const SW = 4, A = 11 * k, per = 2.6;
+    const dyOf = x => { const p = (x - x0) / bw, amp = A * (.45 + .55 * Math.abs(p - .5) * 2); return amp * Math.sin(TAU * (p * 1.15 - t / per)) + A * .35 * Math.sin(TAU * (p * 2.3 - t / (per * .7)) + 1.3); };
+    for (let x = x0; x < x0 + bw; x += SW) { const dy = dyOf(x + SW / 2); g2.drawImage(FL, x, y0, SW + 1, bh, x, y0 + dy, SW + 1, bh); }
+    g2.save(); g2.globalCompositeOperation = 'source-atop';
+    for (let x = x0; x < x0 + bw; x += SW) { const sl = (dyOf(x + SW) - dyOf(x)) / SW; const s = clamp(sl * 1.6, -1, 1) * .16 * k;
+      g2.fillStyle = s > 0 ? `rgba(0,0,40,${s})` : `rgba(255,255,255,${-s * .8})`; g2.fillRect(x, y0 - 30, SW + 1, bh + 60); }
+    g2.restore(); ctx.drawImage(FL2, 0, 0);
+  }
   function content(ctx, t) {
     ctx.drawImage(CL.layer('s8bg', W, H, g => CL.paper(g, 'kraft')), 0, 0);
     // yellow paper rays behind the logo (stepped rotation)
@@ -24,11 +41,14 @@
 
     const j = CL.j(t, 1, 3);
     // blue torn panel + logo
+    FL.width = W; FL.height = H; { const ctx = FL.getContext('2d');
     const ps = CL.pop(t, 36.98, .3);
-    if (ps) { CL.scrap(ctx, 620 + j[0], 400 + j[1], 1060, 520, { fill: C.blue, seed: 21, rot: .02, scale: ps, draw: (g, w, h) => CL.halftone(g, -w / 2, -h / 2, w, h, '#5B82FF', 32, .5, { fade: 'radial' }) });
-      if (ps === 1 || t > 37.2) { CL.tape(ctx, 130, 170, -.5, 170, 50); CL.tape(ctx, 1110, 630, -.45, 170, 50); } }
-    const ls = CL.pop(t, 37.08, .32);        // CUE 37.08 logo slam
-    if (ls) { const sk = CL.shake(t, 37.08, .4, 12); CL.title(ctx, 'GOTV', 620 + j[0] + sk[0], 395 + j[1] + sk[1], { size: 330, dir: 'ltr', rot: -.05 + j[2], scale: ls }); }
+      if (ps) { CL.scrap(ctx, 620 + j[0], 400 + j[1], 1060, 520, { fill: C.blue, seed: 21, rot: .02, scale: ps, draw: (g, w, h) => CL.halftone(g, -w / 2, -h / 2, w, h, '#5B82FF', 32, .5, { fade: 'radial' }) });
+        if (ps === 1 || t > 37.2) { CL.tape(ctx, 130, 170, -.5, 170, 50); CL.tape(ctx, 1110, 630, -.45, 170, 50); } }
+      const ls = CL.pop(t, 37.08, .32);        // CUE 37.08 logo slam
+      if (ls) { const sk = CL.shake(t, 37.08, .4, 12); CL.title(ctx, 'GOTV', 620 + j[0] + sk[0], 395 + j[1] + sk[1], { size: 330, dir: 'ltr', rot: -.05 + j[2], scale: ls }); }
+    }
+    flagDraw(ctx, t, 20, 80, 1220, 660);
     const s1 = CL.pop(t, 37.25, .3), sj = CL.j(t, 3, 3);
     if (s1) { CL.star(ctx, 70 + sj[0], 110 + sj[1], 78 * s1, 10, { fill: C.red, rot: .3 }); CL.star(ctx, 1170 - sj[0], 700 + sj[1], 70 * s1, 8, { fill: C.pink, rot: -.2 }); CL.star(ctx, 1150 + sj[1], 120, 50 * s1, 8, { fill: C.orange, rot: .1 }); }
 
