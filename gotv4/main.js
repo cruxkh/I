@@ -8,7 +8,7 @@
   const { clamp, lerp, inv, ease, hash, rng } = A;
   const eob = t => ease.outBack(clamp(t)), eo = t => ease.out(clamp(t));
   A.post = null; A.tMap = TLF.vOf; A.holdAt = TLF.holdAt;
-  const sortScenes = () => A.scenes.sort((a, b) => (a.start + a.shift) - (b.start + b.shift));
+  const sortScenes = () => A.scenes.sort((a, b) => ((a.outT ? 1e6 : 0) + a.start + a.shift) - ((b.outT ? 1e6 : 0) + b.start + b.shift));   // output-time interludes always draw last (on top)
 
   // ---------------- captions v2
   const EMPH = { 'מנטפליקס': '#FF5A66', 'מדיסני': '#6DB8FF', 'הספורט': '#4BE59A', 'ספורט': '#4BE59A', 'חיים': '#FF7A7A', 'השידורים': '#FF7A7A', 'שידורים': '#FF7A7A', 'תקיעות': '#FFC24A', 'נקודה': '#FFC24A', 'אנימה': '#FF8BE0', 'טורקיות': '#FFB347', 'קוריאניות': '#7DF2E6', "וצ'רלטון": '#FF9A3D' };
@@ -92,9 +92,10 @@
   }
   function post(c, t, f, T) {
     bloom(c, 0.42);
-    c.drawImage(vig, 0, 0);
+    const flashEnd = T >= 6.4 && T < 7.0;   // the god intro ends on pure light: no vignette/grain there
+    if (!flashEnd) c.drawImage(vig, 0, 0);
     if (!(t >= 25.5 && t < 25.61)) captions(c, t, T);
-    c.save(); c.globalAlpha = .05; c.globalCompositeOperation = 'overlay'; c.drawImage(grain[(f >> 1) % 4], 0, 0, W, H); c.restore();
+    if (!flashEnd) { c.save(); c.globalAlpha = .05; c.globalCompositeOperation = 'overlay'; c.drawImage(grain[(f >> 1) % 4], 0, 0, W, H); c.restore(); }
     if (window.G_OVERLAY) window.G_OVERLAY(c, t);
     const fb = Math.max(1 - inv(0, 0.22, T), inv(DURV - 0.3, DURV, T)); if (fb > 0) { c.fillStyle = `rgba(0,0,0,${fb})`; c.fillRect(0, 0, W, H); }
   }

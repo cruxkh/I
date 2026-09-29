@@ -75,13 +75,13 @@
 
   // ---------------------------------------------------------------- host cel grade
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
-  const GW = 540, GH = 960, SC = mk(GW, GH), sx = SC.getContext('2d', { willReadFrequently: true }), LUM = new Float32Array(GW * GH), OUT = mk(GW, GH), ox = OUT.getContext('2d');
+  const GW = 432, GH = 768, SC = mk(GW, GH), sx = SC.getContext('2d', { willReadFrequently: true }), LUM = new Float32Array(GW * GH), OUT = mk(GW, GH), ox = OUT.getContext('2d');
   const cache = new Map();
   function gradeHost(ctx, img, Wd = W, Hd = H) {
     if (!ANIMEFX.hostAnime) { ctx.drawImage(img, 0, 0, Wd, Hd); return; }
     const key = img.currentSrc || img.src || img; let hit = cache.get(key);
     if (!hit) {
-      const o = Object.assign({ levels: 5, sat: 1.7, ink: 1, dots: 1, blur: 1.4, inkLo: .2, inkHi: .55 }, ANIMEFX.hostOpts || {});
+      const o = Object.assign({ levels: 5, sat: 1.5, ink: 1, dots: 1, blur: 1.4, inkLo: .2, inkHi: .55 }, ANIMEFX.hostOpts || {});
       sx.setTransform(1, 0, 0, 1, 0, 0); sx.globalCompositeOperation = 'source-over'; sx.clearRect(0, 0, GW, GH);
       sx.filter = `blur(${o.blur}px) contrast(1.1) saturate(1.15)`; sx.drawImage(img, 0, 0, GW, GH); sx.filter = 'none';
       const id = sx.getImageData(0, 0, GW, GH), d = id.data, N = GW * GH;
@@ -90,7 +90,7 @@
       let acc = 0, lo = 0, hi = 255; const tot = N / 3; for (let k = 0; k < 256; k++) { acc += hist[k]; if (acc > tot * .02) { lo = k; break; } } acc = 0; for (let k = 255; k >= 0; k--) { acc += hist[k]; if (acc > tot * .03) { hi = k; break; } }
       const l0 = lo / 255, l1 = Math.max(l0 + .1, hi / 255), NL = o.levels, INK = [26, 19, 52];
       for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) {
-        const i = y * GW + x, p = i * 4, L0 = LUM[i], L = Math.pow(clamp((L0 - l0) / (l1 - l0)), .85);
+        const i = y * GW + x, p = i * 4, L0 = LUM[i], L = Math.pow(clamp((L0 - l0) / (l1 - l0)), .88);
         // edge (sobel on luma)
         let ink = 0;
         if (o.ink && x > 0 && y > 0 && x < GW - 1 && y < GH - 1) {
@@ -101,13 +101,13 @@
         }
         // posterise luma (soft steps)
         const t = L * NL, f = Math.min(NL - 1, Math.floor(t)), fr = t - f, s1 = fr < .4 ? 0 : fr > .6 ? 1 : (fr - .4) / .2, band = f + s1 * s1 * (3 - 2 * s1);
-        const q = clamp(band / (NL - 1) * .96 + .02), ratio = (q + .05) / (L0 + .05);
+        const q = clamp(band / (NL - 1) * .9 + .02), ratio = (q + .05) / (L0 + .05);
         let r = d[p] * ratio, g = d[p + 1] * ratio, b = d[p + 2] * ratio;
         const gr = q * 255; r = gr + (r - gr) * o.sat; g = gr + (g - gr) * o.sat; b = gr + (b - gr) * o.sat;
         if (band < 1.2) { r *= .86; g *= .9; b *= 1.18; } else if (band < 2.2) { r *= .95; g *= .97; b *= 1.07; } else if (band > NL - 1.7) { r *= 1.05; g *= 1.02; b *= .96; }
         // shadow screen-tone dots
         if (o.dots && L < .38) {
-          const uu = (x + y) * .7071, vv = (x - y) * .7071, S6 = 5, fu = ((uu % S6) + S6) % S6 / S6 - .5, fv = ((vv % S6) + S6) % S6 / S6 - .5, rr = .5 * Math.sqrt((.36 - L) / .36);
+          const uu = (x + y) * .7071, vv = (x - y) * .7071, S6 = 4, fu = ((uu % S6) + S6) % S6 / S6 - .5, fv = ((vv % S6) + S6) % S6 / S6 - .5, rr = .5 * Math.sqrt((.36 - L) / .36);
           if (fu * fu + fv * fv < rr * rr * .72) { r *= .7; g *= .72; b *= .82; }
         }
         if (ink > 0) { r += (INK[0] - r) * ink * .92; g += (INK[1] - g) * ink * .92; b += (INK[2] - b) * ink * .92; }

@@ -1,0 +1,156 @@
+[
+ {
+  "t": 4.97,
+  "sound": "whip_slash_in",
+  "desc": "anime slash whip covering previous scene",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 4.97,
+  "sound": "live_badge_slam",
+  "desc": "LIVE badge slam on kol",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 5.12,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate pop kan11",
+  "gain_db": -11,
+  "pan": -0.3
+ },
+ {
+  "t": 5.21,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate pop keshet12",
+  "gain_db": -11,
+  "pan": 0.3
+ },
+ {
+  "t": 5.3,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate pop reshet13",
+  "gain_db": -11,
+  "pan": -0.3
+ },
+ {
+  "t": 5.59,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate pop ch14",
+  "gain_db": -11,
+  "pan": 0.3
+ },
+ {
+  "t": 5.68,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate pop ch9",
+  "gain_db": -11,
+  "pan": -0.3
+ },
+ {
+  "t": 5.82,
+  "sound": "plate_pop_glossy",
+  "desc": "channel plate pop i24",
+  "gain_db": -10,
+  "pan": 0.3
+ },
+ {
+  "t": 5.83,
+  "sound": "sparkle_ring_burst",
+  "desc": "flag flare and gold ring on beisrael",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 6.68,
+  "sound": "curtain_whoosh_close",
+  "desc": "red curtains slide shut",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 6.72,
+  "sound": "rumble_gogogo",
+  "desc": "low rumble ゴゴゴ build",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 6.99,
+  "sound": "impact_frame_don",
+  "desc": "anime impact frame + deep boom, NETFLIX slam",
+  "gain_db": -3,
+  "pan": 0
+ },
+ {
+  "t": 6.99,
+  "sound": "curtain_burst_open",
+  "desc": "curtains blown open",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 7.06,
+  "sound": "poster_cascade_flutter",
+  "desc": "poster cards drop in cascade",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 7.1,
+  "sound": "kira_glint",
+  "desc": "logo glints",
+  "gain_db": -14,
+  "pan": 0.2
+ },
+ {
+  "t": 7.69,
+  "sound": "whip_color_slash",
+  "desc": "red white blue slash whip out to disney sky",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 7.85,
+  "sound": "comet_whoosh_rising",
+  "desc": "comet streak approaching",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 7.96,
+  "sound": "shooting_star_zip",
+  "desc": "shooting star",
+  "gain_db": -16,
+  "pan": 0.4
+ },
+ {
+  "t": 8.17,
+  "sound": "magic_impact_boom_sparkle",
+  "desc": "comet hits, Disney+ logo reveal with shimmering burst",
+  "gain_db": -3,
+  "pan": 0
+ },
+ {
+  "t": 8.2,
+  "sound": "sparkle_shimmer_burst",
+  "desc": "30 sparkle stars burst",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 8.52,
+  "sound": "plus_flare_ping",
+  "desc": "plus sign flare ping on plus",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 8.6,
+  "sound": "kira_glint",
+  "desc": "キラキラ glints",
+  "gain_db": -14,
+  "pan": 0.2
+ }
+]

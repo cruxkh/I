@@ -88,7 +88,7 @@ def build_music_raw():
     cuts = sorted({0.0, m.shape[1] / SR} | {h['v'] for h in HOLDS if h['v'] > 0})
     segs = []
     for a, b in zip(cuts[:-1], cuts[1:]):
-        Ta = v2T(a + 1e-9); seg = m[:, int(round(a * SR)): int(round(b * SR))].copy(); n = seg.shape[1]
+        Ta = a + sum(h['dur'] for h in HOLDS if h['v'] <= a + 1e-6); seg = m[:, int(round(a * SR)): int(round(b * SR))].copy(); n = seg.shape[1]
         f = min(int(.003 * SR), n // 4); seg[:, :f] *= np.linspace(0, 1, f); seg[:, -f:] *= np.linspace(1, 0, f)
         add(out, seg, Ta); segs.append((a, b, Ta))
     ir = plate_ir(rt60=1.9, seed=9); fx = np.zeros((2, NS)); log = []
@@ -104,7 +104,7 @@ def build_music_raw():
             for k, vv in enumerate(vers): res += vv * np.clip(1 - abs(pos - k), 0, 1)
             out[:, i0 - L:i0] = res
             # 2) reverb-tail freeze of the last beat (only the tail after T0)
-            tl = lp(res[:, -int(.30 * SR):], 3500, 2) * np.hanning(int(.30 * SR) * 2)[int(.30 * SR):][None, :] ** 0
+            tl = lp(seg, 3500, 2)
             full = np.vstack([fftconvolve(tl[0], ir[0]), fftconvolve(tl[1], ir[1])])
             tail = full[:, L: L + int((h['dur'] + .1) * SR)]
             env = np.ones(tail.shape[1]); k = int(.25 * SR); env[-k:] = np.linspace(1, 0, k) ** 2

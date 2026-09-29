@@ -169,7 +169,7 @@
       wedges(ctx, CX, CY, 16, ph, 1700, 'rgba(255,225,150,1)', .16 * lightA * (.8 + .2 * breathe));
       // shock ring + halo ring
       const sr = inv(3.65, 4.0, t); if (sr > 0 && sr < 1) { V.ring(ctx, CX, CY, eo(sr) * 1000, 46 * (1 - sr) + 4, `rgba(255,255,255,${1 - sr})`); V.ring(ctx, CX, CY, eo(sr) * 800, 18 * (1 - sr), `rgba(255,214,120,${(1 - sr) * .9})`); }
-      const hr = eo(inv(3.68, 4.12, t)); haloRing(ctx, CX, CY, lerp(40, 470, hr) * (1 + .008 * (breathe - .5) * 2), ph, hr);
+      const hr = eo(inv(3.68, 4.12, t)); haloRing(ctx, CX, CY, lerp(40, 440, hr) * (1 + .008 * (breathe - .5) * 2), ph, hr);
       // burst petals -> hover
       for (let i = 0; i < 46; i++) {
         const an = hash(i * 1.9 + 3) * TAU, D = 480 + hash(i * 7.1) * 560, bp = eo(inv(3.66, 4.6, t)), d = lerp(60, D, bp), sw = Math.sin(TAU * (ph + hash(i))) * 14;
@@ -205,7 +205,7 @@
   } });
 
   // ================================================================= 2) END CARD
-  const EX = 540, EY = 560, ELW = 760;
+  const EX = 540, EY = 600, ELW = 740;
   const branchLayer = () => A.layer('s1_branch', 560, 620, g => {
     const draw = (x, y, an, len, w, d, sd) => {
       if (d === 0 || len < 8) { for (let i = 0; i < 5; i++) { const a = i / 5 * TAU + sd; g.save(); g.translate(x + Math.cos(a) * 14, y + Math.sin(a) * 14); g.rotate(a + Math.PI / 2); g.beginPath(); g.ellipse(0, 0, 9, 15, 0, 0, TAU); g.fillStyle = i % 2 ? '#FFC1DC' : '#FFE1EE'; g.fill(); g.lineWidth = 2; g.strokeStyle = '#8A2A66'; g.stroke(); g.restore(); }
@@ -279,7 +279,7 @@
       ctx.save(); ctx.translate(1100, -30); ctx.scale(-1, 1); ctx.rotate(-sway); ctx.globalAlpha = k; ctx.drawImage(b, 0, 0); ctx.restore(); }
     // clouds of light on the horizon
     // ---- ring behind logo
-    const rk = eo(inv(.05, .6, lt)); haloRing(ctx, EX, EY, lerp(120, 500, rk), ph, rk, 16);
+    const rk = eo(inv(.05, .6, lt)); haloRing(ctx, EX, EY, lerp(120, 405, rk), ph, rk, 16);
     // ---- logo hero: forged again, fast
     const ex = eo(inv(.16, .5, lt)), hot = 1 - smooth(.1, .32, lt), sc = A.key(lt, [[.1, .3], [.24, 1.16, 'out'], [.38, .97, 'inOut'], [.5, 1, 'inOut']]) * (1 + .008 * Math.sin(TAU * ph));
     const shn = (lt > .6 && lt < 1.1) ? inv(.6, 1.1, lt) : (lt > 2.0 && lt < 2.5 ? inv(2.0, 2.5, lt) : -1);
@@ -289,19 +289,18 @@
     // shock ring
     const sr = inv(.1, .5, lt); if (sr > 0 && sr < 1) { V.ring(ctx, EX, EY, eo(sr) * 1000, 46 * (1 - sr) + 4, `rgba(255,255,255,${1 - sr})`); }
     // tagline
-    tagline(ctx, EX, 812, inv(.5, .84, lt));
+    tagline(ctx, EX, 850, inv(.5, .84, lt));
     // ---- Goty + smart TV + pill
-    const pp = eio(inv(.6, 1.0, lt));
-    V.mascot(ctx, 290, 1090, 1.12, { t: lt, t0: .7, pose: lt < 1.5 ? 'cheer' : 'point', look: 'cam', face: 'excited', talk: 0 });
-    smartTV(ctx, 736, 1080, 380, lt, inv(.75, 1.3, lt));
-    pillBar(ctx, EX, 1372, 880, 120, lt);
-    // hero from vhero.js if the kit is ready
-    if (window.V && V.hero && V.hero.DONE && typeof V.heroEnd === 'function') V.heroEnd(ctx, lt);
     // ---- sakura falling (loop-safe: pure function of lt)
     for (let i = 0; i < 34; i++) {
       const sp = 90 + hash(i * 2.7) * 130, x0 = hash(i * 1.3) * 1300 - 100, y = ((hash(i * 4.1) * 1900 + lt * sp + 200) % 2200) - 200, x = x0 + Math.sin(lt * (.8 + hash(i)) + i) * 60 + lt * 40;
       const xx = ((x % 1300) + 1300) % 1300 - 110; petal(ctx, xx, y, 10 + hash(i * 8.3) * 14, i + lt * (1 + hash(i * 2)) * 2, .95);
     }
+    V.mascot(ctx, 285, 1130, 1.3, { t: lt, t0: .7, pose: lt < 1.5 ? 'cheer' : 'point', look: 'cam', face: 'excited', talk: 0 });
+    smartTV(ctx, 730, 1120, 400, lt, inv(.75, 1.3, lt));
+    pillBar(ctx, EX, 1400, 880, 120, lt);
+    // hero from vhero.js if the kit is ready
+    if (window.V && V.hero && V.hero.DONE && typeof V.heroEnd === 'function') V.heroEnd(ctx, lt);
     for (let i = 0; i < 8; i++) { const tw = Math.pow(Math.max(0, Math.sin(TAU * (lt * .8 + hash(i * 2.2)))), 6) * clamp(inv(.5, .9, lt)); if (tw > .01) glint(ctx, EX + (hash(i * 3.3 + 1) - .5) * 800, EY + (hash(i * 5.1 + 2) - .5) * 300, 24 + 55 * tw, tw); }
     ctx.restore();
     cornerBrackets(ctx, eo(inv(.3, .7, lt)));

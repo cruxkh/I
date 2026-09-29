@@ -1,0 +1,222 @@
+[
+ {
+  "t": 3.0,
+  "sound": "light_hit_whoosh",
+  "desc": "white light hit, airy whoosh with soft boom",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 3.05,
+  "sound": "energy_charge_riser",
+  "desc": "rising energy charge swirl, 0.5 s",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 3.15,
+  "sound": "tiles_spiral_whoosh",
+  "desc": "glass tiles spiralling into the core, swirling whoosh",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 3.4,
+  "sound": "tile_suck_pings",
+  "desc": "rapid glassy pings as tiles hit the core",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 3.55,
+  "sound": "pre_impact_silence_pop",
+  "desc": "tiny inhale/suck before the hit",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 3.567,
+  "sound": "anime_impact_boom",
+  "desc": "huge low impact boom with crack, impact frame",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 3.567,
+  "sound": "impact_frame_glitch",
+  "desc": "2 frame b/w inversion zap",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 3.6,
+  "sound": "don_hit",
+  "desc": "katakana DON taiko hit",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 3.68,
+  "sound": "logo_forge_metal_ring",
+  "desc": "metallic forge ring, extrusion grow",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 3.7,
+  "sound": "halo_shockwave",
+  "desc": "expanding shockwave ring whoosh",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 3.75,
+  "sound": "sakura_burst_shimmer",
+  "desc": "petal burst shimmer",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 4.05,
+  "sound": "blade_swish_tagline",
+  "desc": "slash swish as the tagline ribbon wipes in",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 4.28,
+  "sound": "star_ping_sparkle",
+  "desc": "bright star ping and sparkle cascade on the word Hanachon",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 4.86,
+  "sound": "whip_up_whoosh",
+  "desc": "fast upward whip out whoosh with white flash",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 36.88,
+  "sound": "light_hit_whoosh",
+  "desc": "end card white light hit",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 36.98,
+  "sound": "anime_impact_boom",
+  "desc": "end card logo impact",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 37.04,
+  "sound": "logo_forge_metal_ring",
+  "desc": "logo forge ring, fast",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 37.05,
+  "sound": "halo_shockwave",
+  "desc": "shockwave ring",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 37.2,
+  "sound": "paaa_glow_swell",
+  "desc": "katakana PAAA glow swell",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 37.4,
+  "sound": "blade_swish_tagline",
+  "desc": "tagline ribbon slash",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 37.48,
+  "sound": "logo_shine_sweep",
+  "desc": "shine sweep on logo",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 37.58,
+  "sound": "mascot_pop",
+  "desc": "Goty pop-in boing",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 37.6,
+  "sound": "tv_pop",
+  "desc": "smart TV pop-in",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 37.68,
+  "sound": "progress_ticks",
+  "desc": "install progress ticking up",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 37.9,
+  "sound": "pill_slide_pop",
+  "desc": "glass pill slides up with pop",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 38.18,
+  "sound": "install_check_ding",
+  "desc": "green check confirmation ding",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 38.4,
+  "sound": "pill_glint",
+  "desc": "glint over pill",
+  "gain_db": -20,
+  "pan": 0
+ },
+ {
+  "t": 38.92,
+  "sound": "logo_shine_sweep",
+  "desc": "second shine sweep",
+  "gain_db": -18,
+  "pan": 0
+ },
+ {
+  "t": 12.46,
+  "sound": "logo_shine_sweep",
+  "desc": "glassy shine sweep across the logo",
+  "gain_db": -16,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 12.75,
+  "sound": "sparkle_twinkle",
+  "desc": "soft twinkle",
+  "gain_db": -20,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 13.15,
+  "sound": "sparkle_twinkle",
+  "desc": "soft twinkle",
+  "gain_db": -20,
+  "pan": 0,
+  "T": true
+ }
+]

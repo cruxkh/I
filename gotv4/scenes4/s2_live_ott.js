@@ -185,6 +185,10 @@
     ctx.fillStyle = 'rgba(0,0,0,.22)'; for (let yy = h * .1; yy < h / 2; yy += 9) for (let xx = -w / 2 + ((yy / 9) & 1) * 4.5; xx < w / 2; xx += 9) { ctx.beginPath(); ctx.arc(xx, yy, 1.8, 0, TAU); ctx.fill(); }
     ctx.restore(); A.rrect(ctx, -w / 2, -h / 2, w, h, 16); ctx.lineWidth = 6; ctx.strokeStyle = INK; ctx.stroke(); A.rrect(ctx, -w / 2 + 6, -h / 2 + 6, w - 12, h - 12, 11); ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.stroke();
   }
+  function nfLogo(ctx, t, am) {
+    const ha = t - 6.99, breathe = am.on ? am.c * .5 : 0, k = Math.exp(-ha * 14), sc = 1 + .45 * k + .05 * Math.sin(ha * 30) * Math.exp(-ha * 6), sh = am.on ? am.ph * 1.5 - .25 : clamp((ha - .15) / .45);
+    heroLogo(ctx, 'netflix', 540, 640, 900, { sc, sx: 1 - .1 * k, sy: 1 + .12 * k, glow: 'rgba(255,60,70,.9)', glowBlur: 60 + 30 * k + breathe * 30, shine: sh > 0 && sh < 1.3 ? sh : null });
+  }
   function blockB(ctx, t, am) {
     const ha = t - 6.99, shake = ha > 0 ? 22 * Math.exp(-ha * 9) : 0;
     ctx.save(); ctx.translate(A.noise1(t * 60) * shake, A.noise1(t * 60 + 40) * shake);
@@ -205,8 +209,7 @@
     if (ha >= 0) speed(ctx, 540, 640, 9, 60, 260, 1400, '#fff', .55 * Math.exp(-ha * 4) + .06, t, 1.5);
     // NETFLIX slam
     if (ha >= 0) {
-      const k = Math.exp(-ha * 14), sc = 1 + .45 * k + .05 * Math.sin(ha * 30) * Math.exp(-ha * 6), sh = am.on ? am.ph * 1.5 - .25 : clamp((ha - .15) / .45);
-      heroLogo(ctx, 'netflix', 540, 640, 900, { sc, sx: 1 - .1 * k, sy: 1 + .12 * k, glow: 'rgba(255,60,70,.9)', glowBlur: 60 + 30 * k + breathe * 30, shine: sh > 0 && sh < 1.3 ? sh : null });
+      nfLogo(ctx, t, am);
       if (ha < .5) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; V.ring(ctx, 540, 640, 60 + ha * 1600, 28 * (1 - ha / .5), '#fff', 1 - ha / .5); V.ring(ctx, 540, 640, 40 + ha * 1100, 16 * (1 - ha / .5), '#ff5a64', 1 - ha / .5); ctx.restore(); }
       // kira glints on the logo
       const gt = am.on ? am.ph : (t - 7.1) * .9; for (let i = 0; i < 5; i++) { const ph = (gt + i * .21) % 1, a = Math.sin(ph * Math.PI); if (a > .02 && (am.on || t > 7.1)) star4(ctx, 130 + hash(i + 21) * 820, 570 + hash(i + 4) * 150, 30 + a * 34, '#fff', .2, a); }
@@ -277,8 +280,8 @@
       const pa = t - 8.52, px = 540 + .415 * 800, py = 560 + .1 * 434;
       if (pa >= 0 && pa < .7) { const a = Math.exp(-pa * 4.5), pop = eob(pa / .1); ctx.save(); ctx.globalCompositeOperation = 'lighter'; V.glow(ctx, px, py, 260 * pop, '#fff', .9 * a); star4(ctx, px, py, 360 * pop * (.4 + a * .6), '#fff', 0, a); star4(ctx, px, py, 220 * pop, '#9ad8ff', Math.PI / 4, a); V.ring(ctx, px, py, 30 + pa * 700, 12 * a, '#fff', a); ctx.restore(); }
       // katakana
-      if (ha < .8) ink(ctx, 'パァァ', 210, 236, 190, { rot: -.12, sc: eob(ha / .12), alpha: 1 - ein((ha - .4) / .4), grad: [[0, '#fff'], [.5, '#ffe08a'], [1, '#ff9ad0']], col2: '#7a3cff', ow: .22 });
-      if (t > 8.57 && t < 9.0 && !am.on) ink(ctx, 'キラキラ', 850, 340, 120, { rot: .1, sc: eob((t - 8.57) / .12), alpha: 1 - ein((t - 8.72) / .28), grad: [[0, '#fff'], [1, '#ffd84a']], col2: '#ff5ab0' });
+      if (ha < .6) ink(ctx, 'パァァ', 300, 250, 170, { rot: -.12, sc: eob(ha / .12), alpha: 1 - ein((ha - .25) / .35), grad: [[0, '#fff'], [.5, '#ffe08a'], [1, '#ff9ad0']], col2: '#7a3cff', ow: .22 });
+      if (t > 8.57 && t < 8.86 && !am.on) ink(ctx, 'キラキラ', 770, 300, 100, { rot: .1, sc: eob((t - 8.57) / .12), alpha: 1 - ein((t - 8.62) / .22), grad: [[0, '#fff'], [1, '#ffd84a']], col2: '#ff5ab0' });
     }
     // sakura
     for (let i = 0; i < 12; i++) { const sp = 50 + hash(i) * 60, x = (hash(i + 3) * 1300 - (t - 7.69) * sp * .6 + (am.on ? am.s * 30 : 0) + 1400) % 1300 - 110, y = (hash(i + 7) * 2000 + (t - 7.69) * sp + (am.on ? am.env * 40 : 0)) % 2000 - 60; ctx.save(); ctx.translate(x, y); ctx.rotate(t * 1.4 + i + (am.on ? am.s : 0)); ctx.fillStyle = i % 2 ? '#ffd2e6' : '#ff9cc4'; ctx.beginPath(); ctx.ellipse(0, 0, 12, 6.5, 0, 0, TAU); ctx.fill(); ctx.restore(); }
@@ -303,7 +306,7 @@
         if (t < 7.95) { const p = eio(inv(7.69, 7.95, t)), edge = lerp(-260, 1350, p); wipeClip(ctx, edge, 160, true); blockC(ctx, t, am); ctx.restore(); wipeBand(ctx, edge, 160, ['#ff3b4a', '#fff', '#5aa0ff']); }
         else { blockC(ctx, t, am); ctx.restore(); }
       }
-      if (t < 7.3) curtains(ctx, t);
+      if (t < 7.3 && !(t >= 6.99 && t < 7.03)) { curtains(ctx, t); if (t >= 7.03 && t < 7.2) nfLogo(ctx, t, am); }
     },
   });
 })();
