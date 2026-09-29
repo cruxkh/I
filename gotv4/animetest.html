@@ -1,0 +1,11 @@
+<!doctype html><html><head><meta charset="utf-8"><style>@font-face{font-family:Rubik;src:url(fonts/Rubik.ttf);font-weight:300 900}body{margin:0;background:#334}</style></head><body><canvas id="c" width="1080" height="1920" style="width:540px"></canvas>
+<script src="engine.js"></script><script src="vkit.js"></script><script src="vanime.js"></script>
+<script>window.draw=async(w)=>{await document.fonts.load('900 20px Rubik','אבג');const c=document.getElementById('c').getContext('2d');const a=V.anime;
+c.fillStyle='#2a3a7a';c.fillRect(0,0,1080,1920);
+a.halftone(c,0,0,1080,1920,{size:18,gradient:'radial',color:'#000',alpha:.35});
+a.speedLines(c,540,700,.3,{alpha:.4});
+a.kana(c,'ドン',300,200,260);a.kana(c,'ゴゴゴ',700,480,190,{rot:-.1,color:a.SFX.hot});
+a.kana(c,'キラキラ',540,760,190,{color:a.SFX.ice});a.kana(c,'ズバッ',540,1020,200);a.kana(c,'パァァ',540,1260,200,{color:a.SFX.pink});a.kana(c,'ドドド！',540,1500,170,{color:a.SFX.hot});
+a.sakura(c,3,{n:20});a.glint(c,900,300,80,.5);a.sweat(c,150,1700,1,.5);a.anger(c,400,1700,1.2,.5);a.exclaim(c,650,1700,1,.5,{kind:'!?'});a.shine(c,800,1650,1,0.2);a.sparkleEyes(c,980,1750,60,.4);
+a.title(c,'הכל במקום אחד',540,1850,120);
+}</script></body></html>

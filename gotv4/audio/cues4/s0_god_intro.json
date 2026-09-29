@@ -1,0 +1,186 @@
+[
+ {
+  "t": 0.05,
+  "sound": "low_swoosh_rise",
+  "desc": "deep rumble ゴゴゴ under the clouds",
+  "gain_db": -16,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 0.3,
+  "sound": "heartbeat_thump",
+  "desc": "distant divine heartbeat",
+  "gain_db": -20,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 0.72,
+  "sound": "chime_sparkle",
+  "desc": "golden word 1 impact sparkle",
+  "gain_db": -14.5,
+  "pan": 0.3,
+  "T": true
+ },
+ {
+  "t": 0.72,
+  "sound": "impact_hit",
+  "desc": "impact frame on first word",
+  "gain_db": -15,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 1.04,
+  "sound": "chime_sparkle",
+  "desc": "golden word 2 impact sparkle",
+  "gain_db": -15.5,
+  "pan": -0.3,
+  "T": true
+ },
+ {
+  "t": 1.35,
+  "sound": "chime_sparkle",
+  "desc": "golden word 3 impact sparkle",
+  "gain_db": -13.5,
+  "pan": 0.3,
+  "T": true
+ },
+ {
+  "t": 1.35,
+  "sound": "wall_pulse_boom",
+  "desc": "deep syllable screen shake, word 3",
+  "gain_db": -19.2,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 1.78,
+  "sound": "chime_sparkle",
+  "desc": "golden word 4 impact sparkle",
+  "gain_db": -15.0,
+  "pan": -0.3,
+  "T": true
+ },
+ {
+  "t": 2.31,
+  "sound": "chime_sparkle",
+  "desc": "golden word 5 impact sparkle",
+  "gain_db": -13.25,
+  "pan": 0.3,
+  "T": true
+ },
+ {
+  "t": 2.31,
+  "sound": "wall_pulse_boom",
+  "desc": "deep syllable screen shake, word 5",
+  "gain_db": -19.0,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 2.6,
+  "sound": "string_swell_rise",
+  "desc": "choir swell as the clouds part fully",
+  "gain_db": -19,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 2.93,
+  "sound": "chime_sparkle",
+  "desc": "golden word 6 impact sparkle",
+  "gain_db": -14.25,
+  "pan": -0.3,
+  "T": true
+ },
+ {
+  "t": 3.55,
+  "sound": "chime_sparkle",
+  "desc": "golden word 7 impact sparkle",
+  "gain_db": -14.5,
+  "pan": 0.3,
+  "T": true
+ },
+ {
+  "t": 4.02,
+  "sound": "chime_sparkle",
+  "desc": "golden word 8 impact sparkle",
+  "gain_db": -13.5,
+  "pan": -0.3,
+  "T": true
+ },
+ {
+  "t": 4.02,
+  "sound": "wall_pulse_boom",
+  "desc": "deep syllable screen shake, word 8",
+  "gain_db": -19.2,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 4.91,
+  "sound": "chime_sparkle",
+  "desc": "golden word 9 impact sparkle",
+  "gain_db": -13.0,
+  "pan": 0.3,
+  "T": true
+ },
+ {
+  "t": 4.91,
+  "sound": "wall_pulse_boom",
+  "desc": "deep syllable screen shake, word 9",
+  "gain_db": -18.8,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 5.4,
+  "sound": "shimmer_sweep",
+  "desc": "riser shimmer into the question mark",
+  "gain_db": -16,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 5.58,
+  "sound": "chime_sparkle",
+  "desc": "golden word 10 impact sparkle",
+  "gain_db": -14.0,
+  "pan": -0.3,
+  "T": true
+ },
+ {
+  "t": 6.12,
+  "sound": "comic_pop",
+  "desc": "question mark pop",
+  "gain_db": -14,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 6.12,
+  "sound": "bass_slam",
+  "desc": "question mark shake",
+  "gain_db": -16,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 6.6,
+  "sound": "light_burst_whoosh",
+  "desc": "light burst riser peak",
+  "gain_db": -10,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 6.6,
+  "sound": "light_burst_hit",
+  "desc": "white light flash",
+  "gain_db": -8,
+  "pan": 0,
+  "T": true
+ }
+]

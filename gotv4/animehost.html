@@ -1,0 +1,3 @@
+<!doctype html><html><body style="margin:0"><canvas id="c" width="1080" height="1920" style="width:540px"></canvas>
+<script src="engine.js"></script><script src="vkit.js"></script><script src="vanime.js"></script><script src="animefx.js"></script>
+<script>window.go=async(src)=>{const im=await new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=src});const c=document.getElementById('c').getContext('2d');const t0=performance.now();ANIMEFX.gradeHost(c,im,1080,1920);const a=performance.now()-t0;const t1=performance.now();ANIMEFX.hostAnime=true;const cc=document.createElement('canvas');cc.width=1080;cc.height=1920;ANIMEFX.gradeHost(c,im,1080,1920);return [a,performance.now()-t1]}</script></body></html>
