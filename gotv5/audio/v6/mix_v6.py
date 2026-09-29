@@ -66,10 +66,12 @@ def chroma(x, t0, t1):
     return c / (c.sum() + 1e-12)
 
 
-def best_triad(c):
+def best_triad(c, allowed=None):
     best = None
     for r in range(12):
         for q, iv in (('maj', (0, 4, 7)), ('min', (0, 3, 7))):
+            if allowed is not None and (r, q) not in allowed:
+                continue
             s = sum(c[(r + i) % 12] for i in iv) - 0.5 * sum(c[(r + i) % 12] for i in range(12) if i not in iv) / 9
             if best is None or s > best[0]:
                 best = (s, r, q)
@@ -205,7 +207,7 @@ def cue_sheet(key):
     c(23.92, 'curtain_swoosh', -5)                               # curtains close
     c(23.97, 'stamp_thud', -4)                                   # curtains meet (speech gap)
     c(25.32, 'riser_long', -2, root=R['riser'])                  # TRANSITION riser -> silence -> drop
-    c(25.64, 'boom_big', 0, m_all=2.0)                           # THE BIG ONE (sub/kick may sit level with "אין";
+    c(25.64, 'boom_big', 0, m_all=2.0, m_hi=5.0)                           # THE BIG ONE (sub/kick may sit level with "אין";
                                                                  #  its speech band stays >= 8 dB under the voice)
     c(25.82, 'boom_med_b', -3)                                   # IMPACT: stamp 2
     c(26.52, 'boom_med', -2)                                     # IMPACT: period dot + flash
@@ -348,7 +350,9 @@ def main():
         MU[:, :min(NS, m.shape[1])] = m[:, :NS]
         mono = MU.mean(0)
         gk, gq = best_triad(chroma(mono, 0, DUR))
-        loc = lambda t: best_triad(chroma(mono, t - 0.05, t + 0.9))
+        dia = [((gk + d) % 12, qq) for d, qq in (((0, 'maj'), (2, 'min'), (4, 'min'), (5, 'maj'), (7, 'maj'), (9, 'min'))
+                                               if gq == 'maj' else ((0, 'min'), (3, 'maj'), (5, 'min'), (7, 'min'), (8, 'maj'), (10, 'maj')))]
+        loc = lambda t: best_triad(chroma(mono, t - 0.05, t + 0.9), dia)     # diatonic chords of the score's key only
         b = [near(loc(t)[0], 50) for t in (3.58, 7.02, 37.08)]
         ch = [(near(loc(t)[0], 74), loc(t)[1]) for t in (4.28, 35.63, 38.9)]
         scale = [0, 2, 4, 7, 9] if gq == 'maj' else [0, 3, 5, 7, 10]
@@ -464,20 +468,16 @@ def main():
         m_near[:max(0, min(onset - int(0.1 * SR), int(t_start * SR) - i0_))] = False
         m_near[min(nL, onset + int(0.3 * SR)):] = False
         Hh = Ah = Eh = Ea = 0.0
-        if m_near.any():                                    # 1) whole cue level, judged around the hit
-            for _ in range(2):                              # (2 rounds: the low band leaks a little above 200 Hz)
-                Hh = solve(lambda G: ok(loud_curve(hib(Et + hi_ * db(G + Ah) + lo_ * db(Ah)), WIN), lim_h, m_near))
-                Ah = solve(lambda G: ok(loud_curve(Et + (hi_ * db(Hh) + lo_) * db(G), WIN), lim_a, m_near))
-        g_hi0, g_lo0 = db(Hh + Ah), db(Ah)
+        both = lambda z, lim_all: ok(loud_curve(hib(z), WIN), lim_h, mm_) and ok(loud_curve(z, WIN), lim_all, mm_)
+        mm_ = m_near
+        if m_near.any():                                    # 1) whole-cue gain, judged around the hit
+            Ah = solve(lambda G: both(Et + loc * db(G), lim_a))
         if m.any():                                         # 2) extra tuck of the tail only (never raises it)
+            mm_ = m
             lim_at = np.where(tw > 0.5, lim_a_tail, lim_a)
-            for _ in range(2):
-                Eh = solve(lambda G: ok(loud_curve(hib(Et + (hi_ * g_hi0 * (hw + tw * db(G)) + lo_ * g_lo0)
-                                                       * (hw + tw * db(Ea))), WIN), lim_h, m))
-                Ea = solve(lambda G: ok(loud_curve(Et + (hi_ * g_hi0 * (hw + tw * db(Eh)) + lo_ * g_lo0)
-                                                   * (hw + tw * db(G)), WIN), lim_at, m))
-        wa = g_lo0 * (hw + tw * db(Ea))
-        wh = g_hi0 * (hw + tw * db(Eh)) * (hw + tw * db(Ea))
+            Ea = solve(lambda G: both(Et + loc * db(Ah) * (hw + tw * db(G)), lim_at))
+        wa = db(Ah) * (hw + tw * db(Ea))
+        wh = wa
         head = hw
         q['prot'] = (Hh + Ah, Hh + Ah + Eh + Ea, True)
         LO[:, i0_:i2_] += lo_ * wa
