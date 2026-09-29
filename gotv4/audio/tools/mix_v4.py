@@ -161,9 +161,10 @@ def load_cues(legacy=False):
     out = []
     for c in cues:
         if any(a - 0.02 <= c['T_abs'] < b for a, b in INTERLUDES) and not c.get('keep') and c['scene'] not in ('host',):
-            c['skip'] = 'inside interlude wav'
+            if any(k in c['sound'] for k in ('caption_pop', 'screen_pop')): c['gain_db'] -= 4; c['keep_note'] = 'kept, -4 dB (visual-synced tick)'
+            else: c['skip'] = 'inside interlude wav'
         out.append(c)
-    if not any('impact' in c['sound'] and abs(c['T_abs'] - IMPACT_T) < 0.05 and not c.get('skip') for c in out):
+    if not any(c['sound'] == 'impact_boom' and abs(c['T_abs'] - IMPACT_T) < 0.05 and not c.get('skip') for c in out):
         out.append({'t': IMPACT_T, 'T': True, 'T_abs': IMPACT_T, 'sound': 'impact_boom', 'desc': 'mixer-injected giant impact', 'gain_db': -3, 'pan': 0, 'scene': 'mixer'})
     out.sort(key=lambda c: c['T_abs']); return out
 

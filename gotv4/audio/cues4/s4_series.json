@@ -1,0 +1,320 @@
+[
+ {
+  "t": 11.97,
+  "sound": "slab_slash_whoosh",
+  "desc": "fast golden diagonal slash whoosh covering the previous scene",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 12.0,
+  "sound": "title_slam_gold",
+  "desc": "big bass hit + shimmer as SERIES title slams",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 12.39,
+  "sound": "drama_lightning_zap",
+  "desc": "soap opera lightning crack + string stab as Turkish title and drama panels slam",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 12.42,
+  "sound": "panel_slam_pair",
+  "desc": "two manga panels whack in from left and right",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 12.5,
+  "sound": "heartbeat_dokidoki",
+  "desc": "two soft heartbeat thumps",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 12.62,
+  "sound": "tear_drip_glint",
+  "desc": "tiny water drip with glassy glint",
+  "gain_db": -18,
+  "pan": 0
+ },
+ {
+  "t": 12.7,
+  "sound": "petal_flutter",
+  "desc": "soft airy rose petal flutter",
+  "gain_db": -20,
+  "pan": 0
+ },
+ {
+  "t": 13.07,
+  "sound": "neon_slat_zap",
+  "desc": "electric neon zap as neon slats slam shut (Korean hit)",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 13.1,
+  "sound": "neon_title_buzz",
+  "desc": "neon sign flicker on, buzz",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 13.13,
+  "sound": "rain_swell",
+  "desc": "rain on umbrella swells in",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 13.96,
+  "sound": "anime_impact_don",
+  "desc": "huge anime impact boom, black/white impact frame, DON",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 14.05,
+  "sound": "hero_slam_zoom",
+  "desc": "fast whoosh zoom into hero close-up + thud",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 14.22,
+  "sound": "eye_glint_ting",
+  "desc": "glint ting on the hero's eyes",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 14.536,
+  "sound": "logo_rush_whoosh",
+  "desc": "rushing whoosh of logo tiles flying in",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 14.6,
+  "sound": "tile_pop_run",
+  "desc": "rapid run of small glassy pops as logo tiles land",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 14.8,
+  "sound": "pullback_whoosh",
+  "desc": "long pull-back whoosh with rising shimmer",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 15.42,
+  "sound": "wall_settle_shine",
+  "desc": "wall locks into place, bright shine chime",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 15.81,
+  "sound": "zoomthrough_whoosh",
+  "desc": "zoom-through whoosh into white burst",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 30.45,
+  "sound": "shine_sweep_hold",
+  "desc": "glass shine sweep over the Turkish title",
+  "gain_db": -16,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 32.2,
+  "sound": "rain_hold_loop",
+  "desc": "rain + neon buzz sustained under the Korean hold",
+  "gain_db": -16,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 33.736,
+  "sound": "anime_impact_don",
+  "desc": "black/white impact frame boom, DON!",
+  "gain_db": -3,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 33.806,
+  "sound": "impact_flip_tick",
+  "desc": "inversion flicker ticks",
+  "gain_db": -12,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 33.851,
+  "sound": "impact_flip_tick",
+  "desc": "second inversion flick",
+  "gain_db": -12,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 34.136,
+  "sound": "eye_sparkle_shine",
+  "desc": "sparkle shine ting as hero's eyes fill with stars",
+  "gain_db": -9,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 34.186,
+  "sound": "manga_caption_pop",
+  "desc": "caption pop",
+  "gain_db": -11,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 34.336,
+  "sound": "kirakira_chime",
+  "desc": "soft kira-kira chime run",
+  "gain_db": -14,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 34.936,
+  "sound": "pullback_swell",
+  "desc": "dramatic pull-back whoosh with warm swell",
+  "gain_db": -8,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 35.086,
+  "sound": "manga_caption_pop",
+  "desc": "caption pop",
+  "gain_db": -11,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 35.186,
+  "sound": "screen_pop",
+  "desc": "glassy screen pop with sparkle",
+  "gain_db": -13,
+  "pan": -0.4,
+  "T": true
+ },
+ {
+  "t": 35.286,
+  "sound": "screen_pop",
+  "desc": "glassy screen pop with sparkle",
+  "gain_db": -13,
+  "pan": 0.4,
+  "T": true
+ },
+ {
+  "t": 35.386,
+  "sound": "screen_pop",
+  "desc": "glassy screen pop with sparkle",
+  "gain_db": -13,
+  "pan": -0.2,
+  "T": true
+ },
+ {
+  "t": 35.486,
+  "sound": "screen_pop",
+  "desc": "glassy screen pop with sparkle",
+  "gain_db": -13,
+  "pan": 0.2,
+  "T": true
+ },
+ {
+  "t": 35.586,
+  "sound": "screen_pop",
+  "desc": "glassy screen pop with sparkle",
+  "gain_db": -13,
+  "pan": -0.5,
+  "T": true
+ },
+ {
+  "t": 35.686,
+  "sound": "screen_pop",
+  "desc": "glassy screen pop with sparkle",
+  "gain_db": -13,
+  "pan": 0.5,
+  "T": true
+ },
+ {
+  "t": 36.036,
+  "sound": "gogogo_rumble",
+  "desc": "deep rumble ゴゴゴ rising",
+  "gain_db": -6,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 36.056,
+  "sound": "power_shockwave_boom",
+  "desc": "power-up shockwave boom + gold shimmer",
+  "gain_db": -4,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 36.136,
+  "sound": "aura_flame_roar",
+  "desc": "aura flame roar loop",
+  "gain_db": -10,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 36.486,
+  "sound": "power_shockwave_boom",
+  "desc": "second gold shockwave, hair turns gold",
+  "gain_db": -5,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 37.036,
+  "sound": "fist_whoosh_punch",
+  "desc": "fist thrust whoosh + hit toward camera",
+  "gain_db": -4,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 37.056,
+  "sound": "manga_caption_pop",
+  "desc": "big caption pop",
+  "gain_db": -9,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 37.396,
+  "sound": "white_flash_riser",
+  "desc": "short bright riser into white flash",
+  "gain_db": -8,
+  "pan": 0,
+  "T": true
+ },
+ {
+  "t": 38.75,
+  "sound": "shine_sweep_hold",
+  "desc": "glass shine sweep across the logo wall",
+  "gain_db": -14,
+  "pan": 0,
+  "T": true
+ }
+]

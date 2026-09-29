@@ -23,3 +23,10 @@ gotv4/audio/music/
 gotv/audio/sfx/
 gotv/audio/music/
 gotv/audio/*.npz
+
+gotv4/yt2/*.raw
+gotv4/yt2/src/
+gotv4/yt2/mask/
+gotv4/yt2/mask_rgba/
+gotv4/yt2/*.mp4
+*.raw

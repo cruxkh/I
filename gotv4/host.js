@@ -11,16 +11,16 @@
   const FULLS = ITEMS.filter(i => i.mode === 'full'), CAMEOS = ITEMS.filter(i => i.mode === 'cameo');
   const GROUP = id => id.startsWith('h10') ? 'm10' : id.startsWith('h1') ? 'm1' : id.startsWith('h2') ? 'm1' : id.startsWith('h3') ? 'm1' : id.startsWith('h4') ? 'm1' : id.startsWith('h5') ? 'm5' : id.startsWith('h6') ? 'm6' : id.startsWith('h7') ? 'm7' : id.startsWith('h8') ? 'm8' : id.startsWith('h9') ? 'm9' : id;
   const GSTART = { m1: 0, m5: 18.81, m6: 23.9, m7: 30.12, m8: 32.04, m9: 33.42, m10: 35.19 };
-  const PIV = [0.49 * W, 0.35 * H];
+  const PIV = [0.49 * W, 0.35 * H]; const HFPS = 23.976;   // new host footage: 720x1280 @ 23.976 fps, per-frame head anchors (window.HANCH[f] = [px, py, k])
   const cache = new Map(), load = src => { if (cache.has(src)) return cache.get(src); const p = new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; }); cache.set(src, p); if (cache.size > 90) cache.delete(cache.keys().next().value); return p; };
   let curs = [];   // active items with their decoded frames
   const active = t => ITEMS.filter(i => t >= i.t0 && t < i.t1 + (i.id === 'h10b' ? 0.3 : 0));
   async function prepare(t) {
     curs = [];
     for (const it of active(t)) {
-      const idx = it.src + Math.floor(clamp(t - it.t0, 0, it.t1 - it.t0 - 1e-4) * 25 * it.rate + 1e-6), nm = String(Math.min(idx, 894)).padStart(4, '0');
-      const [im, mk2] = await Promise.all([load(`yt/src/f${nm}.jpg`), load(`yt/mask_rgba/f${nm}.png`)]);
-      if (im && mk2) curs.push({ it, im, mk: mk2 });
+      const idx = it.src + Math.floor(clamp(t - it.t0, 0, it.t1 - it.t0 - 1e-4) * HFPS * it.rate + 1e-6), nm = String(Math.min(idx, 1292)).padStart(4, '0');
+      const [im, mk2] = await Promise.all([load(`yt2/src/f${nm}.jpg`), load(`yt2/mask_rgba/f${nm}.png`)]);
+      if (im && mk2) curs.push({ it, im, mk: mk2, an: (window.HANCH && HANCH[Math.min(idx, 1292)]) || [0.5, 0.25, 1] });
     }
   }
 
@@ -39,7 +39,8 @@
     const cu = t - it.t0, shk = it.mode === 'full' ? Math.exp(-cu * 14) * 16 : 0;
     const z = lerp(it.z0, it.z1, e) * beat * (o.zoomK || 1), rot = lerp(it.rot0, it.rot1, e) * Math.PI / 180, dx = (o.dx || 0) + Math.sin(cu * 60) * shk, dy = (o.dy || 0) + Math.cos(cu * 53) * shk;
     const fx = it.flip ? -1 : 1;
-    const xf = cx => { cx.setTransform(1, 0, 0, 1, 0, 0); cx.translate(it.cx + dx, it.cy + dy); cx.rotate(rot); cx.scale(z * fx, z); cx.translate(-PIV[0], -PIV[1]); };
+    const an = c.an || [0.5, 0.25, 1], zk = z * an[2], px = an[0] * W, py = an[1] * H;
+    const xf = cx => { cx.setTransform(1, 0, 0, 1, 0, 0); cx.translate(it.cx + dx, it.cy + dy); cx.rotate(rot); cx.scale(zk * fx, zk); cx.translate(-px, -py); };
     tctx.setTransform(1, 0, 0, 1, 0, 0); tctx.clearRect(0, 0, W, H); tctx.globalCompositeOperation = 'source-over';
     tctx.save(); xf(tctx); if (window.ANIMEFX && ANIMEFX.hostAnime) ANIMEFX.gradeHost(tctx, c.im, W, H); else { tctx.filter = 'contrast(1.14) saturate(1.5) brightness(1.08)'; tctx.drawImage(c.im, 0, 0, W, H); } tctx.restore();
     tctx.save(); tctx.globalCompositeOperation = 'destination-in'; xf(tctx); tctx.drawImage(c.mk, 0, 0, W, H); tctx.restore();
@@ -158,5 +159,6 @@
     }
   }
   const ein_ = t => ease.in(clamp(t));
+  if (window.ANIMEFX) ANIMEFX.hostOpts = { levels: 7, sat: 1.1, ink: .75, dots: .55, blur: 1.1 };
   window.HOST = { prepare, overlay, ITEMS };
 })();

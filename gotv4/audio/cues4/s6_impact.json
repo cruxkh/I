@@ -1,0 +1,194 @@
+[
+ {
+  "t": 25.61,
+  "sound": "impact_boom_villain",
+  "desc": "giant sub boom + glass-ice crack as Lord Buffering is revealed",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 25.61,
+  "sound": "glitch_burst",
+  "desc": "digital glitch stutter burst",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 25.655,
+  "sound": "gold_slam_ain",
+  "desc": "huge gold metal slam on the word AIN with shockwave",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 25.9,
+  "sound": "ice_crack_rise",
+  "desc": "ice cracks spreading rising creak",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 26.045,
+  "sound": "gold_slam_tkiyot",
+  "desc": "huge gold slam + glass shatter of the villain",
+  "gain_db": -3,
+  "pan": 0
+ },
+ {
+  "t": 26.06,
+  "sound": "ice_shatter_big",
+  "desc": "big ice/glass shatter with shards tinkling",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 26.535,
+  "sound": "dot_slam_impact",
+  "desc": "massive impact hit for the period dot with sub drop and shockwave",
+  "gain_db": -2,
+  "pan": 0
+ },
+ {
+  "t": 26.6,
+  "sound": "gold_sparkle_rain",
+  "desc": "gold sparkles shimmer falling",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 27.14,
+  "sound": "whoosh_wipe",
+  "desc": "fast light-streak whoosh (wipe to pitch)",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 27.2,
+  "sound": "crowd_rumble_low",
+  "desc": "low stadium crowd rumble rising",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 27.54,
+  "sound": "heartbeat_dokun",
+  "desc": "heartbeat thump",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 27.7,
+  "sound": "heartbeat_dokun",
+  "desc": "heartbeat thump",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 27.955,
+  "sound": "whip_zoom",
+  "desc": "crash zoom whip",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 28.05,
+  "sound": "kick_impact",
+  "desc": "boot smashes ball, punchy thwack with bass hit",
+  "gain_db": -2,
+  "pan": 0
+ },
+ {
+  "t": 28.1,
+  "sound": "ball_whoosh_slowmo",
+  "desc": "slow-motion ball whoosh with airy tail",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 28.45,
+  "sound": "ghost_glitch",
+  "desc": "icy ghostly glitch as spinner ghost appears",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 28.62,
+  "sound": "ice_freeze_creak",
+  "desc": "freezing crackle around the ball",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 28.8,
+  "sound": "ice_smash",
+  "desc": "ball smashes the ghost ring, glass burst",
+  "gain_db": -3,
+  "pan": 0
+ },
+ {
+  "t": 28.9,
+  "sound": "whoosh_pan",
+  "desc": "camera whip pan",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 29.28,
+  "sound": "net_ripple_thud",
+  "desc": "ball hits the net, thud and net swish",
+  "gain_db": -3,
+  "pan": 0
+ },
+ {
+  "t": 29.28,
+  "sound": "crowd_roar_huge",
+  "desc": "huge stadium goal roar eruption",
+  "gain_db": -2,
+  "pan": 0
+ },
+ {
+  "t": 29.28,
+  "sound": "confetti_pop",
+  "desc": "confetti cannons pop",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 29.28,
+  "sound": "air_horn_goal",
+  "desc": "stadium air horn",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 29.55,
+  "sound": "whoosh_pan",
+  "desc": "camera whip to celebration",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 51.43,
+  "T": true,
+  "sound": "gold_shimmer_hold",
+  "desc": "soft shimmering glint over the gold letters during the hold",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 55.4,
+  "T": true,
+  "sound": "crowd_chant_celebration",
+  "desc": "crowd chanting and cheering, sustained during goal celebration hold",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 55.6,
+  "T": true,
+  "sound": "confetti_shimmer",
+  "desc": "confetti flutter sparkle",
+  "gain_db": -14,
+  "pan": 0
+ }
+]

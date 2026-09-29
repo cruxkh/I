@@ -443,7 +443,7 @@
 "scene": "s1_logo_end",
 "T_abs": 10.5,
 "loud": -23.897460198836285,
-"red": -10.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -468,26 +468,6 @@
 "boost": 0.0
 },
 {
-"sound": "flash_boom",
-"gain_db": -8,
-"scene": "v1",
-"T_abs": 10.55,
-"loud": -21.384157499256247,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "app_tornado_swirl_start",
-"gain_db": -9,
-"scene": "v1",
-"T_abs": 10.58,
-"loud": -27.556912028623668,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "tiles_spiral_whoosh",
 "gain_db": -14,
 "scene": "s1_logo_end",
@@ -498,32 +478,12 @@
 "boost": 0.0
 },
 {
-"sound": "tiles_suck_in",
-"gain_db": -9,
-"scene": "v1",
-"T_abs": 10.8,
-"loud": -41.051843392820516,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "tile_suck_pings",
 "gain_db": -16,
 "scene": "s1_logo_end",
 "T_abs": 10.9,
 "loud": -34.50078026316755,
 "red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "power_charge",
-"gain_db": -12,
-"scene": "v1",
-"T_abs": 10.95,
-"loud": -37.90612507891785,
-"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -543,7 +503,7 @@
 "scene": "s1_logo_end",
 "T_abs": 11.067,
 "loud": -23.443422319976815,
-"red": -10.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -553,17 +513,7 @@
 "scene": "s1_logo_end",
 "T_abs": 11.067,
 "loud": -28.71181048834845,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "anticipation_suck",
-"gain_db": -12,
-"scene": "v1",
-"T_abs": 11.08,
-"loud": -40.62125837008327,
-"red": -10.0,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -573,47 +523,7 @@
 "scene": "s1_logo_end",
 "T_abs": 11.1,
 "loud": -23.061019933577015,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "shockwave_ring",
-"gain_db": -6,
-"scene": "v1",
-"T_abs": 11.1,
-"loud": -22.499288547145778,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "impact_boom",
-"gain_db": -5,
-"scene": "v1",
-"T_abs": 11.1,
-"loud": -19.676546615255628,
 "red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "logo_slam",
-"gain_db": -6,
-"scene": "v1",
-"T_abs": 11.120000000000001,
-"loud": -21.424609556407525,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "sparkle_shower",
-"gain_db": -14,
-"scene": "v1",
-"T_abs": 11.16,
-"loud": -28.996383028252158,
-"red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -643,17 +553,7 @@
 "scene": "s1_logo_end",
 "T_abs": 11.25,
 "loud": -27.81265888739696,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glint_sweep",
-"gain_db": -11,
-"scene": "v1",
-"T_abs": 11.4,
-"loud": -28.482026209618184,
-"red": -10.0,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -668,53 +568,13 @@
 "boost": 0.0
 },
 {
-"sound": "logo_shine",
-"gain_db": -11,
-"scene": "v1",
-"T_abs": 11.6,
-"loud": -29.037302412097365,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "twinkle_cluster",
-"gain_db": -16,
-"scene": "v1",
-"T_abs": 11.7,
-"loud": -30.891418819942814,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "star_ping_sparkle",
 "gain_db": -10,
 "scene": "s1_logo_end",
 "T_abs": 11.780000000000001,
 "loud": -23.879429480346328,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "word_pop",
-"gain_db": -12,
-"scene": "v1",
-"T_abs": 11.92,
-"loud": -25.542971161030515,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "word_pop",
-"gain_db": -14,
-"scene": "v1",
-"T_abs": 12.05,
-"loud": -27.542971161030515,
-"red": -10.0,
-"vo_red": 0.0,
+"red": 0.0,
+"vo_red": -1.8330543752999118,
 "boost": 0.0
 },
 {
@@ -723,17 +583,7 @@
 "scene": "fx",
 "T_abs": 12.1,
 "loud": -26.28982106365369,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "word_pop",
-"gain_db": -14,
-"scene": "v1",
-"T_abs": 12.2,
-"loud": -27.542971161030515,
-"red": -10.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -743,7 +593,7 @@
 "scene": "s1_logo_end",
 "T_abs": 12.46,
 "loud": -36.16731006564141,
-"red": -10.0,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -753,7 +603,7 @@
 "scene": "s1_logo_end",
 "T_abs": 12.75,
 "loud": -35.11448089832185,
-"red": -10.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -763,17 +613,7 @@
 "scene": "s1_logo_end",
 "T_abs": 13.15,
 "loud": -35.11448089832185,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "eye_shine_ting",
-"gain_db": -14,
-"scene": "v1",
-"T_abs": 13.65,
-"loud": -29.183526450013098,
-"red": -10.0,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -788,22 +628,12 @@
 "boost": 0.0
 },
 {
-"sound": "whip_out",
-"gain_db": -8,
-"scene": "v1",
-"T_abs": 13.75,
-"loud": -27.136477661513254,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "whip_slash_in",
 "gain_db": -8,
 "scene": "s2_live_ott",
 "T_abs": 13.77,
 "loud": -26.21613484674415,
-"red": -10.0,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -813,56 +643,6 @@
 "scene": "s2_live_ott",
 "T_abs": 13.77,
 "loud": -26.086897093811388,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "gold_burst_impact",
-"gain_db": -8,
-"scene": "v2",
-"T_abs": 13.780000000000001,
-"loud": -20.904101948735672,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whip_zoom",
-"gain_db": -10,
-"scene": "v1",
-"T_abs": 13.8,
-"loud": -27.435239325133264,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whoosh_fast_push_in",
-"gain_db": -10,
-"scene": "v2",
-"T_abs": 13.8,
-"loud": -27.980816486570795,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "flag_unfurl",
-"gain_db": -10,
-"scene": "v2",
-"T_abs": 13.850000000000001,
-"loud": -28.142145496690848,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "live_badge_pop",
-"gain_db": -9,
-"scene": "v2",
-"T_abs": 13.88,
-"loud": -25.94586431406631,
 "red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -878,32 +658,12 @@
 "boost": 0.0
 },
 {
-"sound": "headline_slam",
-"gain_db": -9,
-"scene": "v2",
-"T_abs": 13.940000000000001,
-"loud": -27.44362214383792,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "plate_pop_glossy",
 "gain_db": -11,
 "scene": "s2_live_ott",
 "T_abs": 14.010000000000002,
 "loud": -24.996974886271623,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tv_pop_in",
-"gain_db": -13,
-"scene": "v2",
-"T_abs": 14.02,
-"loud": -27.28982106365369,
-"red": -10.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -913,57 +673,7 @@
 "scene": "s2_live_ott",
 "T_abs": 14.100000000000001,
 "loud": -24.996974886271623,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tv_pop_in",
-"gain_db": -13,
-"scene": "v2",
-"T_abs": 14.100000000000001,
-"loud": -27.28982106365369,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "headline_slam",
-"gain_db": -8,
-"scene": "v2",
-"T_abs": 14.100000000000001,
-"loud": -26.44362214383792,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glint_sweep",
-"gain_db": -16,
-"scene": "v2",
-"T_abs": 14.16,
-"loud": -33.48202620961818,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tv_pop_in",
-"gain_db": -13,
-"scene": "v2",
-"T_abs": 14.18,
-"loud": -27.28982106365369,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whip_out_left",
-"gain_db": -8,
-"scene": "v2",
-"T_abs": 14.3,
-"loud": -26.166692207747786,
-"red": -7.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -973,7 +683,7 @@
 "scene": "fx",
 "T_abs": 14.38,
 "loud": -29.353543782758692,
-"red": -10.0,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -988,42 +698,12 @@
 "boost": 0.0
 },
 {
-"sound": "tv_pop_in",
-"gain_db": -15,
-"scene": "v2",
-"T_abs": 14.4,
-"loud": -29.28982106365369,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tv_pop_in",
-"gain_db": -15,
-"scene": "v2",
-"T_abs": 14.46,
-"loud": -29.28982106365369,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "plate_pop_glossy",
 "gain_db": -11,
 "scene": "s2_live_ott",
 "T_abs": 14.48,
 "loud": -24.996974886271623,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tv_pop_in",
-"gain_db": -15,
-"scene": "v2",
-"T_abs": 14.52,
-"loud": -29.28982106365369,
-"red": -10.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1033,17 +713,7 @@
 "scene": "fx",
 "T_abs": 14.56,
 "loud": -25.409743966144084,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tv_pop_in",
-"gain_db": -15,
-"scene": "v2",
-"T_abs": 14.580000000000002,
-"loud": -29.28982106365369,
-"red": -10.0,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1053,8 +723,8 @@
 "scene": "s2_live_ott",
 "T_abs": 14.620000000000001,
 "loud": -23.996974886271623,
-"red": -2.5,
-"vo_red": 0.0,
+"red": 0.0,
+"vo_red": -1.1489596696159214,
 "boost": 0.0
 },
 {
@@ -1068,152 +738,12 @@
 "boost": 0.0
 },
 {
-"sound": "tv_pop_in",
-"gain_db": -15,
-"scene": "v2",
-"T_abs": 14.64,
-"loud": -29.28982106365369,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tv_pop_in",
-"gain_db": -15,
-"scene": "v2",
-"T_abs": 14.700000000000001,
-"loud": -29.28982106365369,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glass_shatter",
-"gain_db": -7,
-"scene": "v2",
-"T_abs": 14.8,
-"loud": -25.963965376734706,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "impact_boom",
-"gain_db": -9,
-"scene": "v2",
-"T_abs": 14.8,
-"loud": -23.676546615255628,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "hero_badge_pop",
-"gain_db": -11,
-"scene": "v2",
-"T_abs": 14.82,
-"loud": -25.409743966144084,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "hero_badge_pop",
-"gain_db": -11,
-"scene": "v2",
-"T_abs": 14.9,
-"loud": -25.409743966144084,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "hero_badge_pop",
-"gain_db": -11,
-"scene": "v2",
-"T_abs": 14.98,
-"loud": -25.409743966144084,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "hero_badge_pop",
-"gain_db": -11,
-"scene": "v2",
-"T_abs": 15.06,
-"loud": -25.409743966144084,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "suction_snap_whoosh",
 "gain_db": -14,
 "scene": "fx",
 "T_abs": 15.100000000000001,
 "loud": -30.660693048865042,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "headline_slam",
-"gain_db": -10,
-"scene": "v2",
-"T_abs": 15.100000000000001,
-"loud": -28.44362214383792,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "hero_badge_pop",
-"gain_db": -11,
-"scene": "v2",
-"T_abs": 15.14,
-"loud": -25.409743966144084,
-"red": -10.0,
-"vo_red": -6.166671990266489,
-"boost": 0.0
-},
-{
-"sound": "hero_badge_pop",
-"gain_db": -11,
-"scene": "v2",
-"T_abs": 15.22,
-"loud": -25.409743966144084,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "anticipation_suck",
-"gain_db": -12,
-"scene": "v2",
-"T_abs": 15.3,
-"loud": -40.62125837008327,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whoosh_fast_push_in",
-"gain_db": -8,
-"scene": "v2",
-"T_abs": 16.380000000000003,
-"loud": -25.980816486570795,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "drumroll_start",
-"gain_db": -16,
-"scene": "v2",
-"T_abs": 16.42,
-"loud": -41.09555482851002,
-"red": -10.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1223,27 +753,7 @@
 "scene": "s2_live_ott",
 "T_abs": 16.48,
 "loud": -26.705925953133043,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "logo_slam",
-"gain_db": -6,
-"scene": "v2",
-"T_abs": 16.5,
-"loud": -21.424609556407525,
 "red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "flash_boom",
-"gain_db": -10,
-"scene": "v2",
-"T_abs": 16.5,
-"loud": -23.384157499256247,
-"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1253,57 +763,7 @@
 "scene": "s2_live_ott",
 "T_abs": 16.52,
 "loud": -36.79214604488267,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glint_sweep",
-"gain_db": -14,
-"scene": "v2",
-"T_abs": 16.6,
-"loud": -31.482026209618184,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "popcorn_burst_l",
-"gain_db": -13,
-"scene": "v2",
-"T_abs": 16.62,
-"loud": -34.923626081691616,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "popcorn_burst_r",
-"gain_db": -13,
-"scene": "v2",
-"T_abs": 16.62,
-"loud": -34.923626081691616,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "card_flip_cascade",
-"gain_db": -11,
-"scene": "v2",
-"T_abs": 16.64,
-"loud": -32.022270628482715,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "beat_hit_zoom",
-"gain_db": -12,
-"scene": "v2",
-"T_abs": 16.75,
-"loud": -26.86525203864394,
-"red": -7.5,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1333,7 +793,7 @@
 "scene": "fx",
 "T_abs": 16.830000000000002,
 "loud": -26.430968551429224,
-"red": -7.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1343,7 +803,7 @@
 "scene": "s2_live_ott",
 "T_abs": 16.86,
 "loud": -29.318472461304363,
-"red": -10.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1353,17 +813,7 @@
 "scene": "s2_live_ott",
 "T_abs": 16.9,
 "loud": -34.16402129193516,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "beat_hit_zoom",
-"gain_db": -12,
-"scene": "v2",
-"T_abs": 17.0,
-"loud": -26.86525203864394,
-"red": -7.5,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1373,17 +823,7 @@
 "scene": "fx",
 "T_abs": 17.01,
 "loud": -25.409743966144084,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "popcorn_burst_l",
-"gain_db": -14,
-"scene": "v2",
-"T_abs": 17.16,
-"loud": -35.923626081691616,
-"red": -10.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1393,27 +833,7 @@
 "scene": "fx",
 "T_abs": 17.200000000000003,
 "loud": -29.08325302318855,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glint_sweep",
-"gain_db": -16,
-"scene": "v2",
-"T_abs": 17.22,
-"loud": -33.48202620961818,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "beat_hit_zoom",
-"gain_db": -12,
-"scene": "v2",
-"T_abs": 17.28,
-"loud": -26.86525203864394,
-"red": -7.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1428,22 +848,12 @@
 "boost": 0.0
 },
 {
-"sound": "beat_hit_zoom",
-"gain_db": -12,
-"scene": "v2",
-"T_abs": 18.92,
-"loud": -26.86525203864394,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "suction_snap_whoosh",
 "gain_db": -14,
 "scene": "fx",
 "T_abs": 18.950000000000003,
 "loud": -30.660693048865042,
-"red": -2.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1453,16 +863,6 @@
 "scene": "s2_live_ott",
 "T_abs": 19.05,
 "loud": -27.86200175958708,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glitch_burst",
-"gain_db": -8,
-"scene": "v2",
-"T_abs": 19.1,
-"loud": -22.965729485131643,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -1473,67 +873,7 @@
 "scene": "s2_live_ott",
 "T_abs": 19.16,
 "loud": -36.157244626915066,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "iris_burst_whoosh",
-"gain_db": -8,
-"scene": "v2",
-"T_abs": 19.18,
-"loud": -25.980243339716893,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "cut_flash_tick",
-"gain_db": -10,
-"scene": "v2",
-"T_abs": 19.19,
-"loud": -23.232938661404933,
-"red": 0.0,
-"vo_red": -4.260457126227089,
-"boost": 0.0
-},
-{
-"sound": "shooting_star",
-"gain_db": -11,
-"scene": "v2",
-"T_abs": 19.22,
-"loud": -26.976103403408473,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "disney_pop",
-"gain_db": -6,
-"scene": "v2",
-"T_abs": 19.3,
-"loud": -18.095965813942897,
-"red": 0.0,
-"vo_red": -4.8253326908528384,
-"boost": 0.0
-},
-{
-"sound": "sparkle_shower",
-"gain_db": -10,
-"scene": "v2",
-"T_abs": 19.3,
-"loud": -24.996383028252158,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "card_flip_cascade",
-"gain_db": -13,
-"scene": "v2",
-"T_abs": 19.32,
-"loud": -34.022270628482715,
-"red": -10.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1553,37 +893,7 @@
 "scene": "s2_live_ott",
 "T_abs": 19.4,
 "loud": -25.417270318060183,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glint_sweep",
-"gain_db": -15,
-"scene": "v2",
-"T_abs": 19.44,
-"loud": -32.48202620961818,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "sparkle_trail",
-"gain_db": -14,
-"scene": "v2",
-"T_abs": 19.5,
-"loud": -29.604650030911635,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "twinkle_cluster",
-"gain_db": -15,
-"scene": "v2",
-"T_abs": 19.5,
-"loud": -29.891418819942814,
-"red": -10.0,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1593,17 +903,7 @@
 "scene": "fx",
 "T_abs": 19.53,
 "loud": -25.350146029714878,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "beat_hit_zoom",
-"gain_db": -14,
-"scene": "v2",
-"T_abs": 19.68,
-"loud": -28.86525203864394,
-"red": -10.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1613,7 +913,7 @@
 "scene": "fx",
 "T_abs": 19.71,
 "loud": -25.409743966144084,
-"red": -7.5,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1623,17 +923,7 @@
 "scene": "s2_live_ott",
 "T_abs": 19.72,
 "loud": -25.009446633320426,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "twinkle_cluster",
-"gain_db": -15,
-"scene": "v2",
-"T_abs": 19.72,
-"loud": -29.891418819942814,
-"red": -10.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1643,17 +933,7 @@
 "scene": "s2_live_ott",
 "T_abs": 19.8,
 "loud": -34.16402129193516,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "beat_hit_zoom",
-"gain_db": -14,
-"scene": "v2",
-"T_abs": 19.94,
-"loud": -28.86525203864394,
-"red": -10.0,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1663,107 +943,67 @@
 "scene": "fx",
 "T_abs": 20.020000000000003,
 "loud": -30.660693048865042,
-"red": -10.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "shooting_star",
-"gain_db": -14,
-"scene": "v2",
-"T_abs": 20.05,
-"loud": -29.976103403408473,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "camera_glide_whoosh",
-"gain_db": -9,
-"scene": "v2",
-"T_abs": 21.650000000000002,
-"loud": -29.042688973215306,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whip_in_right",
+"sound": "manga_panel_slam",
 "gain_db": -8,
-"scene": "v3",
-"T_abs": 21.650000000000002,
-"loud": -25.430968551429224,
+"scene": "s3_sports",
+"T_abs": 21.6,
+"loud": -26.56206991492414,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "stadium_crowd_swell",
-"gain_db": -15,
-"scene": "v3",
-"T_abs": 21.650000000000002,
-"loud": -28.295580833040468,
-"red": -10.0,
+"sound": "ball_shot",
+"gain_db": -9,
+"scene": "s3_sports",
+"T_abs": 21.62,
+"loud": -31.279025658355415,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "logo_pop_sting",
-"gain_db": -10,
-"scene": "v3",
-"T_abs": 21.67,
-"loud": -23.59171454141297,
+"sound": "score_bug_pop",
+"gain_db": -12,
+"scene": "s3_sports",
+"T_abs": 21.62,
+"loud": -23.984428361055425,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "final_sparkle_tail",
-"gain_db": -16,
-"scene": "v2",
-"T_abs": 21.72,
-"loud": -29.8085342802164,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "ball_zip",
+"sound": "whip_pan_1",
 "gain_db": -14,
-"scene": "v3",
-"T_abs": 21.770000000000003,
-"loud": -33.86101111121181,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "impact_hit",
-"gain_db": -6,
-"scene": "v3",
+"scene": "s3_sports",
 "T_abs": 21.82,
-"loud": -26.63511561557627,
-"red": -7.5,
+"loud": -30.39570126992491,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "plate_fly_whoosh",
-"gain_db": -14,
-"scene": "v3",
+"sound": "rim_clang",
+"gain_db": -9,
+"scene": "s3_sports",
 "T_abs": 21.830000000000002,
-"loud": -32.01866955269064,
+"loud": -27.439461786810686,
 "red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "crash_zoom_whoosh",
-"gain_db": -11,
-"scene": "v3",
-"T_abs": 21.840000000000003,
-"loud": -27.5400460452677,
-"red": -5.0,
+"sound": "score_bug_pop",
+"gain_db": -12,
+"scene": "s3_sports",
+"T_abs": 21.830000000000002,
+"loud": -23.984428361055425,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1773,77 +1013,67 @@
 "scene": "fx",
 "T_abs": 21.950000000000003,
 "loud": -26.86525203864394,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whip_in_left",
-"gain_db": -8,
-"scene": "v3",
-"T_abs": 21.950000000000003,
-"loud": -28.353543782758692,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "logo_pop_sting",
-"gain_db": -10,
-"scene": "v3",
-"T_abs": 21.97,
-"loud": -23.59171454141297,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "rim_clang",
-"gain_db": -8,
-"scene": "v3",
-"T_abs": 22.1,
-"loud": -26.439461786810686,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "crash_zoom_whoosh",
-"gain_db": -11,
-"scene": "v3",
-"T_abs": 22.1,
-"loud": -27.5400460452677,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "plate_fly_whoosh",
-"gain_db": -14,
-"scene": "v3",
-"T_abs": 22.130000000000003,
-"loud": -32.01866955269064,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whip_in_right",
-"gain_db": -8,
-"scene": "v3",
-"T_abs": 22.25,
-"loud": -25.430968551429224,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "logo_pop_sting",
-"gain_db": -10,
-"scene": "v3",
-"T_abs": 22.270000000000003,
-"loud": -23.59171454141297,
 "red": -5.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "whip_pan_1",
+"gain_db": -14,
+"scene": "s3_sports",
+"T_abs": 22.03,
+"loud": -30.39570126992491,
+"red": -7.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "racket_smash",
+"gain_db": -9,
+"scene": "s3_sports",
+"T_abs": 22.04,
+"loud": -32.000977286439635,
+"red": -7.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "score_bug_pop",
+"gain_db": -12,
+"scene": "s3_sports",
+"T_abs": 22.04,
+"loud": -23.984428361055425,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "whip_pan_1",
+"gain_db": -14,
+"scene": "s3_sports",
+"T_abs": 22.240000000000002,
+"loud": -30.39570126992491,
+"red": -10.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "punch_impact",
+"gain_db": -8,
+"scene": "s3_sports",
+"T_abs": 22.25,
+"loud": -26.274686820930985,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "score_bug_pop",
+"gain_db": -12,
+"scene": "s3_sports",
+"T_abs": 22.25,
+"loud": -23.984428361055425,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1858,32 +1088,32 @@
 "boost": 0.0
 },
 {
-"sound": "racket_smash",
-"gain_db": -7,
-"scene": "v3",
-"T_abs": 22.410000000000004,
-"loud": -30.000977286439635,
-"red": -10.0,
+"sound": "light_burst_hit",
+"gain_db": -9,
+"scene": "s3_sports",
+"T_abs": 22.450000000000003,
+"loud": -24.021613429109557,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "crash_zoom_whoosh",
-"gain_db": -11,
-"scene": "v3",
-"T_abs": 22.410000000000004,
-"loud": -27.5400460452677,
-"red": -10.0,
+"sound": "plate_pop_glossy",
+"gain_db": -13,
+"scene": "s3_sports",
+"T_abs": 22.46,
+"loud": -26.996974886271623,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "plate_fly_whoosh",
-"gain_db": -14,
-"scene": "v3",
-"T_abs": 22.480000000000004,
-"loud": -32.01866955269064,
-"red": -10.0,
+"sound": "plate_pop_glossy",
+"gain_db": -13,
+"scene": "s3_sports",
+"T_abs": 22.505000000000003,
+"loud": -26.996974886271623,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1898,42 +1128,42 @@
 "boost": 0.0
 },
 {
-"sound": "whip_in_left",
-"gain_db": -8,
-"scene": "v3",
+"sound": "plate_pop_glossy",
+"gain_db": -13,
+"scene": "s3_sports",
 "T_abs": 22.55,
-"loud": -28.353543782758692,
+"loud": -26.996974886271623,
 "red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "logo_pop_sting",
-"gain_db": -10,
-"scene": "v3",
-"T_abs": 22.57,
-"loud": -23.59171454141297,
-"red": -7.5,
-"vo_red": -2.96287669056821,
-"boost": 0.0
-},
-{
-"sound": "logo_pop_sting",
-"gain_db": -9,
-"scene": "v3",
-"T_abs": 22.650000000000002,
-"loud": -22.59171454141297,
-"red": 0.0,
+"sound": "plate_pop_glossy",
+"gain_db": -13,
+"scene": "s3_sports",
+"T_abs": 22.595,
+"loud": -26.996974886271623,
+"red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "punch_impact",
-"gain_db": -5,
-"scene": "v3",
-"T_abs": 22.700000000000003,
-"loud": -23.274686820930985,
-"red": 0.0,
+"sound": "plate_pop_glossy",
+"gain_db": -13,
+"scene": "s3_sports",
+"T_abs": 22.64,
+"loud": -26.996974886271623,
+"red": -10.0,
+"vo_red": -0.9149759105514939,
+"boost": 0.0
+},
+{
+"sound": "plate_pop_glossy",
+"gain_db": -13,
+"scene": "s3_sports",
+"T_abs": 22.685000000000002,
+"loud": -26.996974886271623,
+"red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1943,24 +1173,181 @@
 "scene": "fx",
 "T_abs": 22.71,
 "loud": -25.409743966144084,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "whip_in_right",
+"gain_db": -8,
+"scene": "s3_sports",
+"T_abs": 22.75,
+"skip": "inside interlude wav"
+},
+{
+"sound": "drumroll_start",
+"gain_db": -12,
+"scene": "s3_sports",
+"T_abs": 23.1,
+"skip": "inside interlude wav"
+},
+{
+"sound": "beat_kick",
+"gain_db": -12,
+"scene": "s3_sports",
+"T_abs": 23.25,
+"skip": "inside interlude wav"
+},
+{
+"sound": "beat_kick",
+"gain_db": -12,
+"scene": "s3_sports",
+"T_abs": 23.5,
+"skip": "inside interlude wav"
+},
+{
+"sound": "manga_panel_slam",
+"gain_db": -9,
+"scene": "s3_sports",
+"T_abs": 23.7,
+"skip": "inside interlude wav"
+},
+{
+"sound": "beat_kick",
+"gain_db": -12,
+"scene": "s3_sports",
+"T_abs": 23.75,
+"skip": "inside interlude wav"
+},
+{
+"sound": "pre_impact_silence_pop",
+"gain_db": -14,
+"scene": "s3_sports",
+"T_abs": 23.92,
+"skip": "inside interlude wav"
+},
+{
+"sound": "goal_crowd_roar",
+"gain_db": -5,
+"scene": "s3_sports",
+"T_abs": 23.95,
+"skip": "inside interlude wav"
+},
+{
+"sound": "confetti_burst",
+"gain_db": -8,
+"scene": "s3_sports",
+"T_abs": 23.95,
+"skip": "inside interlude wav"
+},
+{
+"sound": "impact_frame_don",
+"gain_db": -8,
+"scene": "s3_sports",
+"T_abs": 23.95,
+"skip": "inside interlude wav"
+},
+{
+"sound": "flag_unfurl",
+"gain_db": -16,
+"scene": "s3_sports",
+"T_abs": 24.25,
+"skip": "inside interlude wav"
+},
+{
+"sound": "whip_out",
+"gain_db": -8,
+"scene": "s3_sports",
+"T_abs": 24.95,
+"skip": "inside interlude wav"
+},
+{
+"sound": "whip_in_left",
+"gain_db": -12,
+"scene": "s3_sports",
+"T_abs": 25.160000000000004,
+"loud": -32.35354378275869,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "power_charge_rise",
+"gain_db": -10,
+"scene": "s3_sports",
+"T_abs": 25.200000000000003,
+"loud": -30.244032323699052,
 "red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "logo_pop_sting",
-"gain_db": -8,
-"scene": "v3",
-"T_abs": 22.75,
-"skip": "inside interlude wav"
+"sound": "spotlight_on",
+"gain_db": -16,
+"scene": "s3_sports",
+"T_abs": 25.270000000000003,
+"loud": -31.032404575165273,
+"red": -10.0,
+"vo_red": 0.0,
+"boost": 0.0
 },
 {
-"sound": "ball_whoosh_trail",
-"gain_db": -9,
-"scene": "v3",
-"T_abs": 25.25,
-"loud": -29.365143004525848,
+"sound": "spotlight_on",
+"gain_db": -16,
+"scene": "s3_sports",
+"T_abs": 25.340000000000003,
+"loud": -31.032404575165273,
+"red": -10.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "spotlight_on",
+"gain_db": -14,
+"scene": "s3_sports",
+"T_abs": 25.400000000000002,
+"loud": -29.032404575165273,
+"red": -10.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "impact_frame_don",
+"gain_db": -5,
+"scene": "s3_sports",
+"T_abs": 25.410000000000004,
+"loud": -23.833779555473885,
 "red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "logo_slam_reveal",
+"gain_db": -6,
+"scene": "s3_sports",
+"T_abs": 25.410000000000004,
+"loud": -19.139273943834798,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "halo_shockwave",
+"gain_db": -10,
+"scene": "s3_sports",
+"T_abs": 25.42,
+"loud": -29.457278472220636,
+"red": -5.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "shine_sweep",
+"gain_db": -14,
+"scene": "s3_sports",
+"T_abs": 25.450000000000003,
+"loud": -34.152866905082334,
+"red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -1970,47 +1357,47 @@
 "scene": "fx",
 "T_abs": 25.550000000000004,
 "loud": -30.660693048865042,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "logo_slam_reveal",
-"gain_db": -4,
-"scene": "v3",
-"T_abs": 25.550000000000004,
-"loud": -17.139273943834798,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "shimmer_sweep",
-"gain_db": -12,
-"scene": "v3",
-"T_abs": 25.580000000000002,
-"loud": -31.35725943049456,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whoosh_up",
-"gain_db": -12,
-"scene": "v3",
-"T_abs": 25.93,
-"loud": -29.211292230263894,
 "red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "tile_pop",
-"gain_db": -13,
-"scene": "v3",
-"T_abs": 25.93,
-"loud": -28.16157185587951,
+"sound": "plate_pop_glossy",
+"gain_db": -10,
+"scene": "s3_sports",
+"T_abs": 25.630000000000003,
+"loud": -23.996974886271623,
 "red": 0.0,
+"vo_red": -0.8450866443574272,
+"boost": 0.0
+},
+{
+"sound": "plate_pop_glossy",
+"gain_db": -10,
+"scene": "s3_sports",
+"T_abs": 25.740000000000002,
+"loud": -23.996974886271623,
+"red": -2.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "plate_pop_glossy",
+"gain_db": -10,
+"scene": "s3_sports",
+"T_abs": 25.85,
+"loud": -23.996974886271623,
+"red": -2.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "plate_pop_glossy",
+"gain_db": -10,
+"scene": "s3_sports",
+"T_abs": 25.96,
+"loud": -23.996974886271623,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2020,46 +1407,36 @@
 "scene": "fx",
 "T_abs": 25.980000000000004,
 "loud": -26.430968551429224,
-"red": 0.0,
+"red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "tile_pop",
-"gain_db": -13,
-"scene": "v3",
-"T_abs": 25.980000000000004,
-"loud": -28.16157185587951,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tile_pop",
-"gain_db": -13,
-"scene": "v3",
-"T_abs": 26.03,
-"loud": -28.16157185587951,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tile_pop",
-"gain_db": -13,
-"scene": "v3",
+"sound": "impact_frame_don",
+"gain_db": -5,
+"scene": "s3_sports",
 "T_abs": 26.080000000000002,
-"loud": -28.16157185587951,
-"red": -7.5,
-"vo_red": 0.0,
+"loud": -23.833779555473885,
+"red": -2.5,
+"vo_red": -4.487731360840395,
 "boost": 0.0
 },
 {
-"sound": "tile_pop",
-"gain_db": -13,
-"scene": "v3",
-"T_abs": 26.130000000000003,
-"loud": -28.16157185587951,
+"sound": "logo_slam_reveal",
+"gain_db": -4,
+"scene": "s3_sports",
+"T_abs": 26.080000000000002,
+"loud": -17.139273943834798,
+"red": 0.0,
+"vo_red": -10.0,
+"boost": 0.0
+},
+{
+"sound": "shockwave_ring",
+"gain_db": -9,
+"scene": "s3_sports",
+"T_abs": 26.090000000000003,
+"loud": -25.499288547145778,
 "red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
@@ -2070,66 +1447,36 @@
 "scene": "fx",
 "T_abs": 26.160000000000004,
 "loud": -25.409743966144084,
-"red": 0.0,
-"vo_red": -10.0,
+"red": -5.0,
+"vo_red": -9.204141255810407,
 "boost": 0.0
 },
 {
-"sound": "ui_swipe_out",
-"gain_db": -14,
-"scene": "v3",
-"T_abs": 27.25,
-"loud": -35.28062583758507,
-"red": 0.0,
+"sound": "shine_sweep",
+"gain_db": -16,
+"scene": "s3_sports",
+"T_abs": 26.3,
+"loud": -36.152866905082334,
+"red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "scoreboard_slide",
-"gain_db": -11,
-"scene": "v3",
-"T_abs": 27.369999999999997,
-"loud": -35.051893227542315,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "ball_shot",
-"gain_db": -10,
-"scene": "v3",
-"T_abs": 27.52,
-"loud": -32.279025658355415,
+"sound": "slash_wipe_whoosh",
+"gain_db": -9,
+"scene": "s3_sports",
+"T_abs": 27.3,
+"loud": -28.98391988641228,
 "red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "goal_net_hit",
-"gain_db": -4,
-"scene": "v3",
-"T_abs": 27.61,
-"loud": -21.18588426876502,
-"red": 0.0,
-"vo_red": -3.7280276659980607,
-"boost": 0.0
-},
-{
-"sound": "goal_crowd_roar",
-"gain_db": -6,
-"scene": "v3",
-"T_abs": 27.65,
-"loud": -16.688681792031456,
-"red": 0.0,
-"vo_red": -10.0,
-"boost": 0.0
-},
-{
-"sound": "confetti_pop",
-"gain_db": -10,
-"scene": "v3",
-"T_abs": 27.65,
-"loud": -28.153449767189336,
+"sound": "badge_stamp",
+"gain_db": -12,
+"scene": "s3_sports",
+"T_abs": 27.52,
+"loud": -26.567728384903475,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -2140,7 +1487,47 @@
 "scene": "fx",
 "T_abs": 27.7,
 "loud": -30.660693048865042,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "logo_shine_sweep",
+"gain_db": -16,
+"scene": "s3_sports",
+"T_abs": 28.0,
+"loud": -36.16731006564141,
+"red": -5.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "whip_out",
+"gain_db": -8,
+"scene": "s3_sports",
+"T_abs": 29.13,
+"loud": -27.136477661513254,
 "red": -2.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "slab_slash_whoosh",
+"gain_db": -9,
+"scene": "s4_series",
+"T_abs": 29.17,
+"loud": -24.308340947488276,
+"red": 0.0,
+"vo_red": -0.7181273043231409,
+"boost": 0.0
+},
+{
+"sound": "title_slam_gold",
+"gain_db": -7,
+"scene": "s4_series",
+"T_abs": 29.2,
+"loud": -22.660982921284255,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2155,162 +1542,92 @@
 "boost": 0.0
 },
 {
-"sound": "whip_in_right",
+"sound": "drama_lightning_zap",
 "gain_db": -7,
-"scene": "v3",
-"T_abs": 29.25,
-"loud": -24.430968551429224,
+"scene": "s4_series",
+"T_abs": 29.59,
+"loud": -25.715311563932083,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "bass_slam",
-"gain_db": -4,
-"scene": "v3",
-"T_abs": 29.259999999999998,
-"loud": -19.102404417311394,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "stopwatch_tick",
-"gain_db": -13,
-"scene": "v3",
-"T_abs": 29.369999999999997,
-"loud": -42.14650961043472,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "car_whoosh",
-"gain_db": -9,
-"scene": "v3",
-"T_abs": 29.45,
-"loud": -24.397235200401596,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "punch_impact",
+"sound": "panel_slam_pair",
 "gain_db": -8,
-"scene": "v3",
-"T_abs": 29.53,
-"loud": -26.274686820930985,
+"scene": "s4_series",
+"T_abs": 29.619999999999997,
+"loud": -28.449521337191314,
 "red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "flag_flutter",
-"gain_db": -12,
-"scene": "v3",
-"T_abs": 29.61,
-"loud": -31.623505551734745,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "logo_slam_reveal",
-"gain_db": -5,
-"scene": "v3",
-"T_abs": 29.689999999999998,
-"loud": -18.139273943834798,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "letter_tick",
+"sound": "heartbeat_dokidoki",
 "gain_db": -14,
-"scene": "v3",
+"scene": "s4_series",
 "T_abs": 29.7,
-"loud": -28.68805536509297,
+"loud": -29.424406017242838,
+"red": -2.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "tear_drip_glint",
+"gain_db": -18,
+"scene": "s4_series",
+"T_abs": 29.82,
+"loud": -33.623922741347656,
 "red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "letter_tick",
-"gain_db": -14,
-"scene": "v3",
-"T_abs": 29.74,
-"loud": -28.68805536509297,
-"red": -7.5,
+"sound": "petal_flutter",
+"gain_db": -20,
+"scene": "s4_series",
+"T_abs": 29.9,
+"loud": -35.52619580364117,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "letter_tick",
-"gain_db": -14,
-"scene": "v3",
-"T_abs": 29.78,
-"loud": -28.68805536509297,
-"red": -10.0,
+"sound": "neon_slat_zap",
+"gain_db": -8,
+"scene": "s4_series",
+"T_abs": 30.27,
+"loud": -26.28459454537362,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "letter_tick",
-"gain_db": -14,
-"scene": "v3",
-"T_abs": 29.82,
-"loud": -28.68805536509297,
-"red": -10.0,
+"sound": "shine_sweep_hold",
+"gain_db": -16,
+"scene": "s4_series",
+"T_abs": 30.45,
+"loud": -36.23618450135781,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "shimmer_sweep",
+"sound": "neon_title_buzz",
 "gain_db": -12,
-"scene": "v3",
-"T_abs": 29.86,
-"loud": -31.35725943049456,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glitch_hit",
-"gain_db": -9,
-"scene": "v3",
-"T_abs": 30.119999999999997,
-"loud": -24.62614967387954,
-"red": 0.0,
-"vo_red": -6.187269696583008,
-"boost": 0.0
-},
-{
-"sound": "whip_out_left",
-"gain_db": -8,
-"scene": "v3",
+"scene": "s4_series",
 "T_abs": 31.299999999999997,
-"loud": -26.166692207747786,
+"loud": -28.04532758340068,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "whip_in_right",
-"gain_db": -8,
-"scene": "v4",
-"T_abs": 31.299999999999997,
-"loud": -25.430968551429224,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "seagull_call",
-"gain_db": -18,
-"scene": "v4",
-"T_abs": 31.439999999999998,
-"loud": -31.970579257342983,
-"red": -10.0,
+"sound": "rain_swell",
+"gain_db": -14,
+"scene": "s4_series",
+"T_abs": 31.33,
+"loud": -37.49611426766711,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2325,22 +1642,12 @@
 "boost": 0.0
 },
 {
-"sound": "title_pop_ribbon",
-"gain_db": -10,
-"scene": "v4",
-"T_abs": 31.5,
-"loud": -24.294248689024055,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "beat_hit_zoom",
 "gain_db": -12,
 "scene": "fx",
 "T_abs": 31.6,
 "loud": -26.86525203864394,
-"red": -2.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2355,212 +1662,253 @@
 "boost": 0.0
 },
 {
-"sound": "string_swell_rise",
-"gain_db": -16,
-"scene": "v4",
-"T_abs": 31.7,
-"loud": -34.27149228374202,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "soap_sting",
-"gain_db": -6,
-"scene": "v4",
-"T_abs": 31.82,
-"loud": -17.417913793101633,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glitch_rgb_hit",
-"gain_db": -14,
-"scene": "v4",
-"T_abs": 31.82,
-"loud": -31.435356770323867,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "heartbeat_thump",
-"gain_db": -9,
-"scene": "v4",
-"T_abs": 31.92,
-"loud": -23.190813944751355,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "suction_snap_whoosh",
 "gain_db": -14,
 "scene": "fx",
 "T_abs": 31.95,
 "loud": -30.660693048865042,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tear_glint",
-"gain_db": -14,
-"scene": "v4",
-"T_abs": 32.0,
-"loud": -29.61382465427826,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "crash_zoom_thud",
-"gain_db": -11,
-"scene": "v4",
-"T_abs": 32.04,
-"loud": -29.376488890846684,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "crash_zoom_thud",
-"gain_db": -8,
-"scene": "v4",
-"T_abs": 32.144999999999996,
-"loud": -26.376488890846684,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "wipe_whoosh_pink",
-"gain_db": -9,
-"scene": "v4",
-"T_abs": 33.2,
-"loud": -26.330040400362613,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "neon_buzz_on",
-"gain_db": -14,
-"scene": "v4",
-"T_abs": 33.239999999999995,
-"loud": -36.462486576033726,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "rain_bed",
-"gain_db": -24,
-"scene": "v4",
-"T_abs": 33.3,
-"loud": -42.48092358150801,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "heart_pop",
-"gain_db": -8,
-"scene": "v4",
-"T_abs": 33.4,
-"loud": -25.08325302318855,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "chime_sparkle",
+"sound": "rain_hold_loop",
 "gain_db": -16,
-"scene": "v4",
-"T_abs": 33.44,
-"loud": -28.755716672334096,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whip_zoom_cut",
-"gain_db": -9,
-"scene": "v4",
-"T_abs": 33.519999999999996,
-"loud": -26.154034858182136,
+"scene": "s4_series",
+"T_abs": 32.2,
+"loud": -32.172932997061054,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "glitch_rgb_hit",
-"gain_db": -14,
-"scene": "v4",
-"T_abs": 33.519999999999996,
-"loud": -31.435356770323867,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "heart_pop",
-"gain_db": -10,
-"scene": "v4",
-"T_abs": 33.58,
-"loud": -27.08325302318855,
+"sound": "anime_impact_don",
+"gain_db": -4,
+"scene": "s4_series",
+"T_abs": 33.16,
+"loud": -23.541895272938532,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "chime_sparkle",
-"gain_db": -15,
-"scene": "v4",
-"T_abs": 33.7,
-"loud": -27.755716672334096,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "anime_flash_whoosh",
+"sound": "hero_slam_zoom",
 "gain_db": -7,
-"scene": "v4",
-"T_abs": 37.6,
-"loud": -24.440505980520754,
+"scene": "s4_series",
+"T_abs": 33.25,
+"loud": -21.480450307556882,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "comic_pop",
-"gain_db": -9,
-"scene": "v4",
-"T_abs": 37.66,
-"loud": -22.919841391247875,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "power_charge_rise",
-"gain_db": -14,
-"scene": "v4",
-"T_abs": 37.7,
-"loud": -34.24403232369905,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "eye_zoom_slam",
-"gain_db": -8,
-"scene": "v4",
-"T_abs": 37.78,
-"loud": -25.110331986230843,
+"sound": "eye_glint_ting",
+"gain_db": -12,
+"scene": "s4_series",
+"T_abs": 33.42,
+"loud": -30.58817066135261,
 "red": -2.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "logo_rush_whoosh",
+"gain_db": -6,
+"scene": "s4_series",
+"T_abs": 33.736,
+"skip": "inside interlude wav"
+},
+{
+"sound": "anime_impact_don",
+"gain_db": -3,
+"scene": "s4_series",
+"T_abs": 33.736,
+"skip": "inside interlude wav"
+},
+{
+"sound": "impact_flip_tick",
+"gain_db": -12,
+"scene": "s4_series",
+"T_abs": 33.806,
+"skip": "inside interlude wav"
+},
+{
+"sound": "impact_flip_tick",
+"gain_db": -12,
+"scene": "s4_series",
+"T_abs": 33.851,
+"skip": "inside interlude wav"
+},
+{
+"sound": "eye_sparkle_shine",
+"gain_db": -9,
+"scene": "s4_series",
+"T_abs": 34.136,
+"skip": "inside interlude wav"
+},
+{
+"sound": "manga_caption_pop",
+"gain_db": -15,
+"scene": "s4_series",
+"T_abs": 34.186,
+"loud": -28.72055187664794,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "kirakira_chime",
+"gain_db": -14,
+"scene": "s4_series",
+"T_abs": 34.336,
+"skip": "inside interlude wav"
+},
+{
+"sound": "pullback_swell",
+"gain_db": -8,
+"scene": "s4_series",
+"T_abs": 34.936,
+"skip": "inside interlude wav"
+},
+{
+"sound": "manga_caption_pop",
+"gain_db": -15,
+"scene": "s4_series",
+"T_abs": 35.086,
+"loud": -28.72055187664794,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "screen_pop",
+"gain_db": -17,
+"scene": "s4_series",
+"T_abs": 35.186,
+"loud": -34.17806654013509,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "screen_pop",
+"gain_db": -17,
+"scene": "s4_series",
+"T_abs": 35.286,
+"loud": -34.17806654013509,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "screen_pop",
+"gain_db": -17,
+"scene": "s4_series",
+"T_abs": 35.386,
+"loud": -34.17806654013509,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "screen_pop",
+"gain_db": -17,
+"scene": "s4_series",
+"T_abs": 35.486,
+"loud": -34.17806654013509,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "screen_pop",
+"gain_db": -17,
+"scene": "s4_series",
+"T_abs": 35.586,
+"loud": -34.17806654013509,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "screen_pop",
+"gain_db": -17,
+"scene": "s4_series",
+"T_abs": 35.686,
+"loud": -34.17806654013509,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "gogogo_rumble",
+"gain_db": -6,
+"scene": "s4_series",
+"T_abs": 36.036,
+"skip": "inside interlude wav"
+},
+{
+"sound": "power_shockwave_boom",
+"gain_db": -4,
+"scene": "s4_series",
+"T_abs": 36.056,
+"skip": "inside interlude wav"
+},
+{
+"sound": "aura_flame_roar",
+"gain_db": -10,
+"scene": "s4_series",
+"T_abs": 36.136,
+"skip": "inside interlude wav"
+},
+{
+"sound": "power_shockwave_boom",
+"gain_db": -5,
+"scene": "s4_series",
+"T_abs": 36.486,
+"skip": "inside interlude wav"
+},
+{
+"sound": "fist_whoosh_punch",
+"gain_db": -4,
+"scene": "s4_series",
+"T_abs": 37.036,
+"skip": "inside interlude wav"
+},
+{
+"sound": "manga_caption_pop",
+"gain_db": -13,
+"scene": "s4_series",
+"T_abs": 37.056,
+"loud": -26.72055187664794,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "white_flash_riser",
+"gain_db": -8,
+"scene": "s4_series",
+"T_abs": 37.396,
+"skip": "inside interlude wav"
+},
+{
+"sound": "tile_pop_run",
+"gain_db": -12,
+"scene": "s4_series",
+"T_abs": 37.6,
+"loud": -32.25831555712861,
+"red": -2.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "pullback_whoosh",
+"gain_db": -8,
+"scene": "s4_series",
+"T_abs": 37.8,
+"loud": -29.695340930836878,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2570,87 +1918,7 @@
 "scene": "fx",
 "T_abs": 37.8,
 "loud": -29.08325302318855,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "sakura_swish",
-"gain_db": -18,
-"scene": "v4",
-"T_abs": 37.86,
-"loud": -31.62408014571018,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "speedline_cut",
-"gain_db": -10,
-"scene": "v4",
-"T_abs": 37.9,
-"loud": -27.191640068141204,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "anime_impact_don",
-"gain_db": -4,
-"scene": "v4",
-"T_abs": 37.94,
-"loud": -23.541895272938532,
 "red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glass_shatter",
-"gain_db": -6,
-"scene": "v4",
-"T_abs": 38.05,
-"loud": -24.963965376734706,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glitch_rgb_hit",
-"gain_db": -14,
-"scene": "v4",
-"T_abs": 38.05,
-"loud": -31.435356770323867,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "tunnel_rush_whoosh",
-"gain_db": -8,
-"scene": "v4",
-"T_abs": 38.09,
-"loud": -26.844305863290582,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "title_pop_glass",
-"gain_db": -10,
-"scene": "v4",
-"T_abs": 38.13,
-"loud": -23.59711431036677,
-"red": 0.0,
-"vo_red": -4.575803232709442,
-"boost": 0.0
-},
-{
-"sound": "plate_flyby",
-"gain_db": -16,
-"scene": "v4",
-"T_abs": 38.2,
-"loud": -33.54038024866127,
-"red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2660,57 +1928,27 @@
 "scene": "fx",
 "T_abs": 38.25,
 "loud": -26.28982106365369,
-"red": -5.0,
-"vo_red": -2.945988110864858,
+"red": 0.0,
+"vo_red": -7.945988105461665,
 "boost": 0.0
 },
 {
-"sound": "plate_flyby",
-"gain_db": -16,
-"scene": "v4",
-"T_abs": 38.28,
-"loud": -33.54038024866127,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "reverse_whoosh",
-"gain_db": -10,
-"scene": "v4",
-"T_abs": 38.35,
-"loud": -51.18014655866939,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "wall_pulse_boom",
-"gain_db": -7,
-"scene": "v4",
-"T_abs": 38.5,
-"loud": -21.93624969339408,
+"sound": "wall_settle_shine",
+"gain_db": -8,
+"scene": "s4_series",
+"T_abs": 38.42,
+"loud": -28.24060491389504,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "shimmer_sweep",
-"gain_db": -16,
-"scene": "v4",
-"T_abs": 38.6,
-"loud": -35.357259430494565,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "zoom_through_rise",
-"gain_db": -9,
-"scene": "v4",
-"T_abs": 39.879999999999995,
-"loud": -34.69369157368129,
-"red": -10.0,
+"sound": "shine_sweep_hold",
+"gain_db": -14,
+"scene": "s4_series",
+"T_abs": 38.75,
+"loud": -34.23618450135781,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2720,16 +1958,6 @@
 "scene": "s5_library_smooth",
 "T_abs": 39.94,
 "loud": -25.980243339716893,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "wall_pulse_boom",
-"gain_db": -8,
-"scene": "v4",
-"T_abs": 39.95,
-"loud": -22.93624969339408,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -2740,37 +1968,17 @@
 "scene": "s5_library_smooth",
 "T_abs": 40.0,
 "loud": -27.59701592996667,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "light_burst_hit",
-"gain_db": -5,
-"scene": "v4",
-"T_abs": 40.01,
-"loud": -20.021613429109557,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "iris_burst_whoosh",
-"gain_db": -6,
-"scene": "v5",
-"T_abs": 40.01,
-"loud": -23.980243339716893,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "library_lights_shimmer",
-"gain_db": -14,
-"scene": "v5",
-"T_abs": 40.05,
-"loud": -26.153734814505537,
 "red": -7.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "zoomthrough_whoosh",
+"gain_db": -6,
+"scene": "s4_series",
+"T_abs": 40.01,
+"loud": -20.51301644308265,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2780,7 +1988,7 @@
 "scene": "fx",
 "T_abs": 40.2,
 "loud": -29.08325302318855,
-"red": -10.0,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2790,47 +1998,7 @@
 "scene": "s5_library_smooth",
 "T_abs": 40.29,
 "loud": -27.541895272938532,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "poster_thud",
-"gain_db": -11,
-"scene": "v5",
-"T_abs": 40.4,
-"loud": -27.462721698039427,
 "red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "confetti_pop",
-"gain_db": -14,
-"scene": "v5",
-"T_abs": 40.42,
-"loud": -32.153449767189336,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "count_up_tick",
-"gain_db": -15,
-"scene": "v5",
-"T_abs": 40.46,
-"loud": -40.24321439184402,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "badge_stamp",
-"gain_db": -12,
-"scene": "v5",
-"T_abs": 40.620000000000005,
-"loud": -26.567728384903475,
-"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2845,33 +2013,13 @@
 "boost": 0.0
 },
 {
-"sound": "poster_thud",
-"gain_db": -11,
-"scene": "v5",
-"T_abs": 40.733000000000004,
-"loud": -27.462721698039427,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "count_up_tick",
-"gain_db": -15,
-"scene": "v5",
-"T_abs": 40.793,
-"loud": -40.24321439184402,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "hero_badge_pop",
 "gain_db": -11,
 "scene": "fx",
 "T_abs": 40.86,
 "loud": -25.409743966144084,
-"red": -2.5,
-"vo_red": -1.8382437875513045,
+"red": 0.0,
+"vo_red": -4.338243784043578,
 "boost": 0.0
 },
 {
@@ -2890,37 +2038,7 @@
 "scene": "s5_library_smooth",
 "T_abs": 40.9,
 "loud": -25.575733503283182,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "poster_thud",
-"gain_db": -11,
-"scene": "v5",
-"T_abs": 41.067,
-"loud": -27.462721698039427,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "confetti_pop",
-"gain_db": -14,
-"scene": "v5",
-"T_abs": 41.087,
-"loud": -32.153449767189336,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "count_up_tick",
-"gain_db": -15,
-"scene": "v5",
-"T_abs": 41.126999999999995,
-"loud": -40.24321439184402,
-"red": -10.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2930,7 +2048,7 @@
 "scene": "s5_library_smooth",
 "T_abs": 41.32,
 "loud": -25.575733503283182,
-"red": -5.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -2945,61 +2063,11 @@
 "boost": 0.0
 },
 {
-"sound": "poster_thud",
-"gain_db": -11,
-"scene": "v5",
-"T_abs": 41.4,
-"loud": -27.462721698039427,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "count_up_tick",
-"gain_db": -15,
-"scene": "v5",
-"T_abs": 41.46,
-"loud": -40.24321439184402,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "badge_stamp",
-"gain_db": -12,
-"scene": "v5",
-"T_abs": 41.5,
-"loud": -26.567728384903475,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "card_burst_pop",
 "gain_db": -12,
 "scene": "s5_library_smooth",
 "T_abs": 41.57,
 "loud": -26.575733503283182,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "poster_thud",
-"gain_db": -11,
-"scene": "v5",
-"T_abs": 41.733000000000004,
-"loud": -27.462721698039427,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "confetti_pop",
-"gain_db": -14,
-"scene": "v5",
-"T_abs": 41.753,
-"loud": -32.153449767189336,
 "red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -3015,41 +2083,11 @@
 "boost": 0.0
 },
 {
-"sound": "count_up_tick",
-"gain_db": -15,
-"scene": "v5",
-"T_abs": 41.793,
-"loud": -40.24321439184402,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "card_burst_pop",
 "gain_db": -12,
 "scene": "s5_library_smooth",
 "T_abs": 41.94,
 "loud": -26.575733503283182,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "poster_thud",
-"gain_db": -11,
-"scene": "v5",
-"T_abs": 42.067,
-"loud": -27.462721698039427,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "count_up_tick",
-"gain_db": -15,
-"scene": "v5",
-"T_abs": 42.126999999999995,
-"loud": -40.24321439184402,
 "red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -3095,62 +2133,12 @@
 "boost": 0.0
 },
 {
-"sound": "poster_thud",
-"gain_db": -11,
-"scene": "v5",
-"T_abs": 42.4,
-"loud": -27.462721698039427,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "confetti_pop",
-"gain_db": -14,
-"scene": "v5",
-"T_abs": 42.42,
-"loud": -32.153449767189336,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "count_up_tick",
-"gain_db": -15,
-"scene": "v5",
-"T_abs": 42.46,
-"loud": -40.24321439184402,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "pullback_whoosh",
-"gain_db": -8,
-"scene": "v5",
-"T_abs": 42.75,
-"loud": -29.695340930836878,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "count_up_total",
-"gain_db": -10,
-"scene": "v5",
-"T_abs": 42.8,
-"loud": -22.890597899214654,
-"red": 0.0,
-"vo_red": -9.371262753597215,
-"boost": 0.0
-},
-{
 "sound": "shine_sweep",
 "gain_db": -16,
 "scene": "s5_library_smooth",
 "T_abs": 42.879999999999995,
 "loud": -36.152866905082334,
-"red": -10.0,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3160,17 +2148,7 @@
 "scene": "host",
 "T_abs": 43.599999999999994,
 "loud": -27.136477661513254,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "sparkle_trail",
-"gain_db": -16,
-"scene": "v5",
-"T_abs": 43.599999999999994,
-"loud": -31.604650030911635,
-"red": -10.0,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3180,7 +2158,7 @@
 "scene": "host",
 "T_abs": 43.709999999999994,
 "loud": -34.542971161030515,
-"red": -10.0,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3190,7 +2168,7 @@
 "scene": "fx",
 "T_abs": 43.709999999999994,
 "loud": -26.232938661404933,
-"red": -2.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3210,7 +2188,7 @@
 "scene": "host",
 "T_abs": 43.78,
 "loud": -26.604650030911635,
-"red": -5.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3220,7 +2198,7 @@
 "scene": "host",
 "T_abs": 44.099999999999994,
 "loud": -29.891418819942814,
-"red": -2.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3240,36 +2218,6 @@
 "scene": "s5_library_smooth",
 "T_abs": 45.54,
 "loud": -27.98391988641228,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glass_shatter",
-"gain_db": -6,
-"scene": "v5",
-"T_abs": 45.54,
-"loud": -24.963965376734706,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whoosh_low",
-"gain_db": -9,
-"scene": "v5",
-"T_abs": 45.56,
-"loud": -25.056689315807354,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "live_pop",
-"gain_db": -9,
-"scene": "v5",
-"T_abs": 45.65,
-"loud": -24.150135281579214,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -3280,7 +2228,7 @@
 "scene": "s5_library_smooth",
 "T_abs": 45.7,
 "loud": -26.029053957153515,
-"red": -2.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3290,16 +2238,6 @@
 "scene": "fx",
 "T_abs": 45.879999999999995,
 "loud": -29.353543782758692,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "live_pop",
-"gain_db": -9,
-"scene": "v5",
-"T_abs": 45.9,
-"loud": -24.150135281579214,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -3310,7 +2248,7 @@
 "scene": "s5_library_smooth",
 "T_abs": 45.959999999999994,
 "loud": -27.16305681108331,
-"red": -2.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3320,16 +2258,6 @@
 "scene": "fx",
 "T_abs": 46.06,
 "loud": -25.409743966144084,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "live_pop",
-"gain_db": -9,
-"scene": "v5",
-"T_abs": 46.15,
-"loud": -24.150135281579214,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -3345,32 +2273,12 @@
 "boost": 0.0
 },
 {
-"sound": "live_pop",
-"gain_db": -9,
-"scene": "v5",
-"T_abs": 46.4,
-"loud": -24.150135281579214,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "beat_kick",
-"gain_db": -12,
-"scene": "v5",
-"T_abs": 46.4,
-"loud": -28.469636436435408,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "suction_snap_whoosh",
 "gain_db": -14,
 "scene": "fx",
 "T_abs": 46.5,
 "loud": -30.660693048865042,
-"red": -5.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3385,72 +2293,12 @@
 "boost": 0.0
 },
 {
-"sound": "beat_kick",
-"gain_db": -12,
-"scene": "v5",
-"T_abs": 46.9,
-"loud": -28.469636436435408,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "riser_zoom",
-"gain_db": -8,
-"scene": "v5",
-"T_abs": 46.95,
-"loud": -34.73773419394196,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "silky_ribbon_swish",
 "gain_db": -12,
 "scene": "s5_library_smooth",
 "T_abs": 47.15,
 "loud": -31.553410864106656,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "light_burst_whoosh",
-"gain_db": -6,
-"scene": "v5",
-"T_abs": 47.18,
-"loud": -23.182266477238386,
 "red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "train_pass",
-"gain_db": -10,
-"scene": "v5",
-"T_abs": 47.22,
-"loud": -28.743235239569035,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "lag_glitch_tick",
-"gain_db": -19,
-"scene": "v5",
-"T_abs": 47.3,
-"loud": -37.96154268766587,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "ball_roll_whoosh",
-"gain_db": -12,
-"scene": "v5",
-"T_abs": 47.349999999999994,
-"loud": -31.357214525664293,
-"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3470,7 +2318,7 @@
 "scene": "fx",
 "T_abs": 47.55,
 "loud": -29.08325302318855,
-"red": -2.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3495,22 +2343,12 @@
 "boost": 0.0
 },
 {
-"sound": "lag_glitch_tick",
-"gain_db": -19,
-"scene": "v5",
-"T_abs": 47.632999999999996,
-"loud": -37.96154268766587,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "glitch_stutter",
 "gain_db": -14,
 "scene": "s5_library_smooth",
 "T_abs": 47.82,
 "loud": -42.900190226810466,
-"red": -7.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3525,52 +2363,12 @@
 "boost": 0.0
 },
 {
-"sound": "overtake_impact",
-"gain_db": -5,
-"scene": "v5",
-"T_abs": 47.959999999999994,
-"loud": -23.382649508641205,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "lag_glitch_tick",
-"gain_db": -19,
-"scene": "v5",
-"T_abs": 47.967,
-"loud": -37.96154268766587,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glitch_shards",
-"gain_db": -10,
-"scene": "v5",
-"T_abs": 47.98,
-"loud": -27.042448728041084,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "suction_snap_whoosh",
 "gain_db": -14,
 "scene": "fx",
 "T_abs": 48.0,
 "loud": -30.660693048865042,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "speed_lines_zip",
-"gain_db": -12,
-"scene": "v5",
-"T_abs": 48.0,
-"loud": -28.68414649444606,
-"red": -5.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3585,33 +2383,13 @@
 "boost": 0.0
 },
 {
-"sound": "word_pop_gold",
-"gain_db": -8,
-"scene": "v5",
-"T_abs": 48.2,
-"loud": -22.252953509889654,
-"red": 0.0,
-"vo_red": -2.4482398103186203,
-"boost": 0.0
-},
-{
 "sound": "ghost_defeat_pop",
 "gain_db": -12,
 "scene": "s5_library_smooth",
 "T_abs": 48.26,
 "loud": -27.66038299915069,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "word_pop_cyan",
-"gain_db": -8,
-"scene": "v5",
-"T_abs": 48.32,
-"loud": -22.201210001188684,
 "red": 0.0,
-"vo_red": -6.623735219518552,
+"vo_red": -0.6190559198577983,
 "boost": 0.0
 },
 {
@@ -3620,27 +2398,7 @@
 "scene": "s5_library_smooth",
 "T_abs": 48.4,
 "loud": -35.533013333923655,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "power_down",
-"gain_db": -8,
-"scene": "v5",
-"T_abs": 48.4,
-"loud": -19.865571395253212,
 "red": 0.0,
-"vo_red": -0.8574314991251564,
-"boost": 0.0
-},
-{
-"sound": "spotlight_on",
-"gain_db": -10,
-"scene": "v5",
-"T_abs": 48.5,
-"loud": -25.032404575165273,
-"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3660,7 +2418,7 @@
 "scene": "host",
 "T_abs": 48.8,
 "loud": -32.70927251282369,
-"red": -10.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3670,8 +2428,8 @@
 "scene": "host",
 "T_abs": 48.8,
 "loud": -34.542971161030515,
-"red": -10.0,
-"vo_red": 0.0,
+"red": 0.0,
+"vo_red": -4.051446479017411,
 "boost": 0.0
 },
 {
@@ -3680,7 +2438,7 @@
 "scene": "fx",
 "T_abs": 48.8,
 "loud": -26.232938661404933,
-"red": -5.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3690,7 +2448,7 @@
 "scene": "host",
 "T_abs": 48.9,
 "loud": -39.09555482851002,
-"red": -10.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3720,7 +2478,27 @@
 "scene": "host",
 "T_abs": 50.2,
 "loud": -24.67926520817937,
-"red": -10.0,
+"red": -5.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "impact_boom_villain",
+"gain_db": -4,
+"scene": "s6_impact",
+"T_abs": 50.51,
+"loud": -20.708133613546796,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 2.0
+},
+{
+"sound": "glitch_burst",
+"gain_db": -10,
+"scene": "s6_impact",
+"T_abs": 50.51,
+"loud": -24.965729485131643,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3745,132 +2523,62 @@
 "boost": 5.0
 },
 {
-"sound": "flash_boom",
+"sound": "gold_slam_ain",
 "gain_db": -4,
-"scene": "v6",
-"T_abs": 50.519999999999996,
-"loud": -17.384157499256247,
+"scene": "s6_impact",
+"T_abs": 50.555,
+"loud": -20.785284461597005,
 "red": 0.0,
 "vo_red": 0.0,
-"boost": 2.0
-},
-{
-"sound": "shockwave_ring",
-"gain_db": -10,
-"scene": "v6",
-"T_abs": 50.519999999999996,
-"loud": -26.499288547145778,
-"red": -7.5,
-"vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "ice_crack_lines",
+"sound": "ice_crack_rise",
 "gain_db": -12,
-"scene": "v6",
-"T_abs": 50.56,
-"loud": -37.71927107276283,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glitch_burst",
-"gain_db": -14,
-"scene": "v6",
-"T_abs": 50.58,
-"loud": -28.965729485131643,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "headline_slam",
-"gain_db": -5,
-"scene": "v6",
-"T_abs": 50.61,
-"loud": -23.44362214383792,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "ice_crack_lines",
-"gain_db": -10,
-"scene": "v6",
-"T_abs": 50.7,
-"loud": -35.71927107276283,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "anticipation_suck",
-"gain_db": -12,
-"scene": "v6",
+"scene": "s6_impact",
 "T_abs": 50.8,
-"loud": -40.62125837008327,
+"loud": -32.83603817893842,
 "red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "impact_boom",
-"gain_db": -2,
-"scene": "v6",
-"T_abs": 50.89,
-"loud": -16.676546615255628,
-"red": 0.0,
-"vo_red": -10.0,
-"boost": 0.0
-},
-{
-"sound": "glass_shatter",
-"gain_db": -4,
-"scene": "v6",
-"T_abs": 50.89,
-"loud": -22.963965376734706,
-"red": -5.0,
+"sound": "gold_slam_tkiyot",
+"gain_db": -3,
+"scene": "s6_impact",
+"T_abs": 50.945,
+"loud": -25.328869342458304,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "shockwave_ring",
-"gain_db": -8,
-"scene": "v6",
-"T_abs": 50.92,
-"loud": -24.499288547145778,
+"sound": "ice_shatter_big",
+"gain_db": -6,
+"scene": "s6_impact",
+"T_abs": 50.959999999999994,
+"loud": -25.920693217684388,
 "red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "sparkle_shower",
+"sound": "gold_shimmer_hold",
 "gain_db": -14,
-"scene": "v6",
-"T_abs": 51.0,
-"loud": -28.996383028252158,
+"scene": "s6_impact",
+"T_abs": 51.43,
+"loud": -30.413731374447217,
 "red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "foil_shimmer",
-"gain_db": -16,
-"scene": "v6",
-"T_abs": 51.25,
-"loud": -34.1530245745826,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "whoosh_fast_push_in",
-"gain_db": -8,
-"scene": "v6",
-"T_abs": 51.34,
-"loud": -25.980816486570795,
-"red": -10.0,
+"sound": "dot_slam_impact",
+"gain_db": -2,
+"scene": "s6_impact",
+"T_abs": 51.935,
+"loud": -16.827937966560402,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -3880,166 +2588,86 @@
 "scene": "fx",
 "T_abs": 51.95,
 "loud": -20.86525203864394,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "dot_slam",
-"gain_db": -3,
-"scene": "v6",
-"T_abs": 51.95,
-"loud": -19.532616980880842,
 "red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "shockwave_whoosh",
-"gain_db": -8,
-"scene": "v6",
-"T_abs": 51.97,
-"loud": -24.10319538045686,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "settle_thud",
+"sound": "gold_sparkle_rain",
 "gain_db": -14,
-"scene": "v6",
-"T_abs": 52.019999999999996,
-"loud": -25.727849295717622,
+"scene": "s6_impact",
+"T_abs": 52.0,
+"loud": -30.981257191839866,
 "red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "foil_shimmer",
-"gain_db": -18,
-"scene": "v6",
-"T_abs": 52.25,
-"loud": -36.1530245745826,
-"red": -10.0,
+"sound": "whoosh_wipe",
+"gain_db": -8,
+"scene": "s6_impact",
+"T_abs": 52.54,
+"loud": -26.045138686714456,
+"red": 0.0,
 "vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "crowd_rumble_low",
+"gain_db": -12,
+"scene": "s6_impact",
+"T_abs": 52.599999999999994,
+"loud": -32.62686547595381,
+"red": -5.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "heartbeat_dokun",
+"gain_db": -8,
+"scene": "s6_impact",
+"T_abs": 52.94,
+"loud": -24.312299595160805,
+"red": 0.0,
+"vo_red": -7.252091889706792,
+"boost": 0.0
+},
+{
+"sound": "heartbeat_dokun",
+"gain_db": -8,
+"scene": "s6_impact",
+"T_abs": 53.099999999999994,
+"loud": -24.312299595160805,
+"red": 0.0,
+"vo_red": -9.995676191593981,
 "boost": 0.0
 },
 {
 "sound": "whip_zoom",
 "gain_db": -6,
-"scene": "v6",
-"T_abs": 52.4,
+"scene": "s6_impact",
+"T_abs": 53.355,
 "loud": -23.435239325133264,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "low_swoosh_rise",
-"gain_db": -10,
-"scene": "v6",
-"T_abs": 52.45,
-"loud": -24.091687441645384,
-"red": -5.0,
-"vo_red": -6.393766277372948,
-"boost": 0.0
-},
-{
-"sound": "white_out_swell",
-"gain_db": -8,
-"scene": "v6",
-"T_abs": 52.519999999999996,
-"loud": -25.017083930166596,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "stadium_crowd_swell",
-"gain_db": -10,
-"scene": "v6",
-"T_abs": 52.55,
-"loud": -23.295580833040468,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "crowd_tense_bed",
-"gain_db": -16,
-"scene": "v6",
-"T_abs": 52.599999999999994,
-"loud": -32.70927251282369,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "sprint_footsteps",
-"gain_db": -16,
-"scene": "v6",
-"T_abs": 52.75,
-"loud": -37.753309381513674,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "sprint_footsteps",
-"gain_db": -16,
-"scene": "v6",
-"T_abs": 53.08,
-"loud": -37.753309381513674,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "power_charge",
-"gain_db": -14,
-"scene": "v6",
-"T_abs": 53.26,
-"loud": -39.90612507891785,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "orbit_whoosh",
-"gain_db": -12,
-"scene": "v6",
-"T_abs": 53.379999999999995,
-"loud": -29.84716289683721,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "boot_kick",
+"sound": "kick_impact",
 "gain_db": -2,
-"scene": "v6",
+"scene": "s6_impact",
 "T_abs": 53.45,
-"loud": -20.486200163896253,
+"loud": -26.78889382069267,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "ball_whoosh_trail",
+"sound": "ball_whoosh_slowmo",
 "gain_db": -8,
-"scene": "v6",
-"T_abs": 53.459999999999994,
-"loud": -28.365143004525848,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "spinner_ghost_appear",
-"gain_db": -12,
-"scene": "v6",
-"T_abs": 53.67,
-"loud": -24.75375378719334,
+"scene": "s6_impact",
+"T_abs": 53.5,
+"loud": -26.49777399532496,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -4050,7 +2678,17 @@
 "scene": "fx",
 "T_abs": 53.73,
 "loud": -26.430968551429224,
-"red": -5.0,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "ghost_glitch",
+"gain_db": -10,
+"scene": "s6_impact",
+"T_abs": 53.849999999999994,
+"loud": -26.41019166437681,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4060,37 +2698,7 @@
 "scene": "fx",
 "T_abs": 53.849999999999994,
 "loud": -26.28982106365369,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "spinner_smash",
-"gain_db": -4,
-"scene": "v6",
-"T_abs": 53.86,
-"loud": -26.773138683677352,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glass_shatter",
-"gain_db": -12,
-"scene": "v6",
-"T_abs": 53.86,
-"loud": -30.963965376734706,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "silence_cut",
-"gain_db": -14,
-"scene": "v6",
-"T_abs": 53.9,
-"loud": -134.0,
-"red": -10.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4100,27 +2708,27 @@
 "scene": "fx",
 "T_abs": 53.91,
 "loud": -25.409743966144084,
-"red": -2.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
 {
-"sound": "time_resume_whoosh",
-"gain_db": -12,
-"scene": "v6",
-"T_abs": 53.94,
-"loud": -30.070749902762977,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "keeper_dive",
+"sound": "ice_freeze_creak",
 "gain_db": -10,
-"scene": "v6",
-"T_abs": 54.0,
-"loud": -31.108159481280943,
+"scene": "s6_impact",
+"T_abs": 54.019999999999996,
+"loud": -27.867951777850717,
 "red": -10.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "ice_smash",
+"gain_db": -3,
+"scene": "s6_impact",
+"T_abs": 54.2,
+"loud": -19.763625606663773,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4135,62 +2743,62 @@
 "boost": 0.0
 },
 {
+"sound": "whoosh_pan",
+"gain_db": -8,
+"scene": "s6_impact",
+"T_abs": 54.3,
+"loud": -28.308015559576575,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "net_ripple_thud",
+"gain_db": -3,
+"scene": "s6_impact",
+"T_abs": 54.68,
+"loud": -16.69338760425567,
+"red": 0.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "crowd_roar_huge",
+"gain_db": -2,
+"scene": "s6_impact",
+"T_abs": 54.68,
+"loud": -16.236423781952258,
+"red": 0.0,
+"vo_red": -6.271619124276285,
+"boost": 0.0
+},
+{
+"sound": "confetti_pop",
+"gain_db": -6,
+"scene": "s6_impact",
+"T_abs": 54.68,
+"loud": -24.153449767189336,
+"red": -7.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "air_horn_goal",
+"gain_db": -8,
+"scene": "s6_impact",
+"T_abs": 54.68,
+"loud": -23.911025606439097,
+"red": -5.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
 "sound": "beat_hit_zoom",
 "gain_db": -6,
 "scene": "fx",
 "T_abs": 54.68,
 "loud": -20.86525203864394,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "net_swish",
-"gain_db": -2,
-"scene": "v6",
-"T_abs": 54.68,
-"loud": -19.381998691950212,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "goal_flash_hit",
-"gain_db": -6,
-"scene": "v6",
-"T_abs": 54.68,
-"loud": -21.787272048722443,
 "red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "goal_crowd_roar",
-"gain_db": -3,
-"scene": "v6",
-"T_abs": 54.69,
-"loud": -13.688681792031456,
-"red": 0.0,
-"vo_red": -9.149424630345083,
-"boost": 0.0
-},
-{
-"sound": "confetti_cannon",
-"gain_db": -8,
-"scene": "v6",
-"T_abs": 54.7,
-"loud": -26.153449767189336,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "score_bug_pop",
-"gain_db": -14,
-"scene": "v6",
-"T_abs": 54.72,
-"loud": -25.984428361055425,
-"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4220,27 +2828,17 @@
 "scene": "fx",
 "T_abs": 54.91,
 "loud": -25.409743966144084,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "confetti_burst",
-"gain_db": -14,
-"scene": "v6",
-"T_abs": 54.95,
-"loud": -32.153449767189336,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "pullback_whoosh",
-"gain_db": -8,
-"scene": "v6",
-"T_abs": 55.15,
-"loud": -29.695340930836878,
 "red": -7.5,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "whoosh_pan",
+"gain_db": -8,
+"scene": "s6_impact",
+"T_abs": 54.95,
+"loud": -28.308015559576575,
+"red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4250,6 +2848,26 @@
 "scene": "fx",
 "T_abs": 55.3,
 "loud": -30.660693048865042,
+"red": -10.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "crowd_chant_celebration",
+"gain_db": -8,
+"scene": "s6_impact",
+"T_abs": 55.4,
+"loud": -22.653467527056232,
+"red": -5.0,
+"vo_red": 0.0,
+"boost": 0.0
+},
+{
+"sound": "confetti_shimmer",
+"gain_db": -14,
+"scene": "s6_impact",
+"T_abs": 55.6,
+"loud": -29.29306026921395,
 "red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -4265,22 +2883,12 @@
 "boost": 0.0
 },
 {
-"sound": "whip_out_right",
-"gain_db": -6,
-"scene": "v6",
-"T_abs": 56.5,
-"loud": -24.32891236840194,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "word_pop",
 "gain_db": -21,
 "scene": "host",
 "T_abs": 56.519999999999996,
 "loud": -34.542971161030515,
-"red": -2.5,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4570,16 +3178,6 @@
 "scene": "s1_logo_end",
 "T_abs": 63.28,
 "loud": -23.897460198836285,
-"red": -2.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "flash_boom",
-"gain_db": -8,
-"scene": "v1",
-"T_abs": 63.28,
-"loud": -21.384157499256247,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
@@ -4595,32 +3193,12 @@
 "boost": 0.0
 },
 {
-"sound": "shockwave_ring",
-"gain_db": -8,
-"scene": "v1",
-"T_abs": 63.3,
-"loud": -24.499288547145778,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "logo_slam",
-"gain_db": -7,
-"scene": "v1",
-"T_abs": 63.32,
-"loud": -22.424609556407525,
-"red": 0.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
 "sound": "anime_impact_boom",
 "gain_db": -8,
 "scene": "s1_logo_end",
 "T_abs": 63.379999999999995,
 "loud": -27.443422319976815,
-"red": -10.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4630,7 +3208,7 @@
 "scene": "s1_logo_end",
 "T_abs": 63.44,
 "loud": -30.2973753453887,
-"red": -10.0,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4640,17 +3218,7 @@
 "scene": "s1_logo_end",
 "T_abs": 63.449999999999996,
 "loud": -31.457278472220636,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "sparkle_shower",
-"gain_db": -14,
-"scene": "v1",
-"T_abs": 63.5,
-"loud": -28.996383028252158,
-"red": -10.0,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4660,7 +3228,7 @@
 "scene": "s1_logo_end",
 "T_abs": 63.6,
 "loud": -36.888873339873555,
-"red": -10.0,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4670,27 +3238,7 @@
 "scene": "fx",
 "T_abs": 63.65,
 "loud": -26.28982106365369,
-"red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "word_pop",
-"gain_db": -12,
-"scene": "v1",
-"T_abs": 63.68,
-"loud": -25.542971161030515,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glint_sweep",
-"gain_db": -11,
-"scene": "v1",
-"T_abs": 63.75,
-"loud": -28.482026209618184,
-"red": -10.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4700,7 +3248,7 @@
 "scene": "s1_logo_end",
 "T_abs": 63.8,
 "loud": -30.0291338439076,
-"red": -10.0,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4710,17 +3258,7 @@
 "scene": "s1_logo_end",
 "T_abs": 63.879999999999995,
 "loud": -36.16731006564141,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "word_pop",
-"gain_db": -14,
-"scene": "v1",
-"T_abs": 63.949999999999996,
-"loud": -27.542971161030515,
-"red": -10.0,
+"red": -7.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4730,7 +3268,7 @@
 "scene": "s1_logo_end",
 "T_abs": 63.98,
 "loud": -24.439766032224792,
-"red": -5.0,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4740,17 +3278,7 @@
 "scene": "s1_logo_end",
 "T_abs": 64.0,
 "loud": -29.211065784067042,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "logo_shine",
-"gain_db": -12,
-"scene": "v1",
-"T_abs": 64.0,
-"loud": -30.037302412097365,
-"red": -10.0,
+"red": -5.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4760,27 +3288,7 @@
 "scene": "s1_logo_end",
 "T_abs": 64.08,
 "loud": -30.717168146855727,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "button_ripple_chime",
-"gain_db": -14,
-"scene": "v1",
-"T_abs": 64.15,
-"loud": -27.532494008563134,
 "red": -7.5,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "silk_pad_swell",
-"gain_db": -14,
-"scene": "v1",
-"T_abs": 64.19999999999999,
-"loud": -31.320876811770386,
-"red": -10.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4790,7 +3298,7 @@
 "scene": "s1_logo_end",
 "T_abs": 64.3,
 "loud": -28.55786464287322,
-"red": -7.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4800,7 +3308,7 @@
 "scene": "s1_logo_end",
 "T_abs": 64.58,
 "loud": -23.914179751764074,
-"red": -2.5,
+"red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4810,17 +3318,7 @@
 "scene": "s1_logo_end",
 "T_abs": 64.8,
 "loud": -35.93058163695907,
-"red": -10.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "glint_sweep",
-"gain_db": -13,
-"scene": "v1",
-"T_abs": 65.15,
-"loud": -30.482026209618184,
-"red": -5.0,
+"red": -2.5,
 "vo_red": 0.0,
 "boost": 0.0
 },
@@ -4830,16 +3328,6 @@
 "scene": "s1_logo_end",
 "T_abs": 65.32,
 "loud": -38.16731006564141,
-"red": -5.0,
-"vo_red": 0.0,
-"boost": 0.0
-},
-{
-"sound": "final_sparkle_tail",
-"gain_db": -14,
-"scene": "v1",
-"T_abs": 65.35,
-"loud": -27.8085342802164,
 "red": 0.0,
 "vo_red": 0.0,
 "boost": 0.0
