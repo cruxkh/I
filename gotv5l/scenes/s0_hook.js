@@ -190,7 +190,7 @@
   };
   const logo = (ctx, t) => {
     const T0 = 3.58; if (t < T0) return;
-    ctx.save(); ctx.translate(1200, 410); ctx.scale(1.08, 1.08); ctx.translate(-540, -800);
+    ctx.save(); ctx.translate(1200, 430); ctx.scale(1.08, 1.08); ctx.translate(-540, -800);
     // backing sheets
     const pb = CL.pop(t, T0, .3), sb = 1 + .012 * Math.sin(Math.max(0, t - 4.3) * 9) * (t > 4.6 ? 0 : 1);
     ctx.save(); ctx.translate(LX, LY + 10); ctx.scale(pb * sb, pb * sb); ctx.rotate(.045);
@@ -205,7 +205,7 @@
     // underline scribble under logo, marker arrow + "כאן", check mark
     const pu = clamp((t - 3.92) / .3); if (pu > 0) CL.underline(ctx, 150, 930, 1140, pu, { color: C.red, lw: 16, seed: 4 });
     const chk = clamp((t - 4.28) / .25);
-    if (chk > 0) mk(ctx, lerpPts([[800, 430], [860, 520], [1010, 300]], 10), chk, C.green, 44);
+    if (chk > 0) mk(ctx, lerpPts([[900, 520], [960, 590], [1090, 440]], 10), chk, C.green, 44);
     ctx.restore();
     const pa = clamp((t - 3.92) / .3); if (pa > 0) CL.arrow(ctx, 1640, 880, 1560, 790, pa, { color: C.ink, lw: 12, bend: -80 });
     const pc = CL.pop(t, 4.0, .3); if (pc) { const j = CL.j(t, 95, 3); CL.chip(ctx, 'כאן!', 1750 + j[0], 890 + j[1], { size: 80, fill: C.red, ink: '#fff', rot: -.12 + j[2], scale: pc, seed: 9 }); }

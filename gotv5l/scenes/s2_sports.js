@@ -202,15 +202,15 @@
     // ---- hero: Sport 5 with starburst
     if (hero) {
       const hp = CL.pop(t, HERO_T, .3), hs = CL.shake(t, HERO_T, .5, 12);
-      const cy = t >= CHAR_T ? 590 : 700, mv = t >= CHAR_T ? Math.min(1, Math.floor((t - CHAR_T) / (1 / 12) + 1e-6) / 3) : 0, cyy = lerp(540, 520, mv), hx = lerp(700, 560, mv);
+      const cy = t >= CHAR_T ? 590 : 700, mv = t >= CHAR_T ? Math.min(1, Math.floor((t - CHAR_T) / (1 / 12) + 1e-6) / 3) : 0, cyy = lerp(540, 520, mv), hx = lerp(620, 540, mv);
       const bs = hp;
       ctx.save(); ctx.translate(hs[0], hs[1]);
       const bj = CL.j(t, 40, 3);
       starburst(ctx, t, hx + bj[0], cyy + bj[1], 500, bs);
       const img = CL.logoImg('sport5'), lj = CL.j(t, 41, 2.5);
-      if (img) { ctx.save(); ctx.translate(hx + lj[0], cyy + lj[1]); ctx.rotate(-.05 + lj[2]); ctx.scale(hp * .78, hp * .78); ctx.fillStyle='rgba(30,15,0,.35)'; ctx.beginPath(); ctx.arc(16,22,372,0,TAU); ctx.fill(); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(0,0,372,0,TAU); ctx.fill(); ctx.fillStyle=C.navy; ctx.beginPath(); ctx.arc(0,0,350,0,TAU); ctx.fill(); CL.halftone(ctx,-350,-350,700,700,C.blue,26,.5,{alpha:.8,fade:'radial'}); ctx.save(); ctx.beginPath(); ctx.arc(0,0,350,0,TAU); ctx.clip(); ctx.restore(); CL.sticker(ctx, img, 0, 6, 560, 540, { border: 10, shadow: 0, color: C.navy }); ctx.restore(); }
+      if (img) { ctx.save(); ctx.translate(hx + lj[0], cyy + lj[1]); ctx.rotate(-.05 + lj[2]); ctx.scale(hp * .92, hp * .92); ctx.fillStyle='rgba(30,15,0,.35)'; ctx.beginPath(); ctx.arc(16,22,372,0,TAU); ctx.fill(); ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(0,0,372,0,TAU); ctx.fill(); ctx.fillStyle=C.navy; ctx.beginPath(); ctx.arc(0,0,350,0,TAU); ctx.fill(); CL.halftone(ctx,-350,-350,700,700,C.blue,26,.5,{alpha:.8,fade:'radial'}); ctx.save(); ctx.beginPath(); ctx.arc(0,0,350,0,TAU); ctx.clip(); ctx.restore(); CL.sticker(ctx, img, 0, 6, 560, 540, { border: 10, shadow: 0, color: C.navy }); ctx.restore(); }
       // marker circle around the logo
-      const cp = clamp((t - HERO_T - .18) / .3); if (cp > 0) { ctx.save(); ctx.translate(hx, cyy); CL.circle(ctx, 0, 0, 340, 330, Math.floor(cp * 12) / 12, { color: C.red, lw: 16, seed: 2 }); ctx.restore(); }
+      const cp = clamp((t - HERO_T - .18) / .3); if (cp > 0) { ctx.save(); ctx.translate(hx, cyy); CL.circle(ctx, 0, 0, 400, 390, Math.floor(cp * 12) / 12, { color: C.red, lw: 16, seed: 2 }); ctx.restore(); }
       // sparks on pop
       if (t - HERO_T < .5) CL.sparks(ctx, hx, cyy, 380, 470, 18, t, { color: C.ink, lw: 10 });
       ctx.restore();
@@ -219,9 +219,9 @@
     // ---- Charlton slam
     if (t >= CHAR_T - .01) {
       const u = (t - CHAR_T) / .25, k = Math.floor(clamp(u) * 4), sc = u >= 1 ? 1 : [2.6, 1.6, .9, 1.05][k], cs = CL.shake(t, CHAR_T + .06, .5, 20), j = CL.j(t, 55, 3);
-      ctx.save(); ctx.translate(1350 + cs[0] + j[0], 560 + cs[1] + j[1]); ctx.rotate(-.06 + j[2]); ctx.scale(sc * .88, sc * .88); charlton(ctx, t); ctx.restore();
+      ctx.save(); ctx.translate(1390 + cs[0] + j[0], 560 + cs[1] + j[1]); ctx.rotate(-.06 + j[2]); ctx.scale(sc * 1.0, sc * 1.0); charlton(ctx, t); ctx.restore();
       // confetti scraps from the impact
-      const ct = t - CHAR_T; if (ct > 0.05 && ct < 1.3) { for (let i = 0; i < 26; i++) { const a = hash(i * 3.1) * TAU, sp = 300 + hash(i * 7.7) * 700, tt = Math.floor(ct * 12) / 12; const x = 1350 + Math.cos(a) * sp * tt * 1.2, y = 560 + Math.sin(a) * sp * tt * .9 + 900 * tt * tt; ctx.save(); ctx.translate(x, y); ctx.rotate(hash(i) * 6 + tt * 8 * (hash(i + 3) - .5)); ctx.fillStyle = [C.yellow, C.blue, C.red, '#fff', C.green][i % 5]; ctx.strokeStyle = C.ink; ctx.lineWidth = 3; const w = 22 + hash(i * 2) * 26; ctx.fillRect(-w / 2, -8, w, 16); ctx.strokeRect(-w / 2, -8, w, 16); ctx.restore(); } }
+      const ct = t - CHAR_T; if (ct > 0.05 && ct < 1.3) { for (let i = 0; i < 26; i++) { const a = hash(i * 3.1) * TAU, sp = 300 + hash(i * 7.7) * 700, tt = Math.floor(ct * 12) / 12; const x = 1390 + Math.cos(a) * sp * tt * 1.2, y = 560 + Math.sin(a) * sp * tt * .9 + 900 * tt * tt; ctx.save(); ctx.translate(x, y); ctx.rotate(hash(i) * 6 + tt * 8 * (hash(i + 3) - .5)); ctx.fillStyle = [C.yellow, C.blue, C.red, '#fff', C.green][i % 5]; ctx.strokeStyle = C.ink; ctx.lineWidth = 3; const w = 22 + hash(i * 2) * 26; ctx.fillRect(-w / 2, -8, w, 16); ctx.strokeRect(-w / 2, -8, w, 16); ctx.restore(); } }
     }
     // small doodles: marker arrows and stars around
     if (!hero) { const p = clamp((t - 9.95) / .3); if (p > 0) { ctx.save(); CL.arrow(ctx, 40, 760, 30, 860, Math.floor(p * 8) / 8, { color: C.yellow, lw: 12, bend: 40 }); ctx.restore(); } }
