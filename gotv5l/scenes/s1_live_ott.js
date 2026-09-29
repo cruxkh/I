@@ -1,7 +1,7 @@
 // S1: LIVE + STREAMERS (4.8 to 9.4). Israeli live TV collage, then Netflix / Disney+ / Apple TV logo slaps.
 (() => {
   const { clamp, lerp, inv, ease, hash, rng } = A;
-  const C = CL.C, W = 1080, H = 1920;
+  const C = CL.C, W = CL.W, H = CL.H;
   const tq = t => CL.q(t + 1 / 24, 12);                       // stepped clock, half frame early so pops land on the word
 
   // ---- torn-edge reveal region. mode 'up' (sheet from the bottom) or 'left' (sheet from the left)
@@ -10,6 +10,10 @@
     if (mode === 'up') {
       ctx.moveTo(-60, H + 60);
       for (let x = -60; x <= W + 60; x += 30) ctx.lineTo(x, pos + (hash(Math.floor(x / 30) + seed) - .5) * 40);
+      ctx.lineTo(W + 60, H + 60);
+    } else if (mode === 'right') {
+      ctx.moveTo(W + 60, -60);
+      for (let y = -60; y <= H + 60; y += 30) ctx.lineTo(pos + (hash(Math.floor(y / 30) + seed) - .5) * 40, y);
       ctx.lineTo(W + 60, H + 60);
     } else {
       ctx.moveTo(-60, -60);
@@ -20,7 +24,7 @@
   };
   // draws strip + shadow, then clips to the region. caller must ctx.save() before
   const revealClip = (ctx, mode, pos, seed) => {
-    const d = mode === 'up' ? -1 : 1;
+    const d = (mode === 'up' || mode === 'right') ? -1 : 1;
     ctx.fillStyle = 'rgba(40,20,0,.3)'; edgePath(ctx, mode, pos + d * 30, seed + 9); ctx.fill();
     ctx.fillStyle = C.white; edgePath(ctx, mode, pos + d * 14, seed + 3); ctx.fill();
     edgePath(ctx, mode, pos, seed); ctx.clip();
@@ -88,11 +92,11 @@
   };
 
   const CH = [
-    { key: 'kan11', t0: 5.16, x: 235, y: 335, r: -.09, lw: 340, bg: '#0B1F5C', from: [-300, 300] },
-    { key: 'keshet12', t0: 5.32, x: 835, y: 345, r: .08, lw: 250, bg: C.white, from: [1400, 250] },
-    { key: 'reshet13', t0: 5.5, x: 165, y: 1140, r: .07, lw: 260, bg: C.white, crop: [107, 99, 298, 319], from: [-300, 1500] },
-    { key: 'ch14', t0: 5.68, x: 905, y: 1130, r: -.07, lw: 280, bg: C.cream, from: [1400, 1500] },
-    { key: 'i24', t0: 5.88, x: 540, y: 1290, r: .03, lw: 340, bg: C.ink, from: [540, 2200] },
+    { key: 'kan11', t0: 5.16, x: 230, y: 175, r: -.09, lw: 340, bg: '#0B1F5C', from: [-400, 100] },
+    { key: 'keshet12', t0: 5.32, x: 1010, y: 165, r: .08, lw: 250, bg: C.white, from: [1500, -200] },
+    { key: 'reshet13', t0: 5.5, x: 190, y: 640, r: .07, lw: 220, bg: C.white, crop: [107, 99, 298, 319], from: [-400, 1200] },
+    { key: 'ch14', t0: 5.68, x: 1040, y: 650, r: -.07, lw: 230, bg: C.cream, from: [1500, 1200] },
+    { key: 'i24', t0: 5.88, x: 1330, y: 500, r: .03, lw: 340, bg: C.ink, from: [2300, 500] },
   ];
 
   // ---------------------------------------------------------------- phase A: LIVE
@@ -102,26 +106,26 @@
     const mp = CL.pop(tq(t), 4.95, .3);
     if (false && mp) { const j = CL.j(t, 1, 4); drawMap(ctx, 400 + j[0], 830 + j[1], 300 * mp, -.08 + j[2], t); }
     // flag on 'בישראל'
-    const f = fly(t, 5.86, .24, 540, -300, 540, 215, -.5, .04);
-    if (f) flag(ctx, f.x, f.y, 400, f.rot, 4);
+    const f = fly(t, 5.86, .24, 2300, 200, 1330, 190, -.5, .04);
+    if (f) flag(ctx, f.x, f.y, 380, f.rot, 4);
     // TV drop
-    const tv = fly(t, 5.0, .3, 540, -600, 540, 830, .12, -.025);
+    const tv = fly(t, 5.0, .3, 640, -600, 640, 450, .12, -.025);
     if (tv) {
       ctx.save(); ctx.translate(tv.x, tv.y); ctx.rotate(tv.rot);
       // antenna
       ctx.strokeStyle = C.ink; ctx.lineWidth = 14; ctx.lineCap = 'round';
       const wob = Math.sin(CL.q(t, 12) * 2) * 4;
-      ctx.beginPath(); ctx.moveTo(-40, -290); ctx.lineTo(-170 + wob, -430); ctx.moveTo(40, -290); ctx.lineTo(150 - wob, -440); ctx.stroke();
-      ctx.fillStyle = C.red; for (const p of [[-170 + wob, -430], [150 - wob, -440]]) { ctx.beginPath(); ctx.arc(p[0], p[1], 18, 0, A.TAU); ctx.fill(); ctx.stroke(); }
-      CL.tv(ctx, 0, 0, 740, 580, { body: C.orange, draw: screen(t), chin: 46 });
+      ctx.beginPath(); ctx.moveTo(-40, -250); ctx.lineTo(-150 + wob, -340); ctx.moveTo(40, -250); ctx.lineTo(130 - wob, -345); ctx.stroke();
+      ctx.fillStyle = C.red; for (const p of [[-150 + wob, -340], [130 - wob, -345]]) { ctx.beginPath(); ctx.arc(p[0], p[1], 18, 0, A.TAU); ctx.fill(); ctx.stroke(); }
+      CL.tv(ctx, 0, 0, 860, 520, { body: C.orange, draw: screen(t), chin: 40 });
       // knobs
-      ctx.fillStyle = C.yellow; ctx.lineWidth = 6; for (const x of [250, 300]) { ctx.beginPath(); ctx.arc(x, 250, 20, 0, A.TAU); ctx.fill(); ctx.stroke(); }
+      ctx.fillStyle = C.yellow; ctx.lineWidth = 6; for (const x of [330, 385]) { ctx.beginPath(); ctx.arc(x, 218, 18, 0, A.TAU); ctx.fill(); ctx.stroke(); }
       ctx.restore();
       // LIVE tag: slaps on 5.06, blinks at 12 fps (3 frame period)
       const lt = tq(t);
       if (lt >= 5.05) {
         const sc = CL.pop(lt, 5.05, .3) || 1, on = Math.floor(lt * 12 / 3) % 2 === 0, j = CL.j(t, 5, 3);
-        ctx.save(); ctx.translate(255 + j[0], 555 + j[1]); ctx.rotate(-.1 + j[2]); ctx.scale(sc, sc);
+        ctx.save(); ctx.translate(330 + j[0], 250 + j[1]); ctx.rotate(-.1 + j[2]); ctx.scale(sc, sc);
         CL.scrap(ctx, 0, 0, 290, 118, { fill: on ? C.red : '#B3160E', seed: 8, rough: 4 });
         ctx.fillStyle = C.white; ctx.beginPath(); ctx.arc(-92, 0, on ? 20 : 8, 0, A.TAU); ctx.fill();
         ctx.font = '900 76px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.fillText('LIVE', 30, 5);
@@ -137,7 +141,7 @@
       if (p.u >= 1 && tq(t) - c.t0 < .5) CL.sparks(ctx, p.x, p.y, 240, 300, 8, t, { lw: 7, color: C.yellow });
     }
     // marker: circle around the LIVE tag after it lands, arrow to screen
-    if (t > 5.4) CL.arrow(ctx, 120, 760, 190, 640, inv(5.4, 5.65, t), { color: C.yellow, lw: 10, bend: -40 });
+    if (t > 5.4) CL.arrow(ctx, 120, 480, 220, 330, inv(5.4, 5.65, t), { color: C.yellow, lw: 10, bend: -40 });
   };
 
   // ---------------------------------------------------------------- phase B/C
@@ -150,7 +154,7 @@
     const S = [2.6, 1.7, 1.0, .93, 1.05, 1.0][clamp(k, 0, 5)];
     const jn = CL.j(t, 21, 5);
     const moveU = inv(8.02, 8.22, q), E = ease.inOut(Math.floor(moveU * 3) / 3);          // stepped 3-frame slide up
-    const cx = lerp(540, 540, E), cy = lerp(800, 250, E), scl = lerp(1, .58, E), rot = lerp(-.05, -.06, E);
+    const cx = lerp(760, 300, E), cy = lerp(430, 220, E), scl = lerp(1.05, .5, E), rot = lerp(-.05, -.06, E);
     const sh = k < 2 ? 40 : 12;
     ctx.save(); ctx.translate(CL.shake(t, NFX_T + .03, .5, 20)[0], CL.shake(t, NFX_T + .03, .5, 20)[1]);
     ctx.translate(cx + (k > 5 ? jn[0] * .5 : 0), cy + (k > 5 ? jn[1] * .5 : 0)); ctx.rotate(rot + (k > 5 ? jn[2] : 0)); ctx.scale(S * scl, S * scl);
@@ -176,8 +180,8 @@
     // stamp-thump ring + dust
     if (q >= NFX_T && q < NFX_T + .35 && !(moveU > 0)) {
       const u = (q - NFX_T) / .35; ctx.save(); ctx.globalAlpha = 1 - u * .6;
-      CL.sparks(ctx, 540, 800, 520 + u * 120, 640 + u * 240, 16, t, { color: C.ink, lw: 12 });
-      CL.sparks(ctx, 540, 800, 500 + u * 100, 600 + u * 200, 12, t + .05, { color: C.yellow, lw: 8 }); ctx.restore();
+      CL.sparks(ctx, 760, 430, 500 + u * 120, 640 + u * 240, 16, t, { color: C.ink, lw: 12 });
+      CL.sparks(ctx, 760, 430, 480 + u * 100, 600 + u * 200, 12, t + .05, { color: C.yellow, lw: 8 }); ctx.restore();
     }
   };
 
@@ -199,10 +203,10 @@
   const DIS_T = 8.16, APL_T = 8.4;
   const drawDisney = (ctx, t) => {
     const q = tq(t); if (q < DIS_T - 1e-6) return;
-    const p = fly(t, DIS_T, .24, 1600, 640, 540, 700, .5, .03);
+    const p = fly(t, DIS_T, .24, 2500, 300, 940, 400, .5, .03);
     const j = CL.j(t, 40, 5), landed = p.u >= 1, k = Math.floor((q - DIS_T) * 12);
     const bump = [1.06, 1.12, .96, 1.03][clamp(k - 3, 0, 3)] || 1;
-    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); const sc = landed ? (k < 7 ? bump : 1) : 1; ctx.scale(sc, sc);
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); const sc = (landed ? (k < 7 ? bump : 1) : 1) * .88; ctx.scale(sc, sc);
     CL.scrap(ctx, 0, 0, 960, 520, { fill: C.blue, seed: 41, shadow: landed ? 12 : 34, rough: 8 });
     ctx.save(); CL.tornPath(ctx, -480, -260, 960, 520, { seed: 41, rough: 8 }); ctx.clip(); CL.halftone(ctx, -480, -260, 960, 520, '#5B84FF', 34, .5, { alpha: .6, fade: 'l' }); ctx.restore();
     ctx.save(); ctx.translate(0, 8); logoDraw(ctx, 'disney', 740); ctx.restore();
@@ -210,16 +214,16 @@
     const fp = inv(8.6, 8.85, q); if (fp > 0) { const f = 60 + 70 * ease.out(fp); ctx.fillStyle = 'rgba(0,0,40,.3)'; ctx.beginPath(); ctx.moveTo(-480 + f + 8, -260 + 10); ctx.lineTo(-480 + 8, -260 + f + 10); ctx.lineTo(-480 + f * .55 + 8, -260 + f * .55 + 10); ctx.fill(); ctx.fillStyle = C.cream; ctx.beginPath(); ctx.moveTo(-480 + f, -260); ctx.lineTo(-480, -260 + f); ctx.lineTo(-480 + f * .05, -260); ctx.closePath(); ctx.fill(); }
     CL.tape(ctx, -360, -262, -.3, 130, 42); CL.tape(ctx, 380, 262, -.35, 130, 42);
     ctx.restore();
-    if (landed) confetti(ctx, t, DIS_T + .2, 540, 700, 34, 77);
-    if (landed && q < DIS_T + .55) CL.sparks(ctx, 540, 700, 500, 620, 14, t, { color: C.yellow, lw: 9 });
+    if (landed) confetti(ctx, t, DIS_T + .2, 940, 400, 40, 77);
+    if (landed && q < DIS_T + .55) CL.sparks(ctx, 940, 400, 430, 540, 14, t, { color: C.yellow, lw: 9 });
   };
 
   const drawApple = (ctx, t) => {
     const q = tq(t); if (q < APL_T - 1e-6) return;
     const u = clamp((q - APL_T) / .3), flipX = Math.abs(Math.cos((1 - ease.outBack(u)) * Math.PI / 2 * 1.0)); // card flips up from the bottom
-    const rise = lerp(420, 0, ease.out(u)), landed = u >= 1, j = CL.j(t, 50, 5), back = u < .34;
-    ctx.save(); ctx.translate(540 + (landed ? j[0] * .5 : 0), 1170 + rise + (landed ? j[1] * .5 : 0)); ctx.rotate(lerp(.5, -.045, ease.out(u)) + (landed ? j[2] : 0));
-    ctx.scale(Math.max(.05, flipX), 1);
+    const rise = lerp(500, 0, ease.out(u)), landed = u >= 1, j = CL.j(t, 50, 5), back = u < .34;
+    ctx.save(); ctx.translate(480 + (landed ? j[0] * .5 : 0), 640 + rise + (landed ? j[1] * .5 : 0)); ctx.rotate(lerp(.5, -.045, ease.out(u)) + (landed ? j[2] : 0));
+    ctx.scale(Math.max(.05, flipX) * .68, .68);
     // white scrap, and a black paper patch on it (white logo needs dark ground)
     CL.scrap(ctx, 0, 0, 940, 420, { fill: C.white, seed: 51, shadow: landed ? 12 : 30, rough: 7, border: 0 });
     if (back) { ctx.fillStyle = '#e8dcc0'; CL.tornPath(ctx, -470, -210, 940, 420, { seed: 51, rough: 7 }); ctx.fill(); }
@@ -229,7 +233,7 @@
       CL.tape(ctx, -400, -200, -.4, 130, 42); CL.tape(ctx, 410, 200, -.3, 130, 42);
     }
     ctx.restore();
-    if (landed && q < APL_T + .5) CL.sparks(ctx, 540, 1170, 470, 560, 12, t, { color: C.white, lw: 8 });
+    if (landed && q < APL_T + .5) CL.sparks(ctx, 480, 640, 330, 400, 12, t, { color: C.white, lw: 8 });
   };
 
   A.scene({ name: 's1_live_ott', start: 4.8, end: 9.4, draw: (ctx, s) => {
@@ -237,7 +241,7 @@
     // entry: sheet of paper slides up from the bottom with a torn edge (4.8 to 5.05)
     const ew = inv(4.8, 5.03, q), entering = q < 5.05;
     ctx.save();
-    if (entering) revealClip(ctx, 'up', lerp(H + 60, -60, ease.out(Math.floor(ew * 6) / 6)), 11);
+    if (entering) revealClip(ctx, 'right', lerp(W + 60, -60, ease.out(Math.floor(ew * 6) / 6)), 11);
     // phase A / B switch: red paper wipes in from the left (6.55 to 6.85)
     if (q < 6.86) drawA(ctx, t);
     if (q >= 6.55) {

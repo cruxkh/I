@@ -1,6 +1,6 @@
 // SERIES: three hand-made paper drama posters (Turkish / Korean / anime) + avalanche of small posters. Window 11.8 to 15.9.
 (() => {
-  const { clamp, lerp, ease, hash } = A, C = CL.C, INK = C.ink, TAU = Math.PI * 2, W = 1080;
+  const { clamp, lerp, ease, hash } = A, C = CL.C, INK = C.ink, TAU = Math.PI * 2, W = 1920, H = 1080, PS = .97;
   const PW = 620, PH = 700, PAD = 50;
   // CUE 12.39 turkish poster slam | CUE 13.095 korean poster slam | CUE 13.99 anime poster flip | CUE 14.8 avalanche | CUE 15.11 second wave
 
@@ -118,9 +118,9 @@
   }
 
   const POSTERS = [
-    { key: 'tur', fn: turkish, t0: 12.39, home: [330, 490], rot: -.07, from: [-700, 300], rotFrom: -.9, seed: 1, ov: 'tur' },
-    { key: 'kor', fn: korean, t0: 13.095, home: [755, 770], rot: .06, from: [1500, 700], rotFrom: 1.0, seed: 2, ov: 'kor' },
-    { key: 'ani', fn: animeFace, t0: 13.99, home: [345, 1000], rot: -.035, from: [345, 2200], rotFrom: .3, seed: 3, ov: 'ani', flip: true },
+    { key: 'tur', fn: turkish, t0: 12.39, home: [560, 450], rot: -.05, from: [-700, 300], rotFrom: -.9, seed: 1, ov: 'tur' },
+    { key: 'kor', fn: korean, t0: 13.095, home: [1085, 480], rot: .04, from: [2700, 500], rotFrom: 1.0, seed: 2, ov: 'kor' },
+    { key: 'ani', fn: animeFace, t0: 13.99, home: [1600, 450], rot: -.03, from: [1570, 1700], rotFrom: .3, seed: 3, ov: 'ani', flip: true },
   ];
   const posterLayer = P => CL.layer('s3poster:' + P.key, PW + PAD * 2, PH + PAD * 2, (g, w, h) => { g.translate(w / 2, h / 2); CL.scrap(g, 0, 0, PW, PH, { fill: P.key === 'tur' ? '#A50F1E' : P.key === 'kor' ? '#FFC4DC' : '#8FD8FF', seed: 11 + P.seed * 5, rough: 5, shadow: 16, draw: P.fn }); });
 
@@ -151,7 +151,7 @@
     const x = lerp(P.from[0], P.home[0], e), y = lerp(P.from[1], P.home[1], e), rot = lerp(P.rotFrom, P.rot, e) + j[2];
     const sinceLand = q - land, squash = sinceLand < 0 ? 1 : [1.09, .96, 1.03, 1][Math.min(3, Math.floor(sinceLand * 12 + 1e-6))];
     const shk = CL.shake(t, land, .45, 10);
-    ctx.save(); ctx.translate(x + j[0] * .5 + shk[0], y + j[1] * .5 + shk[1]); ctx.rotate(rot); ctx.scale(squash, squash);
+    ctx.save(); ctx.translate(x + j[0] * .5 + shk[0], y + j[1] * .5 + shk[1]); ctx.rotate(rot); ctx.scale(squash * PS, squash * PS);
     let flipX = 1, back = false; if (P.flip && u < 1) { flipX = Math.cos((1 - e) * Math.PI); back = flipX < 0; flipX = Math.abs(flipX) < .06 ? .06 : Math.abs(flipX); }
     ctx.scale(flipX, 1);
     if (back) { CL.scrap(ctx, 0, 0, PW, PH, { fill: '#F4ECD8', seed: 30, shadow: 16 }); CL.halftone(ctx, -280, -320, 560, 640, C.red, 34, .5, { alpha: .3 }); }
@@ -162,7 +162,7 @@
       if (tp > 0) { CL.tape(ctx, -245, -348, -.55, 150, 46); CL.tape(ctx, 245, -348, .55, 150, 46); }
     }
     ctx.restore();
-    if (sinceLand >= 0 && sinceLand < .3) { ctx.save(); ctx.translate(P.home[0], P.home[1]); CL.sparks(ctx, 0, 0, 385, 385 + 70, 18, t, { lw: 9 }); ctx.restore(); }
+    if (sinceLand >= 0 && sinceLand < .3) { ctx.save(); ctx.translate(P.home[0], P.home[1]); CL.sparks(ctx, 0, 0, 420, 420 + 70, 18, t, { lw: 9 }); ctx.restore(); }
   }
 
   // ---------- avalanche of small posters
@@ -184,10 +184,10 @@
       g.fillStyle = 'rgba(20,20,20,.85)'; g.beginPath(); g.roundRect(-100, 96, 200, 22, 8); g.fill(); g.fillStyle = 'rgba(20,20,20,.55)'; g.beginPath(); g.roundRect(-70, 132, 140, 14, 7); g.fill();
     } });
   });
-  const N = 36, ITEMS = Array.from({ length: N }, (_, i) => {
-    const wave = i < 18 ? 0 : 1, side = hash(i * 6.7 + 2), tx = 90 + hash(i * 1.7 + .3) * 900, ty = 560 + Math.pow(hash(i * 2.9 + 1), .8) * 780;
-    return { i, v: i % 12, ts: (wave ? 15.11 + (i - 18) * .014 : 14.8 + i * .016) - .03, tx, ty, rot: (hash(i * 4.1) - .5) * .9, spin: (hash(i * 3.3) - .5) * 3, sc: .95 + hash(i * 5.3) * .5,
-      sx: side > .9 ? 1450 : side > .8 ? -350 : tx + (hash(i * 8.1) - .5) * 400, sy: side > .8 ? ty - 350 : -420 };
+  const N = 56, ITEMS = Array.from({ length: N }, (_, i) => {
+    const wave = i < 28 ? 0 : 1, side = hash(i * 6.7 + 2), tx = 80 + hash(i * 1.7 + .3) * 1760, ty = 300 + Math.pow(hash(i * 2.9 + 1), .9) * 560;
+    return { i, v: i % 12, ts: (wave ? 15.11 + (i - 28) * .009 : 14.8 + i * .01) - .03, tx, ty, rot: (hash(i * 4.1) - .5) * .9, spin: (hash(i * 3.3) - .5) * 3, sc: .7 + hash(i * 5.3) * .4,
+      sx: side > .9 ? 2300 : side > .8 ? -350 : tx + (hash(i * 8.1) - .5) * 400, sy: side > .8 ? ty - 350 : -420 };
   });
   function avalanche(ctx, t) {
     const q = CL.q(t, 24);
@@ -205,22 +205,22 @@
     const t = s.t, tr = clamp((t - 11.8) / .3);
     ctx.save();
     if (tr < 1) {   // torn paper wipe, right to left
-      const q = CL.q(t, 12), edge = W * (1 - ease.inOut(tr)) - 40, pts = [];
-      for (let y = -40; y <= 1960; y += 50) pts.push([edge + (hash(y * .1 + q * 7) - .5) * 70, y]);
-      const path = (dx, dy) => { ctx.beginPath(); ctx.moveTo(1200, -60); pts.forEach(p => ctx.lineTo(p[0] + dx, p[1] + dy)); ctx.lineTo(1200, 1980); ctx.closePath(); };
+      const q = CL.q(t, 12), edge = W * (1 - ease.inOut(tr)) + 40 * (1 - tr), pts = [];
+      for (let y = -40; y <= 1120; y += 50) pts.push([edge + (hash(y * .1 + q * 7) - .5) * 70, y]);
+      const path = (dx, dy) => { ctx.beginPath(); ctx.moveTo(W + 200, -60); pts.forEach(p => ctx.lineTo(p[0] + dx, p[1] + dy)); ctx.lineTo(W + 200, 1140); ctx.closePath(); };
       ctx.fillStyle = 'rgba(40,20,0,.4)'; path(-22, 8); ctx.fill(); ctx.fillStyle = C.white; path(-14, 0); ctx.fill();
       path(0, 0); ctx.clip();
     }
     CL.paper(ctx, 'kraft', { dots: '#FF7AB8', dotSize: 34, dotAlpha: .14 });
     // "סדרות" ransom chip on its word
     const cp = CL.pop(t, 11.99, .3), av = t < 14.8;
-    if (cp > 0 && av) { const j = CL.j(t, 9, 4); CL.chip(ctx, 'סדרות', 540 + j[0], 74 + j[1], { size: 82, rot: -.03 + j[2], scale: cp, fill: C.yellow, seed: 4 }); }
+    if (cp > 0 && av) { const j = CL.j(t, 9, 4); CL.chip(ctx, 'סדרות', 960 + j[0], 50 + j[1], { size: 66, rot: -.03 + j[2], scale: cp, fill: C.yellow, seed: 4 }); }
     for (const P of POSTERS) drawPoster(ctx, t, P);
     avalanche(ctx, t);
     // titles on the avalanche words
     const a = CL.pop(t, 14.77, .3), b = CL.pop(t, 15.08, .3);
-    if (a > 0) { const j = CL.j(t, 21, 4); CL.title(ctx, 'המון', 720 + j[0], 215 + j[1], { size: 210, rot: .06 + j[2], scale: a, fill: C.yellow }); }
-    if (b > 0) { const j = CL.j(t, 22, 4); CL.title(ctx, 'תוכן!', 360 + j[0], 430 + j[1], { size: 200, rot: -.07 + j[2], scale: b, fill: '#fff' }); }
+    if (a > 0) { const j = CL.j(t, 21, 4); CL.title(ctx, 'המון', 1420 + j[0], 200 + j[1], { size: 200, rot: .06 + j[2], scale: a, fill: C.yellow }); }
+    if (b > 0) { const j = CL.j(t, 22, 4); CL.title(ctx, 'תוכן!', 1000 + j[0], 330 + j[1], { size: 190, rot: -.07 + j[2], scale: b, fill: '#fff' }); }
     ctx.restore();
   } });
 })();
