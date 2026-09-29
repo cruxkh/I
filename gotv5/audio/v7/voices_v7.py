@@ -242,12 +242,12 @@ def main():
     ne = neden()
     sb, inh = sob(rng)
     sb = sb[:int(0.46 * SR)] * np.r_[np.ones(int(0.46 * SR) - 2400), np.linspace(1, 0, 2400)][:len(sb[:int(0.46 * SR)])]
-    put(sb, 14.49, -8, -0.1, room, 'sob syllables (tur, Kokoro if_sara re-performed with WORLD)')
-    put(ne, 14.965, -3.5, 0.0, room, 'Neden?! (tur, Kokoro if_sara IPA)')
+    put(sb, 15.05, -8, -0.1, room, 'sob syllables (tur, Kokoro if_sara re-performed with WORLD)')
+    put(ne, 14.52, -3.5, 0.0, room, 'Neden?! (tur, Kokoro if_sara IPA)')
     put(inh, 15.9, -14, 0.1, None, 'sob in-breath (designed)')
     ko = saranghae()
-    put(ko, 17.24, -3.5, 0.0, room, '사랑해요! (kor, Kokoro jf_alpha)')
-    put(sugoi(), 19.38, -1.5, 0.0, None, 'すごい…！ (ani, gotv4 anime_voice.wav)')
+    put(ko, 16.99, -3.5, 0.0, room, '사랑해요! (kor, Kokoro jf_alpha)')
+    put(sugoi(), 19.18, -1.5, 0.0, None, 'すごい…！ (ani, gotv4 anime_voice.wav)')
     # the tur sob pieces must end inside the hold
     tend = int(16.065 * SR)
     GV[:, tend - int(0.15 * SR):tend] *= np.linspace(1, 0, int(0.15 * SR))

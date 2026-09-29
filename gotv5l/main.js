@@ -39,7 +39,13 @@
 
   // ---- HOLD overlays: the voice pauses on a genre poster; camera pushes in and the poster "performs" its own sound moment
   const HOLDFOC = {cin:[1390,560,1.45],tur:[560,450,1.55],kor:[1085,480,1.55],ani:[1600,450,1.55]};
-  function holdCam(hd) { if (!hd) return null; const [fx, fy, zm] = HOLDFOC[hd.k], e = ease.inOut(clamp(hd.age / .45)), out = ease.inOut(clamp((hd.d - hd.age) / .3)), k = Math.min(e, out); return { fx, fy, z: lerp(1, zm, k), k }; }
+  const PRE = { cin: 11.11, tur: 12.39, kor: 13.095, ani: 13.99 };   // zoom starts ON the spoken word, is complete when the hold begins
+  function holdCam(hd, t) {
+    let k = 0, key = null;
+    if (hd) { key = hd.k; k = ease.inOut(clamp((hd.d - hd.age) / .3)); }
+    else for (const h of TLF.HOLDS) { const p = PRE[h.k]; if (t >= p && t < h.v) { key = h.k; k = ease.inOut(clamp((t - p) / Math.max(.2, h.v - p))); } }
+    if (!key || k <= 0) return null; const [fx, fy, zm] = HOLDFOC[key]; return { fx, fy, z: lerp(1, zm, k), k };
+  }
   function bubble(c, s, x, y, o = {}) {
     const size = o.size || 120; c.save(); c.translate(x, y); c.rotate(o.rot || 0); c.scale(o.sc ?? 1, o.sc ?? 1); c.font = `900 ${size}px ${o.font || 'Rubik'}`; c.direction = o.dir || 'ltr';
     const tw = c.measureText(s).width, w = tw + size * .8, h = size * 1.45;
@@ -63,27 +69,27 @@
     c.restore();
   }
   function holdOverlay(c, hd, T) {
-    if (!hd || hd.k === 'cin') return; const a = hd.age, q = CL.q(T, 12), inA = clamp(a / .25) * clamp((hd.d - a) / .2);
+    if (!hd || hd.k === 'cin') return; const a = hd.age, q = CL.q(T, 12), inA = clamp(a / .08) * clamp((hd.d - a) / .2);
     c.save(); c.globalAlpha = inA;
     if (hd.k === 'tur') {
       const v = c.createRadialGradient(W / 2, H / 2, Math.min(W, H) * .25, W / 2, H / 2, Math.max(W, H) * .75); v.addColorStop(0, 'rgba(120,0,10,0)'); v.addColorStop(1, 'rgba(90,0,10,.62)'); c.fillStyle = v; c.fillRect(0, 0, W, H);
       for (let i = 0; i < 14; i++) { const x = (hash(i * 3.7) * .9 + .05) * W, sp = 380 + hash(i) * 420, y = ((a * sp + hash(i * 9) * H) % (H + 200)) - 100, s = 18 + hash(i * 5) * 22; c.fillStyle = '#7FC8FF'; c.strokeStyle = C.ink; c.lineWidth = 4; c.beginPath(); c.moveTo(x, y - s * 1.6); c.quadraticCurveTo(x + s, y, x, y + s * .9); c.quadraticCurveTo(x - s, y, x, y - s * 1.6); c.fill(); c.stroke(); }
-      const sc = CL.pop(T, hd.T0 + .5, .25); if (sc > 0) bubble(c, 'Neden?!', W * .5, H * .16, { size: W > H ? 110 : 120, rot: -.06 + CL.j(T, 3, 1)[2], sc, font: 'Bangers', ink: '#B3001B' });
+      const sc = CL.pop(T, hd.T0 + .04, .2); if (sc > 0) bubble(c, 'Neden?!', W * .5, H * .16, { size: W > H ? 110 : 120, rot: -.06 + CL.j(T, 3, 1)[2], sc, font: 'Bangers', ink: '#B3001B' });
     } else if (hd.k === 'kor') {
       c.fillStyle = 'rgba(255,170,210,.22)'; c.fillRect(0, 0, W, H);
       for (let i = 0; i < 16; i++) { const x = (hash(i * 2.3) * .9 + .05) * W, y = H - ((a * (220 + hash(i) * 260) + hash(i * 7) * H) % (H + 160)) + 80, s = 26 + hash(i * 4) * 30, j = CL.j(T, i, 3); c.save(); c.translate(x + j[0], y + j[1]); c.fillStyle = i % 3 ? '#FF6FA8' : '#FF3B6B'; c.strokeStyle = C.ink; c.lineWidth = 4; c.beginPath(); c.moveTo(0, s * .35); c.bezierCurveTo(-s, -s * .3, -s * .45, -s, 0, -s * .45); c.bezierCurveTo(s * .45, -s, s, -s * .3, 0, s * .35); c.fill(); c.stroke(); c.restore(); }
-      const sc = CL.pop(T, hd.T0 + .3, .25); if (sc > 0) bubble(c, '사랑해요!', W * .5, H * .16, { size: W > H ? 100 : 110, rot: .05 + CL.j(T, 4, 1)[2], sc, font: "'WenQuanYi Zen Hei'", ink: '#D6246E' });
+      const sc = CL.pop(T, hd.T0 + .03, .2); if (sc > 0) bubble(c, '사랑해요!', W * .5, H * .16, { size: W > H ? 100 : 110, rot: .05 + CL.j(T, 4, 1)[2], sc, font: "'WenQuanYi Zen Hei'", ink: '#D6246E' });
     } else {
       c.save(); c.translate(W / 2, H * .45); c.rotate(q * .6); for (let i = 0; i < 18; i++) { c.rotate(A.TAU / 18); c.fillStyle = i % 2 ? 'rgba(255,214,10,.28)' : 'rgba(255,255,255,.18)'; c.beginPath(); c.moveTo(0, 0); c.lineTo(-90, -Math.max(W, H)); c.lineTo(90, -Math.max(W, H)); c.fill(); } c.restore();
       for (let i = 0; i < 12; i++) { const an = i / 12 * A.TAU + q, r = Math.min(W, H) * (.32 + .1 * hash(i + q)), s = 30 + 26 * hash(i * 3 + q); CL.star(c, W / 2 + Math.cos(an) * r, H * .45 + Math.sin(an) * r, s, 4, { fill: i % 2 ? '#fff' : C.yellow, lw: 5, rot: q }); }
-      const sc = CL.pop(T, hd.T0 + .25, .25); if (sc > 0) bubble(c, 'すごい！', W * .5, H * .15, { size: W > H ? 110 : 120, rot: -.05 + CL.j(T, 5, 1)[2], sc, font: 'IPAGothic', ink: '#1F4FFF' });
+      const sc = CL.pop(T, hd.T0 + .03, .2); if (sc > 0) bubble(c, 'すごい！', W * .5, H * .15, { size: W > H ? 110 : 120, rot: -.05 + CL.j(T, 5, 1)[2], sc, font: 'IPAGothic', ink: '#1F4FFF' });
     }
     c.restore();
   }
   const grain = (() => { const g = mk(480, 270), gx = g.getContext('2d'), id = gx.createImageData(480, 270), r = rng(5); for (let i = 0; i < id.data.length; i += 4) { const v = r() * 255; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; } gx.putImageData(id, 0, 0); return g; })();
   const ACC = mk(W, H), acx = ACC.getContext('2d'), ACC2 = mk(W, H);
   async function draw(f, opt = {}) {
-    const T = f / FPS, t = TLF.vOf(T), hd = TLF.holdAt(T), hc = holdCam(hd);
+    const T = f / FPS, t = TLF.vOf(T), hd = TLF.holdAt(T), hc = holdCam(hd, t);
     cv.width = W;   // reset all canvas state
     if (window.HOST) await HOST.prepare(t);
     A.renderFrame(f);

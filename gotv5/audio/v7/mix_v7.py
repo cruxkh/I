@@ -70,7 +70,7 @@ def words():
     return W
 
 
-GENRE = [('Neden?!', 14.965, 15.90), ('사랑해요!', 17.24, 18.20), ('すごい…！', 19.38, 20.12)]   # genre voice lines (T)
+GENRE = [('Neden?!', 14.52, 15.45), ('사랑해요!', 16.99, 17.95), ('すごい…！', 19.18, 19.92)]   # genre voice lines (T)
 
 
 # ------------------------------------------------------------------ key detection (pitched SFX follow the score)
@@ -293,17 +293,17 @@ def cue_sheet(key):
     c(11.06, 'projector', -13, 0.3)                                  # old projector 11.06 -> 13.19
     # ---- tur hold (14.465-16.065)
     c(14.465, 'tur_dum', -2, root=R['tur'])                           # dum dum DUM
-    c(14.965, 'paper_pop', -12, 0.0)                                  # the bubble
+    c(14.52, 'paper_pop', -12, 0.0)                                  # the bubble
     c(15.35, 'tear_drop', -10, -0.3)
     c(15.72, 'tear_drop', -12, 0.25, var=0.93)
     # ---- kor hold (16.94-18.54)
     c(16.96, 'heart_pops', -3, root=R['kor'])
-    c(17.24, 'paper_pop', -12, 0.0, var=1.1)                          # the bubble
+    c(16.99, 'paper_pop', -12, 0.0, var=1.1)                          # the bubble
     c(17.9, 'lib:light_shimmer', -12, 0.0)
     # ---- ani hold (19.13-20.73)
     c(19.13, 'wipe_whoosh_c', -6)
     c(19.13, 'anime_sting', -2, root=R['ani'])
-    c(19.38, 'paper_pop', -12, 0.0, var=1.2)                          # the bubble
+    c(19.18, 'paper_pop', -12, 0.0, var=1.2)                          # the bubble
     return C
 
 
