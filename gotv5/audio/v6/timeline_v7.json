@@ -1,0 +1,35 @@
+{
+ "note": "T = output time (final video/audio seconds). v = voice clock (all word times in words.js and // CUE comments). At each hold the voice-over PAUSES (the VO file is split at v and silence of length d inserted). T = v + sum(d of holds with hold.v < v). Total output length 46.2 s.",
+ "vdur": 40.0,
+ "total": 46.2,
+ "holds": [
+  {
+   "k": "cin",
+   "v": 11.79,
+   "d": 1.4,
+   "T0": 11.79,
+   "desc": "after the word וצ'רלטון (v 11.11-11.78): CINEMA moment. The narrator's word itself turns into a deep movie-trailer voice; letterbox bars and projector flicker on screen from v 11.06; during the hold an epic trailer boom + echo tail + projector ambience, screen says GOTV PRESENTS"
+  },
+  {
+   "k": "tur",
+   "v": 13.065,
+   "d": 1.6,
+   "T0": 14.465,
+   "desc": "after טורקיות: Turkish TV-drama moment: camera pushes in on the Turkish drama poster (broken heart, tears falling), bubble 'Neden?!' pops at +0.5 s"
+  },
+  {
+   "k": "kor",
+   "v": 13.94,
+   "d": 1.6,
+   "T0": 16.94,
+   "desc": "after קוריאניות: K-drama moment: pink hearts floating, bubble '사랑해요!' pops at +0.3 s"
+  },
+  {
+   "k": "ani",
+   "v": 14.53,
+   "d": 1.6,
+   "T0": 19.13,
+   "desc": "after אנימה: anime moment: rotating yellow rays, sparkle stars, bubble 'すごい！' pops at +0.25 s"
+  }
+ ]
+}
