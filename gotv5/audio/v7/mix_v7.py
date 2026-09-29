@@ -291,7 +291,8 @@ def cue_sheet(key):
     def c(t, nm, g=0.0, p=0.0, **kw):
         C.append(dict(t=t, nm=nm, g=g, p=p, **kw))
     # ---- cin hold (word 11.11-11.78, hold 11.79-13.19)
-    c(11.11, 'thx_swell', -6, m_all=2.0, m_hi=5.0, root=R['cin'])   # trailer boom + THX swell under the cinema word
+    c(11.11, 'thx_swell', -6, m_all=2.0, m_hi=5.0, root=R['cin'])
+    c(13.19, 'lib:whip_pan', -9, 0.0)                               # forward whoosh into the bridge (no end-of-film hush)   # trailer boom + THX swell under the cinema word
     c(11.06, 'projector', -13, 0.3)                                  # old projector 11.06 -> 13.19
     # ---- tur hold (14.465-16.065)
     c(14.465, 'tur_dum', -2, root=R['tur'])                           # dum dum DUM
@@ -564,8 +565,11 @@ def main():
     duck = 0.5 - 0.5 * np.cos(np.pi * duck)            # raised-cosine ramps
     MUSIC_DB = -6.0
     hold = np.zeros(NS)
+    starts = sorted(a for a, b in segs)
     for h in HOLDS:
-        hold = np.maximum(hold, np.interp(t, [h['T0'] + 0.03, h['T0'] + 0.15, h['T0'] + h['d'] - 0.25, h['T0'] + h['d'] - 0.05],
+        he = h['T0'] + h['d']
+        nxt = min([a for a in starts if a >= he - 0.05] + [he + 0.6])     # keep the hold energy up until the narrator actually speaks again
+        hold = np.maximum(hold, np.interp(t, [h['T0'] + 0.03, h['T0'] + 0.15, nxt - 0.35, nxt - 0.08],
                                           [0, 1, 1, 0], left=0, right=0))
     gd = np.zeros(NS)
     for _, a, b in GENRE:
