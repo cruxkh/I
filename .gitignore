@@ -30,3 +30,5 @@ gotv4/yt2/mask/
 gotv4/yt2/mask_rgba/
 gotv4/yt2/*.mp4
 *.raw
+gotv5/out/
+gotv5/previews/
