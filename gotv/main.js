@@ -69,7 +69,7 @@
   let sorted = false;
   async function draw(f, opt = {}) {
     if (!sorted) { sortScenes(); sorted = true; }
-    const N = opt.fast ? 1 : (opt.n || 5), shutter = 0.55, t = f / FPS;
+    const N = opt.fast ? 1 : (opt.n || 3), shutter = 0.55, t = f / FPS;
     acx.setTransform(1, 0, 0, 1, 0, 0); acx.globalAlpha = 1; acx.globalCompositeOperation = 'source-over'; acx.fillStyle = '#000'; acx.fillRect(0, 0, W, H);
     for (let k = 0; k < N; k++) {
       const ff = f + (N === 1 ? 0 : ((k + .5) / N - .5) * shutter);

@@ -12,7 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, '/home/user/I/promo/audio/tools')
 from sfx import *          # helpers from the packet-from-home library (SR, whoosh, bell, thump, reverb, ...)
 from sfx import _sos, _air_horn, _whistle
-ROOT = os.path.normpath(os.path.join(HERE, '..'))
+ROOT = '/home/user/I/gotv/audio'
 PROMO_SFX = '/home/user/I/promo/audio/sfx'
 OUTD = os.path.join(ROOT, 'sfx')
 CUES = os.path.join(ROOT, 'cues')
@@ -833,6 +833,46 @@ def f_shine_up(r, dur=1.0):
     y, h = f_whoosh(r, dur, .6, 1500, 12000, .6, -.6, .6, shim=1.0)
     ar, _ = f_arp(r, [1568 * 2 ** (i / 12) for i in (0, 4, 7, 12, 16, 19)], .05, .5, wet=.4)
     return cat(y * .7, ar * .6), .5
+
+def f_heartbeat(r):
+    n = N(.5); x = np.zeros(n)
+    y = np.sin(phase_of(52 + 40 * np.exp(-tax(n) / .03))) * expdec(n, .09) * attack(n, .004) * 1.0 + .35 * lp(white(n, r), 300) * expdec(n, .05)
+    return verb(pan(y, 0), IR_room(), .1), 0.0
+def f_neon_on(r, dur=.9):
+    n = N(dur); t = tax(n)
+    gate = np.zeros(n)
+    for a, b in ((0, .04), (.09, .13), (.2, .23), (.3, .9)): gate[N(a):N(b)] = 1
+    hum = (sine(np.full(n, 100), n) * .5 + sine(np.full(n, 200), n) * .3 + sat(sine(np.full(n, 300), n), 3) * .2) * gate
+    ign = bp(white(n, r), 2000, 9000) * (expdec(n, .006) + expdec(n, .006, .09) + expdec(n, .006, .2)) * 1.2
+    y = hum * .5 * env(n, [(0, 1), (.3, 1), (dur, .5)]) + ign
+    return verb(pan(y, .2), IR_room(), .15), 0.0
+def f_rain(r, dur=3.0):
+    n = N(dur); y = hp(pink(n, r), 800) * .5 + bp(white(n, r), 3000, 9000) * .5
+    drops = np.zeros(n)
+    for k in range(int(dur * 60)):
+        i = r.integers(0, n - 300); L = 200; drops[i:i + L] += white(L, r) * np.exp(-np.arange(L) / 30) * r.uniform(.2, 1)
+    y = y * slow_noise(n, r, 1.5, .7, 1) + hp(drops, 2500) * .6
+    x = pan(y, 0) + pan(np.roll(y, 137), 0) * 0; x = np.vstack([y, np.roll(y, 211)])
+    return fade(x, .4, .5), 0.0
+def f_petals(r): 
+    x, _ = f_sparkle(r, 1.6, 44, 3500, 10000, rise=True, dens='lin', wet=.5, gain=.7)
+    y, _ = f_whoosh(r, .9, .25, 2000, 9000, .8, -.6, .6, shim=.6); return cat(x, y * .4), 0.0
+def f_aura(r):
+    x, h = f_riser(r, 1.2, 150, 4500, tone=1.2, sub=.7, shim=.3, wet=.05)
+    g = sat(bp(white(x.shape[1], r), 500, 5000) * slow_noise(x.shape[1], r, 40, .2, 1) * (tax(x.shape[1]) / 1.2) ** 2 * 2, 3) * .2
+    return x + pan(g, 0), h
+def f_tiles_rush(r):
+    y, h = f_vortex(r, 1.0, .85)
+    th = f_thud(r, 90, .2, 4, .06, .0, .5, .3)[0] * .4
+    return cat(y, np.concatenate([np.zeros((2, N(.5))), th], axis=1)), .85
+S('heartbeat_thump', f_heartbeat)
+S('neon_buzz_on', f_neon_on)
+S('rain_bed', f_rain)
+S('sakura_shimmer', f_petals)
+S('aura_charge_rise', f_aura)
+S('tiles_rush', f_tiles_rush)
+S('wipe_whoosh_pink', f_whoosh, dur=.7, peak=.35, f_lo=500, f_hi=9000, pf=-.9, pt=.9, shim=.8, tone=.4)
+S('chime_sparkle', f_arp, notes=[1319, 1568, 1976, 2349, 2637], step=.06, d=.5, wet=.5)
 
 # ------------------------------------------------------- keyword fallback for unseen names (s4 etc.)
 def auto(name, desc, r):
