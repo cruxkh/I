@@ -139,8 +139,8 @@
       ctx.restore();
     }
     // finger
-    const qt = Q(t), fd = A.key(qt, [[30.03, 1150], [30.27, 130, 'out'], [30.34, -14, 'lin'], [30.58, -14, 'lin'], [30.95, 1150, 'in']]);
-    if (fd < 1100) { const hj = CL.j(t, 5, 3), tx = BTN.x + DIR[0] * fd + hj[0], ty = BTN.y + DIR[1] * fd + hj[1];
+    const qt = Q(t), fd = A.key(qt, [[30.03, 1500], [30.27, 130, 'out'], [30.34, -14, 'lin'], [30.58, -14, 'lin'], [30.8, 1500, "in"]]);
+    if (fd < 1400) { const hj = CL.j(t, 5, 3), tx = BTN.x + DIR[0] * fd + hj[0], ty = BTN.y + DIR[1] * fd + hj[1];
       CL.sticker(ctx, handLayer(), tx + DIR[0] * 550, ty + DIR[1] * 550, 420, 1100, { rot: HAND_ROT }); }
     // CLICK
     if (t > 30.34 && t < 30.85) {
@@ -156,10 +156,10 @@
 
   // ============ PHASE B
   const exitK = (t, t0 = 33.35) => { const u = inv(t0, t0 + .22, Q(t, 15)); return u; };
-  function card(ctx, name, t, t0, cx, cy, w, h, rot, seed) {
+  function card(ctx, name, t, t0, cx, cy, w, h, rot, seed, fill) {
     const u = exitK(t); if (u >= 1) return; const s = CL.pop(t, t0, .3); if (!s) return; const j = CL.j(t, seed, 3);
-    if (t < 33.35) CL.logoCard(ctx, name, cx + j[0], cy + j[1], w, h, { rot: rot + j[2], scale: s, seed });
-    else CL.logoCard(ctx, name, cx, cy + ease.in(u) * 600, w, h, { rot: rot + u * 1.2, scale: 1 - u * .6, seed });
+    if (t < 33.35) CL.logoCard(ctx, name, cx + j[0], cy + j[1], w, h, { rot: rot + j[2], scale: s, seed, fill });
+    else CL.logoCard(ctx, name, cx, cy + ease.in(u) * 600, w, h, { rot: rot + u * 1.2, scale: 1 - u * .6, seed, fill });
     if (t - t0 < .3 && t >= t0) CL.sparks(ctx, cx, cy, w * .55, w * .85, 12, t, { color: C.ink, lw: 9 });
   }
   function phaseB(ctx, t) {
@@ -170,13 +170,13 @@
     tv(ctx, 540 + jt[0] + sh[0], 830 + jt[1] + sh[1], 800, 560, scr, t);
     // streamers (CUE 32.22 netflix, 32.42 disney, 32.62 appletv)
     card(ctx, 'netflix', t, 32.2, 300, 270, 540, 270, -.08, 3);     // CUE 32.2 pop
-    card(ctx, 'disney', t, 32.42, 790, 330, 540, 270, .07, 4);
-    card(ctx, 'appletv', t, 32.64, 560, 1260, 540, 270, .04, 5);
+    card(ctx, 'disney', t, 32.42, 790, 330, 540, 270, .07, 4, '#0B1F5C');
+    card(ctx, 'appletv', t, 32.64, 560, 1260, 540, 270, .04, 5, C.ink);
     // live / sport / football
     if (t >= 33.4) {
       const jf = CL.j(t, 8, 3);
       const c5 = CL.pop(t, 33.55, .3);
-      if (c5) { CL.logoCard(ctx, 'sport5', 300 + jf[0], 270 + jf[1], 560, 280, { rot: -.07, scale: c5, seed: 6 }); if (t < 33.85) CL.sparks(ctx, 300, 270, 300, 400, 12, t, { color: C.ink, lw: 9 }); }
+      if (c5) { CL.logoCard(ctx, 'sport5', 300 + jf[0], 270 + jf[1], 560, 280, { rot: -.07, scale: c5, seed: 6, fill: C.ink }); if (t < 33.85) CL.sparks(ctx, 300, 270, 300, 400, 12, t, { color: C.ink, lw: 9 }); }
       const c1 = CL.pop(t, 34.3, .3);
       if (c1) { CL.logoCard(ctx, 'sport1', 790 - jf[0], 300 + jf[1], 560, 280, { rot: .06, scale: c1, seed: 7 }); if (t < 34.6) CL.sparks(ctx, 790, 300, 300, 400, 12, t, { color: C.ink, lw: 9 }); }
       const lv = CL.pop(t, 33.95, .3);           // CUE 33.95 live
