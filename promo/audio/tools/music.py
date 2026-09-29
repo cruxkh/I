@@ -1179,7 +1179,7 @@ def main():
     os.makedirs(os.path.join(MUS, 'stems'), exist_ok=True)
     sf.write(os.path.join(MUS, 'music.wav'), mixo.astype(np.float32), SR, subtype='PCM_24')
     for k, y in stems.items():
-        sf.write(os.path.join(MUS, 'stems', k + '.wav'), y.astype(np.float32), SR, subtype='PCM_24')
+        sf.write(os.path.join(MUS, 'stems', k + '.wav'), y.astype(np.float32), SR, subtype='FLOAT')
     HITS.update({'bpm': 120, 'beat': .5, 'silence': [25.50, 25.61], 'gold_riser_land': 3.05,
                  'genre_stings': {'cinematic': 6.7, 'magic': 8.0, 'sports': 9.05, 'oud': 13.1, 'kpop': 14.0, 'anime': 14.6},
                  'build_cut': 15.81, 'light_start': 15.81, 'smooth_start': 20.64, 'tension': [23.5, 25.5]})

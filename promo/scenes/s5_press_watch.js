@@ -5,7 +5,7 @@
   const OL = () => A.OUTLINE;
   const clamp = A.clamp, inv = A.inv, ease = A.ease;
   const TVC = { x: 1430, y: 424.5 }, TVW = 780, TVH = 439;   // TV screen centre + size (world)
-  const RING = { x: 650, y: 690, rx: 700, ry: 165 };
+  const RING = { x: 620, y: 715, rx: 700, ry: 165 };
   const SOFA = { x: 620, y: 1010, s: 1.1 };
 
   // ---------- small helpers ----------
@@ -284,7 +284,7 @@
       ctx.save(); ctx.translate(w / 2, h / 2);
       const on = inv(31.1, 31.3, t), hh = A.lerp(6, h, ease.out(on));
       ctx.beginPath(); ctx.rect(-w / 2, -hh / 2, w, hh); ctx.clip();
-      drawMatch(ctx, w, h, t - 31.1 + (t >= 35.2 ? 1.0 : 0));
+      drawMatch(ctx, w, h, t < 35.0 ? t - 31.1 + 0.5 : 35.0 - 31.1 + 0.5 + (t - 35.0) * 0.4);
       ctx.restore();
       if (on < 1) { ctx.fillStyle = `rgba(255,255,255,${0.85 * (1 - on)})`; ctx.fillRect(0, 0, w, h); }
     };
@@ -324,16 +324,16 @@
     WHO.forEach((w, i) => {
       const sp = seat(i), o = personOpts(i, t);
       const jump = t > 36.1 ? Math.abs(Math.sin((t - 36.1) * 9 + i)) * 14 : 0;
-      PPL.person(ctx, w, sp.x, sp.y + 18 - jump, SOFA.s * 1.0, o);
+      PPL.person(ctx, w, sp.x, sp.y + 30 - jump, SOFA.s * 1.2, o);
     });
     // popcorn bucket between Maya and Tom laps + cushion
-    PPL.popcorn(ctx, seat(1).x + 150, seat(1).y + 70, 0.95, t);
+    PPL.popcorn(ctx, seat(1).x + 165, seat(1).y + 96, 1.1, t);
     PPL.sofaFront(ctx, SOFA.x, SOFA.y, SOFA.s);
     // TV light on the family (additive, flicker)
     const on = ease.out(inv(31.1, 31.6, t));
     const fl = 0.75 + 0.25 * Math.sin(t * 17) * Math.sin(t * 5.3);
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    ctx.fillStyle = A.radial(ctx, TVC.x - 300, TVC.y + 60, 50, 1000, [[0, `rgba(120,200,255,${0.34 * on * fl})`], [1, 'rgba(0,0,0,0)']]);
+    ctx.fillStyle = A.radial(ctx, TVC.x - 300, TVC.y + 60, 50, 1000, [[0, `rgba(120,200,255,${(0.34 + 0.25 * inv(35.1, 35.8, t)) * on * fl})`], [1, 'rgba(0,0,0,0)']]);
     ctx.fillRect(0, 0, 1920, 1080); ctx.restore();
     // dim room before the TV lights it
     const dim = 0.75 * (1 - ease.out(inv(31.1, 31.8, t)));
@@ -344,15 +344,15 @@
     ctx.restore();
   }
   function camFn(t) {
-    const zoom = A.key(t, [[31.10, 1.3, 'out'], [32.04, 1.0], [35.19, 1.05, 'inOut'], [36.17, 1.22, 'inOut'], [36.88, 1.27, 'lin']]);
-    const x = A.key(t, [[31.10, 1000], [32.04, 960, 'out'], [35.19, 985, 'inOut'], [36.17, 1090, 'inOut']]);
+    const zoom = A.key(t, [[31.10, 1.3, 'out'], [32.04, 1.0], [35.19, 1.05, 'inOut'], [36.17, 1.16, 'inOut'], [36.88, 1.2, 'lin']]);
+    const x = A.key(t, [[31.10, 1000], [32.04, 960, 'out'], [35.19, 985, 'inOut'], [36.17, 1030, 'inOut']]);
     const y = A.key(t, [[31.10, 470], [32.04, 540, 'out'], [35.19, 535, 'inOut'], [36.17, 500, 'inOut']]);
     const rot = 0.008 * Math.sin(t * 0.9) + A.key(t, [[35.19, 0], [35.7, -0.018, 'inOut'], [36.17, 0, 'inOut']]);
     const shake = 0.7 * Math.exp(-Math.max(0, t - 36.31) * 12) * (t > 36.31 ? 1 : 0) + 0.25 * Math.exp(-Math.max(0, t - 31.1) * 8) * (t > 31.1 ? 1 : 0);
     return { x, y, zoom, rot, shake };
   }
 
-========================================================
+  // ============================================================
   // 6. Spinner ghost, thumbs-up, end text
   // ============================================================
   function spinner(ctx, x, y, s, a, t) {
@@ -380,7 +380,7 @@
     if (t < t0 - 0.12) return;
     // golden hero light
     const gl = ease.out(inv(t0 - 0.08, t0 + 0.3, t));
-    ctx.fillStyle = `rgba(18,8,40,${0.5 * gl})`; ctx.fillRect(0, 0, 1920, 1080);
+    ctx.fillStyle = `rgba(18,8,40,${0.62 * gl})`; ctx.fillRect(0, 0, 1920, 1080);
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     ctx.translate(960, 350); ctx.rotate((t - t0) * 0.35); ctx.globalAlpha = 0.22 * gl;
     for (let i = 0; i < 14; i++) { ctx.rotate(A.TAU / 14); ctx.fillStyle = A.linear(ctx, 0, 0, 1300, 0, [[0, 'rgba(255,214,110,0.9)'], [1, 'rgba(255,214,110,0)']]); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(1300, -60); ctx.lineTo(1300, 60); ctx.closePath(); ctx.fill(); }
