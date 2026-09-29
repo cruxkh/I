@@ -4,8 +4,9 @@
   const SKIN = '#F0B48A', SKIN_D = '#D48F66';
   const OL = () => A.OUTLINE;
   const clamp = A.clamp, inv = A.inv, ease = A.ease;
-  const TVC = { x: 960, y: 335 }, TVW = 720, TVH = 400;   // TV screen centre + size (world)
-  const RING = { x: 960, y: 690, rx: 830, ry: 150 };
+  const TVC = { x: 1430, y: 424.5 }, TVW = 780, TVH = 439;   // TV screen centre + size (world)
+  const RING = { x: 650, y: 690, rx: 700, ry: 165 };
+  const SOFA = { x: 620, y: 1010, s: 1.1 };
 
   // ---------- small helpers ----------
   function sparkle(ctx, x, y, r, rot, fill, a = 1) {
@@ -199,77 +200,6 @@
   }
 
   // ============================================================
-  // 3. ROOM (static layer + dynamic lights)
-  // ============================================================
-  function roomLayer() {
-    return A.layer('s5room', 1920, 1080, (g) => {
-      // wall
-      g.fillStyle = A.linear(g, 0, 0, 0, 760, [[0, '#4a2466'], [1, '#8a4460']]); g.fillRect(0, 0, 1920, 760);
-      g.fillStyle = 'rgba(255,220,200,0.05)'; for (let x = 0; x < 1920; x += 90) g.fillRect(x, 0, 44, 760);
-      // wainscot
-      g.fillStyle = '#5a2e52'; g.fillRect(0, 640, 1920, 130); g.fillStyle = 'rgba(255,200,160,0.18)'; g.fillRect(0, 640, 1920, 8);
-      for (let x = 60; x < 1920; x += 240) { A.rrect(g, x, 668, 190, 80, 8); g.strokeStyle = 'rgba(20,8,30,0.45)'; g.lineWidth = 5; g.stroke(); }
-      // floor
-      g.fillStyle = A.linear(g, 0, 770, 0, 1080, [[0, '#7a4630'], [1, '#3c1f26']]); g.fillRect(0, 770, 1920, 310);
-      g.strokeStyle = 'rgba(20,8,20,0.35)'; g.lineWidth = 3;
-      for (let i = 0; i < 9; i++) { const y = 780 + i * i * 4.6 + i * 10; g.beginPath(); g.moveTo(0, y); g.lineTo(1920, y); g.stroke(); }
-      g.fillStyle = 'rgba(20,8,20,0.5)'; g.fillRect(0, 764, 1920, 8);
-      // rug
-      g.beginPath(); g.ellipse(960, 930, 780, 130, 0, 0, A.TAU); g.fillStyle = '#1FB6A6'; g.fill(); g.lineWidth = 7; g.strokeStyle = A.OUTLINE; g.stroke();
-      g.beginPath(); g.ellipse(960, 930, 660, 100, 0, 0, A.TAU); g.strokeStyle = '#FFC24A'; g.lineWidth = 8; g.stroke();
-      g.beginPath(); g.ellipse(960, 930, 520, 74, 0, 0, A.TAU); g.strokeStyle = '#FF4F9A'; g.lineWidth = 6; g.stroke();
-      // bookshelf left
-      A.rrect(g, 70, 130, 330, 590, 14); A.fillStroke(g, '#5b3320', 7);
-      for (let r = 0; r < 4; r++) {
-        const y = 150 + r * 142; g.fillStyle = '#2b150f'; g.fillRect(84, y, 302, 122);
-        let x = 92; const rn = A.rng(r + 11);
-        while (x < 372) { const bw = 20 + rn() * 26, bh = 70 + rn() * 44; g.fillStyle = ['#FF4F9A', '#38D9F5', '#FFC24A', '#3D7BFF', '#FF8A3D', '#3DDC84'][Math.floor(rn() * 6)]; g.fillRect(x, y + 122 - bh, bw, bh); g.lineWidth = 3; g.strokeStyle = A.OUTLINE; g.strokeRect(x, y + 122 - bh, bw, bh); x += bw + 3; }
-        g.fillStyle = '#5b3320'; g.fillRect(84, y + 122, 302, 20);
-      }
-      // frames right
-      const fr = (x, y, w, h, c1, c2) => { A.rrect(g, x, y, w, h, 8); A.fillStroke(g, '#FFC24A', 8); A.rrect(g, x + 14, y + 14, w - 28, h - 28, 4); g.fillStyle = A.linear(g, x, y, x + w, y + h, [[0, c1], [1, c2]]); g.fill(); };
-      fr(1470, 150, 170, 210, '#38D9F5', '#3D7BFF'); fr(1670, 210, 190, 150, '#FF8A3D', '#FF4F9A'); fr(1550, 400, 150, 150, '#3DDC84', '#1FB6A6');
-      g.beginPath(); g.arc(1560, 260, 30, 0, A.TAU); g.fillStyle = 'rgba(255,255,255,0.7)'; g.fill();
-      // plant
-      g.beginPath(); g.moveTo(1740, 660); g.lineTo(1860, 660); g.lineTo(1840, 780); g.lineTo(1760, 780); g.closePath(); A.fillStroke(g, '#FF8A3D', 7);
-      for (let i = 0; i < 7; i++) { const a = -Math.PI / 2 + (i - 3) * 0.32; g.save(); g.translate(1800, 660); g.rotate(a + Math.PI / 2); g.beginPath(); g.ellipse(0, -110, 34, 110, 0, 0, A.TAU); A.fillStroke(g, i % 2 ? '#3DDC84' : '#22a85f', 6); g.restore(); }
-      // floor lamp left
-      g.fillStyle = '#2b150f'; g.fillRect(468, 300, 12, 470); g.beginPath(); g.ellipse(474, 770, 60, 14, 0, 0, A.TAU); g.fill();
-      g.beginPath(); g.moveTo(420, 300); g.lineTo(528, 300); g.lineTo(508, 210); g.lineTo(440, 210); g.closePath(); A.fillStroke(g, '#FFD98A', 7);
-      // TV console
-      A.rrect(g, 560, 585, 800, 92, 18); A.fillStroke(g, '#6a3a24', 8); g.fillStyle = 'rgba(255,255,255,0.1)'; g.fillRect(580, 595, 760, 8);
-      g.fillStyle = '#2b150f'; g.fillRect(600, 690, 30, 80); g.fillRect(1290, 690, 30, 80);
-      // TV stand neck
-      g.fillStyle = '#20182e'; g.fillRect(900, 530, 120, 60);
-    });
-  }
-  function tvFrame(ctx, on) {
-    ctx.save(); A.rrect(ctx, TVC.x - TVW / 2 - 26, TVC.y - TVH / 2 - 26, TVW + 52, TVH + 52, 26); A.fillStroke(ctx, '#171126', 9);
-    ctx.restore();
-  }
-  function sofaPlaceholder(ctx) {
-    // sofa back + seat + arms
-    ctx.save();
-    A.rrect(ctx, 400, 640, 1120, 300, 60); A.fillStroke(ctx, '#C7473E', 8);
-    A.rrect(ctx, 360, 720, 170, 250, 60); A.fillStroke(ctx, '#A9362F', 8);
-    A.rrect(ctx, 1390, 720, 170, 250, 60); A.fillStroke(ctx, '#A9362F', 8);
-    A.rrect(ctx, 500, 800, 920, 170, 40); A.fillStroke(ctx, '#D95B4F', 8);
-    ctx.restore();
-  }
-  const CAST = [{ x: 720, c: '#FFC24A', n: 'YONI' }, { x: 960, c: '#FF4F9A', n: 'MAYA' }, { x: 1200, c: '#38D9F5', n: 'TOM' }];
-  function peoplePlaceholder(ctx, t, cheer) {
-    CAST.forEach((p, i) => {
-      const bob = Math.sin(t * (6 + i) + i) * (6 + 22 * cheer) + cheer * -12;
-      const lean = 0.06 * Math.sin(t * 3 + i);
-      ctx.save(); ctx.translate(p.x, 800 + bob); ctx.rotate(lean);
-      A.rrect(ctx, -70, -150, 140, 190, 40); A.fillStroke(ctx, p.c, 7);
-      ctx.beginPath(); ctx.arc(0, -220, 80, 0, A.TAU); A.fillStroke(ctx, SKIN, 7);
-      ctx.beginPath(); ctx.ellipse(0, -195, 32, 20 + 20 * cheer, 0, 0, Math.PI); A.fillStroke(ctx, '#7a1f2b', 5);
-      ctx.restore();
-    });
-  }
-
-  // ============================================================
   // 4. Posters / LIVE tiles orbit
   // ============================================================
   const POSTERS = [
@@ -346,64 +276,83 @@
     for (const [i, st] of list) { const isFront = st.dep > 0.5 && st.sp > 0.6; if (isFront === front) drawTile(ctx, i, st, t); }
   }
 
+  // ====  // ============================================================
+  // 5. Room scene (PPL kit)
   // ============================================================
-  // 5. Room scene
-  // ============================================================
-  function tvScreen(ctx, t) {
-    ctx.save();
-    ctx.translate(TVC.x, TVC.y);
-    A.rrect(ctx, -TVW / 2, -TVH / 2, TVW, TVH, 10); ctx.clip();
-    // power-on: from a bright line to full
-    const on = inv(31.1, 31.3, t);
-    ctx.fillStyle = '#05030c'; ctx.fillRect(-TVW / 2, -TVH / 2, TVW, TVH);
-    ctx.save(); const hh = A.lerp(6, TVH, ease.out(on)); ctx.beginPath(); ctx.rect(-TVW / 2, -hh / 2, TVW, hh); ctx.clip();
-    // content over time: goal replay (31.1-34.6), crowd/celebrate
-    if (t < 35.2) drawMatch(ctx, TVW, TVH, t - 31.1);
-    else drawMatch(ctx, TVW, TVH, t - 31.1 + 1.0);
-    ctx.restore();
-    // glass shine
-    ctx.fillStyle = 'rgba(255,255,255,0.07)'; ctx.beginPath(); ctx.moveTo(-TVW / 2, -TVH / 2); ctx.lineTo(-TVW / 6, -TVH / 2); ctx.lineTo(-TVW / 2 - 110, TVH / 2); ctx.lineTo(-TVW / 2, TVH / 2); ctx.fill();
-    ctx.restore();
+  function screenDraw(t) {
+    return (ctx, w, h) => {
+      ctx.save(); ctx.translate(w / 2, h / 2);
+      const on = inv(31.1, 31.3, t), hh = A.lerp(6, h, ease.out(on));
+      ctx.beginPath(); ctx.rect(-w / 2, -hh / 2, w, hh); ctx.clip();
+      drawMatch(ctx, w, h, t - 31.1 + (t >= 35.2 ? 1.0 : 0));
+      ctx.restore();
+      if (on < 1) { ctx.fillStyle = `rgba(255,255,255,${0.85 * (1 - on)})`; ctx.fillRect(0, 0, w, h); }
+    };
   }
-  function tvGlow(ctx, t) {
-    const on = ease.out(inv(31.1, 31.6, t));
-    const gc = A.hash(Math.floor(t * 6)) * 0;   // reserved for flicker
-    const pulse = 0.85 + 0.15 * Math.sin(t * 17) + gc;
-    A.glow(ctx, TVC.x, TVC.y + 60, 1250, '#7fd8ff', 0.5 * on * pulse);
-    A.glow(ctx, TVC.x, TVC.y + 300, 900, '#c9ffd0', 0.22 * on);
-    // warm lamp
-    A.glow(ctx, 474, 250, 480, '#ffc070', 0.5);
-    A.glow(ctx, 474, 700, 300, '#ffb060', 0.18);
+  // pose schedule: returns person opts
+  const WHO = ['yoni', 'maya', 'tom'];
+  function personOpts(i, t) {
+    const o = { t, seated: true, look: 'tv', tvSide: 1 };
+    const j = i * 0.045;   // stagger
+    const ph = [
+      [0, 'remote', 'remote'], [31.10, 'remote', 'lean'], [31.5, 'lean', 'cheer'], [32.9, 'cheer', 'laugh'], [33.42, 'laugh', 'cheer'],
+      [34.9, 'cheer', 'lean'], [35.19, 'lean', 'lean'], [35.9, 'lean', 'cheer'], [36.1, 'cheer', 'cheer'],
+    ];
+    let cur = ph[0];
+    for (const q of ph) if (t >= q[0] + j) cur = q;
+    const st = cur[0] + j, nxt = ph[ph.indexOf(cur) + 1];
+    const dur = nxt ? Math.max(0.05, nxt[0] + j - st) : 1;
+    // blend from the previous key's target into this key's pose over 0.25 s
+    const prev = ph[Math.max(0, ph.indexOf(cur) - 1)];
+    const k = ease.inOut(inv(st, st + 0.25, t)); void dur;
+    if (t < 31.1) o.pose = 'remote'; else o.blend = { from: prev[2], to: cur[2], k };
+    if (t >= 31.1 && ph.indexOf(cur) === 0) { delete o.blend; o.pose = 'remote'; }
+    if (t >= 36.2) { o.look = { x: 0.15 * (i - 1), y: 0.05 }; }
+    if (i === 2 && t > 36.25) { o.blend = { from: 'cheer', to: 'thumbs', k: ease.outBack(inv(36.25, 36.4, t)) }; }
+    return o;
   }
   function roomScene(ctx, t, cam) {
     ctx.save();
     const c = cam(t);
     A.camera(ctx, { x: c.x, y: c.y, zoom: c.zoom, rot: c.rot, shake: c.shake, t });
-    ctx.drawImage(roomLayer(), 0, 0);
-    tvFrame(ctx); tvScreen(ctx, t);
-    // TV light spill upon wall (additive)
-    tvGlow(ctx, t);
+    PPL.room(ctx, t, {});
+    PPL.sofaBack(ctx, SOFA.x, SOFA.y, SOFA.s);
     drawTiles(ctx, t, false);
-    // sofa + people
-    const cheer = clamp(0.35 + inv(31.5, 32.5, t) * 0.25 + inv(36.1, 36.3, t) * 0.4);
-    sofaPlaceholder(ctx);
-    peoplePlaceholder(ctx, t, cheer);
+    const seat = i => PPL.sofaSeat(SOFA.x, SOFA.y, SOFA.s, i);
+    const cheer = clamp(0.3 + inv(31.5, 32.5, t) * 0.3 + inv(36.1, 36.3, t) * 0.4);
+    // bounce shared by everybody on big beats
+    WHO.forEach((w, i) => {
+      const sp = seat(i), o = personOpts(i, t);
+      const jump = t > 36.1 ? Math.abs(Math.sin((t - 36.1) * 9 + i)) * 14 : 0;
+      PPL.person(ctx, w, sp.x, sp.y + 18 - jump, SOFA.s * 1.0, o);
+    });
+    // popcorn bucket between Maya and Tom laps + cushion
+    PPL.popcorn(ctx, seat(1).x + 150, seat(1).y + 70, 0.95, t);
+    PPL.sofaFront(ctx, SOFA.x, SOFA.y, SOFA.s);
+    // TV light on the family (additive, flicker)
+    const on = ease.out(inv(31.1, 31.6, t));
+    const fl = 0.75 + 0.25 * Math.sin(t * 17) * Math.sin(t * 5.3);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = A.radial(ctx, TVC.x - 300, TVC.y + 60, 50, 1000, [[0, `rgba(120,200,255,${0.34 * on * fl})`], [1, 'rgba(0,0,0,0)']]);
+    ctx.fillRect(0, 0, 1920, 1080); ctx.restore();
+    // dim room before the TV lights it
+    const dim = 0.75 * (1 - ease.out(inv(31.1, 31.8, t)));
+    if (dim > 0.01) { ctx.fillStyle = `rgba(8,4,30,${dim})`; ctx.fillRect(-600, -400, 3200, 1900); }
+    // TV drawn last so it shines above the dim
+    PPL.tv(ctx, screenDraw(t), { spill: t < 33 ? '#8fd0ff' : (t < 34 ? '#ff8a7a' : '#8fd0ff'), spillAlpha: 0.45 * on, on: true });
     drawTiles(ctx, t, true);
-    // darkness (room dim before TV lit + vignette around light)
-    const dim = 0.72 * (1 - ease.out(inv(31.1, 31.7, t)));
-    if (dim > 0.01) { ctx.fillStyle = `rgba(8,4,30,${dim})`; ctx.fillRect(-400, -300, 2800, 1700); }
     ctx.restore();
   }
   function camFn(t) {
-    let zoom = A.key(t, [[31.10, 1.22, 'out'], [32.04, 1.0], [35.19, 1.05, 'inOut'], [36.17, 1.6, 'inOut'], [36.88, 1.68, 'lin']]);
-    let x = A.key(t, [[31.10, 940], [32.04, 960], [35.19, 970, 'inOut'], [36.17, 960, 'inOut']]);
-    let y = A.key(t, [[31.10, 520], [32.04, 540], [35.19, 530, 'inOut'], [36.17, 470, 'inOut']]);
-    const rot = 0.012 * Math.sin(t * 0.9) + A.key(t, [[35.19, 0], [35.7, -0.02, 'inOut'], [36.17, 0, 'inOut']]);
+    const zoom = A.key(t, [[31.10, 1.3, 'out'], [32.04, 1.0], [35.19, 1.05, 'inOut'], [36.17, 1.22, 'inOut'], [36.88, 1.27, 'lin']]);
+    const x = A.key(t, [[31.10, 1000], [32.04, 960, 'out'], [35.19, 985, 'inOut'], [36.17, 1090, 'inOut']]);
+    const y = A.key(t, [[31.10, 470], [32.04, 540, 'out'], [35.19, 535, 'inOut'], [36.17, 500, 'inOut']]);
+    const rot = 0.008 * Math.sin(t * 0.9) + A.key(t, [[35.19, 0], [35.7, -0.018, 'inOut'], [36.17, 0, 'inOut']]);
     const shake = 0.7 * Math.exp(-Math.max(0, t - 36.31) * 12) * (t > 36.31 ? 1 : 0) + 0.25 * Math.exp(-Math.max(0, t - 31.1) * 8) * (t > 31.1 ? 1 : 0);
     return { x, y, zoom, rot, shake };
   }
 
-  // ============================================================
+========================================================
   // 6. Spinner ghost, thumbs-up, end text
   // ============================================================
   function spinner(ctx, x, y, s, a, t) {
@@ -433,14 +382,14 @@
     const gl = ease.out(inv(t0 - 0.08, t0 + 0.3, t));
     ctx.fillStyle = `rgba(18,8,40,${0.5 * gl})`; ctx.fillRect(0, 0, 1920, 1080);
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    ctx.translate(960, 440); ctx.rotate((t - t0) * 0.35); ctx.globalAlpha = 0.22 * gl;
+    ctx.translate(960, 350); ctx.rotate((t - t0) * 0.35); ctx.globalAlpha = 0.22 * gl;
     for (let i = 0; i < 14; i++) { ctx.rotate(A.TAU / 14); ctx.fillStyle = A.linear(ctx, 0, 0, 1300, 0, [[0, 'rgba(255,214,110,0.9)'], [1, 'rgba(255,214,110,0)']]); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(1300, -60); ctx.lineTo(1300, 60); ctx.closePath(); ctx.fill(); }
     ctx.restore();
-    A.glow(ctx, 960, 450, 1000, '#FFC24A', 0.55 * gl);
-    A.glow(ctx, 960, 450, 520, '#fff4c0', 0.35 * gl);
+    A.glow(ctx, 960, 360, 1000, '#FFC24A', 0.55 * gl);
+    A.glow(ctx, 960, 360, 520, '#fff4c0', 0.35 * gl);
     // white flash on pop
     flash(ctx, 0.75 * Math.exp(-Math.max(0, t - t0) * 14) * (t >= t0 ? 1 : 0), '255,244,200');
-    const lines = [['כל התוכן.', 0, 400], ['בלי תקיעות.', 0.11, 570]];
+    const lines = [['כל התוכן.', 0, 260], ['בלי תקיעות.', 0.11, 440]];
     lines.forEach(([s, d, y], i) => {
       const q = inv(t0 + d, t0 + d + 0.32, t); if (q <= 0) return;
       const sc = A.lerp(0.4, 1, ease.outBack(q)) * (1 + 0.03 * inv(t0, 36.9, t)), rot = (1 - ease.out(q)) * (i ? 0.06 : -0.06);
@@ -472,7 +421,7 @@
   // MAIN
   // ============================================================
   function worldOverlay() {}
-  const GX = 1650, GY = 300;
+  const GX = 1780, GY = 215;
   function screenGag(ctx, t) {
     const ap = inv(36.1, 36.24, t); if (ap <= 0) return;
     const q = inv(36.2, 36.31, t), sq = inv(36.31, 36.37, t);

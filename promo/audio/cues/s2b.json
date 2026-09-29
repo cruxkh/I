@@ -1,0 +1,212 @@
+[
+ {
+  "t": 9.05,
+  "sound": "whip_in_right",
+  "desc": "fast airy whoosh, panel sweeping in from right to left with sizzling wind streaks",
+  "gain_db": -8,
+  "pan": 0.5
+ },
+ {
+  "t": 9.05,
+  "sound": "stadium_crowd_roar",
+  "desc": "stadium crowd roar swelling under the montage, chants blur, runs to 10.3",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 9.27,
+  "sound": "kick_impact",
+  "desc": "punchy leather football kick thump with short bright snap and ball whistle-by",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 9.35,
+  "sound": "cut_flash_tick",
+  "desc": "tiny riser-stab tick on colour flash cut, short sparkle",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.57,
+  "sound": "dunk_rim_hit",
+  "desc": "heavy basketball slam on rim, metallic rim rattle and net swish",
+  "gain_db": -6,
+  "pan": -0.2
+ },
+ {
+  "t": 9.65,
+  "sound": "cut_flash_tick",
+  "desc": "tiny riser-stab tick on colour flash cut, short sparkle",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.87,
+  "sound": "tennis_serve_hit",
+  "desc": "crisp tennis racket pop plus fast ball zip down to the right",
+  "gain_db": -6,
+  "pan": 0.3
+ },
+ {
+  "t": 9.95,
+  "sound": "cut_flash_tick",
+  "desc": "tiny riser-stab tick on colour flash cut, short sparkle",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 10.13,
+  "sound": "wipe_whoosh_blue",
+  "desc": "broadcast swoosh, bright layered sweep left to right with rising tail",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 10.17,
+  "sound": "boxing_punch_hit",
+  "desc": "meaty glove punch impact with low thud and crowd gasp",
+  "gain_db": -5,
+  "pan": 0.2
+ },
+ {
+  "t": 10.27,
+  "sound": "ball_race_whoosh",
+  "desc": "very fast whooshing ball flying across screen left to right with doppler",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 10.48,
+  "sound": "logo_slam",
+  "desc": "big broadcast logo slam, deep impact hit plus glassy shine sparkle",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 10.6,
+  "sound": "scoreboard_slide",
+  "desc": "light UI slide-up with soft click and blip",
+  "gain_db": -13,
+  "pan": 0
+ },
+ {
+  "t": 10.75,
+  "sound": "logo_shine",
+  "desc": "short shimmering sweep across logo",
+  "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 11.0,
+  "sound": "cut_whip_goal",
+  "desc": "quick whoosh cut into match scene, crowd noise rises",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 11.25,
+  "sound": "striker_kick",
+  "desc": "hard football strike thump with air swish",
+  "gain_db": -5,
+  "pan": -0.3
+ },
+ {
+  "t": 11.38,
+  "sound": "ball_shot_whistle",
+  "desc": "fast ball zipping rush toward the goal, rising",
+  "gain_db": -9,
+  "pan": 0.4
+ },
+ {
+  "t": 11.47,
+  "sound": "net_hit",
+  "desc": "ball slamming into goal net, rippling net flutter and thud",
+  "gain_db": -5,
+  "pan": 0.5
+ },
+ {
+  "t": 11.5,
+  "sound": "goal_flash_stinger",
+  "desc": "huge goal stinger: bright white flash hit, bass boom, then crowd eruption roar and horn",
+  "gain_db": -3,
+  "pan": 0
+ },
+ {
+  "t": 11.5,
+  "sound": "confetti_pop",
+  "desc": "party cannon pop with falling confetti rustle",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 11.62,
+  "sound": "goal_slide_slap",
+  "desc": "grass slide swoosh and cheer accents",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 11.95,
+  "sound": "wipe_whoosh_orange",
+  "desc": "heavy diagonal stripe swoosh with gritty edge, sweeps left to right",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 12.08,
+  "sound": "charlton_slam",
+  "desc": "aggressive metal-industrial logo slam, deep boom with a stopwatch tick layer",
+  "gain_db": -5,
+  "pan": 0
+ },
+ {
+  "t": 12.2,
+  "sound": "stopwatch_tick_fast",
+  "desc": "rapid stopwatch ticking loop accelerating",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 12.4,
+  "sound": "race_car_pass",
+  "desc": "race car engine roar doppler pass left to right with tyre screech",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 12.55,
+  "sound": "cage_impact_prep",
+  "desc": "cage fence rattle and short grunt",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 12.66,
+  "sound": "mma_punch_hit",
+  "desc": "hard punch impact with bone thump and cage rattle",
+  "gain_db": -5,
+  "pan": 0
+ },
+ {
+  "t": 12.7,
+  "sound": "sprint_footsteps",
+  "desc": "fast sprinter footsteps on track, whoosh blur",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 12.85,
+  "sound": "charlton_lockup_hit",
+  "desc": "final logo slam with white flash, sub boom and metallic ring",
+  "gain_db": -4,
+  "pan": 0
+ },
+ {
+  "t": 13.1,
+  "sound": "whip_out_left",
+  "desc": "fast whoosh panel whipping away to the left with wind streaks",
+  "gain_db": -8,
+  "pan": 0
+ }
+]
