@@ -21,8 +21,8 @@ VO_TRIM = 0.0          # VO is the anchor
 MUSIC_GAIN = -12.0      # music bed level before ducking (relative to file)
 DUCK_DB = -7.0         # music duck while narrator speaks (mids); lows duck less
 SFX_GAIN = -6.0
-SFX_DUCK = -4.0        # SFX dip under narration (excluding big hits)
-MAX_LOUD_OVERLAP = 4
+SFX_DUCK = -7.5        # SFX dip under narration (excluding big hits)
+MAX_LOUD_OVERLAP = 3
 MAXLEN = {'impact_boom': 6.0, 'crowd_roar': 2.4, 'goal_horn': 1.2, 'stadium_crowd_swell': 2.6, 'button_ripple_chime': 2.0, 'goal_crowd_roar': 3.2}
 def maxlen(nm): return MAXLEN.get(nm, 3.6)
 BOOST = {('impact_boom', 25.61): 5.0, ('flash_boom', 25.62): 2.0, ('impact_boom', 25.99): 2.0}   # the hero moment stays huge
@@ -169,7 +169,7 @@ def build_sfx(cues, vo_dry, vo_act):
                          and (o['loud'] > c['loud'] or (o['loud'] == c['loud'] and id(o) < id(c))))
             worst = max(worst, louder)
         if worst >= MAX_LOUD_OVERLAP:
-            c['red'] = max(-8.0, -2.0 * (worst - MAX_LOUD_OVERLAP + 1))
+            c['red'] = max(-10.0, -2.5 * (worst - MAX_LOUD_OVERLAP + 1))
     # ---- VO-aware limiter: during narration no non-hero cue may exceed (VO band level - 3 dB) in the 300-4k intelligibility band
     vob = sosfilt(sos('bandpass', [300, 4000], 4), vo_dry[0])
     for c in items:
@@ -180,8 +180,8 @@ def build_sfx(cues, vo_dry, vo_act):
         if v < 10 ** (-52 / 20): continue                          # narrator silent here
         xb = sosfilt(sos('bandpass', [300, 4000], 4), cache[c['sound']][0])
         a = int(max(c['h'] - .01, 0) * SR); sx = np.sqrt(np.mean(xb[a:a + w] ** 2)) * db(c['gain_db'] + c['red'] + SFX_GAIN + SFX_DUCK)
-        over = 20 * np.log10(sx / v + 1e-9) + 3.0
-        if over > 0: c['vo_red'] = -min(8.0, over)
+        over = 20 * np.log10(sx / v + 1e-9) + 6.0
+        if over > 0: c['vo_red'] = -min(10.0, over)
     bus = np.zeros((2, NS))
     for c in items:
         x = cache[c['sound']][:, :int((c['h'] + maxlen(c['sound'])) * SR)]

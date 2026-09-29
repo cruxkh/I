@@ -874,6 +874,76 @@ S('tiles_rush', f_tiles_rush)
 S('wipe_whoosh_pink', f_whoosh, dur=.7, peak=.35, f_lo=500, f_hi=9000, pf=-.9, pt=.9, shim=.8, tone=.4)
 S('chime_sparkle', f_arp, notes=[1319, 1568, 1976, 2349, 2637], step=.06, d=.5, wet=.5)
 
+def f_net_crowd(r):
+    a = _load_anim('ball_net_swish')(r)[0]
+    c = f_crowd(r, 2.2, 36, 'roar', wet=.35, hit=.1)[0]
+    return cat(a, np.concatenate([np.zeros((2, N(.05))), c], axis=1) * .55), .01
+def f_eye_slam(r):
+    b = f_boom(r, 75, 36, .5, .6, .8, metal=.3, mf=420, wet=.2, dur=1.4, low_rumble=.2)[0]
+    gl = f_glitch(r, .5)[0]
+    return cat(b, gl * .5), .003
+def f_overtake(r):
+    ic = f_ice_shards(r, 1.6)[0]; b = f_boom(r, 80, 40, .4, .6, .8, wet=.15, dur=1.2, low_rumble=.1)[0]
+    return cat(ic, b * .8), 0.003
+
+# ---- round 2 (v3 WOW upgrade)
+S('logo_pop_sting', f_arp, notes=[1568, 2093, 2637], step=.04, d=.35, wet=.3, sp=False)
+S('impact_hit', f_boom, sub0=90, sub1=45, tau=.25, body=.6, crack=.7, wet=.1, dur=1.0, low_rumble=0)
+S('plate_fly_whoosh', W, dur=.6, peak=.3, f_lo=400, f_hi=7000, pf=-.5, pt=.8, shim=.5)
+S('crash_zoom_whoosh', W, dur=.5, peak=.32, f_lo=300, f_hi=9000, tone=1.0, sub=.4, pf=-.1, pt=.1)
+S('rim_clang', f_rim)
+S('racket_smash', f_serve)
+S('punch_impact', f_punch, low=90, wet=.15)
+S('logo_slam_reveal', f_logo_hit, dur=3.0)
+S('shimmer_sweep foil_shimmer', f_shine, dur=.9)
+S('whoosh_up', W, dur=.6, peak=.45, f_lo=300, f_hi=5000, pf=0, pt=0, sub=.2)
+S('tile_pop', f_pop, f0=500, f1=1300, dur=.15, click=.3, tau=.05)
+S('ui_swipe_out', W, dur=.4, peak=.2, f_lo=800, f_hi=6000, pf=-.2, pt=.4)
+S('ball_shot', f_kick)
+S('goal_net_hit', f_net_crowd)
+S('bass_slam', f_boom, sub0=55, sub1=28, tau=.8, body=.8, crack=.6, metal=.5, mf=200, wet=.25, dur=1.8, grit=.6)
+S('stopwatch_tick', f_click, f=3800, thunk=.2)
+S('car_whoosh', f_race)
+S('flag_flutter', f_cloth, dur=.9)
+S('letter_tick', f_thud, f=140, tau=.05, wood=1.2, dur=.25)
+S('glitch_hit glitch_rgb_hit', f_glitch, dur=.3)
+S('string_swell_rise', f_choir_swell, dur=1.5, f=196, chord=(1, 1.5, 2, 2.38), wet=.5, peak=1.4)
+S('crash_zoom_thud', f_boom, sub0=80, sub1=40, tau=.3, body=.5, crack=.5, wet=.1, dur=1.0, low_rumble=.1)
+S('whip_zoom_cut', W, dur=.4, peak=.22, f_lo=300, f_hi=9000, tone=.8, pf=-.2, pt=.2)
+S('anime_flash_whoosh', W, dur=.5, peak=.25, f_lo=1000, f_hi=10000, shim=.5, grit=.3, pf=-.2, pt=.2)
+S('comic_pop', f_pop, f0=700, f1=1800, dur=.16, blip=.5, blipf=3000, tau=.05)
+S('power_charge_rise', f_aura)
+S('eye_zoom_slam', f_eye_slam)
+S('sakura_swish', f_petals)
+S('speedline_cut speed_lines_zip', W, dur=.32, peak=.15, f_lo=2500, f_hi=11000, grit=.5, pf=-.3, pt=.3)
+S('tunnel_rush_whoosh', f_vortex, dur=1.0, peak=.85)
+S('title_pop_glass', f_pop, f0=800, f1=1800, dur=.16, blip=.8, blipf=3500, tau=.05)
+S('plate_flyby', W, dur=.5, peak=.25, f_lo=500, f_hi=8000, shim=.6, pf=.8, pt=-.8)
+S('reverse_whoosh', W, dur=.9, peak=.5, f_lo=300, f_hi=5000, rev=True, sub=.2)
+S('wall_pulse_boom', f_boom, sub0=70, sub1=36, tau=.5, body=.5, crack=.3, shim=.5, wet=.3, dur=1.6)
+S('zoom_through_rise', f_riser, dur=1.0, f_lo=250, f_hi=8000, tone=1.0, shim=.4, wet=.2)
+S('light_burst_hit', f_boom, sub0=70, sub1=34, tau=.6, body=.5, crack=.6, shim=1.0, wet=.35, dur=1.8, choir=.3)
+S('count_up_tick', f_ticks, dur=1.0, rate=25, f=3000, lvl=.6)
+S('badge_stamp', f_thud, f=130, tau=.07, wood=1.0, dur=.3)
+S('count_up_total', f_arp, notes=[600 * 2 ** (i / 12) for i in range(13)], step=.05, d=.05, sp=True, harm=(1, .2), wet=.15, lvl=.8)
+S('whoosh_low', W, dur=.9, peak=.4, f_lo=80, f_hi=900, sub=1.0, bw=1.3)
+S('live_pop', f_pop, f0=500, f1=1300, dur=.16, click=.4, blip=.5, blipf=2600, tau=.045)
+S('beat_kick', f_boom, sub0=80, sub1=45, tau=.25, crack=.3, dur=.6, low_rumble=0, wet=.05)
+S('riser_zoom', f_riser, dur=.9, f_lo=250, f_hi=7000, tone=.8, wet=.15)
+S('light_burst_whoosh', W, dur=.7, peak=.4, f_lo=400, f_hi=9000, tone=.7, shim=.8)
+S('lag_glitch_tick', f_lag, dur=.3)
+S('ball_roll_whoosh', f_ball_zip, dur=.8)
+S('overtake_impact', f_overtake)
+S('glitch_shards', f_ice_shards, dur=1.2)
+S('word_pop_gold', f_pop, f0=500, f1=1400, dur=.16, blip=.5, blipf=3200, tau=.05)
+S('word_pop_cyan', f_pop, f0=600, f1=1600, dur=.16, blip=.5, blipf=2600, tau=.05)
+S('spotlight_on', f_spot)
+S('low_swoosh_rise', W, dur=.8, peak=.6, f_lo=120, f_hi=3000, sub=.4)
+S('orbit_whoosh', f_swirl, dur=1.2, base=(400, 3000), ui=False)
+S('time_resume_whoosh', W, dur=.8, peak=.3, f_lo=300, f_hi=6000, tone=.5, sub=.3)
+S('score_bug_pop', f_blips, notes=(1800, 2400, 3000), step=.05, ndur=.09, d=.04, lvl=.6)
+S('whip_out_right', W, dur=.5, peak=.22, f_lo=500, f_hi=8000, pf=-.5, pt=.9, grit=.4)
+
 # ------------------------------------------------------- keyword fallback for unseen names (s4 etc.)
 def auto(name, desc, r):
     s = (name + ' ' + desc).lower()
