@@ -119,6 +119,11 @@ def sound(name, root=None):
     key = (name, root)
     if key in _CACHE:
         return _CACHE[key]
+    if name == 'week_harp':
+        import cal_week
+        x, hit = cal_week.build(root), 0.0
+        _CACHE[key] = (x, hit)
+        return x, hit
     if name.startswith('lib:'):
         nm = name[4:]
         x, sr = sf.read(os.path.join(LIBDIR, nm + '.wav'), always_2d=True)
@@ -215,10 +220,7 @@ def cue_sheet_v(key):
           rr.uniform(-0.7, 0.7), var=rr.uniform(0.9, 1.2))
     # ---- S4 library
     c(15.72, 'wipe_whoosh_c', -3)                                # sheet rises (speech gap)
-    for k in range(7):                                           # calendar: day page -> UI click, NEW stamp -> ding
-        tk = 16.72 + 0.24 * k
-        c(tk, 'ui_click', -11, [-0.3, 0.3][k % 2])
-        c(tk + 0.10, 'notif_ding', -15 + k * 0.4, [-0.2, 0.2][k % 2], root=R['ding'][k])
+    c(16.72, 'week_harp', -7, 0.0, root=tuple(R['ding']))       # calendar: the week plays a rising harp/pizz melody (one note per day)
     c(18.70, 'lib:whip_pan', -9)                                 # calendar flies off (speech gap)
     c(19.54, 'lib:tv_unfreeze_pop', -9)                          # gift box pops open
     c(19.77, 'boom_med', -2)                                     # IMPACT: giant NEW stamp
