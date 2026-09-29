@@ -225,6 +225,8 @@ Brief template for a scene agent (worked well):
 - **End-card tag:** "GO TV!" in the same trailer voice right after the logo slam (Kokoro `am_onyx` with phonemes `ɡˈoʊ, tˈiː vˈiː!` at speed 0.85, then the same trailer chain), with echoes "TV... TV...". Verify with Whisper ("Go TV!"). If the client can supply the real narrator (Cartesia) saying it, prefer that.
 - **Provider stickers on "השידורים החיים שאתם צריכים":** yes and HOT use real logos cropped from tv-logos (`yes-brand.png` = the "yes" part of `yes-israel-il.png`; `hot-brand.png` = `hot-vod-il.png` with the coloured square removed, on a dark card). FreeTV, Cellcom tv and Partner TV had no logo available (web blocked), so they are paper wordmarks in brand-like colours (orange, purple, teal). Ask the client for real logo images.
 
+- **Repeated small events (calendar days, list items): make them MUSIC, not UI sounds.** Synthetic clicks and notification dings sounded "metallic, not professional". The fix was `audio/v7/cal_week.py`: each torn day page plays one note of a rising phrase in the score's key, on real harp plus violin pizzicato samples, with a piano chord and a harp glissando on the last day.
+
 ## 9. Known pitfalls and fixes
 
 - The canvas state leaked between frames. Fix: `cv.width = W` at the start of every frame.
