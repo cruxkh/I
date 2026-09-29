@@ -25,7 +25,7 @@ SFX_DUCK = -4.0        # SFX dip under narration (excluding big hits)
 MAX_LOUD_OVERLAP = 4
 MAXLEN = {'impact_boom': 6.0, 'crowd_roar': 2.4, 'goal_horn': 1.2, 'stadium_crowd_swell': 2.6, 'button_ripple_chime': 2.0, 'goal_crowd_roar': 3.2}
 def maxlen(nm): return MAXLEN.get(nm, 3.6)
-BOOST = {('impact_boom', 25.61): 5.0, ('glass_shatter', 25.61): 2.0}   # the hero moment stays huge
+BOOST = {('impact_boom', 25.61): 5.0, ('flash_boom', 25.62): 2.0, ('impact_boom', 25.99): 2.0}   # the hero moment stays huge
 
 db = lambda x: 10 ** (x / 20.0)
 def sos(kind, f, order=2): return butter(order, f, kind, fs=SR, output='sos')
@@ -130,6 +130,8 @@ def load_cues():
     for f in sorted(glob.glob(os.path.join(ROOT, 'cues', '*.json'))):
         sc = os.path.basename(f)[:-5]
         for c in json.load(open(f)): c['scene'] = sc; cues.append(c)
+    if not any(c['sound'] == 'impact_boom' and abs(c['t'] - IMPACT) < 0.05 for c in cues):   # guarantee the giant impact on 25.61
+        cues.append({'t': IMPACT, 'sound': 'impact_boom', 'desc': 'mixer-injected giant impact at 25.61', 'gain_db': -3, 'pan': 0, 'scene': 'mixer'})
     cues.sort(key=lambda c: c['t'])
     return cues
 

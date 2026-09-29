@@ -21,7 +21,9 @@
   function captions(c, t) {
     if (NOCAP.some(([a, b]) => t >= a && t < b)) return;
     const ci = chunks.findIndex(k => t >= k.t0 - 0.02 && t < k.t1 + 0.08); if (ci < 0) return;
+    const heroType = t >= 25.61 && t < 27.2;   // the impact scene draws the giant words itself: keep only the English gloss
     const ch = chunks[ci], age = t - ch.t0, big = ch.some(w => /^(תקיעות|נקודה)/.test(w.w)), size = big ? 168 : 100, YB = big ? 1300 : 1320;
+    if (!heroType) {
     c.save(); c.direction = 'rtl'; c.font = `900 ${size}px Rubik`;
     const words = ch.map(w => w.w.replace(/[,?]/g, '')), gap = size * 0.34, widths = words.map(s => c.measureText(s).width);
     let total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1); const fit = Math.min(1, 940 / total);
@@ -38,7 +40,7 @@
       c.fillStyle = (active && !big) ? '#101440' : big ? V.lin(c, 0, -size * .5, 0, size * .5, V.GOLD_GRAD) : em ? em : V.lin(c, 0, -size * .5, 0, size * .5, V.WHITE_GRAD);
       c.fillText(s, 0, 0); c.restore(); x -= wp + gap;
     });
-    c.restore();
+    c.restore(); }
     const L = A.LINES.find(l => t >= l.t - 0.05 && t <= l.end + 0.3);
     if (L) {
       c.save(); c.direction = 'ltr'; c.font = '600 34px Rubik'; const tw = L.words.reduce((s, w) => s + c.measureText(w.w + ' ').width, 0), y = YB + (big ? 150 : 108), gs = Math.min(1, 980 / (tw + 52));
