@@ -1,0 +1,21 @@
+[
+{"t":0.00,"sound":"whoosh_fast_push_in","desc":"very fast airy camera-push whoosh with a slight doppler rise, settles into room tone by 0.8s","gain_db":-8,"pan":0},
+{"t":0.15,"sound":"app_tornado_swirl_start","desc":"looping cartoon wind-swirl with tiny UI blips and pings orbiting, builds in fast; runs until 2.0 then winds down","gain_db":-14,"pan":0},
+{"t":0.45,"sound":"tv_static_flick","desc":"short channel-zap blip of the big TV switching apps","gain_db":-16,"pan":0.5},
+{"t":0.80,"sound":"laptop_spinner_bloop","desc":"comic buffering bloop-bloop from the laptop","gain_db":-18,"pan":0.1},
+{"t":1.05,"sound":"tablet_error_buzz","desc":"small cheeky error buzzer from Tom's tablet","gain_db":-16,"pan":0.3},
+{"t":1.25,"sound":"maya_sigh","desc":"long exasperated female sigh, comedic, short","gain_db":-12,"pan":-0.5},
+{"t":1.55,"sound":"phone_ad_jingle_snip","desc":"tinny 0.3s mobile ad jingle cut short","gain_db":-18,"pan":-0.2},
+{"t":1.85,"sound":"remote_button_mash","desc":"rapid plastic remote-button clicks, frantic","gain_db":-16,"pan":0},
+{"t":2.00,"sound":"tape_stop_freeze","desc":"record/tape brake slam: whole chaos winds down to silence except tiny spinner ticks; tornado hangs","gain_db":-8,"pan":0},
+{"t":2.10,"sound":"comic_freeze_sting","desc":"single held comedic string pizzicato plink as everyone stares at camera","gain_db":-12,"pan":0},
+{"t":2.45,"sound":"spinner_tick_loop","desc":"tiny quiet clock ticks of hanging spinners, awkward silence tension","gain_db":-22,"pan":0.2},
+{"t":3.05,"sound":"suction_snap_whoosh","desc":"huge reversed-swoosh snap, all tiles suck into TV in a curved spiral, rising pitch sweep with glassy pings","gain_db":-6,"pan":0.3},
+{"t":3.20,"sound":"tile_swirl_shimmer","desc":"cascade of quick glassy plinks and chimes rising in pitch as tiles arrive one by one","gain_db":-12,"pan":0.5},
+{"t":3.55,"sound":"gold_burst_impact","desc":"big warm cinematic boom with bright shimmering choir-like swell and sparkle shower, TV blowing up in gold light","gain_db":-4,"pan":0.3},
+{"t":3.58,"sound":"sparkle_shower","desc":"high magic-sparkle glitter shower, spread wide, decays over 1s","gain_db":-10,"pan":0},
+{"t":3.70,"sound":"family_wow","desc":"three-person awed 'wooow' gasp, warm, short","gain_db":-11,"pan":-0.2},
+{"t":3.90,"sound":"remote_drop_clunk","desc":"plastic remote clatters on floor with a small bounce","gain_db":-12,"pan":-0.3},
+{"t":4.10,"sound":"push_in_riser","desc":"fast rising airy riser and whoosh as camera dives into the golden TV screen","gain_db":-8,"pan":0},
+{"t":4.60,"sound":"white_out_swell","desc":"bright pad swell to full-frame white, high shimmer, resolves into the next scene's hit at 5.0","gain_db":-8,"pan":0}
+]

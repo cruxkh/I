@@ -1,0 +1,142 @@
+[
+ {
+  "t": 20.66,
+  "sound": "wall_expand_whoosh",
+  "desc": "poster shatters into a wall of live screens, quick airy whoosh with a soft pop",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 20.78,
+  "sound": "live_badge_pop",
+  "desc": "short punchy UI pop with tiny blip, red LIVE badge appears",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 21.0,
+  "sound": "live_badge_pop",
+  "desc": "short punchy UI pop with tiny blip",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 21.22,
+  "sound": "live_badge_pop",
+  "desc": "short punchy UI pop with tiny blip",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 21.44,
+  "sound": "live_badge_pop",
+  "desc": "short punchy UI pop with tiny blip",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 21.66,
+  "sound": "live_badge_pop",
+  "desc": "short punchy UI pop with tiny blip",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 21.88,
+  "sound": "live_badge_pop",
+  "desc": "short punchy UI pop with tiny blip, slightly higher",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 21.95,
+  "sound": "push_through_rush",
+  "desc": "fast rising whoosh, camera plunges into the screen wall, wind + shimmer",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 22.3,
+  "sound": "iris_burst",
+  "desc": "bright airy burst as the light iris opens onto the silky world, sparkly swell",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 22.35,
+  "sound": "silk_pad_swell",
+  "desc": "smooth glassy shimmering pad swell, silky flowing texture",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 22.4,
+  "sound": "word_pop",
+  "desc": "soft bubbly text pop",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 22.45,
+  "sound": "lag_flicker",
+  "desc": "stuttering glitchy digital ticks at low frame rate, ghost lag ball",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 22.5,
+  "sound": "train_pass",
+  "desc": "sleek bullet train gliding past, smooth air whoosh left to right, no clatter",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 22.6,
+  "sound": "ball_zip",
+  "desc": "fast smooth rolling whoosh of a ball overtaking, pitch rises",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 22.68,
+  "sound": "glitch_wipe",
+  "desc": "digital glitch shatter of the ghost ball, crisp pixel scatter plus bright swipe",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 23.3,
+  "sound": "word_pop",
+  "desc": "soft bubbly text pop, higher",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 23.4,
+  "sound": "tv_pop_in",
+  "desc": "cartoon TV pops in with a soft boing and glassy chime",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 23.42,
+  "sound": "word_pop",
+  "desc": "soft bubbly text pop, higher",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 23.55,
+  "sound": "power_down",
+  "desc": "electronic power-down sweep, falling pitch, lights dimming, then dark hush",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 23.7,
+  "sound": "spotlight_thunk",
+  "desc": "low soft thunk and hum as a single spotlight switches on in the dark",
+  "gain_db": -10,
+  "pan": 0
+ }
+]
