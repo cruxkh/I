@@ -85,7 +85,7 @@
   // ---------- phase 2: FAST
   function phase2(ctx, t) {
     CL.paper(ctx, 'yellow', { dots: C.blue, dotSize: 38, dotFade: 'b', dotAlpha: .22 });
-    let k = P(t, 22.22); if (k) CL.chip(ctx, 'חוויית צפייה', 1520, 190, { size: 110, rot: .03, seed: 11, scale: k });
+    let k = P(t, 22.22); if (k) CL.chip(ctx, 'חוויית צפייה', 1450, 190, { size: 110, rot: .03, seed: 11, scale: k });
     // speedometer
     const cx = 800, cy = 450, R = 320; k = P(t, 22.3);
     if (k) { const jj = CL.j(t, 3, 2), sh = CL.shake(t, 22.72, .6, 12);
@@ -106,7 +106,7 @@
     // checkered ribbon
     k = P(t, 22.4); if (k) { ctx.save(); ctx.translate(960, 850); ctx.rotate(-.02); ctx.scale(k, 1); ctx.translate(-960, -850); chequer(ctx, -30, 1950, 850, 80, Math.floor(t * 12) * 18); ctx.restore(); }
     // MEHIRA
-    k = P(t, 22.72); if (k) CL.title(ctx, 'מהירה', 1500, 520, { size: 280, fill: C.red, rot: -.05, scale: k });
+    k = P(t, 22.72); if (k) CL.title(ctx, 'מהירה', 1400, 520, { size: 250, fill: C.red, rot: -.05, scale: k });
     // rocket zoom
     const rp = inv(22.66, 23.06, t);
     if (rp > 0 && rp < 1) { const q = Math.floor(rp * 10) / 10, x = lerp(-380, 2400, q), y = lerp(330, 200, q);
@@ -118,8 +118,8 @@
   const wave = (x, t, i) => Math.sin(x * .006 + t * (1.1 + i * .25) + i * 1.7) * (34 - i * 4) + Math.sin(x * .0023 - t * .7 + i) * 26;
   function phase3(ctx, t) {
     CL.paper(ctx, 'cream', { dots: C.blue, dotSize: 40, dotFade: 't', dotAlpha: .16 });
-    let k = P(t, 23.14); if (k) CL.title(ctx, 'חלקה', 1500, 290, { size: 320, fill: C.blue, rot: .04, scale: k, outer: C.white });
-    const u = inv(23.3, 23.6, t); if (u > 0) CL.underline(ctx, 1180, 1820, 450, u, { color: C.red, seed: 6, lw: 14 });
+    let k = P(t, 23.14); if (k) CL.title(ctx, 'חלקה', 1400, 290, { size: 270, fill: C.blue, rot: .04, scale: k, outer: C.white });
+    const u = inv(23.3, 23.6, t); if (u > 0) CL.underline(ctx, 1130, 1670, 450, u, { color: C.red, seed: 6, lw: 14 });
     // silky ribbon
     const ru = ease.out(inv(23.14, 23.6, t));
     if (ru > 0) { ctx.save(); ctx.lineCap = 'round'; const n = 60; for (const pass of [[0, C.ink, 62, 12], [0, C.yellow, 44, 0], [-8, '#FFF08A', 14, 0]]) { ctx.beginPath(); for (let i = 0; i <= n * ru; i++) { const x = -40 + i / n * 2000; const y = 110 + Math.sin(x * .005 + t * 2) * 40 + Math.sin(x * .002 - t) * 30 + pass[0]; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.strokeStyle = pass[1]; ctx.lineWidth = pass[2]; ctx.stroke(); } ctx.restore(); }
