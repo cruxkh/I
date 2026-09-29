@@ -177,7 +177,7 @@ Brief template for a scene agent (worked well):
 - Suspense ends in DIGITAL SILENCE of about 0.32 s, then the drop on the hit.
 - Rejected earlier: marimba/ukulele "cute", a GM soundfont funk band (OK but "childish"), a synth 808 trap-pop (muddy), and public-domain classical mashups (never delivered).
 
-### 7.1 The "cinema trailer" music recipe (client favourite: the default for every film)
+### 7.1 The "cinema trailer" music recipe (client favourite: the template's music, used when the client asks for this template)
 1. **Driving string ostinato:** 16th-note spiccato (violins and violas); cellos and basses accent the off-beats.
 2. **Heroic brass hook:** horns and trumpets in octaves, 6-8 notes, an upward leap in the middle, a stepwise fall (used: D D D'(octave) C A | Bb A G F).
 3. **Trailer percussion:** taiko, low booms, timpani rolls into hits, gong or cymbal swells, a real kit only in the big sections.
