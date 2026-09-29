@@ -63,10 +63,38 @@
     confetti(ctx, t, 38.9, 34, 540, 1320, 61, 1.8, 900);
   }
 
-  A.scene({ name: 's8_end', start: 36.7, end: 40.0, draw: (ctx, s) => {
+
+  // client add-on: the radio-style fast disclaimer after "GO TV!" (voice T 43.5 = v 38.9): "וכל זה ב 350₪ תשלום חד פעמי, פעיל לשנה"
+  function priceSpot(ctx, t) {
+    const S0 = 38.9; if (t < S0 - 0.3) return;
+    const W = CL.W, H = CL.H, port = H > W, k = clamp((t - (S0 - 0.3)) / .3);
+    ctx.save(); ctx.fillStyle = `rgba(16,10,4,${.5 * k})`; ctx.fillRect(0, 0, W, H); ctx.restore();
+    const cx = W / 2, cy = port ? H * .47 : H * .5, R = Math.min(W, H) * (port ? .44 : .36);
+    // ON AIR + fast-forward badge (radio feel)
+    const oa = CL.pop(t, S0 - 0.25, .25);
+    if (oa) { const oy = port ? cy - R - 150 : 70, ox = port ? cx : cx; ctx.save(); ctx.translate(ox, oy); ctx.scale(oa, oa); ctx.rotate(-.04);
+      CL.blob(ctx, -140, 0, 300, 110, { fill: C.red }); A.text(ctx, 'ON AIR', -120, 6, { font: '400 76px Bangers', fill: C.white, stroke: C.ink, lw: 12, dir: 'ltr' });
+      ctx.fillStyle = Math.floor(t * 4) % 2 ? '#fff' : '#FFD60A'; ctx.strokeStyle = C.ink; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(-250, 0, 16, 0, TAU); ctx.fill(); ctx.stroke();
+      for (let i = 1; i <= 3; i++) { ctx.strokeStyle = `rgba(255,255,255,${.9 - i * .2 + .2 * Math.sin(t * 9 - i)})`; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(-250, 0, 16 + i * 22, -.7, .7); ctx.stroke(); ctx.beginPath(); ctx.arc(-250, 0, 16 + i * 22, Math.PI - .7, Math.PI + .7); ctx.stroke(); }
+      CL.blob(ctx, 150, 0, 220, 110, { fill: C.yellow }); ctx.fillStyle = C.ink; for (const dx of [95, 150]) { ctx.beginPath(); ctx.moveTo(dx - 26, -30); ctx.lineTo(dx + 22, 0); ctx.lineTo(dx - 26, 30); ctx.closePath(); ctx.fill(); }
+      A.text(ctx, 'x2', 222, 6, { font: '400 60px Bangers', fill: C.ink, dir: 'ltr' }); ctx.restore(); }
+    // "וכל זה ב"
+    const a0 = CL.pop(t, S0 + 0.02, .22); if (a0) CL.chip(ctx, 'וכל זה ב', port ? cx : cx - R * 1.35, port ? cy - R - 20 : cy - R * .35, { size: port ? 64 : 56, rot: -.05, scale: a0, fill: C.white, seed: 71 });
+    // price burst
+    const pb = CL.pop(t, S0 + 0.42, .35);
+    if (pb) { const sk = CL.shake(t, S0 + 0.42, .4, 14), rot = Math.sin(t * 1.3) * .03; ctx.save(); ctx.translate(cx + sk[0], cy + sk[1]); ctx.scale(pb, pb);
+      CL.star(ctx, 8, 14, R, 18, { fill: 'rgba(40,20,0,.35)', lw: .01, rot }); CL.star(ctx, 0, 0, R, 18, { fill: C.yellow, lw: 12, rot });
+      CL.star(ctx, 0, 0, R * .8, 18, { fill: '#FFE66B', lw: .01, rot: rot + .1 });
+      CL.title(ctx, '350', -R * .14, -R * .05, { size: R * .5, dir: 'ltr', fill: C.red, rot: -.06 }); CL.title(ctx, '₪', R * .55, -R * .1, { size: R * .36, dir: 'ltr', fill: C.red, rot: -.06, font: `bold ${Math.round(R * .36)}px 'DejaVu Sans'` }); ctx.restore();
+      if (t < S0 + 0.8) CL.sparks(ctx, cx, cy, R * 1.05, R * 1.35, 16, t, { color: C.white, lw: 10 }); }
+    const c1 = CL.pop(t, S0 + 1.45, .25); if (c1) CL.chip(ctx, 'תשלום חד פעמי', cx, cy + R * .72, { size: port ? 80 : 64, rot: .03, scale: c1, fill: C.blue, ink: C.white, seed: 72 });
+    const c2 = CL.pop(t, S0 + 2.42, .25); if (c2) CL.chip(ctx, 'פעיל לשנה', cx, cy + R * .72 + (port ? 132 : 100), { size: port ? 78 : 64, rot: -.04, scale: c2, fill: C.white, seed: 73 });
+  }
+  A.scene({ name: 's8_end', start: 36.7, end: 43.0, draw: (ctx, s) => {
     const t = s.t, p = inv(36.7, 37.05, t);
-    if (p >= 1) { content(ctx, t); return; }
+    if (p >= 1) { content(ctx, t); priceSpot(ctx, t); return; }
     const pp = ease.out(clamp(Q(p * 100, 24) / 100)), R = pp * 1450, ring = r => { ctx.beginPath(); for (let i = 0; i <= 72; i++) { const a = i / 72 * TAU, rr = r * (1 + (hash(i * 1.3 + Q(t, 12) * .1) - .5) * .07); ctx.lineTo(540 + Math.cos(a) * rr, 960 + Math.sin(a) * rr); } ctx.closePath(); };
     ctx.save(); ctx.fillStyle = 'rgba(40,20,0,.32)'; ring(R + 44); ctx.fill(); ctx.fillStyle = C.white; ring(R + 18); ctx.fill(); ring(R); ctx.clip(); content(ctx, t); ctx.restore();
+    priceSpot(ctx, s.t);
   } });
 })();
