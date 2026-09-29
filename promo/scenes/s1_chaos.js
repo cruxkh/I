@@ -230,7 +230,7 @@
         c.globalCompositeOperation = 'lighter'; const g = 0.2 + 0.8 * p * p; c.fillStyle = A.radial(c, w / 2, h / 2, 0, w * 0.6 * g, [[0, 'rgba(255,240,190,' + (0.95 * g) + ')'], [0.5, 'rgba(255,194,74,' + 0.5 * g + ')'], [1, 'rgba(255,194,74,0)']]); c.fillRect(0, 0, w, h);
         c.globalCompositeOperation = 'source-over';
       } else {
-        c.fillStyle = A.radial(c, w / 2, h / 2, 0, w * 0.75, [[0, '#FFFFFF'], [0.35, '#FFF0B8'], [1, '#FFC24A']]); c.fillRect(0, 0, w, h);
+        c.fillStyle = A.radial(c, w / 2, h / 2, 0, w * 0.75, [[0, '#FFFBEA'], [0.3, '#FFE9A0'], [1, '#FFB830']]); c.fillRect(0, 0, w, h);
         c.save(); c.translate(w / 2, h / 2); c.rotate(b * 0.4); c.globalAlpha = 0.35; for (let i = 0; i < 12; i++) { c.rotate(TAU / 12); c.fillStyle = '#fff'; c.beginPath(); c.moveTo(0, 0); c.lineTo(700, -50); c.lineTo(700, 50); c.fill(); } c.restore();
       }
     }, { spill: t < T_BURST ? '#FF5A78' : '#FFD27A', spillAlpha: t < T_BURST ? 0.3 * chaos : 0.6 });
@@ -308,9 +308,9 @@
   // ---------------------------------------------------------------- camera
   function cam(t) {
     const TS = T_SNAP + 0.4;
-    const x = A.key(t, [[0, 1130], [0.9, 760, 'out'], [T_FREEZE, 700, 'inOut'], [T_SNAP, 640, 'inOut'], [TS, 960, 'out'], [T_BURST + 0.15, 1000, 'inOut'], [4.1, 1200, 'inOut'], [T_END, L.tv.x, 'in']]);
-    const y = A.key(t, [[0, 640], [0.9, 590, 'out'], [T_FREEZE, 560], [T_SNAP, 540, 'inOut'], [TS, 540, 'out'], [T_BURST + 0.15, 520, 'inOut'], [4.1, 470, 'inOut'], [T_END, L.tv.y, 'in']]);
-    const zoom = A.key(t, [[0, 1.6], [0.9, 1.3, 'out'], [T_FREEZE - 0.01, 1.34, 'lin'], [T_FREEZE + 0.12, 1.47, 'out'], [T_SNAP, 1.58, 'lin'], [TS, 1.0, 'outBack'], [T_BURST + 0.15, 1.04, 'inOut'], [4.1, 1.4, 'inOut'], [T_END, 5.2, 'in']]);
+    const x = A.key(t, [[0, 1130], [0.9, 760, 'out'], [T_FREEZE, 700, 'inOut'], [T_SNAP, 640, 'inOut'], [TS, 960, 'out'], [T_BURST + 0.15, 1020, 'inOut'], [4.3, 1360, 'inOut'], [T_END, L.tv.x, 'in']]);
+    const y = A.key(t, [[0, 640], [0.9, 590, 'out'], [T_FREEZE, 560], [T_SNAP, 540, 'inOut'], [TS, 540, 'out'], [T_BURST + 0.15, 520, 'inOut'], [4.3, 450, 'inOut'], [T_END, L.tv.y, 'in']]);
+    const zoom = A.key(t, [[0, 1.6], [0.9, 1.3, 'out'], [T_FREEZE - 0.01, 1.34, 'lin'], [T_FREEZE + 0.12, 1.47, 'out'], [T_SNAP, 1.58, 'lin'], [TS, 1.0, 'outBack'], [T_BURST + 0.15, 1.04, 'inOut'], [4.3, 1.3, 'inOut'], [4.7, 2.3, 'inOut'], [T_END, 5.4, 'in']]);
     const rot = A.key(t, [[0, 0.06], [0.9, -0.012, 'out'], [T_FREEZE, 0.01], [T_SNAP, 0.0, 'inOut'], [TS, 0, 'out'], [T_BURST, 0], [T_BURST + 0.12, 0.015, 'out'], [4.3, -0.01, 'inOut'], [T_END, 0.0, 'inOut']]);
     const sh = (t > T_FREEZE && t < T_FREEZE + 0.2 ? 0.7 * (1 - inv(T_FREEZE, T_FREEZE + 0.2, t)) : 0) + (t > T_BURST && t < T_BURST + 0.6 ? 1.2 * (1 - inv(T_BURST, T_BURST + 0.6, t)) : 0) + (t > T_SNAP && t < T_SNAP + 0.3 ? 0.6 * (1 - inv(T_SNAP, T_SNAP + 0.3, t)) : 0) + (t > 4.2 ? 0.25 * inv(4.2, T_END, t) : 0);
     // keep the view inside the 1920x1080 kit room
@@ -362,7 +362,7 @@
     if (sk > 0.01) { const r = A.rng(9); ctx.save(); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 26; i++) { const y = r() * 1080, len = 300 + r() * 700, x = ((r() * 2600 - t * 4200 * (0.6 + r())) % 2600 + 2600) % 2600 - 340; ctx.globalAlpha = 0.18 * sk; ctx.fillStyle = r() > 0.5 ? '#B9A6FF' : '#FFE9B0'; ctx.fillRect(x, y, len, 2 + r() * 4); } ctx.restore(); }
     // snap flash + vignette punch at freeze->snap
     const sn = 1 - inv(T_SNAP, T_SNAP + 0.14, t); if (t >= T_SNAP && sn > 0) { ctx.fillStyle = `rgba(255,244,216,${0.35 * sn})`; ctx.fillRect(0, 0, 1920, 1080); }
-    const bf = t >= T_BURST ? 1 - inv(T_BURST, T_BURST + 0.28, t) : 0; if (bf > 0) { ctx.fillStyle = `rgba(255,250,235,${0.8 * bf})`; ctx.fillRect(0, 0, 1920, 1080); }
+    const bf = t >= T_BURST ? 1 - inv(T_BURST, T_BURST + 0.28, t) : 0; if (bf > 0) { ctx.fillStyle = `rgba(255,250,235,${0.6 * bf})`; ctx.fillRect(0, 0, 1920, 1080); }
     // final wash to gold-white
     const w = A.ease.in(inv(T_WASH, T_END - 0.06, t)); if (w > 0) { ctx.fillStyle = GOLD_WHITE; ctx.globalAlpha = w; ctx.fillRect(0, 0, 1920, 1080); ctx.globalAlpha = 1; }
   } });
