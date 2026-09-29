@@ -1,6 +1,6 @@
 ---
 name: creator-ad-studio
-description: Produce a "big-league" creator-style promo video (vertical 1080x1920 + landscape 1920x1080, 30 fps MP4) from the user's own voice-over (TTS WAV) and a talking-head clip of the user, with a hand-made paper-collage stop-motion look, real brand logos, word-exact sync, genre "hold" moments where the voice pauses, an original sample-based score and premium SFX, built by ~10-15 parallel agents. Use when the user sends a VO + a video of themselves and asks for a video / סרטון / פרסומת / "כמו הסרטון של GOTV" / "לפי הטמפלט" / "ליגות גבוהות".
+description: Produce a "big-league" creator-style promo video (vertical 1080x1920 + landscape 1920x1080, 30 fps MP4) from the user's own voice-over (TTS WAV) and a talking-head clip of the user, with a hand-made paper-collage look with smooth 30 fps motion and motion blur, real brand logos, word-exact sync, genre "hold" moments where the voice pauses, an original sample-based score and premium SFX, built by ~10-15 parallel agents. Use when the user sends a VO + a video of themselves and asks for a video / סרטון / פרסומת / "כמו הסרטון של GOTV" / "לפי הטמפלט" / "ליגות גבוהות".
 ---
 # Creator Ad Studio (the GOTV v7 template)
 
