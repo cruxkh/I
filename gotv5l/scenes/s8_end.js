@@ -40,7 +40,7 @@
 
     // smart TV with install animation
     const ts = CL.pop(t, 37.65, .3);
-    if (ts) { const tj = CL.j(t, 6, 2), cx = 1520 + tj[0], cy = 430 + tj[1];
+    if (ts) { const tj = CL.j(t, 6, 2), cx = 1500 + tj[0], cy = 430 + tj[1];
       ctx.save(); ctx.translate(cx, cy); ctx.scale(ts, ts); ctx.fillStyle = C.ink;
       ctx.beginPath(); ctx.moveTo(-220, 216); ctx.lineTo(-150, 216); ctx.lineTo(-180, 282); ctx.lineTo(-250, 282); ctx.closePath(); ctx.moveTo(220, 216); ctx.lineTo(150, 216); ctx.lineTo(180, 282); ctx.lineTo(250, 282); ctx.closePath(); ctx.fill();
       ctx.fillStyle = C.white; ctx.beginPath(); ctx.roundRect(-364, -249, 728, 498, 46); ctx.fill(); ctx.restore();
@@ -63,8 +63,8 @@
 
     // small parenthesised line on a paper tag
     const tg = CL.pop(t, 38.15, .3);
-    if (tg) { const gj = CL.j(t, 8, 2); ctx.save(); ctx.translate(1520 + gj[0], 820 + gj[1]); ctx.rotate(-.015); ctx.scale(tg, tg);
-      CL.scrap(ctx, 0, 0, 820, 110, { fill: C.white, seed: 9, rough: 4, shadow: 9 }); ctx.font = '700 48px Rubik'; ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = C.ink;
+    if (tg) { const gj = CL.j(t, 8, 2); ctx.save(); ctx.translate(1500 + gj[0], 840 + gj[1]); ctx.rotate(-.015); ctx.scale(tg, tg);
+      CL.scrap(ctx, 0, 0, 700, 100, { fill: C.white, seed: 9, rough: 4, shadow: 9 }); ctx.font = '700 42px Rubik'; ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = C.ink;
       ctx.fillText('(התקנת אפליקציה על המסך החכם)', 0, 4); ctx.restore(); }
 
     confetti(ctx, t, 37.08, 46, 620, 400, 51);
