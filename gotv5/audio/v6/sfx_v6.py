@@ -370,11 +370,12 @@ def _glock(f, dur, r, bright=1.0):
     return y * attack(n, 0.0008)
 
 
-def win_chime(r, root=74):
+def win_chime(r, root=74, quality='maj'):
     dur = 2.4
     n = N(dur)
     y = np.zeros((2, n))
-    seq = [0, 4, 7, 12, 16, 19, 24]
+    third = 4 if quality == 'maj' else 3
+    seq = [0, third, 7, 12, 12 + third, 19, 24]
     step = 0.042
     for k, iv in enumerate(seq):
         f = mtof(root + iv)
@@ -382,11 +383,11 @@ def win_chime(r, root=74):
         add_at(y, pan(g, -0.6 + 1.2 * k / (len(seq) - 1)), k * step)
     # confirming bright chord on top, a hair after the arpeggio
     t_ch = len(seq) * step
-    for iv, p in ((12, -0.3), (16, 0.3), (19, -0.1), (24, 0.2)):
+    for iv, p in ((12, -0.3), (12 + third, 0.3), (19, -0.1), (24, 0.2)):
         add_at(y, pan(_glock(mtof(root + iv), 1.8, r, 0.8) * 0.55, p), t_ch)
     # warm soft pad underneath (sine chord, fast swell, short)
     m = N(1.4)
-    pad = sum(np.sin(2 * np.pi * mtof(root - 12 + iv) * tax(m)) for iv in (0, 4, 7, 12)) * 0.08
+    pad = sum(np.sin(2 * np.pi * mtof(root - 12 + iv) * tax(m)) for iv in (0, third, 7, 12)) * 0.08
     pad *= env(m, [(0, 0), (0.08, 1), (0.5, 0.5), (1.4, 0)])
     add_at(y, st(pad), 0.02)
     # glitter: tiny high sine twinkles
@@ -402,6 +403,8 @@ def win_chime(r, root=74):
 @reg('win_chime', 0.0, 'Game-win success chime: fast sparkly glockenspiel major arpeggio (7 notes, L->R), bright '
      'confirming chord, warm pad, glitter twinkles, hall. First note = hit 0.0. 2.4 s.', True)
 def _(r, root=74):
+    if isinstance(root, tuple):
+        return win_chime(r, root[0], root[1])
     return win_chime(r, root)
 
 
