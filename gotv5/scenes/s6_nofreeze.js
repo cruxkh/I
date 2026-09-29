@@ -1,7 +1,6 @@
 // s6 NO FREEZING. PERIOD.  25.4 to 30.5  (climax)
 (() => {
   const { clamp, lerp, inv, ease, hash, rng, TAU } = A, C = CL.C, W = 1080, H = 1920;
-  CL.noCap.push([25.6, 27.3]);
   const SK = ['#FF3B30', '#FFD60A', '#1F4FFF', '#2BC48A', '#FF7AB8', '#FF8A1F', '#FFFDF6'];
 
   // ---------- helpers
@@ -107,9 +106,9 @@
   }
   function tornLine(y0, y1, x0, x1, seed) { const r = rng(seed), pts = [], n = 16; for (let i = 0; i <= n; i++) { const k = i / n; pts.push([lerp(x0, x1, k) + (i % 2 ? 22 : -22) * (.5 + r()), lerp(y0, y1, k)]); } return pts; }
   function tv1(ctx, t) {
-    const p = CL.pop(t, 27.19, .3); if (p <= 0 && t < 27.19) return; const j = CL.j(t, 5, 2.5), cx = 540 + j[0], cy = 600 + j[1], rot = -.035 + j[2];
+    const p = CL.pop(t, 27.19, .3); if (p <= 0 && t < 27.19) return; const j = CL.j(t, 5, 2.5), cx = 540 + j[0], cy = 650 + j[1], rot = -.035 + j[2];
     drawTV1(t, p); const ts = 27.8;
-    if (t < ts) { ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(p, p); ctx.drawImage(tvc, -TVC[0], -TVC[1]); ctx.restore(); return; }
+    if (t < ts) { ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(p * 1.06, p * 1.06); ctx.drawImage(tvc, -TVC[0], -TVC[1]); ctx.restore(); return; }
     const u = t - ts, line = tornLine(-30, 820, 640, 470, 4);
     [-1, 1].forEach(sd => {
       ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot);
@@ -157,7 +156,7 @@
     const dv = ease.out(clamp((t - 29.0) / .28)); player(c, sw - 96, 300 + 26 * Math.sin(t * 3.1) - dv * 100, C.orange, run * .5, -1, 1.2 + dv * .1);
     const sxp = t < kick ? sx : sx + Math.min(60, (t - kick) * 120);
     player(c, sxp, sy, C.yellow, run + 5, 1, 1.35);
-    let bx, by, br = 17, hgt = 0;
+    let bx, by, br = 25, hgt = 0;
     if (t < kick) { bx = sx + 44 + 10 * Math.sin(t * 15); by = sy + 16; }
     else if (t < land) { const u = (t - kick) / (land - kick), x0 = sx + 44 + 10 * Math.sin(kick * 15), y0 = sy + 16; bx = lerp(x0, sw - 62, u); by = lerp(y0, 352, u); hgt = Math.sin(u * Math.PI) * 70; }
     else { const k = t - land; bx = sw - 62 + 12 * (1 - Math.exp(-k * 5)); by = 352 + 14 * (1 - Math.exp(-k * 4)) + Math.sin(k * 9) * 3; }
@@ -217,6 +216,7 @@
   }
 
   A.scene({ name: 's6_nofreeze', start: 25.4, end: 30.5, draw: (ctx, s) => {
+    if (CL.noCap && !CL.noCap.some(q => q[0] === 25.6)) CL.noCap.push([25.6, 27.3]);   // main.js resets CL.noCap after scenes load, so register lazily
     const t = s.t; let sx = 0, sy = 0;
     [[25.64, .45, 22], [25.82, .5, 30], [26.52, .7, 40], [29.25, .6, 24]].forEach(([a, d, m]) => { const k = CL.shake(t, a, d, m); sx += k[0]; sy += k[1]; });
     ctx.translate(540 + sx, 960 + sy); ctx.scale(1.035, 1.035); ctx.translate(-540, -960);
