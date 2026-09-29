@@ -344,9 +344,9 @@
     ctx.restore();
   }
   function camFn(t) {
-    const zoom = A.key(t, [[31.10, 1.3, 'out'], [32.04, 1.0], [35.19, 1.05, 'inOut'], [36.17, 1.16, 'inOut'], [36.88, 1.2, 'lin']]);
-    const x = A.key(t, [[31.10, 1000], [32.04, 960, 'out'], [35.19, 985, 'inOut'], [36.17, 1030, 'inOut']]);
-    const y = A.key(t, [[31.10, 470], [32.04, 540, 'out'], [35.19, 535, 'inOut'], [36.17, 500, 'inOut']]);
+    const zoom = A.key(t, [[31.10, 1.3, 'out'], [32.04, 1.0], [35.19, 1.04, 'inOut'], [36.17, 1.25, 'inOut'], [36.88, 1.3, 'lin']]);
+    const x = A.key(t, [[31.10, 1000], [32.04, 960, 'out'], [35.19, 985, 'inOut'], [36.17, 985, 'inOut']]);
+    const y = A.key(t, [[31.10, 470], [32.04, 540, 'out'], [35.19, 535, 'inOut'], [36.17, 505, 'inOut']]);
     const rot = 0.008 * Math.sin(t * 0.9) + A.key(t, [[35.19, 0], [35.7, -0.018, 'inOut'], [36.17, 0, 'inOut']]);
     const shake = 0.7 * Math.exp(-Math.max(0, t - 36.31) * 12) * (t > 36.31 ? 1 : 0) + 0.25 * Math.exp(-Math.max(0, t - 31.1) * 8) * (t > 31.1 ? 1 : 0);
     return { x, y, zoom, rot, shake };
@@ -380,12 +380,12 @@
     if (t < t0 - 0.12) return;
     // golden hero light
     const gl = ease.out(inv(t0 - 0.08, t0 + 0.3, t));
-    ctx.fillStyle = `rgba(18,8,40,${0.62 * gl})`; ctx.fillRect(0, 0, 1920, 1080);
+    ctx.fillStyle = `rgba(18,8,40,${0.42 * gl})`; ctx.fillRect(0, 0, 1920, 1080);
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     ctx.translate(960, 350); ctx.rotate((t - t0) * 0.35); ctx.globalAlpha = 0.22 * gl;
     for (let i = 0; i < 14; i++) { ctx.rotate(A.TAU / 14); ctx.fillStyle = A.linear(ctx, 0, 0, 1300, 0, [[0, 'rgba(255,214,110,0.9)'], [1, 'rgba(255,214,110,0)']]); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(1300, -60); ctx.lineTo(1300, 60); ctx.closePath(); ctx.fill(); }
     ctx.restore();
-    A.glow(ctx, 960, 360, 1000, '#FFC24A', 0.55 * gl);
+    A.glow(ctx, 960, 360, 1000, '#FFC24A', 0.4 * gl);
     A.glow(ctx, 960, 360, 520, '#fff4c0', 0.35 * gl);
     // white flash on pop
     flash(ctx, 0.75 * Math.exp(-Math.max(0, t - t0) * 14) * (t >= t0 ? 1 : 0), '255,244,200');
@@ -393,16 +393,18 @@
     lines.forEach(([s, d, y], i) => {
       const q = inv(t0 + d, t0 + d + 0.32, t); if (q <= 0) return;
       const sc = A.lerp(0.4, 1, ease.outBack(q)) * (1 + 0.03 * inv(t0, 36.9, t)), rot = (1 - ease.out(q)) * (i ? 0.06 : -0.06);
-      ctx.save(); ctx.translate(960, y + (1 - ease.out(q)) * 40); ctx.rotate(rot); ctx.scale(sc, sc); ctx.globalAlpha = clamp(q * 3);
+      const tc = A.layer('s5txt', 1700, 320, () => {}), g = tc.getContext('2d');
+      g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, 1700, 320); g.globalAlpha = 1;
       const font = '900 ' + (i ? 190 : 200) + 'px Rubik';
-      A.text(ctx, s, 6, 14, { font, fill: 'rgba(10,4,30,0.55)', stroke: 'rgba(10,4,30,0.55)', lw: 30, dir: 'rtl' });
-      A.text(ctx, s, 0, 0, { font, fill: '#1a1330', stroke: '#1a1330', lw: 34, dir: 'rtl' });
-      ctx.font = font; ctx.direction = 'rtl'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillStyle = A.linear(ctx, 0, -100, 0, 100, [[0, '#FFF6C8'], [0.45, '#FFD24A'], [1, '#FF9A2A']]); ctx.fillText(s, 0, 0);
-      // shine sweep
-      ctx.save(); ctx.globalCompositeOperation = 'source-atop'; const sx = A.lerp(-500, 500, inv(t0 + d + 0.15, t0 + d + 0.6, t));
-      ctx.fillStyle = A.linear(ctx, sx - 80, 0, sx + 80, 0, [[0, 'rgba(255,255,255,0)'], [0.5, 'rgba(255,255,255,0.85)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(sx - 80, -140, 160, 280); ctx.restore();
-      ctx.restore();
+      A.text(g, s, 856, 174, { font, fill: 'rgba(10,4,30,0.55)', stroke: 'rgba(10,4,30,0.55)', lw: 30, dir: 'rtl' });
+      A.text(g, s, 850, 160, { font, fill: '#1a1330', stroke: '#1a1330', lw: 34, dir: 'rtl' });
+      g.font = font; g.direction = 'rtl'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillStyle = A.linear(g, 0, 60, 0, 260, [[0, '#FFF6C8'], [0.45, '#FFD24A'], [1, '#FF9A2A']]); g.fillText(s, 850, 160);
+      g.globalCompositeOperation = 'source-atop'; const sx = A.lerp(250, 1450, inv(t0 + d + 0.15, t0 + d + 0.6, t));
+      g.fillStyle = A.linear(g, sx - 80, 0, sx + 80, 0, [[0, 'rgba(255,255,255,0)'], [0.5, 'rgba(255,255,255,0.85)'], [1, 'rgba(255,255,255,0)']]); g.fillRect(sx - 80, 0, 160, 320);
+      g.globalCompositeOperation = 'source-over';
+      ctx.save(); ctx.translate(960, y + (1 - ease.out(q)) * 40); ctx.rotate(rot); ctx.scale(sc, sc); ctx.globalAlpha = clamp(q * 3);
+      ctx.drawImage(tc, -850, -160); ctx.restore();
     });
     // sparkles
     for (let i = 0; i < 14; i++) {
@@ -421,7 +423,7 @@
   // MAIN
   // ============================================================
   function worldOverlay() {}
-  const GX = 1780, GY = 215;
+  const GX = 1810, GY = 215;
   function screenGag(ctx, t) {
     const ap = inv(36.1, 36.24, t); if (ap <= 0) return;
     const q = inv(36.2, 36.31, t), sq = inv(36.31, 36.37, t);
@@ -429,7 +431,7 @@
     ctx.save(); ctx.globalAlpha = fade;
     // spinner ghost tries to appear, gets flattened
     if (sq < 1 || t < 36.5) {
-      const sc = 0.5 + 0.5 * ease.outBack(ap);
+      const sc = 1.6 * (0.5 + 0.5 * ease.outBack(ap));
       const squash = sq > 0 ? { x: sc * (1 + 0.7 * ease.out(sq)), y: sc * (1 - 0.88 * ease.out(sq)) } : { x: sc, y: sc };
       spinner(ctx, GX, GY + 30 * sq, squash, ap * (1 - 0.3 * sq), t);
     }
