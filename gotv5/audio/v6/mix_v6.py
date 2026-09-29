@@ -192,7 +192,7 @@ def cue_sheet(key):
         tk = 16.72 + 0.24 * k
         c(tk, 'ui_click', -11, [-0.3, 0.3][k % 2])
         c(tk + 0.10, 'notif_ding', -15 + k * 0.4, [-0.2, 0.2][k % 2], root=R['ding'][k])
-    c(18.70, 'lib:whip_pan', -4)                                 # calendar flies off (speech gap)
+    c(18.70, 'lib:whip_pan', -9)                                 # calendar flies off (speech gap)
     c(19.54, 'lib:tv_unfreeze_pop', -9)                          # gift box pops open
     c(19.77, 'boom_med', -2)                                     # IMPACT: giant NEW stamp
     c(19.80, 'lib:wa_receive', -9)                               # NOTIFY: "ba-ding"
@@ -205,7 +205,7 @@ def cue_sheet(key):
     c(23.92, 'curtain_swoosh', -5)                               # curtains close
     c(23.97, 'stamp_thud', -4)                                   # curtains meet (speech gap)
     c(25.32, 'riser_long', -2, root=R['riser'])                  # TRANSITION riser -> silence -> drop
-    c(25.64, 'boom_big', 0, m_all=0.0, m_hi=6.0)                           # THE BIG ONE (sub/kick may sit level with "אין";
+    c(25.64, 'boom_big', 0, m_all=2.0)                           # THE BIG ONE (sub/kick may sit level with "אין";
                                                                  #  its speech band stays >= 8 dB under the voice)
     c(25.82, 'boom_med_b', -3)                                   # IMPACT: stamp 2
     c(26.52, 'boom_med', -2)                                     # IMPACT: period dot + flash
@@ -244,7 +244,7 @@ def cue_sheet(key):
     c(36.00, 'paper_pop', -13, 0.0, var=0.9)                     # wheel appears
     c(36.39, 'record_scratch_v6b', -2)                           # SCRATCH: buffering wheel crossed out
     # ---- S8 end card
-    c(37.08, 'boom_med', -6)                                      # IMPACT: end logo slam
+    c(37.08, 'boom_med', -8)                                      # IMPACT: end logo slam
     c(37.08, 'brass_stab', -5, root=R['brass'][2])                # REVEAL brass: end card logo
     c(37.08, 'lib:confetti_popper', -10)
     c(37.45, 'paper_pop', -9)                                    # tagline
@@ -386,6 +386,11 @@ def main():
         p_ = max(0, int((0.45 * SR - (b_ - a_)) / 2))
         thr[a_:b_] = meter0.integrated_loudness(VO[:, a_ - p_:b_ + p_].T) - 9.0
     sounding = inword & (vo_l4 > thr)
+    # per-word VO reference: the word's momentary (400 ms) maximum; SFX over a word are judged against it
+    REF = np.full(NS, 99.0)
+    for w in W:
+        a_, b_ = int(w['t0'] * SR), max(int(w['t1'] * SR), int(w['t0'] * SR) + 1)
+        REF[a_:b_] = np.minimum(REF[a_:b_], vo_l4[a_:b_].max())
 
     # ---- SFX bus with per-cue VO protection (sequential, in time order).
     #   Every cue gets a static gain chosen so that, wherever a word is sounding, the SFX bus (all cues so far + this
@@ -396,9 +401,8 @@ def main():
     #   raise it by more than 0.5 dB.  Nothing here is time-varying compression: one or two static gains per cue.
     SFX_BUS_DB = 0.0
     M_HI, M_ALL = 7.0, 5.0
-    WIN = 0.2
+    WIN = 0.4
     sos_lo = butter(4, 200, 'lowpass', fs=SR, output='sos')
-    vo_l2 = loud_curve(VO, WIN)
     LO = np.zeros((2, NS))
     HI = np.zeros((2, NS))
     cues = cue_sheet(dict(root=root))
@@ -421,60 +425,69 @@ def main():
               fout=q.get('fout', 0))
         lo_ = sosfilt(sos_lo, loc)
         hi_ = loc - lo_
-        V = vo_l2[i0_:i2_]
-        m = sounding[i0_:i2_] & (V > thr[i0_:i2_])      # syllable cores on both the 400 ms and 200 ms scale
-        onset = int(q['t'] * SR) - i0_
-        head = np.ones(i2_ - i0_)            # weight of the part that stays at full level
-        if m.any():
-            first = int(np.argmax(m[onset:] if onset < len(m) else m)) + (onset if onset < len(m) else 0)
-            if m[:onset + int(0.04 * SR)].any() or not m[onset:].any():
-                first_word = None if not m[onset:].any() else first
-            else:
-                first_word = first
-            if first_word is not None and first_word - onset > int(0.09 * SR) and not m[max(0, onset - int(0.02 * SR)):onset + int(0.04 * SR)].any():
-                s_ = first_word - int(0.05 * SR)
-                head[s_:s_ + ramp_n] = np.cos(np.linspace(0, np.pi / 2, ramp_n)) ** 2
-                head[s_ + ramp_n:] = 0.0
-                m[:first_word + int(0.1 * SR)] = False      # head spill into the first 100 ms of the word is accepted
-            else:
-                head[:] = 0.0                               # hit is on a word: the whole cue is set under the voice
-        if m.any():
-            Ehi, Elo = HI[:, i0_:i2_], LO[:, i0_:i2_]
-            base_hi = loud_curve(Ehi, WIN)
-            base_all = loud_curve(Ehi + Elo, WIN)
+        V = REF[i0_:i2_]
+        m = inword[i0_:i2_]
+        onset = min(max(0, int(q['t'] * SR) - i0_), i2_ - i0_ - 1)
+        Ehi, Elo = HI[:, i0_:i2_], LO[:, i0_:i2_]
+        Et = Ehi + Elo
+        hib = lambda z: z - sosfilt(sos_lo, z)            # speech-band view of the actual summed signal
+        base_hi = loud_curve(hib(Et), WIN)
+        base_all = loud_curve(Et, WIN)
 
-            def need(G, band):
-                w = head + (1 - head) * db(G)
-                if band == 'hi':
-                    l = loud_curve(Ehi + hi_ * w, WIN)
-                    lim = np.maximum(V - q.get('m_hi', M_HI), base_hi + 0.5)
-                else:
-                    l = loud_curve(Ehi + Elo + (hi_ * db(G_h_) + lo_) * w if False else Ehi + Elo + hi_ * wh_ + lo_ * w, WIN)
-                    lim = np.maximum(V - q.get('m_all', M_ALL), base_all + 0.5)
-                return np.all(l[m] <= lim[m] + 0.05)
+        def solve(test):
+            if test(0.0):
+                return 0.0
+            lo_g, hi_g = -36.0, 0.0
+            for _ in range(8):
+                mid = 0.5 * (lo_g + hi_g)
+                lo_g, hi_g = (mid, hi_g) if test(mid) else (lo_g, mid)
+            return lo_g
 
-            def solve(band):
-                if need(0.0, band):
-                    return 0.0
-                lo_g, hi_g = -36.0, 0.0
-                for _ in range(8):
-                    mid = 0.5 * (lo_g + hi_g)
-                    if need(mid, band):
-                        lo_g = mid
-                    else:
-                        hi_g = mid
-                return lo_g
-            wh_ = head
-            G_h_ = solve('hi')
-            wh_ = head + (1 - head) * db(G_h_)
-            G_a_ = solve('all')
-        else:
-            G_h_ = G_a_ = 0.0
-        wa = head + (1 - head) * db(G_a_)
-        wh = (head + (1 - head) * db(G_h_)) * wa
-        q['prot'] = (G_h_, G_a_, bool(head.max() > 0 and head.min() < 1))
+        lim_h = np.maximum(V - q.get('m_hi', M_HI), base_hi + 0.25)
+        lim_a = np.maximum(V - q.get('m_all', M_ALL), base_all + 0.25)
+        lim_a_tail = np.maximum(V - M_ALL, base_all + 0.25)          # a hit-only exception never extends to its tail
+
+        def ok(l, lim, mm):
+            return np.all(l[mm] <= lim[mm] + 0.05)
+        # two segments per cue: the hit (from the file start to 120 ms after the sync point) and the tail (after a
+        # 60 ms ramp).  1) one gain for the whole cue, judged from the file start to 300 ms after the sync;
+        # 2) an extra gain for the tail only, judged on every sounding word it overlaps.
+        nL = i2_ - i0_
+        tw = np.zeros(nL)
+        c0 = onset + int(0.12 * SR)
+        if c0 < nL:
+            r_ = min(ramp_n, nL - c0)
+            tw[c0:c0 + r_] = np.sin(np.linspace(0, np.pi / 2, r_)) ** 2
+            tw[c0 + r_:] = 1.0
+        hw = 1.0 - tw
+        m_near = m.copy()                                   # samples the hit itself is judged on
+        m_near[:max(0, min(onset - int(0.1 * SR), int(t_start * SR) - i0_))] = False
+        m_near[min(nL, onset + int(0.3 * SR)):] = False
+        Hh = Ah = Eh = Ea = 0.0
+        if m_near.any():                                    # 1) whole cue level, judged around the hit
+            for _ in range(2):                              # (2 rounds: the low band leaks a little above 200 Hz)
+                Hh = solve(lambda G: ok(loud_curve(hib(Et + hi_ * db(G + Ah) + lo_ * db(Ah)), WIN), lim_h, m_near))
+                Ah = solve(lambda G: ok(loud_curve(Et + (hi_ * db(Hh) + lo_) * db(G), WIN), lim_a, m_near))
+        g_hi0, g_lo0 = db(Hh + Ah), db(Ah)
+        if m.any():                                         # 2) extra tuck of the tail only (never raises it)
+            lim_at = np.where(tw > 0.5, lim_a_tail, lim_a)
+            for _ in range(2):
+                Eh = solve(lambda G: ok(loud_curve(hib(Et + (hi_ * g_hi0 * (hw + tw * db(G)) + lo_ * g_lo0)
+                                                       * (hw + tw * db(Ea))), WIN), lim_h, m))
+                Ea = solve(lambda G: ok(loud_curve(Et + (hi_ * g_hi0 * (hw + tw * db(Eh)) + lo_ * g_lo0)
+                                                   * (hw + tw * db(G)), WIN), lim_at, m))
+        wa = g_lo0 * (hw + tw * db(Ea))
+        wh = g_hi0 * (hw + tw * db(Eh)) * (hw + tw * db(Ea))
+        head = hw
+        q['prot'] = (Hh + Ah, Hh + Ah + Eh + Ea, True)
         LO[:, i0_:i2_] += lo_ * wa
         HI[:, i0_:i2_] += hi_ * wh
+        if os.environ.get('DEBUG_T'):
+            td = int(float(os.environ['DEBUG_T']) * SR) - i0_
+            if 0 <= td < nL:
+                print('DBG %-22s t=%.2f hi-alone %.1f  bus-hi(hib) %.1f  lim_h %.1f REF %.1f  gains %s' % (
+                    q['nm'], q['t'], loud_curve(hi_ * wh, WIN)[td], loud_curve(hib(HI[:, i0_:i2_] + LO[:, i0_:i2_]), WIN)[td], lim_h[td], V[td],
+                    q['prot']))
     SFX = sosfilt(butter(2, 22, 'highpass', fs=SR, output='sos'), LO + HI)
     exempt = np.zeros(NS, bool)
     for q in cues:
@@ -534,10 +547,10 @@ def main():
     print('silence %.3f-%.3f: max |x| = %.3g (%s) | first non-zero sample after: %.5f s'
           % (SIL0, SIL1, np.max(np.abs(sil)), 'DIGITAL ZERO' if np.max(np.abs(sil)) == 0 else 'NOT ZERO',
              (i1 + np.argmax(np.any(chk[:, i1:] != 0, axis=0))) / SR))
-    print('SFX bus peak %.1f dBFS pre-master; cues %d, tucked under the voice: %d (tail-only: %d)'
-          % (20 * np.log10(np.max(np.abs(SFX)) + 1e-12), len(cues), sum(min(q['prot'][:2]) < -0.5 for q in cues),
-             sum(q['prot'][2] and min(q['prot'][:2]) < -0.5 for q in cues)))
-    print('per-cue VO protection (speech-band / whole):  ' + '  '.join(
+    print('SFX bus peak %.1f dBFS pre-master; cues %d; hit tucked under the voice: %d; tail tucked: %d'
+          % (20 * np.log10(np.max(np.abs(SFX)) + 1e-12), len(cues), sum(q['prot'][0] < -0.5 for q in cues),
+             sum(q['prot'][1] < -0.5 for q in cues)))
+    print('per-cue VO protection, dB (hit / tail, speech-band+whole):  ' + '  '.join(
         '%.2f %s %.0f/%.0f' % (q['t'], q['nm'].replace('lib:', '')[:12], q['prot'][0], q['prot'][1])
         for q in cues if min(q['prot'][:2]) < -0.5))
     # per-phrase VO vs bed
@@ -550,24 +563,34 @@ def main():
     ph = {}
     for w in W:
         ph.setdefault(w['ph'], []).append(w)
-    print('phrase window        | VO LUFS | VO-bed  VO-SFX  VO-music (integrated over phrase, LU) '
-          '| word-core 400 ms minima: VO-bed  VO-SFX  VO-SFX>200Hz  VO-music')
+    print('phrase window        | VO LUFS | integrated over phrase (LU): VO-bed  VO-SFX  VO-music '
+          '| worst word (VO word-max minus layer max over the word, momentary 400 ms): bed  SFX  SFX>200Hz  music')
     S_ = SFX * gm * mask
     sh_ = loud_curve(S_ - sosfilt(sos_lo, S_), 0.4)
     W_all = []
+    lowwords = []
     for k_, ws in ph.items():
         a, b = ws[0]['t0'], ws[-1]['t1']
         ia, ib = int(a * SR), int(b * SR)
         pad = max(0, int((0.45 - (b - a)) * SR / 2))
         I = lambda X: meter.integrated_loudness(X[:, ia - pad:ib + pad].T)
         v, bb, ss, mm = I(VOf), I(BED), I(S_), I(MU * gm * mask)
-        core = inword[ia:ib] & (vl[ia:ib] > v - 6.0)          # word cores: VO momentary within 6 dB of phrase level
-        mins = [np.min((vl - X)[ia:ib][core]) for X in (bl, sl, sh_, ml)]
+        mins = [99.0] * 4
+        for w in ws:
+            wa_, wb_ = int(w['t0'] * SR), max(int(w['t1'] * SR), int(w['t0'] * SR) + 1)
+            vm = vl[wa_:wb_].max()
+            for j, X in enumerate((bl, sl, sh_, ml)):
+                mins[j] = min(mins[j], vm - X[wa_:wb_].max())
+            if vm - sh_[wa_:wb_].max() < 4.0 or vm - sl[wa_:wb_].max() < 4.0:
+                lowwords.append('%s@%.2f(SFX %.1f, >200Hz %.1f at %.2f)' % (w['w'], w['t0'], vm - sl[wa_:wb_].max(),
+                                vm - sh_[wa_:wb_].max(), (wa_ + np.argmax(sh_[wa_:wb_])) / SR))
         W_all.append(mins)
-        print('%3d %6.2f-%6.2f | %6.1f  | %6.1f  %6.1f  %6.1f                                  | %6.1f  %6.1f  %6.1f  %6.1f   %s'
+        print('%3d %6.2f-%6.2f | %6.1f  |                           %6.1f  %6.1f  %6.1f   '
+              '|                                                            %5.1f %5.1f  %5.1f     %5.1f   %s'
               % (k_, a, b, v, v - bb, v - ss, v - mm, *mins, ' '.join(x['w'] for x in ws)[:24]))
     W_all = np.array(W_all)
-    print('word-core minima over all phrases: VO-bed %.1f | VO-SFX %.1f | VO-SFX speech band %.1f | VO-music %.1f dB'
+    print('words under 4 dB:', ', '.join(lowwords) or 'none')
+    print('worst word over the whole ad: VO-bed %.1f | VO-SFX %.1f | VO-SFX speech band %.1f | VO-music %.1f dB'
           % tuple(W_all.min(0)))
     np.save(os.path.join(HERE, '.stems_check.npy'), np.vstack([VOf.mean(0), (SFX * gm * mask).mean(0), (MU * gm * mask).mean(0)]).astype(np.float32))
     spectro(chk, cues)
