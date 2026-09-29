@@ -440,7 +440,6 @@
     // desk
     const dy = 1085; ctx.fillStyle = lin(ctx, 0, dy, 0, dy + 400, [[0, '#182466'], [.08, '#0a1040'], [1, '#02030f']]); ctx.beginPath(); ctx.moveTo(-500, dy + 30); ctx.lineTo(1580, dy - 30); ctx.lineTo(1580, 2300); ctx.lineTo(-500, 2300); ctx.fill();
     ctx.fillStyle = lin(ctx, 0, 0, W, 0, [[0, '#FFC24A'], [.5, '#FFF3C4'], [1, '#E48A12']]); ctx.beginPath(); ctx.moveTo(-500, dy + 30); ctx.lineTo(1580, dy - 30); ctx.lineTo(1580, dy - 20); ctx.lineTo(-500, dy + 40); ctx.fill();
-    liveBadge(ctx, 540, 215, .9 * eob(inv(5.6, 5.72, t)), t);
     fastStreaks(ctx, t, 6, '#9fc4ff', .3, 44, 2600, 100, 1200);
     ctx.restore();
   }
@@ -451,7 +450,7 @@
   const WALLP = [['kan11', 0, 0, 6.02], ['ch14', 1, 1, 6.10], ['ch9', 0, 2, 6.18], ['keshet12', 1, 0, 6.26], ['i24', 1, 2, 6.34], ['reshet13', 0, 1, 6.42]];
   function shot3(ctx, t) {
     const u = inv(T_S2, T_S3, t), yaw = lerp(.28, -.22, eio(u)), [sx, sy] = shakeXY(t, [6.02, 6.18, 6.34, 6.5], 9);
-    ctx.save(); camT(ctx, 1.0 + .2 * ein(u) + punch(t, [6.02, 6.18, 6.34, 6.5], .035, .16), lerp(-.1, .035, eio(u)), sx + lerp(-50, 50, u), sy);
+    ctx.save(); camT(ctx, 1.0 + .07 * ein(u) + punch(t, [6.02, 6.18, 6.34, 6.5], .035, .16), lerp(-.1, .035, eio(u)), sx + lerp(-50, 50, u), sy);
     ctx.fillStyle = lin(ctx, 0, -300, 0, 1500, [[0, '#070d3a'], [.5, '#0d1a6a'], [1, '#040620']]); ctx.fillRect(-500, -500, W + 1000, 2700);
     glow(ctx, 540, 640, 1100, '#2F6BFF', .4); glow(ctx, 540 + yaw * 500, 1000, 700, '#ff3b4a', .16);
     // perspective floor grid + vertical lines (deep parallax)
@@ -466,7 +465,7 @@
     const cxs = [290, 790], cys = [430, 730, 1030];
     WALLP.forEach(([nm, col, row, t0], i) => {
       const side = col ? 1 : -1, ry = side * .3 + yaw * .5, x = cxs[col] + yaw * 60 * (col ? 1 : -1) * 0 + Math.sin(t * 2 + i) * 4;
-      popPlate(ctx, nm, t, t0, x, cys[row], 430, 296, ry, (row - 1) * -.05, { ph: i + 1, fd: side, bob: 7, drop: 220 });
+      popPlate(ctx, nm, t, t0, x, cys[row], 400, 276, ry, (row - 1) * -.05, { ph: i + 1, fd: side, bob: 7, drop: 220 });
     });
     // headline
     const hu = inv(6.30, 6.5, t); if (hu > 0) { const e = eob(hu); ctx.save(); ctx.translate(540, 212); ctx.scale(e, e); ctx.rotate((1 - hu) * .1); glow(ctx, 0, 0, 380, '#ffc24a', .3); V.text(ctx, 'בישראל', 0, 0, 132, { grad: V.GOLD_GRAD, stroke: '#0A1450', sw: 20, shadowBlur: 40, shadowY: 16 }); ctx.restore(); }
@@ -490,9 +489,9 @@
     const k = t - T_NF, [sx, sy] = shakeXY(t, NF_HITS, 14, .22);
     const zoom = 1.06 + (t - 6.6) * .03 + punch(t, NF_HITS, .07, .2), rot = Math.sin(t * 3.1) * .012 + lerp(-.07, 0, eo(inv(6.7, 7.3, t)));
     ctx.save(); camT(ctx, zoom, rot, sx, sy, 540, 640);
-    ctx.fillStyle = lin(ctx, 0, -300, 0, 1500, [[0, '#020001'], [.4, '#140306'], [.7, '#3a050c'], [1, '#080102']]); ctx.fillRect(-500, -500, W + 1000, 2700);
+    ctx.fillStyle = lin(ctx, 0, -300, 0, 1500, [[0, '#000000'], [.45, '#080203'], [.75, '#1c0408'], [1, '#040001']]); ctx.fillRect(-500, -500, W + 1000, 2700);
     const pulse = .6 + .4 * Math.sin(t * 7);
-    glow(ctx, 540, 1250, 1100, '#ff1a2a', .34); glow(ctx, 540, 430, 700 + punch(t, NF_HITS, 500, .25), '#ff2a3a', .3 * eo(clamp(k * 6)));
+    glow(ctx, 540, 1250, 1000, '#ff1a2a', .22); glow(ctx, 540, 430, 600 + punch(t, NF_HITS, 400, .25), '#ff2a3a', .12 * eo(clamp(k * 6)));
     V.beams(ctx, 540, 1950, t * 2, '#ffd0c0', 6, 2200, 1.1, .07); V.beams(ctx, 540, -60, t * 1.5 + 2, '#ff6a6a', 5, 1800, 1.0, .05);
     dust(ctx, t, 40, 5, ['#fff', '#ff9a8a', '#ffd0a0'], { speed: 40, size: 7, alpha: .8 });
     // side poster columns (parallax, continuous fall)
@@ -518,15 +517,15 @@
     if (k < .04) { hband(ctx, 430, 1, '#ff3a3a', 10 - line * 4, 540 - 500 * eo(line), 540 + 500 * eo(line)); glow(ctx, 540, 430, 300 * line, '#ff2a2a', .7); }
     if (k >= 0) {
       const e = ease.outBack(clamp(k / .32)), s2 = lerp(2.0, 1, ease.out(clamp(k / .3))), ry = lerp(-1.1, -.16, e) + Math.sin(t * 2.6) * .07, rx = Math.sin(t * 2.1 + 1) * .05 - .04;
-      const dim = lerp(.42, 1, inv(6.86, 7.16, t)) * 1, sw1 = inv(6.80, 7.15, t), sw2 = inv(7.42, 7.7, t);
+      const dim = lerp(.55, 1, inv(6.86, 7.16, t)), sw1 = inv(6.80, 7.15, t), sw2 = inv(7.42, 7.7, t);
       const lc = nfLogo(t, Math.min(1, dim + punch(t, NF_HITS, 1, .1)), sw1, sw2);
       ctx.save(); ctx.globalAlpha = clamp(k * 14);
-      glow(ctx, 540, 430, 640, '#e50914', .45 + .3 * pulse); glow(ctx, 540, 430, 340, '#ff5a5a', .35);
+      glow(ctx, 540, 430, 560, '#e50914', .16 + .1 * pulse);
       // reflection
-      ctx.save(); ctx.globalAlpha *= .22; ctx.translate(0, 860 + 8); ctx.scale(1, -1); V.card3d(ctx, lc, 540, 430, 1000 * s2 * e, 300 * s2 * e, ry, rx, 1300, 12, 3); ctx.restore();
-      V.card3d(ctx, lc, 540, 430, 1000 * s2 * Math.max(e, .01), 300 * s2 * Math.max(e, .01), ry, rx, 1300, 14, 4);
+      ctx.save(); ctx.globalAlpha *= .22; ctx.translate(0, 860 + 8); ctx.scale(1, -1); V.card3d(ctx, lc, 540, 430, 780 * s2 * e, 234 * s2 * e, ry, rx, 1300, 12, 3); ctx.restore();
+      V.card3d(ctx, lc, 540, 430, 780 * s2 * Math.max(e, .01), 234 * s2 * Math.max(e, .01), ry, rx, 1300, 14, 4);
       ctx.restore();
-      NF_HITS.forEach((h, i) => { rays(ctx, 540, 430, t, h, i % 2 ? '#ffb0a0' : '#ff3040', 22, 1400, .36, i * 5); hband(ctx, 430, Math.max(0, 1 - (t - h) / .3) * .9, i % 2 ? '#ffd0d0' : '#ff5a5a', 12); });
+      NF_HITS.forEach((h, i) => { rays(ctx, 540, 430, t, h, i % 2 ? '#ff9080' : '#c01020', 20, 1300, .3, i * 5); hband(ctx, 430, Math.max(0, 1 - (t - h) / .3) * .9, i % 2 ? '#ffd0d0' : '#ff5a5a', 12); });
       V.ring(ctx, 540, 430, 80 + k * 2600, 34 * (1 - clamp(k / .5)) + 2, '#ff5a5a', .85 * (1 - clamp(k / .5)));
       if (k < .5) V.ring(ctx, 540, 430, 40 + k * 1500, 16, '#fff', .8 * (1 - k / .5));
       burst(ctx, 540, 430, t, 6.70, 26, ['#fff', '#ff8a8a', '#ffc24a'], 1100, .8, 700, 8);
@@ -574,11 +573,11 @@
       ctx.restore(); });
     // HERO logo
     if (k > -.02) {
-      const e = ease.outBack(clamp(k / .34)), s2 = lerp(2.4, 1, ease.out(clamp(k / .3))), ry = lerp(.9, 0, e) + Math.sin(t * 2.3) * .08, rx = Math.sin(t * 1.9) * .04 - .03, cy = 430 + Math.sin(t * 2.6) * 8;
+      const e = ease.outBack(clamp(k / .34)), s2 = lerp(2.4, 1, ease.out(clamp(k / .3))), ry = lerp(.9, 0, e) + Math.sin(t * 2.3) * .08, rx = Math.sin(t * 1.9) * .04 - .03, cy = 410 + Math.sin(t * 2.6) * 8;
       const lc = dsLogo(t, inv(8.24, 8.62, t));
       glow(ctx, 540, cy, 720, '#5a8aff', .5); glow(ctx, 540, cy, 400, '#ffe9a8', .32 + punch(t, DS_HITS, 1.5, .2));
       ctx.save(); ctx.globalAlpha = clamp((k + .02) * 14);
-      V.card3d(ctx, lc, 540, cy, 1000 * s2 * Math.max(e, .01), 560 * s2 * Math.max(e, .01), ry, rx, 1300, 14, 8);
+      V.card3d(ctx, lc, 540, cy, 820 * s2 * Math.max(e, .01), 459 * s2 * Math.max(e, .01), ry, rx, 1300, 14, 8);
       ctx.restore();
       // comet-orb running along the logo arc
       const au = inv(8.30, 8.72, t); if (au > 0 && au < 1) { const [ax, ay] = arcPt(au), lx = 540 + (ax - .5) * 880, ly = cy + (ay - .5) * 880 * 278 / 512; glow(ctx, lx, ly, 150, '#fff', .9); V.sparkle(ctx, lx, ly, 70, '#fff', t * 4, 1);

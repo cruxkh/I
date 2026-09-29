@@ -40,7 +40,7 @@
       cap(g, -14, 4, -30, -8, 13); disc(25);
     } else if (type === 'thumb') { cap(g, -3, -14, -3, -40, 16); disc(26); g.strokeStyle = 'rgba(160,80,0,.55)'; g.lineWidth = 3; g.lineCap = 'round'; for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(6, -2 + i * 9); g.lineTo(20, -2 + i * 9); g.stroke(); } }
     else if (type === 'point') { cap(g, 4, -10, 4, -50, 13); disc(26); g.strokeStyle = 'rgba(160,80,0,.55)'; g.lineWidth = 3; g.lineCap = 'round'; for (let i = 0; i < 2; i++) { g.beginPath(); g.moveTo(8, 6 + i * 9); g.lineTo(21, 6 + i * 9); g.stroke(); } }
-    else { disc(26); g.strokeStyle = 'rgba(160,80,0,.55)'; g.lineWidth = 3; g.lineCap = 'round'; for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(-14, -12 + i * 9); g.lineTo(-2, -12 + i * 9); g.stroke(); } }
+    else { disc(26); cap(g, 10, -6, 20, -22, 12); g.strokeStyle = 'rgba(160,80,0,.55)'; g.lineWidth = 3; g.lineCap = 'round'; for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(-14, -12 + i * 9); g.lineTo(-2, -12 + i * 9); g.stroke(); } }
     g.restore();
   }
   function shoe(g, x, y, dir, sq = 1) {
@@ -94,13 +94,13 @@
   function mouth(g, type, open, t) {
     const fillM = () => { g.fillStyle = lg(g, 0, 0, 0, 70, [[0, '#7A0F35'], [1, '#C01E55']]); g.fill(); };
     if (type === 'D' || type === 'O') {
-      g.save(); g.translate(0, 44); g.beginPath();
-      if (type === 'D') { const w = 26 + open * 8, d = 6 + open * 46; g.moveTo(-w, 0); g.quadraticCurveTo(0, 7, w, 0); g.bezierCurveTo(w * .95, d, -w * .95, d, -w, 0); }
-      else { g.ellipse(0, 6, 13 + open * 3, 11 + open * 14, 0, 0, TAU); }
-      g.closePath(); fillM(); g.save(); g.clip();
-      if (type === 'D') { g.fillStyle = '#fff'; g.fillRect(-40, -4, 80, 6 + Math.min(1, open * 2) * 6); if (open > .45) { g.beginPath(); g.ellipse(0, 12 + open * 46, 20, 10 + open * 8, 0, 0, TAU); g.fillStyle = '#FF6E96'; g.fill(); } }
-      else { g.beginPath(); g.ellipse(0, 22 + open * 8, 10, 8, 0, 0, TAU); g.fillStyle = '#FF6E96'; g.fill(); }
-      g.restore(); g.lineJoin = 'round'; g.lineWidth = 4; g.strokeStyle = 'rgba(255,255,255,.9)'; g.stroke(); g.restore();
+      g.save(); g.translate(0, 38); const mp = new Path2D();
+      if (type === 'D') { const w = 26 + open * 8, d = 6 + open * 36; mp.moveTo(-w, 0); mp.quadraticCurveTo(0, 7, w, 0); mp.bezierCurveTo(w * .95, d, -w * .95, d, -w, 0); }
+      else mp.ellipse(0, 8, 13 + open * 3, 11 + open * 12, 0, 0, TAU);
+      mp.closePath(); g.fillStyle = lg(g, 0, 0, 0, 60, [[0, '#7A0F35'], [1, '#C01E55']]); g.fill(mp); g.save(); g.clip(mp);
+      if (type === 'D') { g.fillStyle = '#fff'; g.fillRect(-40, -4, 80, 6 + Math.min(1, open * 2) * 6); if (open > .45) { g.beginPath(); g.ellipse(0, 6 + open * 34, 20, 8 + open * 8, 0, 0, TAU); g.fillStyle = '#FF6E96'; g.fill(); } }
+      else { g.beginPath(); g.ellipse(0, 20 + open * 6, 10, 8, 0, 0, TAU); g.fillStyle = '#FF6E96'; g.fill(); }
+      g.restore(); g.lineJoin = 'round'; g.lineWidth = 4; g.strokeStyle = 'rgba(255,255,255,.9)'; g.stroke(mp); g.restore();
     } else if (type === 'smirk') {
       g.save(); g.lineCap = 'round'; g.strokeStyle = '#fff'; g.lineWidth = 6.5; g.beginPath(); g.moveTo(-22, 50); g.quadraticCurveTo(2, 60, 30, 36); g.stroke();
       g.beginPath(); g.moveTo(30, 36); g.lineTo(35, 30); g.stroke(); g.restore();
@@ -138,7 +138,7 @@
     // idle bounce on the beat (120 bpm) with squash on landing
     const ph = (t * 2) % 1, bounce = Math.abs(Math.sin(ph * Math.PI)), land = ph < .12 ? (1 - ph / .12) : 0;
     const hop = P.hop + bounce * (poseName === 'cheer' || poseName === 'laugh' ? 4 : 9);
-    const sqK = land * .07 - (bounce > .8 ? .02 : 0);
+    const sqK = land * .05 - (bounce > .8 ? .015 : 0);
     const popSY = pop * (1 + .32 * (pop - 1)), popSX = pop * (1 - .32 * (pop - 1));
     const sx = popSX * (1 + sqK), sy = popSY * P.sy * (1 - sqK);
     // look
@@ -212,8 +212,8 @@
     ctx.restore();
     ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(190,250,255,.9)'; ctx.beginPath(); ctx.arc(0, 0, RI - .5, 0, TAU); ctx.stroke();
     // tuft: gold play triangle
-    const tr = -.62 + Math.sin(t * 4.2) * .08 - P.tilt * 1.5 + (land * .18);
-    playTri(ctx, 4 + P.tilt * 30, -RO - 18, .58, tr);
+    const tr = -.3 + Math.sin(t * 4.2) * .07 - P.tilt * 1.5 + (land * .18);
+    playTri(ctx, 2 + P.tilt * 30, -RO - 22, .6, tr);
     // remote / bolts
     if (P.remote && o.prop !== 'none') {
       remote(ctx, P.R.x, P.R.y - 8, P.R.ang * (poseName === 'zap' ? 1 : .6));

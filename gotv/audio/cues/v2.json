@@ -9,7 +9,7 @@
  {
   "t": 5.0,
   "sound": "whoosh_fast_push_in",
-  "desc": "fast push-in rush",
+  "desc": "fast push-in rush into skyline",
   "gain_db": -10,
   "pan": 0
  },
@@ -17,224 +17,385 @@
   "t": 5.05,
   "sound": "flag_unfurl",
   "desc": "flag flap unfurl",
-  "gain_db": -9,
+  "gain_db": -10,
   "pan": 0
  },
  {
-  "t": 5.1,
+  "t": 5.08,
   "sound": "live_badge_pop",
   "desc": "LIVE badge pop",
+  "gain_db": -9,
+  "pan": 0.3
+ },
+ {
+  "t": 5.14,
+  "sound": "headline_slam",
+  "desc": "word slam שידורים",
   "gain_db": -9,
   "pan": 0
  },
  {
   "t": 5.22,
-  "sound": "headline_slam",
-  "desc": "title word slam שידורים",
-  "gain_db": -10,
-  "pan": 0
- },
- {
-  "t": 5.45,
   "sound": "tv_pop_in",
-  "desc": "glass monitor pop 1",
-  "gain_db": -14,
+  "desc": "glass logo plate pop kan11",
+  "gain_db": -13,
+  "pan": 0.3
+ },
+ {
+  "t": 5.3,
+  "sound": "tv_pop_in",
+  "desc": "glass logo plate pop keshet12",
+  "gain_db": -13,
+  "pan": 0.1
+ },
+ {
+  "t": 5.3,
+  "sound": "headline_slam",
+  "desc": "word slam חיים",
+  "gain_db": -8,
   "pan": 0
  },
  {
-  "t": 5.55,
+  "t": 5.36,
   "sound": "glint_sweep",
   "desc": "light sweep over title",
   "gain_db": -16,
   "pan": 0
  },
  {
-  "t": 5.55,
-  "sound": "ticker_slide",
-  "desc": "news ticker slide up",
-  "gain_db": -14,
+  "t": 5.38,
+  "sound": "tv_pop_in",
+  "desc": "glass logo plate pop i24",
+  "gain_db": -13,
+  "pan": 0.4
+ },
+ {
+  "t": 5.5,
+  "sound": "whip_out_left",
+  "desc": "whip pan skyline to studio with streaks",
+  "gain_db": -8,
   "pan": 0
  },
  {
-  "t": 5.62,
+  "t": 5.6,
   "sound": "tv_pop_in",
-  "desc": "glass monitor pop 2",
-  "gain_db": -14,
-  "pan": 0
+  "desc": "studio wall logo pop kan11",
+  "gain_db": -15,
+  "pan": -0.3
+ },
+ {
+  "t": 5.66,
+  "sound": "tv_pop_in",
+  "desc": "studio wall logo pop 14",
+  "gain_db": -15,
+  "pan": 0.2
+ },
+ {
+  "t": 5.72,
+  "sound": "tv_pop_in",
+  "desc": "studio wall logo pop 12",
+  "gain_db": -15,
+  "pan": -0.2
  },
  {
   "t": 5.78,
   "sound": "tv_pop_in",
-  "desc": "glass monitor pop 3",
+  "desc": "studio wall logo pop i24",
+  "gain_db": -15,
+  "pan": 0.3
+ },
+ {
+  "t": 5.84,
+  "sound": "tv_pop_in",
+  "desc": "studio wall logo pop 13",
   "gain_db": -15,
   "pan": 0
  },
  {
-  "t": 5.8,
-  "sound": "headline_slam",
-  "desc": "title word slam חיים",
+  "t": 5.9,
+  "sound": "tv_pop_in",
+  "desc": "studio wall logo pop 9",
+  "gain_db": -15,
+  "pan": 0.2
+ },
+ {
+  "t": 6.0,
+  "sound": "glass_shatter",
+  "desc": "video wall glass shatter reveal",
+  "gain_db": -7,
+  "pan": 0
+ },
+ {
+  "t": 6.0,
+  "sound": "impact_boom",
+  "desc": "deep impact under shatter",
   "gain_db": -9,
   "pan": 0
  },
  {
-  "t": 6.08,
-  "sound": "scoreboard_slide",
-  "desc": "lower third slide-in",
+  "t": 6.02,
+  "sound": "hero_badge_pop",
+  "desc": "logo wall plate pop 1",
+  "gain_db": -11,
+  "pan": -0.4
+ },
+ {
+  "t": 6.1,
+  "sound": "hero_badge_pop",
+  "desc": "logo wall plate pop 2",
+  "gain_db": -11,
+  "pan": 0.4
+ },
+ {
+  "t": 6.18,
+  "sound": "hero_badge_pop",
+  "desc": "logo wall plate pop 3",
+  "gain_db": -11,
+  "pan": -0.4
+ },
+ {
+  "t": 6.26,
+  "sound": "hero_badge_pop",
+  "desc": "logo wall plate pop 4",
+  "gain_db": -11,
+  "pan": 0.4
+ },
+ {
+  "t": 6.3,
+  "sound": "headline_slam",
+  "desc": "word slam בישראל",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 6.34,
+  "sound": "hero_badge_pop",
+  "desc": "logo wall plate pop 5",
+  "gain_db": -11,
+  "pan": 0.4
+ },
+ {
+  "t": 6.42,
+  "sound": "hero_badge_pop",
+  "desc": "logo wall plate pop 6",
+  "gain_db": -11,
+  "pan": -0.4
+ },
+ {
+  "t": 6.5,
+  "sound": "anticipation_suck",
+  "desc": "suck-in before push-through",
   "gain_db": -12,
   "pan": 0
  },
  {
-  "t": 6.4,
-  "sound": "news_match_blips",
-  "desc": "ticker blips",
-  "gain_db": -18,
-  "pan": 0
- },
- {
-  "t": 6.6,
-  "sound": "whip_out_left",
-  "desc": "whip A out",
+  "t": 6.58,
+  "sound": "whoosh_fast_push_in",
+  "desc": "push-through zoom into darkness",
   "gain_db": -8,
   "pan": 0
  },
  {
   "t": 6.62,
-  "sound": "whip_in_right",
-  "desc": "whip B in with red light bar",
-  "gain_db": -8,
+  "sound": "drumroll_start",
+  "desc": "short red line charge",
+  "gain_db": -16,
   "pan": 0
  },
  {
-  "t": 6.74,
-  "sound": "poster_flip_1",
-  "desc": "poster card flip",
-  "gain_db": -12,
-  "pan": 0
- },
- {
-  "t": 6.77,
-  "sound": "poster_flip_2",
-  "desc": "poster card flip",
-  "gain_db": -12,
-  "pan": 0
- },
- {
-  "t": 6.8,
-  "sound": "poster_flip_3",
-  "desc": "poster card flip",
-  "gain_db": -12,
-  "pan": 0
- },
- {
-  "t": 6.83,
-  "sound": "poster_flip_4",
-  "desc": "poster card flip",
-  "gain_db": -12,
-  "pan": 0
- },
- {
-  "t": 6.86,
-  "sound": "card_flip_cascade",
-  "desc": "last poster flip cascade",
-  "gain_db": -11,
-  "pan": 0
- },
- {
-  "t": 7.06,
-  "sound": "glint_sweep",
-  "desc": "red light-bar sweep",
-  "gain_db": -10,
-  "pan": 0
- },
- {
-  "t": 7.12,
-  "sound": "netflix_slam",
-  "desc": "NETFLIX chip slam",
+  "t": 6.7,
+  "sound": "logo_slam",
+  "desc": "NETFLIX logo slam with red burst",
   "gain_db": -6,
   "pan": 0
  },
  {
-  "t": 7.14,
+  "t": 6.7,
+  "sound": "flash_boom",
+  "desc": "red light burst",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 6.8,
+  "sound": "glint_sweep",
+  "desc": "spotlight sweep across NETFLIX",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 6.82,
   "sound": "popcorn_burst_l",
   "desc": "popcorn burst left",
-  "gain_db": -10,
-  "pan": 0
+  "gain_db": -13,
+  "pan": -0.6
  },
  {
-  "t": 7.14,
+  "t": 6.82,
   "sound": "popcorn_burst_r",
   "desc": "popcorn burst right",
-  "gain_db": -10,
+  "gain_db": -13,
+  "pan": 0.6
+ },
+ {
+  "t": 6.84,
+  "sound": "card_flip_cascade",
+  "desc": "poster fan cascade",
+  "gain_db": -11,
   "pan": 0
  },
  {
-  "t": 7.3,
-  "sound": "sparkle_shower",
-  "desc": "sparkle accents",
+  "t": 6.95,
+  "sound": "beat_hit_zoom",
+  "desc": "zoom punch on beat",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 7.2,
+  "sound": "beat_hit_zoom",
+  "desc": "zoom punch on beat",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 7.36,
+  "sound": "popcorn_burst_l",
+  "desc": "second popcorn wave",
+  "gain_db": -14,
+  "pan": -0.5
+ },
+ {
+  "t": 7.42,
+  "sound": "glint_sweep",
+  "desc": "reverse light sweep",
   "gain_db": -16,
+  "pan": 0
+ },
+ {
+  "t": 7.48,
+  "sound": "beat_hit_zoom",
+  "desc": "zoom punch",
+  "gain_db": -12,
+  "pan": 0
+ },
+ {
+  "t": 7.72,
+  "sound": "beat_hit_zoom",
+  "desc": "zoom punch",
+  "gain_db": -12,
   "pan": 0
  },
  {
   "t": 7.9,
-  "sound": "shooting_star",
-  "desc": "comet enters, blue iris wipe",
-  "gain_db": -10,
-  "pan": 0
- },
- {
-  "t": 7.92,
-  "sound": "iris_burst_whoosh",
-  "desc": "iris reveal to Disney",
-  "gain_db": -9,
-  "pan": 0
- },
- {
-  "t": 8.08,
-  "sound": "tile_flip_whoosh",
-  "desc": "floating cards rise",
-  "gain_db": -13,
-  "pan": 0
- },
- {
-  "t": 8.16,
-  "sound": "twinkle_cluster",
-  "desc": "twinkle field",
-  "gain_db": -16,
-  "pan": 0
- },
- {
-  "t": 8.4,
-  "sound": "disney_pop",
-  "desc": "Disney+ chip pop",
-  "gain_db": -7,
-  "pan": 0
- },
- {
-  "t": 8.42,
-  "sound": "sparkle_trail",
-  "desc": "gold sparkle burst",
-  "gain_db": -10,
-  "pan": 0
- },
- {
-  "t": 8.6,
-  "sound": "library_lights_shimmer",
-  "desc": "castle shimmer",
-  "gain_db": -18,
-  "pan": 0
- },
- {
-  "t": 9.05,
-  "sound": "whip_out_left",
-  "desc": "whip out left to sports",
+  "sound": "glitch_burst",
+  "desc": "glitch RGB split on NETFLIX exit",
   "gain_db": -8,
   "pan": 0
  },
  {
-  "t": 9.06,
-  "sound": "camera_glide_whoosh",
-  "desc": "streaks tail",
+  "t": 7.98,
+  "sound": "iris_burst_whoosh",
+  "desc": "comet iris reveal of Disney",
+  "gain_db": -8,
+  "pan": 0
+ },
+ {
+  "t": 7.99,
+  "sound": "cut_flash_tick",
+  "desc": "glitch flash frame",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 8.02,
+  "sound": "shooting_star",
+  "desc": "comet trail across sky",
+  "gain_db": -11,
+  "pan": 0
+ },
+ {
+  "t": 8.1,
+  "sound": "disney_pop",
+  "desc": "DISNEY+ logo pop with star burst",
+  "gain_db": -6,
+  "pan": 0
+ },
+ {
+  "t": 8.1,
+  "sound": "sparkle_shower",
+  "desc": "magic dust burst",
+  "gain_db": -10,
+  "pan": 0
+ },
+ {
+  "t": 8.12,
+  "sound": "card_flip_cascade",
+  "desc": "glass poster cards rise",
+  "gain_db": -13,
+  "pan": 0
+ },
+ {
+  "t": 8.24,
+  "sound": "glint_sweep",
+  "desc": "shimmer across Disney logo",
+  "gain_db": -15,
+  "pan": 0
+ },
+ {
+  "t": 8.3,
+  "sound": "sparkle_trail",
+  "desc": "orb runs along logo arc",
   "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 8.3,
+  "sound": "twinkle_cluster",
+  "desc": "castle firework",
+  "gain_db": -15,
+  "pan": -0.3
+ },
+ {
+  "t": 8.48,
+  "sound": "beat_hit_zoom",
+  "desc": "soft zoom punch",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 8.52,
+  "sound": "twinkle_cluster",
+  "desc": "castle firework",
+  "gain_db": -15,
+  "pan": 0.3
+ },
+ {
+  "t": 8.74,
+  "sound": "beat_hit_zoom",
+  "desc": "soft zoom punch",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 8.85,
+  "sound": "shooting_star",
+  "desc": "shooting star",
+  "gain_db": -14,
+  "pan": 0
+ },
+ {
+  "t": 9.05,
+  "sound": "camera_glide_whoosh",
+  "desc": "whip-out with light streaks",
+  "gain_db": -9,
+  "pan": 0
+ },
+ {
+  "t": 9.12,
+  "sound": "final_sparkle_tail",
+  "desc": "sparkle tail",
+  "gain_db": -16,
   "pan": 0
  }
 ]
