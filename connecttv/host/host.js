@@ -179,10 +179,10 @@
   const CX = 960, CY = 520;
   const LH = [190, 700], RH = [1730, 700];   // resting spots in the margins
   const APPS = [
-    { id: 'peek', t0: .12, inDur: .3, stay: 1.5, out: .3, size: 360, from: [-220, 760], home: [40, 690], to: [-260, 760],   // CUE 0.12 peek-in ; CUE 0.74 gasp
+    { id: 'peek', t0: .12, inDur: .3, stay: 1.5, out: .3, size: 360, from: [-220, 760], home: [75, 690], to: [-260, 760],   // CUE 0.12 peek-in ; CUE 0.74 gasp
       pose(tt, x, y) { const g = tt > .62 ? 1 : 0, d = tt - .62, k = clamp(d / .1), hp = bounceH(tt, .6, .34, 70);
         if (!g) return { rot: .3, look: [1, -.15], brow: .3, glow: .5, legs: false, mouth: { open: .05, smile: .6 }, eyes: 'open', armL: null, armR: { a: 3.2, L: .55, hand: 'open', bend: .3 } };
-        return { rot: lerp(.3, -.06, ease.outBack(k)), dy: -hp, sy: 1 + .12 * sin(PI * clamp(d / .3)) - .18 * q(d - .34), sx: 1 - .06 * sin(PI * clamp(d / .3)) + .12 * q(d - .34), legs: true, air: hp > 1 ? 1 : 0, look: [1, -.2], eyes: 'wide', brow: 1, lidY: 0, antUp: 1, mouth: { open: .9, shape: 'o', smile: 0 }, sweat: clamp(d * 3), armL: { a: PI + 1.4, L: .85, hand: 'open', front: true, bend: .2 }, armR: { a: -1.4, L: .85, hand: 'open', front: true, bend: -.2 } }; } },
+        return { rot: lerp(.3, -.06, ease.outBack(k)), dx: 120 * ease.outBack(k), dy: -hp, sy: 1 + .12 * sin(PI * clamp(d / .3)) - .18 * q(d - .34), sx: 1 - .06 * sin(PI * clamp(d / .3)) + .12 * q(d - .34), legs: true, air: hp > 1 ? 1 : 0, look: [1, -.2], eyes: 'wide', brow: 1, lidY: 0, antUp: 1, mouth: { open: .9, shape: 'o', smile: 0 }, sweat: clamp(d * 3), armL: { a: PI + 1.4, L: .85, hand: 'open', front: true, bend: .2 }, armR: { a: -1.4, L: .85, hand: 'open', front: true, bend: -.2 } }; } },
     { id: 'wow', t0: 2.33, inDur: .3, stay: .95, out: .28, size: 400, from: [2160, 800], home: [1735, 690], to: [2160, 700],   // CUE 2.33 wow
       pose(tt) { const h = hops(tt, .18, .3, 60, 2); return { dy: -h.up, sy: 1 - .2 * h.sqz, sx: 1 + .14 * h.sqz, air: h.up > 2 ? 1 : 0, eyes: 'star', mouth: { open: .9, smile: 1 }, sparks: clamp(tt * 3), armL: { a: PI + 1.15 + sin(tt * 12) * .1, L: 1, hand: 'fist', bend: .3 }, armR: { a: -1.15 + sin(tt * 12 + 1) * .1, L: 1, hand: 'fist', bend: -.3 }, glow: .8 }; } },
     { id: 'netflix', t0: 4.34, inDur: .34, stay: 1.05, out: .28, size: 420, from: [-260, 850], home: [200, 690], to: [-260, 760],   // CUE 4.34 cheer
@@ -190,18 +190,18 @@
       fx(g, x, y, tt) { confetti(g, x, y - 120, tt - .1, 30); } },
     { id: 'disney', t0: 5.99, inDur: .3, stay: .85, out: .26, size: 400, from: [2160, 800], home: [1725, 690], to: [2160, 760],   // CUE 5.99 point
       pose(tt, x, y) { const pt = ease.outBack(clamp((tt - .05) / .28)); return { look: lookAt(x, y, CX, 380), eyes: 'open', mouth: { open: .5 + .3 * sin(tt * 14), smile: 1 }, brow: .4, armL: { a: lerp(2.6, aim(x, y, -1, 1300, 330), pt) + sin(tt * 9) * .03, L: lerp(.9, 1.25, pt), hand: 'point', bend: .12 }, armR: { a: 1.25, L: .9, hand: 'fist', bend: -.3 }, dy: -bounceH(tt, .0, .3, 24), shadow: 1, rot: -.05 * pt }; } },
-    { id: 'charlton', t0: 8.32, inDur: .3, stay: 1.95, out: .28, size: 390, from: [-260, 800], home: [240, 640], to: [-260, 760],   // CUE 8.32 excited ; hold cin: director with megaphone (beret)
+    { id: 'charlton', t0: 8.32, inDur: .3, stay: 1.95, out: .28, size: 370, from: [-260, 800], home: [205, 650], to: [-260, 760],   // CUE 8.32 excited ; hold cin: director with megaphone (beret)
       pose(tt, x, y) { const hold = tt > .53, sh = hold ? 0 : sin(tt * 55) * .03 * clamp(tt * 4) * (tt > 0 ? 1 : 0);
         if (!hold) return { rot: sh, dx: sh * 120, eyes: 'wide', mouth: { open: .8, smile: 1 }, sparks: 1, armL: { a: PI + 1.0 + sin(tt * 40) * .1, L: .8, hand: 'fist', bend: .3, front: true }, armR: { a: -1.0 + sin(tt * 40) * .1, L: .8, hand: 'fist', bend: -.3, front: true }, glow: .9 };
         const hh = tt - .53, mg = clamp(hh / .3); return { hat: 'beret', eyes: 'open', brow: .4, look: [1, -.1], mouth: { open: .55 + .35 * sin(hh * 9), smile: .5 }, glow: .7, rot: .05 * sin(hh * 2), armR: { a: lerp(1.2, -.5, ease.outBack(mg)), L: 1.1, hand: 'mega', bend: -.2, front: true }, armL: { a: PI - .8, L: .85, hand: 'fist', bend: .3 }, dy: -4 * sin(hh * 3) }; } },
-    { id: 'turk', t0: 9.27, inDur: .3, stay: 1.7, out: .2, size: 380, from: [2160, 800], home: [1650, 640], to: [2160, 760],   // CUE 9.27 gasp then sob in the hold
+    { id: 'turk', t0: 9.27, inDur: .3, stay: 1.7, out: .2, size: 340, from: [2160, 800], home: [1800, 690], to: [2160, 760],   // CUE 9.27 gasp then sob in the hold
       pose(tt) { const hold = tt > .71, d = tt - .71;
         if (!hold) return { eyes: 'wide', brow: 1, mouth: { open: .9, shape: 'o', smile: 0 }, antUp: 1, armL: { a: PI + 1.45, L: .7, hand: 'open', front: true, bend: .2 }, armR: { a: -1.45, L: .7, hand: 'open', front: true, bend: -.2 }, look: [-1, .2], glow: .5 };
         const sob = sin(d * 16); return { eyes: 'open', lid: 1, lidY: .25, brow: -.3, look: [0, .6], tear: 1, mouth: { open: .5 + .2 * sin(d * 8), shape: 'd', smile: -.8, wob: .05 }, dy: sob * 5, sy: 1 - .03 * sob, rot: .04 * sin(d * 5), antUp: -.5, glow: .35, armL: { a: PI + 1.7, L: .6, hand: 'open', front: true, bend: .2 }, armR: { a: -1.7, L: .6, hand: 'open', front: true, bend: -.2 } }; } },
-    { id: 'bolly', t0: 10.39, inDur: .3, stay: 1.85, out: .22, size: 390, from: [-260, 800], home: [250, 640], to: [-260, 760],   // CUE 10.39 dance (hold ind)
+    { id: 'bolly', t0: 10.39, inDur: .3, stay: 1.72, out: .22, size: 370, from: [-260, 800], home: [205, 650], to: [-260, 760],   // CUE 10.39 dance (hold ind)
       pose(tt) { const ph = tt * TAU * 1.8, b = Math.abs(sin(ph)); return { dx: sin(ph) * 22, dy: -b * 34, rot: sin(ph) * .13, sy: 1 + .06 * cos(ph * 2), sx: 1 - .04 * cos(ph * 2), air: b > .3 ? 1 : 0, walk: tt * 10, eyes: 'happy', mouth: { open: .7, smile: 1 }, sparks: 1, glow: .95, armL: { a: PI + 1.05 + sin(ph) * .5, L: 1.1, hand: 'wave', bend: .3, spin: 0 }, armR: { a: .5 + cos(ph) * .3, L: .9, hand: 'fist', bend: -.3 }, skew: sin(ph) * .05 }; } },
-    { id: 'israel', t0: 12.16, inDur: .3, stay: 1.1, out: .26, size: 390, from: [-260, 820], home: [200, 700], to: [-260, 760],   // CUE 12.16 live mic
-      pose(tt, x, y) { return { look: lookAt(x, y, CX, 460), eyes: 'open', mouth: null, talk: 1, armR: { a: -.5 + sin(tt * 5) * .05, L: 1.1, hand: 'mic', bend: -.3, front: true }, armL: { a: PI - 1.1, L: .9, hand: 'open', bend: .3 }, dy: -bounceH(tt, .0, .3, 26), shadow: 1, rot: .04 }; } },
+    { id: 'israel', t0: 12.16, inDur: .3, stay: 1.1, out: .26, size: 390, from: [2160, 820], home: [1735, 700], to: [2160, 760],   // CUE 12.16 live mic
+      pose(tt, x, y) { return { look: lookAt(x, y, CX, 460), eyes: 'open', mouth: null, armL: { a: PI + .5 + sin(tt * 5) * .05, L: 1.1, hand: 'mic', bend: .3, front: true }, armR: { a: 1.2, L: .9, hand: 'open', bend: -.3 }, dy: -bounceH(tt, .0, .3, 26), shadow: 1, rot: -.04 }; } },
     { id: 'vortex', t0: 13.82, pre: .42, inDur: .3, stay: .75, out: .5, size: 380, from: [-260, 780], home: [240, 700], to: [960, 500],   // CUE 13.82 connie sucked into the vortex TV
       pose(tt, x, y) { const e = clamp((tt - .1) / .6), sp = ease.in(e); return { eyes: 'wide', mouth: { open: .8, shape: 'o', smile: 0 }, look: [1, -.4], rot: tt > .1 ? sp * 9 : .12, sx: 1 - .55 * sp, sy: 1 + .3 * sp, antUp: 1, ant: -1, legs: true, air: 1, armL: { a: PI + .3, L: 1, hand: 'open', bend: .2 }, armR: { a: -.3, L: 1, hand: 'open', bend: -.2 }, alpha: 1 - clamp((tt - .5) / .3) }; },
       spiral: true },
@@ -235,29 +235,30 @@
     else if (eo > 0) { x = lerp(a.home[0], a.to[0], ex); y = lerp(a.home[1], a.to[1], ex); }
     return [x, y, ei, eo];
   }
-  // hold-aware nudge: in holds the camera pushes in (zoom about the focus), so keep her inside the visible frame
-  function holdShift(a, T, x, y) {
-    const hd = TLF.holdAt(T); if (!hd || !CL.HOLDFOC[hd.k]) return [x, y, 1];
-    const [fx, fy, zm] = CL.HOLDFOC[hd.k], k = ease.inOut(clamp(hd.age / .25)) * clamp((hd.d - hd.age) / .2 + .5);
-    const z = lerp(1, zm, k), sxp = W / 2 + (x - fx) * z, mL = 190, mR = W - 190, tx = clamp(sxp, mL, mR);
-    return [x + (tx - sxp) / z * k, y, 1];
+  // the compositor pushes the camera in during the genre holds (zoom about a focus point). Connie is camera-locked: we undo that zoom so she keeps her screen position and size.
+  const PRE = { cin: 8.32, tur: 9.27, ind: 10.39 };
+  function cam(T, t) {
+    const hd = TLF.holdAt(T); let k = 0, key = null;
+    if (hd) { key = hd.k; k = ease.inOut(clamp((hd.d - hd.age) / .3)); }
+    else for (const h of TLF.HOLDS) { const p = PRE[h.k]; if (t >= p && t < h.v) { key = h.k; k = ease.inOut(clamp((t - p) / Math.max(.2, h.v - p))); } }
+    if (!key || k <= 0 || !CL.HOLDFOC[key]) return null; const [fx, fy, zm] = CL.HOLDFOC[key]; return { z: lerp(1, zm, k), fx: lerp(W / 2, fx, k), fy: lerp(H / 2, fy, k) };
   }
   window.HOST = {
     APPS, track,
     async prepare(t) { },
     overlay(ctx, t) {
-      const T = (typeof A.T === 'number') ? A.T : t; TALK = talkEnv(t);
+      const T = (typeof A.T === 'number') ? A.T : t; TALK = talkEnv(t); const cm = cam(T, t);
       for (const a of APPS) {
         if (T < a.ts || T > a.te) continue;
         const tt = T - a.T0, [x0, y0, ei, eo] = track(a, T), [xp, yp] = track(a, T - .04), vx = (x0 - xp) / .04, vy = (y0 - yp) / .04;
-        let [x, y] = holdShift(a, T, x0, y0);
+        let x = x0, y = y0;
         let ps = a.pose(tt, x, y) || {}; const dx = ps.dx || 0, dy = ps.dy || 0, al = ps.alpha ?? 1;
         // flight stretch / landing jelly / exit stretch
         const fl = (ei < 1 ? Math.sin(PI * ei) : 0) + eo * .8, lq = q(tt) * (tt > 0 && tt < 1.2 ? 1 : 0);
         const sx = (ps.sx ?? 1) * (1 - .1 * fl + .16 * lq), sy = (ps.sy ?? 1) * (1 + .16 * fl - .22 * lq);
         const look = ps.look || lookAt(x, y, CX, 500), idle = [A.noise1(T * .9 + a.T0) * .18, A.noise1(T * .7 + 7 + a.T0) * .12];
         const pose = { ...ps, sx, sy, rot: (ps.rot || 0) + clamp(vx / 9000, -.14, .14) + clamp(vy / 24000, -.05, .05), skew: (ps.skew || 0) - clamp(vx / 14000, -.14, .14), ant: (ps.ant || 0) - clamp(vx / 2400, -1, 1), look: [clamp(look[0] + idle[0], -1, 1), clamp(look[1] + idle[1], -1, 1)] };
-        ctx.save(); ctx.globalAlpha *= al;
+        ctx.save(); ctx.globalAlpha *= al; if (cm) { ctx.translate(cm.fx - W / 2 / cm.z, cm.fy - H / 2 / cm.z); ctx.scale(1 / cm.z, 1 / cm.z); }
         connie(ctx, x + dx, y + dy, a.size * (ps.scale || 1), pose, T + a.T0);
         if (a.fx) a.fx(ctx, x + dx, y + dy, tt);
         ctx.restore();

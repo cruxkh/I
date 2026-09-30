@@ -20,10 +20,11 @@
   }
   // circular liquid reveal: lead colour bands (outer, earliest) then the content clipped in the innermost blob
   function reveal(ctx, t, cx, cy, t0, dur, R0, R1, seed, cols, inner) {
-    const n = cols.length;
+    const n = cols.length, pl = clamp((t - t0) / dur), Rm = lerp(R0, R1, ease.out(pl)), bw = 28 + 70 * ease.out(pl);
+    if (t < t0) return;
     for (let i = 0; i <= n; i++) {
-      const p = clamp((t - t0 - i * .04) / dur), R = lerp(R0, R1, ease.out(p)); if (t - t0 - i * .04 < 0) continue;
-      const wob = .05 + .17 * (1 - p), pts = blobPts(cx, cy, R, seed + i, wob, t * 2.2 + i);
+      const R = Rm - i * bw; if (R < 3) continue;
+      const wob = .05 + .17 * (1 - pl), pts = blobPts(cx, cy, R, seed + i, wob, t * 2.2 + i);
       if (i < n) { A.blob(ctx, pts); ctx.fillStyle = cols[i]; ctx.fill(); }
       else {
         ctx.save(); A.blob(ctx, pts); ctx.clip(); inner(); ctx.restore();
@@ -31,7 +32,7 @@
       }
     }
     // flying droplets off the lead edge
-    const pl = clamp((t - t0) / dur); if (pl > 0 && pl < 1) for (let j = 0; j < 14; j++) { const a = hash(j * 5.3 + seed) * TAU, r = lerp(R0, R1, ease.out(pl)) * (1.05 + .12 * hash(j + seed)); CL.drop(ctx, cx + Math.cos(a) * r, cy + Math.sin(a) * r, (10 + 22 * hash(j * 2 + seed)) * (1 - pl), cols[j % cols.length], t, j); }
+    if (pl > 0 && pl < 1) for (let j = 0; j < 14; j++) { const a = hash(j * 5.3 + seed) * TAU, r = Rm * (1.05 + .12 * hash(j + seed)); CL.drop(ctx, cx + Math.cos(a) * r, cy + Math.sin(a) * r, (10 + 22 * hash(j * 2 + seed)) * (1 - pl), cols[j % cols.length], t, j); }
   }
   // right-to-left liquid wipe covering the previous scene; the new scene is clipped to the innermost edge
   function wipeIn(ctx, t, inner) {
@@ -157,7 +158,7 @@
       const u = t - T_TAP, tx = 756, ty = 452;
       A.glow(ctx, tx, ty, 420, '#ffffff', (1 - clamp(u / .16)) * .9);
       CL.ring(ctx, tx, ty, 360, clamp(u / .5), '#ffffff', 22); CL.ring(ctx, tx, ty, 520, clamp((u - .06) / .5), C.yellow, 18); CL.ring(ctx, tx, ty, 700, clamp((u - .12) / .5), C.cyan, 14);
-      if (u < .55) { ctx.save(); ctx.globalAlpha = 1 - sm(.2, .55, u); CL.splash(ctx, tx, ty, 230, CL.spring(t, T_TAP, .45), 7, [C.lime, C.yellow, '#fff', C.green]); ctx.restore(); }
+      if (u < .4) { ctx.save(); ctx.globalAlpha = 1 - sm(.1, .4, u); CL.splash(ctx, tx, ty, 150, CL.spring(t, T_TAP, .4), 7, [C.yellow, '#fff', C.cyan, C.pink]); ctx.restore(); }
     }
   }
 
@@ -225,7 +226,7 @@
     }
     // GOAL burst
     if (t >= GT) {
-      const u = t - GT; ctx.save(); ctx.globalAlpha = 1 - sm(.1, .28, u); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
+      const u = t - GT; ctx.save(); ctx.globalAlpha = .7 * (1 - sm(.03, .2, u)); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
       ctx.save(); ctx.globalAlpha = 1 - sm(.1, .32, u); CL.splash(ctx, gx, gy - 60, 640, CL.spring(t, GT, .45), 3, [C.yellow, C.pink, C.cyan, C.lime, C.orange]); ctx.restore();
       const gs = CL.pop(t, GT + .02, .22); if (gs > 0) CL.title(ctx, 'גול!', CX, 560, { size: 330, scale: gs, rot: -.05, fill: ['#ffffff', '#FFD23F'], dir: 'rtl' });
     }
@@ -250,7 +251,7 @@
         reveal(ctx, t, CX, 470, T_PLAY, .38, 0, 1500, 9, [C.cyan, C.purple, C.pink], () => match(ctx, t));
         const u = t - T_PLAY;   // burst: splash, shockwaves, bolts, sparkles, flash
         // CUE 26.94 playback-burst
-        ctx.save(); ctx.globalAlpha = 1 - sm(.1, .42, u); CL.splash(ctx, CX, 470, 900, CL.spring(t, T_PLAY, .5), 5); ctx.restore();
+        ctx.save(); ctx.beginPath(); ctx.rect(-200, -200, W + 400, H + 400); ctx.arc(CX, 470, 300, 0, TAU, true); ctx.clip('evenodd'); ctx.globalAlpha = 1 - sm(.04, .3, u); CL.splash(ctx, CX, 470, 700, CL.spring(t, T_PLAY, .5), 5); ctx.restore();
         CL.ring(ctx, CX, 470, 1100, clamp(u / .55), '#fff', 26); CL.ring(ctx, CX, 470, 800, clamp((u - .08) / .55), C.yellow, 18);
         CL.bolt(ctx, 1500, -60, CX + 40, 460, inv(0, .07, u), 11, { col: C.cyan, lw: 16, alpha: 1 - sm(.12, .4, u) });
         CL.bolt(ctx, 300, 1120, CX - 40, 500, inv(.03, .1, u), 12, { col: C.pink, lw: 14, alpha: 1 - sm(.15, .42, u) });
@@ -285,11 +286,11 @@
     { const dk = sm(SLAM + .3, SLAM + 1.5, t); if (dk > 0) for (let i = 0; i < 18; i++) { const sp = 18 + hash(i * 1.7) * 30, x = hash(i * 9.1) * W + Math.sin(t * .7 + i) * 26, y = ((hash(i * 3.3) * H * 1.2 - t * sp) % (H + 120) + H + 120) % (H + 120) - 60, r = 9 + hash(i * 5.5) * 30; ctx.save(); ctx.globalAlpha = .7 * dk; CL.drop(ctx, x, y, r, CL.CAND[i % 8], t, i); ctx.restore(); } }
     // iris close of the playback onto the navy end world
     if (t < SLAM) {
-      const p = inv(T_IRIS, SLAM, t), R = 1300 * (1 - ease.in(p)); const z = 1.10 + .30 * ease.in(p);
+      const p = inv(T_IRIS, SLAM, t), R = 1300 * (1 - ease.out(p)); const z = 1.10 + .30 * ease.out(p);
       if (R > 2) { ctx.save(); ctx.beginPath(); ctx.arc(CX, H / 2, R, 0, TAU); ctx.clip(); ctx.translate(CX, H / 2); ctx.scale(z, z); ctx.translate(-CX, -H / 2); match(ctx, t); ctx.restore();
         ctx.save(); ctx.lineWidth = 22; ctx.strokeStyle = 'rgba(255,255,255,.95)'; ctx.beginPath(); ctx.arc(CX, H / 2, R, 0, TAU); ctx.stroke(); ctx.lineWidth = 60; ctx.globalAlpha = .35; ctx.strokeStyle = C.cyan; ctx.stroke(); ctx.restore(); }
       // CUE 27.42 iris-suck
-      A.glow(ctx, CX, 470, 100 + 900 * ease.in(p), '#ffffff', ease.in(p));
+      A.glow(ctx, CX, 470, 100 + 900 * ease.in(p), '#ffffff', ease.in(p) * .9);
     }
     // ---- the big splash behind the logo + shockwaves  (CUE 27.60 logo-slam)
     if (u >= 0) {
@@ -300,10 +301,10 @@
     }
     // ---- LOGO: slams down from big to 1.0 landing exactly on SLAM, squash rebound, then float + breathe
     {
-      const pre = inv(SLAM - .13, SLAM, t); let sx, sy, al = 1;
-      if (t < SLAM) { al = clamp((t - (SLAM - .13)) / .05); sx = sy = lerp(2.7, 1, ease.in(pre)); }
+      const pre = inv(SLAM - .10, SLAM, t); let sx, sy, al = 1;
+      if (t < SLAM) { al = clamp((t - (SLAM - .10)) / .04); sx = sy = lerp(2.4, 1, ease.in(pre)); }
       else { const kk = kick(t, SLAM, .13, 22, 5.5); sx = 1 + kk; sy = 1 - kk * 1.15; }
-      if (t >= SLAM - .13) {
+      if (t >= SLAM - .10) {
         const fu = Math.max(0, u), fl = sm(0, .6, fu), dy = Math.sin(fu * 1.7) * 14 * fl, rot = Math.sin(fu * 1.15) * .014 * fl, br = 1 + .012 * Math.sin(fu * 2.1) * fl;
         const per = 2.6, sp = ((fu - .45) % per + per) % per / per; // gentle sheen sweep, first one right after the slam
         ctx.save(); ctx.globalAlpha = al; ctx.translate(CX, cy0 + dy); ctx.rotate(rot); ctx.scale(sx * br, sy * br); brandSheen(ctx, 0, 0, fu > .3 ? sp / .3 : 9); ctx.restore();
