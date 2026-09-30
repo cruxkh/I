@@ -19,7 +19,7 @@
     { id: 'netflix', t0: 4.34, mode: 'side', side: 'L', x: 190, size: 700, f0: 46, lo: 46, hi: 90, inDur: .34, stay: 1.05, out: .28, hops: [[.12, .38, 60], [.5, .38, 60]] },       // CUE 4.34 cheer
     { id: 'disney', t0: 5.99, mode: 'side', side: 'R', x: 1740, size: 660, f0: 91, lo: 91, hi: 135, inDur: .3, stay: .85, out: .26, pops: [.05] },                                  // CUE 5.99 point
     { id: 'charlton', t0: 8.32, mode: 'rise', side: 'L', x: 130, size: 470, f0: 136, lo: 136, hi: 207, inDur: .3, stay: 1.75, out: .28, pops: [.05] },                              // CUE 8.32 small corner peek (cin hold)
-    { id: 'turk', t0: 9.27, mode: 'rise', side: 'R', x: 1835, size: 620, f0: 140, lo: 136, hi: 207, inDur: .3, stay: 1.6, out: .2, pops: [.05] },                                    // CUE 9.27 crying (tur hold)
+    { id: 'turk', t0: 9.27, mode: 'rise', side: 'R', x: 1745, size: 720, f0: 140, lo: 136, hi: 207, inDur: .3, stay: 1.6, out: .2, pops: [.05] },                                    // CUE 9.27 crying (tur hold)
     { id: 'bolly', t0: 10.39, mode: 'side', side: 'L', x: 130, size: 600, f0: 19, lo: 19, hi: 90, inDur: .3, stay: 1.72, out: .22, pops: [.05] },                                    // CUE 10.39 surprised in the corner (ind hold)
     { id: 'israel', t0: 12.16, mode: 'side', side: 'R', x: 1770, size: 640, f0: 100, lo: 100, hi: 140, inDur: .3, stay: .95, out: .26, pops: [.05] },                                // CUE 12.16 live
     { id: 'vortex', t0: 13.82, mode: 'side', side: 'L', x: 230, size: 620, f0: 28, lo: 28, hi: 70, pre: .42, inDur: .3, stay: .12, out: .55, spiral: true },                           // CUE 13.82 sucked into the vortex TV
