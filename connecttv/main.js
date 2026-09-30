@@ -5,34 +5,70 @@
   const { clamp, lerp, inv, ease, hash, rng } = A, C = CL.C;
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
   A.tMap = TLF.vOf; A.post = null;
-  // ---- captions: chips per phrase (big Hebrew word chips + small English gloss whose words light up)
-  const EMPH = { 'מנטפליקס': C.red, 'דיסני': C.blue, 'פלוס': C.blue, 'הספורט': C.green, "צ'רלטון": C.orange, 'טורקיות': C.pink, 'הודיות': C.orange, 'חיים': C.red, 'השידורים': C.red, 'מישראל': C.blue, 'אחד': C.purple, 'נגיש': C.green, 'השבוע': C.pink, 'מתעדכן': C.pink, 'לחפש': C.red, 'שירותים': C.red, 'לצפות': C.green, 'לראות': C.green, 'המסך': C.purple, 'נפתח': C.purple, 'הבידור': C.pink };
+  // ---- captions: "candy sticker" kinetic type. Every spoken word is a glossy 3D candy word (white die-cut edge, navy outline, extruded depth, gradient + gloss + rim light) that drops in with squash/stretch ON the word start, with a liquid splash, ring and droplets. Small glass strip below with English words lighting up.
+  const EMPH = { 'מנטפליקס': C.red, 'דיסני': C.blue, 'פלוס': C.cyan, 'הספורט': C.green, "צ'רלטון": C.orange, 'טורקיות': C.pink, 'הודיות': C.orange, 'חיים': C.red, 'השידורים': C.pink, 'מישראל': C.blue, 'אחד': C.purple, 'נגיש': C.green, 'השבוע': C.pink, 'מתעדכן': C.cyan, 'לחפש': C.red, 'שירותים': C.red, 'לצפות': C.green, 'לראות': C.green, 'המסך': C.cyan, 'נפתח': C.purple, 'הבידור': C.pink, 'פותחים': C.yellow, 'בפניכם': C.orange };
+  const PAL = [C.yellow, C.pink, C.cyan, C.orange, C.lime, C.purple, C.green];
+  const wcolor = (w, gi) => EMPH[w] || EMPH[w.replace(/^ו/, '')] || PAL[gi % PAL.length];
   const chunks = (() => {
     const out = []; let cur = []; const flush = () => { if (cur.length) out.push(cur); cur = []; };
     WORDS.forEach(w => { if (cur.length && (w.ph !== cur[0].ph || cur.length >= 3 || cur.reduce((s, q) => s + q.w.length, 0) + w.w.length > 16)) flush(); cur.push(w); });
     flush(); out.forEach(c => { c.t0 = c[0].t0; c.t1 = c[c.length - 1].t1; }); return out;
   })();
   CL.noCap = [[27.6, 99]];      // [t0,t1] windows (voice clock) with no captions (scenes may push more, lazily inside draw())
-  CL.capY = 905;                // caption baseline; a scene may set CL.capYAt = t => y
+  CL.capY = 880;                // caption baseline (word centre); a scene may set CL.capYAt = t => y
+  const mctx = mk(4, 4).getContext('2d');
+  const SIZE = 138, INK = '#070B2E';
+  function sprite(s, col) {   // cached candy word: returns {cv, w, h}
+    mctx.font = `900 ${SIZE}px Rubik`; mctx.direction = 'rtl'; const tw = Math.ceil(mctx.measureText(s).width), w = tw + Math.ceil(SIZE * 1.0), h = Math.ceil(SIZE * 2.0), key = 'cap|' + s + '|' + col + '|' + SIZE;
+    const cv = CL.layer(key, w, h, g => {
+      const cx = w / 2, cy = h / 2 - SIZE * .04, dep = Math.round(SIZE * .13);
+      g.font = `900 ${SIZE}px Rubik`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.direction = 'rtl'; g.lineJoin = 'round'; g.miterLimit = 2;
+      g.strokeStyle = 'rgba(2,4,30,.5)'; g.lineWidth = SIZE * .3; g.strokeText(s, cx + 4, cy + dep + 12);              // drop shadow
+      g.strokeStyle = '#ffffff'; g.lineWidth = SIZE * .33; for (const d of [0, dep * .5, dep]) g.strokeText(s, cx, cy + d);   // die-cut sticker edge
+      const dark = A.mixc(col, INK, .7); g.strokeStyle = dark; g.fillStyle = dark; g.lineWidth = SIZE * .2;
+      for (let d = dep; d >= 1; d -= 1) { g.strokeText(s, cx, cy + d); g.fillText(s, cx, cy + d); }                     // extruded depth
+      g.strokeStyle = INK; g.lineWidth = SIZE * .2; g.strokeText(s, cx, cy);                                            // navy outline
+      const t = mk(w, h), x = t.getContext('2d'); x.font = g.font; x.textAlign = 'center'; x.textBaseline = 'middle'; x.direction = 'rtl'; x.lineJoin = 'round';
+      x.fillStyle = A.linear(x, 0, cy - SIZE * .52, 0, cy + SIZE * .52, [[0, A.mixc(col, '#ffffff', .62)], [.42, A.mixc(col, '#ffffff', .12)], [.5, col], [1, A.mixc(col, INK, .32)]]); x.fillText(s, cx, cy);
+      x.globalCompositeOperation = 'source-atop';
+      x.fillStyle = A.linear(x, 0, cy - SIZE * .5, 0, cy + SIZE * .05, [[0, 'rgba(255,255,255,.75)'], [1, 'rgba(255,255,255,.0)']]); x.beginPath(); x.ellipse(cx, cy - SIZE * .27, tw * .56, SIZE * .26, 0, 0, A.TAU); x.fill();   // top gloss
+      x.strokeStyle = 'rgba(255,255,255,.55)'; x.lineWidth = 5; x.strokeText(s, cx, cy);                                 // inner rim light
+      x.globalCompositeOperation = 'source-over';
+      g.drawImage(t, 0, 0);
+    });
+    return { cv, w, h };
+  }
   function captions(c, t) {
     if (CL.noCap.some(([a, b]) => t >= a && t < b)) return;
-    const ci = chunks.findIndex(k => t >= k.t0 - 0.02 && t < k.t1 + 0.14); if (ci < 0) return;
-    const ch = chunks[ci], size = 96, YB = CL.capYAt ? CL.capYAt(t) : CL.capY;
-    c.save(); c.direction = 'rtl'; c.font = `900 ${size}px Rubik`;
-    const words = ch.map(w => w.w), gap = 16, pad = size * .32, widths = words.map(s => c.measureText(s).width + pad * 2);
-    const total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1), fit = Math.min(1, 1500 / total); let x = total / 2;   // RTL: first word at the right
-    c.translate(W / 2, YB); c.scale(fit, fit);
-    words.forEach((s, i) => {
-      const w = ch[i], wp = widths[i], cx = x - wp / 2, sc = CL.pop(t, w.t0 - .04, .26); x -= wp + gap; if (sc <= 0) return;
-      const active = t >= w.t0 - .03 && t < w.t1 + .02, em = EMPH[s] || EMPH[s.replace(/^ו/, '')], sd = ci * 3 + i, jt = CL.j(t, sd, 3);
-      CL.chip(c, s, cx + jt[0], jt[1] - (active ? 8 : 0), { size, fill: active ? (em || C.yellow) : '#ffffff', ink: active ? '#ffffff' : (em || C.ink), scale: sc * (active ? 1.07 : 1), pad, rot: jt[2] + (hash(sd * 1.3) - .5) * .05 });
+    const ci = chunks.findIndex(k => t >= k.t0 - 0.02 && t < k.t1 + 0.16); if (ci < 0) return;
+    const ch = chunks[ci], YB = CL.capYAt ? CL.capYAt(t) : CL.capY, gi0 = chunks.slice(0, ci).reduce((s, k) => s + k.length, 0);
+    const outK = clamp((t - (ch.t1 + .02)) / .14);   // slide/fade out after the phrase
+    // soft legibility scrim behind the caption band
+    const sk = clamp((t - (ch.t0 - .1)) / .2) * (1 - outK); c.save(); c.globalAlpha = .55 * sk; c.fillStyle = c.createLinearGradient(0, H * .58, 0, H); c.fillStyle.addColorStop(0, 'rgba(4,6,32,0)'); c.fillStyle.addColorStop(1, 'rgba(4,6,32,1)'); c.fillRect(0, H * .58, W, H * .42); c.restore();
+    const sp = ch.map((w, i) => sprite(w.w, wcolor(w.w, gi0 + i))), gap = -SIZE * .1, widths = sp.map(q => q.w - SIZE * .55), total = widths.reduce((a, b) => a + b, 0) + gap * (sp.length - 1), fit = Math.min(1, 1640 / total);
+    c.save(); c.translate(W / 2, YB + outK * 40); c.scale(fit, fit); c.globalAlpha = 1 - outK; let x = total / 2;   // RTL: first word at the right
+    ch.forEach((w, i) => {
+      const q = sp[i], wp = widths[i], cx = x - wp / 2, u = (t - (w.t0 - .04)) / .34; x -= wp + gap; if (u <= 0) return;
+      const col = wcolor(w.w, gi0 + i), e = ease.outBack(clamp(u)), k = clamp(u), sq = 1 + .28 * Math.sin(clamp(u * 1.6) * Math.PI) * (1 - k * .3), sc = (.05 + .95 * e) * (w.w.length <= 3 ? 1 : 1);
+      const active = t >= w.t0 - .03 && t < w.t1 + .02, jt = CL.j(t, ci * 3 + i, 4), bob = active ? Math.sin((t - w.t0) * 9) * 3 : 0, drop = -110 * (1 - clamp(u * 1.5)) * (1 - clamp(u * 1.5)), rot = (hash((gi0 + i) * 1.7) - .5) * .09 * (1 - k * .5) + jt[2];
+      // liquid splash + ring + droplets on the word start
+      const su = (t - w.t0 + .04); if (su > 0 && su < .7) { c.save(); c.translate(cx, 8); c.globalAlpha *= 1 - ease.in(clamp(su / .7)); CL.splash(c, 0, 0, Math.max(140, wp * .5), ease.outBack(clamp(su / .28)) * .9, gi0 + i + 3, [col, '#ffffff', A.mixc(col, '#ffffff', .5)]); c.restore(); CL.ring(c, cx, 4, wp * .55 + 60, clamp(su / .5), col, 10);
+        for (let d = 0; d < 7; d++) { const a = -Math.PI / 2 + (hash(d * 3.1 + gi0 + i) - .5) * 2.2, v = 380 + hash(d * 5.7 + i) * 380, px = cx + Math.cos(a) * v * su, py = -40 + Math.sin(a) * v * su + 1500 * su * su; c.fillStyle = d % 2 ? '#fff' : col; c.beginPath(); c.arc(px, py, 9 * (1 - su / .7) + 2, 0, A.TAU); c.fill(); } }
+      c.save(); c.translate(cx + jt[0] * .3, drop + jt[1] * .4 + bob); c.rotate(rot); c.scale(sc * sq * (active ? 1.06 : 1), sc / sq * (active ? 1.06 : 1));
+      if (active) { c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = .35; c.fillStyle = A.radial(c, 0, 0, 0, wp * .75, [[0, A.hex(col, .9)], [1, A.hex(col, 0)]]); c.fillRect(-wp, -SIZE, wp * 2, SIZE * 2); c.restore(); }
+      c.drawImage(q.cv, -q.w / 2, -q.h / 2 + SIZE * .04);
+      const fl = clamp(1 - (t - w.t0) / .22); if (fl > 0) { c.globalCompositeOperation = 'lighter'; c.globalAlpha = .55 * fl; c.drawImage(q.cv, -q.w / 2, -q.h / 2 + SIZE * .04); }
+      c.restore();
     });
     c.restore();
+    // English gloss: dark glass strip, gradient rim, words light up as they are spoken
     const L = A.LINES.find(l => t >= l.t - 0.05 && t <= l.end + 0.3);
     if (L) {
-      c.save(); c.direction = 'ltr'; c.font = '700 34px Rubik'; const tw = L.words.reduce((s, w) => s + c.measureText(w.w + ' ').width, 0), y = YB + size * .92 + 30, gs = Math.min(1, 1500 / (tw + 70));
-      c.translate(W / 2, y); c.scale(gs, gs); c.fillStyle = 'rgba(5,8,38,.78)'; c.beginPath(); c.roundRect(-tw / 2 - 26, -30, tw + 52, 60, 30); c.fill();
-      let xx = -tw / 2; for (const w of L.words) { A.text(c, w.w, xx, 2, { font: '700 34px Rubik', align: 'left', fill: t >= w.t ? C.yellow : 'rgba(255,255,255,.75)' }); xx += c.measureText(w.w + ' ').width; }
+      c.save(); c.direction = 'ltr'; c.font = '800 38px Rubik'; const tw = L.words.reduce((s, w) => s + c.measureText(w.w + ' ').width, 0), y = YB + SIZE * .98 + 8, gs = Math.min(1, 1640 / (tw + 90));
+      c.globalAlpha = sk; c.translate(W / 2, y + outK * 20); c.scale(gs, gs);
+      c.fillStyle = 'rgba(5,8,38,.82)'; c.beginPath(); c.roundRect(-tw / 2 - 36, -34, tw + 72, 68, 34); c.fill();
+      const rg = c.createLinearGradient(-tw / 2, 0, tw / 2, 0); rg.addColorStop(0, C.cyan); rg.addColorStop(.5, C.purple); rg.addColorStop(1, C.pink); c.strokeStyle = rg; c.lineWidth = 3.5; c.stroke();
+      let xx = -tw / 2; for (const w of L.words) { const lit = t >= w.t; A.text(c, w.w, xx, 2, { font: '800 38px Rubik', align: 'left', fill: lit ? C.yellow : 'rgba(255,255,255,.62)' }); const ww = c.measureText(w.w + ' ').width; if (lit && t - w.t < .25) CL.spark(c, xx + ww * .45, -30, 12 * (1 - (t - w.t) / .25), t * 6, '#fff'); xx += ww; }
       c.restore();
     }
   }

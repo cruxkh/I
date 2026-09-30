@@ -115,24 +115,89 @@ class WindEngine:
 
 
 class SitarEngine:
-    """plucked sitar-like string: KS with a jawari-style buzz (soft clip + comb of sympathetic strings) and meend slides.
-    kw: from (semitones), gl."""
+    """plucked sitar-like string: KS with a jawari-style buzz (asymmetric soft clip = grazing bridge), bright 2-5 kHz body,
+    sympathetic-string resonances (tuned to the tonic/fifth) and meend slides.  kw: from (semitones, start offset), gl (glide s)."""
     def render(self, p, notes):
         out = np.zeros((N, 2))
         for i, (t, d, n, v, kw) in enumerate(notes):
             f = mtof(n)
-            s_ = ks_string(f, d, v, 1200 + i, t60=1.4, bright=0.95, pick=0.05, mute_after=4)
+            s_ = ks_string(f, d, v, 1200 + i, t60=kw.get('t60', 1.1), bright=1.0, pick=0.04, mute_after=kw.get('mute', 3))
             L = len(s_)
             tt = np.arange(L) / SR
             fr = kw.get('from', 0.0)
             if fr:
                 ratio = 2 ** ((fr * np.exp(-tt / kw.get('gl', 0.08))) / 12)
                 s_ = resamp_var(np.stack([s_, s_], 1), ratio)[:, 0]
-            # jawari buzz: asymmetric soft clip + a sympathetic-string resonance (tonic drone) + comb
-            z = np.tanh(3.0 * s_ + 0.6 * s_ ** 2) * 0.6
-            z = z + 0.35 * signal.sosfilt(peq_sos(f * 3.0, 9, 8.0), z)
-            z = hpf(lp(z, 7000), 120)
-            place(out, np.stack([z, np.roll(z, 55)], 1) * 0.55, t)
+            z = np.tanh(5.0 * s_ + 1.2 * s_ ** 2) * 0.55                    # jawari buzz
+            z = z + 0.14 * hpf(np.tanh(9.0 * s_), 2200) * np.exp(-tt[:len(z)] / 0.25)   # bright buzzing top
+            z = z + 0.5 * signal.sosfilt(peq_sos(f * 2.0, 8, 6.0), z)
+            z = signal.sosfilt(peq_sos(2600, 3, 0.9), z)
+            for sf_ in (mtof(64) * 1.0, mtof(71), mtof(76)):               # sympathetic strings E4 B4 E5
+                z = z + 0.18 * signal.sosfilt(peq_sos(sf_, 20, 40.0), z)
+            z = hpf(lp(z, 7500), 140)
+            place(out, np.stack([z, np.roll(z, 55)], 1) * 0.5, t)
+        return out
+
+
+class HarmoniumEngine:
+    """harmonium: three detuned reed voices (musette), reedy odd-rich wave, bellows tremolo, nasal EQ; kw: trem (Hz)"""
+    def render(self, p, notes):
+        out = np.zeros((N, 2))
+        for i, (t, d, n, v, kw) in enumerate(notes):
+            L = int((d + 0.15) * SR)
+            tt = np.arange(L) / SR
+            f = mtof(n)
+            y = np.zeros(L)
+            for det in (-7, 0, 6):
+                fr = f * 2 ** (det / 1200)
+                ph = 2 * np.pi * fr * tt
+                K = int(min(3800 / fr, 28))
+                for k in range(1, K + 1):
+                    y += np.sin(k * ph + 0.7 * k * det / 1200) / k ** 0.85
+            y *= 1 + kw.get('td', 0.06) * np.sin(2 * np.pi * kw.get('trem', 5.0) * tt)
+            env = np.minimum(1, tt / 0.03)
+            n_on = int(d * SR)
+            env[n_on:] *= np.exp(-(tt[n_on:] - d) / 0.05)
+            y = lp(y, 3200) * env
+            y = signal.sosfilt(peq_sos(1100, 5, 1.0), y)
+            y = y / (np.max(np.abs(y)) + 1e-9) * (v / 127) * 0.35
+            place(out, np.stack([y, np.roll(y, 70)], 1), t)
+        return out
+
+
+class VoxEngine:
+    """formant-synthesised female 'aa' (F1 850, F2 1220, F3 2810 Hz) with vibrato, portamento and gamak trills (ornamental vocalise, no words).
+    kw: from, gl, vib, trill=(semitones, rate Hz), vd (vibrato delay)"""
+    FORM = [(850, 100, 1.0), (1220, 120, 0.6), (2810, 200, 0.28), (3600, 260, 0.12)]
+
+    def render(self, p, notes):
+        out = np.zeros((N, 2))
+        for i, (t, d, n, v, kw) in enumerate(notes):
+            rng = np.random.default_rng(6000 + i)
+            L = int((d + 0.2) * SR)
+            tt = np.arange(L) / SR
+            semi = kw.get('from', 0.0) * np.exp(-tt / kw.get('gl', 0.05))
+            vib = kw.get('vib', 0.28) * np.sin(2 * np.pi * 5.9 * tt) * np.clip((tt - kw.get('vd', 0.12)) / 0.2, 0, 1)
+            tr = kw.get('trill')
+            if tr:
+                semi = semi + tr[0] * 0.5 * (1 - np.cos(2 * np.pi * tr[1] * tt)) * np.clip((tt - 0.06) / 0.06, 0, 1)
+            fcur = mtof(n + semi + vib)
+            ph = 2 * np.pi * np.cumsum(fcur) / SR
+            f0b = mtof(n)
+            K = int(min(5200 / f0b, 40))
+            y = np.zeros(L)
+            for k in range(1, K + 1):
+                fk = k * f0b
+                a = sum(g * np.exp(-0.5 * ((fk - fc) / bw) ** 2) for fc, bw, g in self.FORM) + 0.03
+                y += a / k * np.sin(k * ph)
+            y += 0.05 * hpf(lp(rng.standard_normal(L), 5000), 2000) * np.minimum(1, tt / 0.05)
+            env = np.minimum(1, tt / 0.03)
+            n_on = int(d * SR)
+            env[n_on:] *= np.exp(-(tt[n_on:] - d) / 0.06)
+            env *= 1 - 0.18 * (0.5 - 0.5 * np.cos(2 * np.pi * 5.9 * tt)) * np.clip((tt - 0.15) / 0.2, 0, 1)
+            y = y * env
+            y = y / (np.max(np.abs(y)) + 1e-9) * (v / 127) * 0.5
+            place(out, np.stack([y, np.roll(y, 45)], 1), t)
         return out
 
 

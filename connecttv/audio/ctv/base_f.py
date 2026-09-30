@@ -169,7 +169,7 @@ def mixdown(stems):
         sm[i] = pv
     gcomp = 10 ** (-np.interp(np.arange(N), np.arange(nb) * blk + blk / 2, sm) / 20)
     mix *= gcomp[:, None]
-    g1 = 10 ** ((-14.5 - meter.integrated_loudness(mix)) / 20)
+    g1 = 10 ** ((-14.0 - meter.integrated_loudness(mix)) / 20)
     mix *= g1
     # soft peak shaper (gain applied to mix AND stems so they still sum): tames the tutti-hit crest factor
     pk = np.max(np.abs(mix), 1)
@@ -177,7 +177,7 @@ def mixdown(stems):
     shp = np.where(pk <= knee0, pk, knee0 + (1 - knee0) * np.tanh((pk - knee0) / (1 - knee0)))
     gsh = shp / np.maximum(pk, 1e-9)
     mix *= gsh[:, None]
-    g3 = 10 ** ((-14.5 - meter.integrated_loudness(mix)) / 20)
+    g3 = 10 ** ((-14.0 - meter.integrated_loudness(mix)) / 20)
     mix *= g3
     g1 = g1 * g3
     # lookahead limiter
@@ -198,7 +198,8 @@ def mixdown(stems):
     gt = gcomp * g1 * gsh * lim
     for s in STEMS:
         stems[s] *= gt[:, None]
-    g2 = 10 ** (-1.5 / 20) / np.max(np.abs(mix))
+    tpk = np.max(np.abs(signal.resample_poly(mix, 4, 1, axis=0)))
+    g2 = 10 ** (-1.3 / 20) / tpk                       # true-peak ceiling -1.3 dBTP
     mix *= g2
     for s in STEMS:
         stems[s] *= g2

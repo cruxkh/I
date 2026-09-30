@@ -226,7 +226,7 @@ class TaikoEngine:
             y += 0.7 * lp(nz, 1400) * np.exp(-tt / 0.03)
             y += 0.18 * hpf(nz, 2500) * np.exp(-tt / 0.004)
             if self.sub:
-                fs = 45 * (1 + 0.6 * np.exp(-tt / 0.06))
+                fs = 0.99 * f0 * (1 + 0.6 * np.exp(-tt / 0.06))
                 y += self.sub * np.sin(2 * np.pi * np.cumsum(fs) / SR) * np.exp(-tt / (self.decay * 1.8))
             y = np.tanh(1.5 * y) / 1.1
             a = int(0.0015 * SR)
@@ -246,7 +246,7 @@ class BoomEngine:
         for i, (t, d, n, v, kw) in enumerate(notes):
             L = int(d * SR)
             tt = np.arange(L) / SR
-            f0, f1 = kw.get('f0', 90), max(40, kw.get('f1', 40))
+            f0, f1 = kw.get('f0', 90), max(28, kw.get('f1', 40))
             f = f1 + (f0 - f1) * np.exp(-tt / 0.1)
             y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt / (d * 0.33))
             nz = np.random.default_rng(40 + i).standard_normal(L) * np.exp(-tt / 0.012)
@@ -406,7 +406,7 @@ def darbuka_hit(kind, vel, seed):
     if kind == 'doum':
         n = int(0.55 * SR)
         t = np.arange(n) / SR
-        f = 92 * (1 + 0.35 * np.exp(-t / 0.018)) * rng.uniform(0.98, 1.02)
+        f = 82.4 * (1 + 0.35 * np.exp(-t / 0.018)) * rng.uniform(0.98, 1.02)
         ph = 2 * np.pi * np.cumsum(f) / SR
         y = np.sin(ph) * np.exp(-t / 0.22) + 0.35 * np.sin(ph * 1.59 + 0.3) * np.exp(-t / 0.07)
         y += 0.2 * np.sin(ph * 2.14) * np.exp(-t / 0.04)
@@ -629,24 +629,89 @@ class WindEngine:
 
 
 class SitarEngine:
-    """plucked sitar-like string: KS with a jawari-style buzz (soft clip + comb of sympathetic strings) and meend slides.
-    kw: from (semitones), gl."""
+    """plucked sitar-like string: KS with a jawari-style buzz (asymmetric soft clip = grazing bridge), bright 2-5 kHz body,
+    sympathetic-string resonances (tuned to the tonic/fifth) and meend slides.  kw: from (semitones, start offset), gl (glide s)."""
     def render(self, p, notes):
         out = np.zeros((N, 2))
         for i, (t, d, n, v, kw) in enumerate(notes):
             f = mtof(n)
-            s_ = ks_string(f, d, v, 1200 + i, t60=1.4, bright=0.95, pick=0.05, mute_after=4)
+            s_ = ks_string(f, d, v, 1200 + i, t60=kw.get('t60', 1.1), bright=1.0, pick=0.04, mute_after=kw.get('mute', 3))
             L = len(s_)
             tt = np.arange(L) / SR
             fr = kw.get('from', 0.0)
             if fr:
                 ratio = 2 ** ((fr * np.exp(-tt / kw.get('gl', 0.08))) / 12)
                 s_ = resamp_var(np.stack([s_, s_], 1), ratio)[:, 0]
-            # jawari buzz: asymmetric soft clip + a sympathetic-string resonance (tonic drone) + comb
-            z = np.tanh(3.0 * s_ + 0.6 * s_ ** 2) * 0.6
-            z = z + 0.35 * signal.sosfilt(peq_sos(f * 3.0, 9, 8.0), z)
-            z = hpf(lp(z, 7000), 120)
-            place(out, np.stack([z, np.roll(z, 55)], 1) * 0.55, t)
+            z = np.tanh(5.0 * s_ + 1.2 * s_ ** 2) * 0.55                    # jawari buzz
+            z = z + 0.14 * hpf(np.tanh(9.0 * s_), 2200) * np.exp(-tt[:len(z)] / 0.25)   # bright buzzing top
+            z = z + 0.5 * signal.sosfilt(peq_sos(f * 2.0, 8, 6.0), z)
+            z = signal.sosfilt(peq_sos(2600, 3, 0.9), z)
+            for sf_ in (mtof(64) * 1.0, mtof(71), mtof(76)):               # sympathetic strings E4 B4 E5
+                z = z + 0.18 * signal.sosfilt(peq_sos(sf_, 20, 40.0), z)
+            z = hpf(lp(z, 7500), 140)
+            place(out, np.stack([z, np.roll(z, 55)], 1) * 0.5, t)
+        return out
+
+
+class HarmoniumEngine:
+    """harmonium: three detuned reed voices (musette), reedy odd-rich wave, bellows tremolo, nasal EQ; kw: trem (Hz)"""
+    def render(self, p, notes):
+        out = np.zeros((N, 2))
+        for i, (t, d, n, v, kw) in enumerate(notes):
+            L = int((d + 0.15) * SR)
+            tt = np.arange(L) / SR
+            f = mtof(n)
+            y = np.zeros(L)
+            for det in (-7, 0, 6):
+                fr = f * 2 ** (det / 1200)
+                ph = 2 * np.pi * fr * tt
+                K = int(min(3800 / fr, 28))
+                for k in range(1, K + 1):
+                    y += np.sin(k * ph + 0.7 * k * det / 1200) / k ** 0.85
+            y *= 1 + kw.get('td', 0.06) * np.sin(2 * np.pi * kw.get('trem', 5.0) * tt)
+            env = np.minimum(1, tt / 0.03)
+            n_on = int(d * SR)
+            env[n_on:] *= np.exp(-(tt[n_on:] - d) / 0.05)
+            y = lp(y, 3200) * env
+            y = signal.sosfilt(peq_sos(1100, 5, 1.0), y)
+            y = y / (np.max(np.abs(y)) + 1e-9) * (v / 127) * 0.35
+            place(out, np.stack([y, np.roll(y, 70)], 1), t)
+        return out
+
+
+class VoxEngine:
+    """formant-synthesised female 'aa' (F1 850, F2 1220, F3 2810 Hz) with vibrato, portamento and gamak trills (ornamental vocalise, no words).
+    kw: from, gl, vib, trill=(semitones, rate Hz), vd (vibrato delay)"""
+    FORM = [(850, 100, 1.0), (1220, 120, 0.6), (2810, 200, 0.28), (3600, 260, 0.12)]
+
+    def render(self, p, notes):
+        out = np.zeros((N, 2))
+        for i, (t, d, n, v, kw) in enumerate(notes):
+            rng = np.random.default_rng(6000 + i)
+            L = int((d + 0.2) * SR)
+            tt = np.arange(L) / SR
+            semi = kw.get('from', 0.0) * np.exp(-tt / kw.get('gl', 0.05))
+            vib = kw.get('vib', 0.28) * np.sin(2 * np.pi * 5.9 * tt) * np.clip((tt - kw.get('vd', 0.12)) / 0.2, 0, 1)
+            tr = kw.get('trill')
+            if tr:
+                semi = semi + tr[0] * 0.5 * (1 - np.cos(2 * np.pi * tr[1] * tt)) * np.clip((tt - 0.06) / 0.06, 0, 1)
+            fcur = mtof(n + semi + vib)
+            ph = 2 * np.pi * np.cumsum(fcur) / SR
+            f0b = mtof(n)
+            K = int(min(5200 / f0b, 40))
+            y = np.zeros(L)
+            for k in range(1, K + 1):
+                fk = k * f0b
+                a = sum(g * np.exp(-0.5 * ((fk - fc) / bw) ** 2) for fc, bw, g in self.FORM) + 0.03
+                y += a / k * np.sin(k * ph)
+            y += 0.05 * hpf(lp(rng.standard_normal(L), 5000), 2000) * np.minimum(1, tt / 0.05)
+            env = np.minimum(1, tt / 0.03)
+            n_on = int(d * SR)
+            env[n_on:] *= np.exp(-(tt[n_on:] - d) / 0.06)
+            env *= 1 - 0.18 * (0.5 - 0.5 * np.cos(2 * np.pi * 5.9 * tt)) * np.clip((tt - 0.15) / 0.2, 0, 1)
+            y = y * env
+            y = y / (np.max(np.abs(y)) + 1e-9) * (v / 127) * 0.5
+            place(out, np.stack([y, np.roll(y, 45)], 1), t)
         return out
 
 
@@ -662,7 +727,7 @@ class TablaEngine:
             tt = np.arange(L) / SR
             y = np.zeros(L)
             if k in ('ge', 'dha', 'dhol'):
-                f0 = (88 if k != 'dhol' else 70) * 2 ** ((n - 60) / 12)
+                f0 = (82.4 if k != 'dhol' else 61.7) * 2 ** ((n - 60) / 12)
                 f = f0 * (1 + 0.45 * np.exp(-tt / 0.03) - 0.25 * np.exp(-tt / 0.012) * 0)
                 f = f0 * (0.8 + 0.2 * (1 - np.exp(-tt / 0.06))) * (1 + 0.5 * np.exp(-tt / 0.02))
                 ph = 2 * np.pi * np.cumsum(f) / SR
@@ -670,7 +735,7 @@ class TablaEngine:
                 y += 0.3 * np.sin(1.5 * ph + 0.4) * np.exp(-tt / 0.05)
                 y += 0.55 * lp(rng.standard_normal(L), 1100) * np.exp(-tt / 0.012)
             if k in ('na', 'tin', 'dha'):
-                fd = 420 * 2 ** ((n - 60) / 12) if k != 'tin' else 640 * 2 ** ((n - 60) / 12)
+                fd = 415.3 * 2 ** ((n - 60) / 12) if k != 'tin' else 659.3 * 2 ** ((n - 60) / 12)
                 for j, (r_, a_, dc) in enumerate(((1, 1.0, 0.16), (2.0, 0.55, 0.1), (3.0, 0.4, 0.07), (4.1, 0.25, 0.04))):
                     y += 0.55 * a_ * np.sin(2 * np.pi * fd * r_ * tt + j) * np.exp(-tt / (dc if k != 'na' else dc * 0.6))
                 y += 0.5 * hpf(rng.standard_normal(L) * np.exp(-tt / 0.004), 2000)
@@ -850,7 +915,13 @@ harp_d = part('harp_d', 'days', E(lambda: vs('Strings/Harp', offset=0, release=0
 pz_d = part('pz_d', 'days', E(lambda: xs('Strings/Violin Section/Pizz', 12, release=0.25)), pan=-0.1, hall=0.3)
 pno_d = part('pno_d', 'days', E(lambda: Sampler(sorted(glob.glob(os.path.join(VS, 'Keys/Upright Nr1/UR1_*.wav'))), dyn_parse,
                                                 offset=0, release=0.8, maxlen=6.0, velcurve=1.4)), width=0.9, hall=0.45)
-sitar = part('sitar', 'choir', SitarEngine(), pan=0.25, hall=0.3)
+sitar = part('sitar', 'choir', SitarEngine(), pan=0.2, hall=0.28)
+vln_si = part('vln_si', 'strings', E(lambda: vs('Strings/Violin Section/Spic', release=0.12)), pan=-0.3, width=1.2, hall=0.3)
+vla_si = part('vla_si', 'strings', E(lambda: vs('Strings/Viola Section/spic', release=0.12)), pan=0.1, hall=0.28)
+harmon = part('harmon', 'choir', HarmoniumEngine(), pan=-0.1, hall=0.3)
+vox = part('vox', 'choir', VoxEngine(), pan=0.0, width=1.1, hall=0.42)
+shehnai = part('shehnai', 'choir', WindEngine(lambda: xs('Woodwinds/Oboe/Vib', 12, release=0.2)), pan=0.12, width=1.0, hall=0.35,
+               eq=[peq_sos(1300, 5, 1.1), peq_sos(2600, 4, 1.4), shelf_sos(5000, 2.0)])
 tabla = part('tabla', 'perc', TablaEngine(), room=0.2, hall=0.15)
 zap = part('zap', 'fx', ZapEngine(), hall=0.25)
 shim = part('shim', 'fx', ShimmerEngine(), width=1.4, hall=0.4)
@@ -864,8 +935,8 @@ TRIM = dict(taiko=-14, trailer=-16, sub=-21, kick=-4, snare=4, hh=9, hho=6, cras
             hn_su=15, hn_st=12, tp_su=4, tp_st=10, tb_su=9, tb_st=9, tu_su=10, tu_st=13, choir=1, oohs=1,
             timp=10, ocym=5, gong=3, riser=-3, boom=-17, braaam=-4, harp=14, celesta=10, glock=14, piano=2,
             kanun=2, darb=-4, tamb=10, oroll=3, bd=2,
-            flute_sv=8, flute_ex=8, flute_nv=8, oboe=8, vln_solo=8, cb_dr=7, vc_dr=6, vlnpz=8, vlapz=8, vcpz=8, cbpz=8, vsol_sp=8, vsol_tr=8,
-            dhol_h=2, dhol_s=2, conga_o=4, harp_d=19, pz_d=11, pno_d=2, sitar=0, tabla=0, zap=0, shim=0)
+            flute_sv=8, flute_ex=12, flute_nv=8, oboe=8, vln_solo=8, cb_dr=7, vc_dr=6, vlnpz=8, vlapz=8, vcpz=8, cbpz=8, vsol_sp=8, vsol_tr=8,
+            dhol_h=3.4, dhol_s=2, conga_o=4, harp_d=19, pz_d=11, pno_d=2, vln_si=2, vla_si=4, sitar=-10, harmon=-9, vox=-5, shehnai=7, tabla=-12, zap=0, shim=0)
 for _k, _db in TRIM.items():
     PARTS[_k].gain *= 10 ** (_db / 20)
 
@@ -987,6 +1058,27 @@ def near(pc, lo):
     return x
 
 
+def _fr_tr(ch):
+    r, _ = ct(ch)
+    return 36.7 * 2 ** (((r - 2) % 12) / 12)
+
+
+def tr_n(ch):
+    """'trailer' drum note number tuned to the chord root (drum body 36-68 Hz)"""
+    return 58 + 12 * np.log2(_fr_tr(ch) / 42.76)
+
+
+def tk_n(ch):
+    """taiko note number tuned to the chord root (55-103 Hz)"""
+    r, _ = ct(ch)
+    return 60 + 12 * np.log2(55 * 2 ** (((r - 9) % 12) / 12) / 62.0)
+
+
+def bm(ch):
+    f1 = _fr_tr(ch)
+    return dict(f0=2.1 * f1, f1=f1)
+
+
 def brass_line(g, line, vel, parts=('hn', 'tp'), hn_oct=-12, tp_oct=0, beats=(-99, 99), legato=1.0, oct_up=0):
     """hook on horns (octave below) + trumpets; long notes on sustain samples, short on staccato."""
     for b, d, n_ in line:
@@ -1104,7 +1196,7 @@ def kit16(t0, s, n, style, lvl=1.0, ph=0, mute=None):
             hh.n(t, 0.08, 60, [90, 50, 70, 50][p % 4] * lvl + rv(-5, 5))
 
 
-def taiko8(t0, b, beats, style='A', lvl=1.0, mute=None):
+def taiko8(t0, b, beats, style='A', lvl=1.0, mute=None, ch='Em'):
     pats = {'A': [(0, 124), (1.75, 96), (2, 112), (3.5, 100)],
             'C': [(0, 124), (0.75, 90), (1.5, 104), (2, 118), (2.75, 90), (3, 100), (3.5, 110)],
             '8': [(i / 2, 118 if i % 2 == 0 else 96) for i in range(8)]}[style]
@@ -1112,7 +1204,7 @@ def taiko8(t0, b, beats, style='A', lvl=1.0, mute=None):
         for off, v in pats:
             bt = bar * 4 + off
             if bt < beats - 1e-6 and not (mute and mute[0] <= t0 + bt * b <= mute[1]):
-                taiko.n(t0 + bt * b + hum(3), 0.5, 60 if off % 1 == 0 else 64, v * lvl + rv(-4, 4))
+                taiko.n(t0 + bt * b + hum(3), 0.5, tk_n(ch) + (0 if off % 1 == 0 else 7), v * lvl + rv(-4, 4))
 
 
 def stab(t, ch, vel=110, dur=0.18):
@@ -1137,9 +1229,9 @@ def tutti(t, ch, big=1.0, dur=0.45, crash_on=True, choir_on=True, top=None, lead
     vc_su.n(t - 0.04, dur + 0.04, near(r, m('C3')), v)
     cb_su.n(t - 0.03, dur + 0.03, near(r, m('C2')), v)
     timp.n(t, 1.0, near(r, m('D2')), v)
-    trailer.n(t, 1.5, 58, v)
+    trailer.n(t, 1.5, tr_n(ch), v)
     bd.n(t, 2.0, 60, v)
-    boom.n(t, 1.6, 60, int(100 * big), f0=85, f1=30)
+    boom.n(t, 1.6, 60, int(100 * big), **bm(ch))
     sub.n(t, dur + 0.6, near(r, m('E1')), int(100 * big))
     if choir_on:
         choir.n(tl - 0.03, dl + 0.03, [near(pcs[0], m('E4')), near(pcs[1], m('G4')), near(pcs[2], m('B4'))], int(min(127, 110 * big)))
@@ -1199,8 +1291,8 @@ def intro():
     zap.n(T_BOLT, 0.5, 60, 122)
     timp.n(T_BOLT, 1.2, 'E2', 127)
     bd.n(T_BOLT, 2.0, 60, 124)
-    trailer.n(T_BOLT, 1.5, 55, 120)
-    boom.n(T_BOLT, 1.6, 60, 118, f0=90, f1=30)
+    trailer.n(T_BOLT, 1.5, tr_n('Em'), 120)
+    boom.n(T_BOLT, 1.6, 60, 118, **bm('Em'))
     sub.n(T_BOLT, 1.6, 'E1', 110)
     stab(T_BOLT, 'Em', 122, 0.35)
     tb_su.n(T_BOLT, 0.5, ['E2', 'B2', 'E3'], 110)
@@ -1229,7 +1321,7 @@ def intro():
     cb_su.ex(T_BOLT + 0.3, T_OPEN, -22, -2, 1.4)
     # shard burst 1.26
     tp = T_SHARD
-    taiko.n(tp, 0.5, 60, 100)
+    taiko.n(tp, 0.5, tk_n('Em'), 100)
     tb_st.n(tp, 0.15, ['E2', 'B2'], 96)
     sparkle(tp, 4, notes=8, dur=0.35, scale=(0, 3, 7, 10, 12), base='E5', vel=76, dens=60)
     # timpani roll + snare roll into 2.33
@@ -1283,7 +1375,7 @@ def sectionA():
         sub.n(g(b0), g.b * d - 0.05, near(r, m('E1')), 84)
     kit16(g(0), s, 16, 'half', 1.0)
     kit16(g(4), s, 16, 'drive', 1.0, ph=0)
-    taiko8(g(0), g.b, 8, 'A', 0.9)
+    taiko8(g(0), g.b, 8, 'A', 0.9, ch='Em')
     # bar 3 build: toms + snare accel to the slam (matches the scene's drum-roll hits 8.03 ... 8.31)
     for i in range(4):
         (tomh if i % 2 == 0 else toml).n(g(8 + i / 4), 0.3, 60, 88 + 8 * i)
@@ -1292,7 +1384,7 @@ def sectionA():
     oroll.n(T_SLAM - 0.7, 0.72, 60, 100)
     oroll.ex(T_SLAM - 0.7, T_SLAM, -20, 0, 1.3, pre=False, post=False)
     for i in range(6):
-        taiko.n(g(8 + i * 0.4), 0.3, 60 if i % 2 == 0 else 64, 100 + 4 * i)
+        taiko.n(g(8 + i * 0.4), 0.3, tk_n('B') + (0 if i % 2 == 0 else 7), 100 + 4 * i)
     # hook (horns, then + trumpets), violins double from bar 2
     brass_line(g, HOOK_MIN, 100, beats=(0, 4), parts=('hn',))
     brass_line(g, HOOK_MIN, 106, beats=(4, 8), parts=('hn', 'tp'))
@@ -1306,10 +1398,10 @@ def sectionA():
     # NETFLIX accent (beat 2) : tutti stab on Em
     t = T_NFX
     stab(t, 'Em', 116, 0.25)
-    taiko.n(t, 0.5, 60, 122)
+    taiko.n(t, 0.5, tk_n('Em'), 122)
     crash.n(t, 1.6, 60, 108)
     kick.n(t, 0.3, 60, 120)
-    boom.n(t, 1.0, 60, 90, f0=80, f1=32)
+    boom.n(t, 1.0, 60, 90, **bm('Em'))
     tutti(t, 'Em', 0.85, dur=0.3, crash_on=False, choir_on=False)
     # DISNEY+ magical sparkle (C lydian) : harp glissando, glock, celesta, glint dust
     sparkle(T_DIS - 0.02, 0, notes=16, dur=0.55, scale=(0, 2, 4, 6, 7, 9, 11), base='E5', vel=84, dens=100)
@@ -1321,7 +1413,7 @@ def sectionA():
     # CHARLTON slam 8.32 : power chord E (open fifth) + trailer drum + gong; then a low stab on the way into the braaam
     t = T_SLAM
     tutti(t, 'Em', 1.2, dur=0.55)
-    trailer.n(t, 1.6, 52, 127)
+    trailer.n(t, 1.6, tr_n('Em'), 127)
     gong.n(t, 3.0, 60, 110)
     braaam.n(t, 0.5, 'E1', 100)
     riser.n(t + 0.0, 0.05, 60, 60, kind='cym', len='s')
@@ -1338,8 +1430,8 @@ def cin():
         pp.n(t0, 1.0, ns, v)
     braaam.n(t0, 1.0, 'E1', 118)
     braaam.n(t0, 1.0, 'B1', 90)
-    trailer.n(t0, 2.0, 52, 127)
-    boom.n(t0, 2.0, 60, 120, f0=95, f1=28)
+    trailer.n(t0, 2.0, tr_n('Em'), 127)
+    boom.n(t0, 2.0, 60, 120, **bm('Em'))
     gong.n(t0 + 0.01, 3.0, 60, 118)
     bd.n(t0, 2.0, 60, 124)
     ocym.n(t0, 2.0, 60, 110)
@@ -1349,7 +1441,7 @@ def cin():
     for pp, ns, v in [(tb_su, ['F2', 'C3', 'F3'], 118), (tu_su, ['F1', 'F2'], 118)]:
         pp.n(t2, 0.45, ns, v)
     braaam.n(t2, 0.5, 'F1', 104)
-    trailer.n(t2, 1.0, 53, 118)
+    trailer.n(t2, 1.0, tr_n('F'), 118)
     # timpani roll crescendo on E
     tt = t0 + 0.12
     while tt < tl - 0.01:
@@ -1383,7 +1475,7 @@ def cin():
         tt += 0.038
     riser.n(tl, 0.9, 60, 100, kind='cym', len='s')
     riser.n(tl - 0.7, 0.7, 60, 90, kind='noise', lo=250, hi=11000, n0=47, oct=3)
-    trailer.n(tl - 0.7, 1.0, 52, 110)
+    trailer.n(tl - 0.7, 1.0, tr_n('Em'), 110)
     # landing: full tutti Em + crash + brand cell on the horns
     tutti(tl, 'Em', 1.1, dur=0.45)
     brass_line(Grid(tl, 0.452), [(0, .5, 'B4'), (.5, .5, 'E5'), (1, .5, 'F#5'), (1.5, 1, 'G5')], 104, parts=('hn', 'tp'))
@@ -1395,7 +1487,7 @@ def series1():
     s = (T_TUR0 - t0) / 10
     ost16(t0, s, 10, 'Em', 1.0, ph=0)
     kit16(t0, s, 10, 'drive', 1.0)
-    taiko8(t0, s * 4, 2.5, 'C', 1.0)
+    taiko8(t0, s * 4, 2.5, 'C', 1.0, ch='Em')
     sub.n(t0, T_TUR0 - t0 - 0.03, 'E1', 96)
     for i in range(4):
         snare.n(T_TUR0 - 0.05 - (3 - i) * s / 2, 0.08, 60, 90 + 9 * i)
@@ -1472,9 +1564,9 @@ def series2():
         hho.n(tt + s * 2, s, 60, 80)
         for pp, nt in ((hn_st, 'E4'), (tp_st, 'B4')):
             pp.n(tt, s * 0.9, m(nt) if grp < 2 else m(nt) + (0 if nt == 'B4' else 3), 100 + 5 * grp)
-    taiko.n(t0, 0.3, 60, 118)
-    taiko.n(t0 + 3 * s, 0.3, 64, 100)
-    taiko.n(t0 + 6 * s, 0.3, 60, 110)
+    taiko.n(t0, 0.3, tk_n('Em'), 118)
+    taiko.n(t0 + 3 * s, 0.3, tk_n('Em') + 7, 100)
+    taiko.n(t0 + 6 * s, 0.3, tk_n('B'), 110)
     timp.n(t0 + 6 * s, 0.4, 'B1', 100)
     sub.n(t0, 9 * s - 0.03, 'E1', 96)
     for i in range(3):
@@ -1482,60 +1574,73 @@ def series2():
 
 
 def ind():
-    """hold 13.43 - 14.53: Bollywood pastiche (E major): dhol + tabla groove, sitar plucks, bansuri line, brass hits; fill -> landing 14.54"""
-    t0 = T_IND0
-    s = 1.1 / 8
-    # dhol / tabla groove (16th grid of 0.1375 s)
-    pat = {0: ('dha', 118), 1: ('tak', 66), 2: ('ge', 96), 3: ('na', 98), 4: ('dha', 112), 5: ('tin', 88), 6: ('ge', 100), 7: ('na', 92)}
-    for i, (k, v) in pat.items():
-        tabla.n(t0 + i * s, 0.2, 60, v, kind=k, pan=0.15 if k in ('na', 'tin', 'tak') else -0.1)
-    tabla.n(t0 + 6.5 * s, 0.2, 60, 84, kind='na', pan=0.15)
-    tabla.n(t0 + 7.5 * s, 0.2, 60, 90, kind='tak', pan=0.15)
-    for i, v in ((0, 118), (4, 108)):
-        dhol_h.n(t0 + i * s, 0.4, 60, v)
-    for i, v in ((2, 92), (3, 84), (6, 100), (7, 92)):
-        dhol_s.n(t0 + i * s, 0.2, 60, v)
-    for i in range(8):
-        tamb.n(t0 + i * s + 0.5 * s, 0.1, 60, 60 + 8 * (i % 2))
-    kick.n(t0, 0.3, 60, 112)
-    # opening hit: brass E major stab + crash (zoom start)
-    for pp, ns in [(tp_st, ['G#4', 'B4', 'E5']), (hn_st, ['E4', 'G#4', 'B4']), (tb_st, ['E2', 'B2', 'E3'])]:
-        pp.n(t0, 0.22, ns, 116)
-    crash.n(t0, 1.2, 60, 100)
-    sub.n(t0, 0.5, 'E1', 100)
-    # sitar plucks: fast ascending line with meend, then a held phrase
-    sit = [(0.02, 'E4', 0.1, 100, {}), (0.14, 'F#4', 0.1, 92, {}), (0.26, 'G#4', 0.1, 96, {}), (0.39, 'A4', 0.12, 94, dict(**{'from': -1.5, 'gl': 0.06})),
-           (0.52, 'B4', 0.3, 104, dict(**{'from': -2.0, 'gl': 0.09}))]
-    for dt, n_, d, v, kw in sit:
-        sitar.n(t0 + dt, d, n_, v, **kw)
-    # bansuri (bamboo flute) answer with an ornamented descent
-    ban = [(0.50, 'B5', 0.16, 96, dict(**{'from': -2.0, 'gl': 0.07})), (0.68, 'A5', 0.1, 90, {}), (0.78, 'G#5', 0.1, 92, {}),
-           (0.88, 'F#5', 0.12, 92, {}), (1.0, 'E5', 0.34, 98, dict(vib=0.3, vd=0.06))]
-    for dt, n_, d, v, kw in ban:
-        flute_ex.n(t0 + dt, d, n_, v, **kw)
-    # brass hits ta-ta-TA on the E major chord
-    for dt, v in ((0.62, 96), (0.76, 104), (0.90, 116)):
-        for pp, ns in [(tp_st, ['B4', 'E5']), (hn_st, ['E4', 'G#4'])]:
-            pp.n(t0 + dt, 0.1, ns, v)
-    vlnpz.n(t0 + 0.62, 0.1, ['E5', 'B5'], 84)
-    # drone
-    vla_su.n(t0, 1.1, 'E3', 60)
-    vc_su.n(t0, 1.1, ['E2', 'B2'], 66)
-    # fill + string run landing on the theme return
-    tl = T_LAND3
+    """hold 13.43 - 14.53: BOLLYWOOD / filmi pastiche (original), the star of the hold.  Bounce = 3+3+3 sixteenths (bhangra/filmi feel, ~122 BPM),
+    downbeat accent, bright sitar riff with jawari buzz + meend slides (Bhairav-flavoured: E F G# A B C), harmonium drone, dhol + tabla groove,
+    shehnai (double-reed) long line with ornaments, ornamental female 'aa-aa' vocalise with a gamak trill, bansuri answer, playful staccato
+    filmi violins; then a tirakita / violin-run pickup that lands on the theme at 14.54."""
+    t0, tl = T_IND0, T_LAND3
+    s = (tl - t0) / 9                                     # 0.1233 s
+    ts = lambda k: t0 + k * s
+    # ---- downbeat accent
+    dhol_h.n(ts(0), 0.5, 60, 127)
+    dhol_s.n(ts(0), 0.2, 60, 112)
+    tabla.n(ts(0), 0.3, 60, 120, kind='dha')
+    sitar.n(ts(0), 0.5, ['E4', 'B4', 'E5'], 118)
+    harmon.n(ts(0), 1.06, ['E3', 'B3', 'E4', 'G#4'], 96)
+    vln_si.n(ts(0), 0.12, ['E5', 'G#5', 'B5', 'E6'], 110)
+    vlnpz.n(ts(0), 0.12, ['E5', 'B5'], 96)
+    sub.n(ts(0), 0.45, 'E1', 108)
+    crash.n(ts(0), 1.0, 60, 96)
+    tamb.n(ts(0), 0.2, 60, 100)
+    # ---- dhol / tabla groove (3+3+3 bounce): dhol bass on 0,3,6; sticks on the off-slots; tabla fills the subdivisions
+    for k, v in ((3, 108), (6, 112)):
+        dhol_h.n(ts(k), 0.4, 60, v)
+    for k, v in ((2, 84), (4, 96), (5, 102), (7, 92), (8, 100)):
+        dhol_s.n(ts(k), 0.2, 60, v)
+    for k, kind, v in ((1, 'na', 74), (2, 'tin', 92), (3, 'ge', 104), (4, 'na', 90), (5, 'tin', 98), (6, 'dha', 110), (7, 'na', 84)):
+        tabla.n(ts(k), 0.2, 60, v, kind=kind, pan=0.15 if kind in ('na', 'tin') else -0.1)
+    for i in range(9):
+        tamb.n(ts(i) + 0.5 * s, 0.1, 60, 58 + 16 * (i % 2))
+    # ---- harmonium drone continues under everything (E + B), bellows tremolo
+    harmon.n(ts(0), 1.06, ['E2', 'B2'], 70)
+    # ---- sitar riff (slots 0-5): E F G# A B with meend slides (augmented 2nd F->G#), then rhythmic chikari plucks
+    sit = [(1.0, 'F5', 0.5, 96, dict(**{'from': -1.0, 'gl': 0.02})), (1.5, 'G#5', 1.0, 102, dict(**{'from': -3.0, 'gl': 0.05})),
+           (2.5, 'A5', 0.5, 98, dict(**{'from': -1.0, 'gl': 0.03})), (3.0, 'B5', 1.5, 110, dict(**{'from': -3.0, 'gl': 0.09})),
+           (4.5, 'A5', 0.5, 94, dict(**{'from': 2.0, 'gl': 0.04})), (5.0, 'G#5', 0.5, 92, {}), (5.5, 'E5', 0.5, 96, dict(**{'from': -2.0, 'gl': 0.05})),
+           (6.5, 'E5', 0.5, 90, {}), (7.5, 'B4', 0.5, 92, dict(**{'from': -2.0, 'gl': 0.04}))]
+    for k, n_, d, v, kw in sit:
+        sitar.n(ts(k), d * s * 1.8, n_, v, **kw)
+    # ---- ornamental female vocalise 'aa-aa' + gamak trill (B5 <-> C6)
+    for k, n_, d, v, kw in [(2.0, 'E5', 0.8, 88, dict(**{'from': -2.0, 'gl': 0.05, 'vib': 0.15})), (3.0, 'G#5', 0.85, 92, {}),
+                            (3.9, 'B5', 2.3, 100, dict(trill=(1.0, 7.0), vd=0.05))]:
+        vox.n(ts(k), d * s, n_, v, **kw)
+    vox.n(ts(6.4), 0.8 * s, 'G#5', 84)
+    # ---- shehnai (double reed, detuned pair) long line with ornaments
+    she = [(3.0, 'B4', 2.0, 100, dict(**{'from': -1.5, 'gl': 0.06, 'vib': 0.4, 'vr': 6.0, 'vd': 0.08})), (5.1, 'C5', 0.5, 92, {}), (5.6, 'B4', 0.5, 94, {}),
+           (6.2, 'A4', 1.0, 94, dict(vib=0.3)), (7.3, 'G#4', 0.8, 92, {}), (8.1, 'E4', 0.85, 98, dict(vib=0.45, vd=0.05))]
+    for k, n_, d, v, kw in she:
+        for dt, dv, det in ((0.0, 0, 0.0), (0.006, -8, 0.14)):
+            shehnai.n(ts(k) + dt, d * s, m(n_) + det, v + dv, **kw)
+    # ---- bansuri answer (descending, with a b2 touch), overlapping the tail
+    for k, n_, d, v, kw in [(5.5, 'B5', 0.5, 92, dict(**{'from': -2.0, 'gl': 0.05, 'vib': 0.3})), (6.0, 'A5', 0.5, 90, {}), (6.5, 'G#5', 0.5, 90, {}),
+                            (7.0, 'F5', 0.5, 92, {}), (7.5, 'E5', 1.4, 96, dict(vib=0.3, vd=0.05))]:
+        flute_ex.n(ts(k), d * s, n_, v, **kw)
+    # ---- playful staccato filmi violins (unison, octave) and a bouncy pizzicato
+    for k, n_ in ((1.0, 'E5'), (1.5, 'G#5'), (2.0, 'B5'), (4.0, 'B5'), (4.5, 'A5'), (5.0, 'G#5')):
+        vln_si.n(ts(k), 0.1, [n_, m(n_) + 12], 92)
+    for k, n_ in ((1.5, 'E5'), (2.5, 'G#5'), (4.5, 'B5'), (5.5, 'E6')):
+        vlnpz.n(ts(k) + 0.02, 0.1, n_, 84)
+    vla_si.n(ts(2.0), 0.1, 'E4', 84)
+    vln_solo.n(ts(0.05), 0.8 * s, 'E6', 70, **{'from': -5.0, 'gl': 0.1, 'vib': 0.2})       # filmi swoop up into the riff
+    # ---- pickup: tirakita fill + dhol sticks roll + accelerating E major violin run, landing on the theme (14.54)
     for i in range(8):
         tabla.n(tl - 0.24 + i * 0.03, 0.06, 60, 80 + 5 * i, kind='tak' if i % 2 else 'na', pan=0.1)
         dhol_s.n(tl - 0.24 + i * 0.03, 0.06, 60, 70 + 6 * i)
-    tt = tl - 0.30
-    while tt < tl - 0.01:
-        u = (tt - (tl - 0.30)) / 0.30
-        snc.n(tt, 0.04, 60, int(44 + 80 * u ** 1.3))
-        tt += 0.03
-    scl = ['E4', 'F#4', 'G#4', 'A4', 'B4', 'C#5', 'D#5', 'E5', 'F#5', 'G#5']
+    scl = ['G#4', 'A4', 'B4', 'C#5', 'D#5', 'E5', 'F#5', 'G#5', 'A5', 'B5']
     for k, nt in enumerate(scl):
-        tk = tl - 0.03 - 0.34 * ((9 - k) / 9) ** 1.25
-        vln_sp.n(tk, 0.06, [nt, m(nt) + 12], 80 + 4 * k)
-        vla_sp.n(tk, 0.06, nt, 74 + 4 * k)
+        tk = tl - 0.03 - 0.36 * ((9 - k) / 9) ** 1.25
+        vln_si.n(tk, 0.06, [nt, m(nt) + 12], 80 + 4 * k)
+        vla_si.n(tk, 0.06, nt, 74 + 4 * k)
     riser.n(tl, 0.45, 60, 88, kind='cym', len='s')
 
 
@@ -1559,7 +1664,7 @@ def live():
     sub.n(g(5), g.b - 0.05, 'D1', 96)
     kit16(g(0), s, 16, 'drive', 1.0, mute=mute)
     kit16(g(4), s, 8, 'build', 1.0)
-    taiko8(g(0), g.b, 4, 'C', 1.0, mute=mute)
+    taiko8(g(0), g.b, 4, 'C', 1.0, mute=mute, ch='Em')
     brass_line(g, HOOK_MIN, 100, beats=(0, 4), parts=('hn', 'tp'))
     strings_line(g, HOOK_MIN, 92, octv=12, beats=(0, 4))
     LIVE2 = [(4, .75, 'E5'), (4.75, .25, 'E5'), (5, .5, 'F#5'), (5.5, .5, 'A5')]
@@ -1567,7 +1672,7 @@ def live():
     # israel hit 15.66: the groove comes back with a stab
     stab(ISR, 'Em', 112, 0.2)
     timp.n(ISR, 0.8, 'E2', 112)
-    taiko.n(ISR, 0.5, 60, 118)
+    taiko.n(ISR, 0.5, tk_n('Em'), 118)
     crash.n(ISR, 1.4, 60, 100)
     sparkle(ISR, 11, notes=8, dur=0.25, scale=(0, 2, 4, 5, 7, 9, 11), base='B5', vel=74, dens=40)
     # pause build (16.16 - 17.32): rising strings scale, timpani, snare, riser, cymbal swell; all-burst 16.58; orbit riser 16.90
@@ -1606,7 +1711,7 @@ def chorus():
         pads(g(b0) + 0.01, g(b0 + d) - 0.02, ch, lvl=88, choir_on=True)
         r, _ = ct(ch)
         sub.n(g(b0), g(b0 + d) - g(b0) - 0.04, near(r, m('E1')), 100)
-    taiko8(g(0), (g(4) - g(0)) / 4, 4, 'C', 1.0)
+    taiko8(g(0), (g(4) - g(0)) / 4, 4, 'C', 1.0, ch='G')
     crash.n(T_VORTEX, 2.0, 60, 118)
     # brand hook, brass + trumpets + violins
     brass_line(g, CHO_A, 112, parts=('hn', 'tp'), hn_oct=-12)
@@ -1650,7 +1755,7 @@ def chorus():
     TB, TG = TofV(17.80), TofV(18.34)
     tutti(T_GOAL, 'G', 1.3, dur=0.8)
     gong.n(T_GOAL, 3.0, 60, 108)
-    trailer.n(T_GOAL, 1.5, 55, 124)
+    trailer.n(T_GOAL, 1.5, tr_n('G'), 124)
     crash.n(T_GOAL, 2.0, 60, 118)
     for a_, b_, ch, ph in [(T_GOAL, TG, 'G', 0), (TG, T_WAIT, 'C', 8)]:
         n = max(1, int(round((b_ - a_) / 0.1165)))
@@ -1660,7 +1765,7 @@ def chorus():
         pads(a_ + 0.01, b_ - 0.02, ch, lvl=92, choir_on=True)
         r, _ = ct(ch)
         sub.n(a_, b_ - a_ - 0.04, near(r, m('E1')), 100)
-    taiko8(T_GOAL, 0.46, 3, 'C', 1.0)
+    taiko8(T_GOAL, 0.46, 3, 'C', 1.0, ch='G')
     # hook phrase 2 by time: D6 (goal), B5, then C6 lands on the GOAL burst
     for pp in (tp_su, hn_su):
         o = 0 if pp is tp_su else -12
@@ -1696,7 +1801,7 @@ def wait():
     timp.n(E3_, 1.0, 'E2', 118)
     kick.n(E3_, 0.3, 60, 116)
     crash.n(E3_, 1.6, 60, 100)
-    trailer.n(E3_, 1.2, 52, 100)
+    trailer.n(E3_, 1.2, tr_n('Em'), 100)
     for tt, nt, v in ((E2_, 'A1', 108), (E1_, 'B1', 116)):
         timp.n(tt, 0.7, nt, v)
         kick.n(tt, 0.3, 60, int(v))
@@ -1791,7 +1896,7 @@ def accents():
     harp.n(1.70, 0.5, 'B5', 58)
     # s1: clapper slam 3.41, episode fan 3.92, flip-to-blue 5.35, plus-pop 6.43
     snare.n(3.41, 0.2, 60, 108)
-    taiko.n(3.41, 0.4, 60, 104)
+    taiko.n(3.41, 0.4, tk_n('Em'), 104)
     for k, nt in enumerate(['B5', 'E6', 'G6']):
         glock.n(3.92 + k * 0.06, 0.4, nt, 70)
     riser.n(5.08, 0.27, 60, 60, kind='noise', lo=600, hi=9000, n0=59, oct=2)
@@ -1803,7 +1908,7 @@ def accents():
     t = TofV(7.47)
     stab(t, 'B', 108, 0.2)
     timp.n(t, 0.8, 'B1', 112)
-    taiko.n(t, 0.5, 60, 112)
+    taiko.n(t, 0.5, tk_n('B'), 112)
     crash.n(t, 1.2, 60, 96)
     # s3: turkish splash 10.67 (a Phrygian F stab), bollywood burst 12.79
     t = TofV(9.27)
@@ -1834,8 +1939,8 @@ def nos():
         tb_su.n(t, 0.5, ['E2', 'B2', 'E3'], 118 * big if big < 1.05 else 124)
         timp.n(t, 1.2, 'E2', 127)
         bd.n(t, 2.0, 60, 124)
-        trailer.n(t, 1.6, 52, 124)
-        boom.n(t, 1.6, 60, 118, f0=88, f1=29)
+        trailer.n(t, 1.6, tr_n('Em'), 124)
+        boom.n(t, 1.6, 60, 118, **bm('Em'))
         sub.n(t, 1.4, 'E1', 118)
         crash.n(t, 1.6, 60, 108)
         cb_su.n(t, 0.6, 'E2', 110)
@@ -1878,7 +1983,7 @@ def nos():
     # 27.93 bolts cross out: accent hit
     stab(T_XOUT, 'Em', 120, 0.25)
     timp.n(T_XOUT, 0.8, 'E2', 122)
-    trailer.n(T_XOUT, 1.2, 52, 116)
+    trailer.n(T_XOUT, 1.2, tr_n('Em'), 116)
     crash.n(T_XOUT, 1.8, 60, 112)
     zap.n(T_XOUT, 0.4, 60, 96)
     # wave sweep 27.93 -> relief 28.30 : reverse cymbal and rising dust
@@ -1913,7 +2018,7 @@ def relief():
         rr, _ = ct(ch)
         sub.n(a, b - a - 0.04, near(rr, m('E1')), 84 + int(16 * lvl))
         kit16(a, s, n, 'lite' if a < T_TAP else 'four', 0.9 if a < T_TAP else 1.05)
-    taiko8(T_TAP, 0.46, 5.5, 'C', 1.0)
+    taiko8(T_TAP, 0.46, 5.5, 'C', 1.0, ch='C')
     # pick: light harp/pizz arpeggio motif (G A B D) as tiles glide in
     for k, nn in enumerate(['D5', 'G5', 'A5', 'B5']):
         vlnpz.n(T_PICK + k * 0.23, 0.1, nn, 70 + 4 * k)
@@ -1924,7 +2029,7 @@ def relief():
         stab(t, ch, 108 + int(10 * big), 0.2)
         timp.n(t, 0.8, near(ct(ch)[0], m('D2')), 100 + int(20 * big))
         crash.n(t, 1.6, 60, 96 + int(14 * big))
-        taiko.n(t, 0.5, 60, 118)
+        taiko.n(t, 0.5, tk_n(ch), 118)
         tutti(t, ch, big * 0.85, dur=0.28, crash_on=False, choir_on=False)
     sparkle(T_TAP, 0, notes=8, dur=0.25, scale=(0, 2, 4, 7, 9), base='E5', vel=78, dens=40)
     sparkle(T_BURST, 0, notes=10, dur=0.3, scale=(0, 2, 4, 7, 9), base='E5', vel=84, dens=60)
@@ -1956,7 +2061,7 @@ def relief():
     t = T_LOGO
     tutti(t, 'G', 1.35, dur=2.4)
     gong.n(t, 4.0, 60, 124)
-    trailer.n(t + 0.002, 2.4, 50, 127)
+    trailer.n(t + 0.002, 2.4, tr_n('G'), 127)
     braaam.n(t, 1.4, 'G1', 118)
     tp_su.n(t, 2.4, ['B5', 'D6'], 120)
     hn_su.n(t, 2.4, ['B4', 'D5', 'G4'], 116)
@@ -2167,7 +2272,7 @@ def mixdown(stems):
         sm[i] = pv
     gcomp = 10 ** (-np.interp(np.arange(N), np.arange(nb) * blk + blk / 2, sm) / 20)
     mix *= gcomp[:, None]
-    g1 = 10 ** ((-14.5 - meter.integrated_loudness(mix)) / 20)
+    g1 = 10 ** ((-14.0 - meter.integrated_loudness(mix)) / 20)
     mix *= g1
     # soft peak shaper (gain applied to mix AND stems so they still sum): tames the tutti-hit crest factor
     pk = np.max(np.abs(mix), 1)
@@ -2175,7 +2280,7 @@ def mixdown(stems):
     shp = np.where(pk <= knee0, pk, knee0 + (1 - knee0) * np.tanh((pk - knee0) / (1 - knee0)))
     gsh = shp / np.maximum(pk, 1e-9)
     mix *= gsh[:, None]
-    g3 = 10 ** ((-14.5 - meter.integrated_loudness(mix)) / 20)
+    g3 = 10 ** ((-14.0 - meter.integrated_loudness(mix)) / 20)
     mix *= g3
     g1 = g1 * g3
     # lookahead limiter
@@ -2196,7 +2301,8 @@ def mixdown(stems):
     gt = gcomp * g1 * gsh * lim
     for s in STEMS:
         stems[s] *= gt[:, None]
-    g2 = 10 ** (-1.5 / 20) / np.max(np.abs(mix))
+    tpk = np.max(np.abs(signal.resample_poly(mix, 4, 1, axis=0)))
+    g2 = 10 ** (-1.3 / 20) / tpk                       # true-peak ceiling -1.3 dBTP
     mix *= g2
     for s in STEMS:
         stems[s] *= g2

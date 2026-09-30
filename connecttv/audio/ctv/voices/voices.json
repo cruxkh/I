@@ -1,4 +1,6 @@
 {
+ "sob_start_T": 11.95,
+ "speech_end_T": 11.98,
  "holds": [
   {
    "v": 8.85,
@@ -45,21 +47,15 @@
  },
  "placements": [
   {
-   "name": "Neden?! + sob tail (tur: crying girl, Kokoro if_sara + Turkish IPA + WORLD child/tremble/breaks)",
+   "name": "Neden?! + child sob sequence (tur: crying girl, Kokoro if_sara + Turkish IPA + WORLD; sobs synthesised)",
    "T": 11.41,
    "dur": 1.0,
    "until": 12.38
-  },
-  {
-   "name": "वाह! (ind, Kokoro hm_omega Hindi + WORLD)",
-   "T": 13.46,
-   "dur": 0.905,
-   "until": 14.53
   }
  ],
  "asr": {
-  "neden_tr": "Neden?",
-  "neden_it": "NEDEN",
+  "neden_tr": "Ne deniz?",
+  "neden_it": "NEDENS!",
   "vaah_hi": "ाहे",
   "cinema_word_he": "...טון.",
   "original_word_he": "צ'לטון"

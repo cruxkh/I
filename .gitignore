@@ -46,3 +46,6 @@ connecttv/audio/**/*.npy
 connecttv/audio/**/stems/
 connecttv/align/__pycache__/
 **/__pycache__/
+connecttv/host/src/
+connecttv/host/mask_rgba/
+connecttv/host/work/

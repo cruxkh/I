@@ -111,7 +111,13 @@ harp_d = part('harp_d', 'days', E(lambda: vs('Strings/Harp', offset=0, release=0
 pz_d = part('pz_d', 'days', E(lambda: xs('Strings/Violin Section/Pizz', 12, release=0.25)), pan=-0.1, hall=0.3)
 pno_d = part('pno_d', 'days', E(lambda: Sampler(sorted(glob.glob(os.path.join(VS, 'Keys/Upright Nr1/UR1_*.wav'))), dyn_parse,
                                                 offset=0, release=0.8, maxlen=6.0, velcurve=1.4)), width=0.9, hall=0.45)
-sitar = part('sitar', 'choir', SitarEngine(), pan=0.25, hall=0.3)
+sitar = part('sitar', 'choir', SitarEngine(), pan=0.2, hall=0.28)
+vln_si = part('vln_si', 'strings', E(lambda: vs('Strings/Violin Section/Spic', release=0.12)), pan=-0.3, width=1.2, hall=0.3)
+vla_si = part('vla_si', 'strings', E(lambda: vs('Strings/Viola Section/spic', release=0.12)), pan=0.1, hall=0.28)
+harmon = part('harmon', 'choir', HarmoniumEngine(), pan=-0.1, hall=0.3)
+vox = part('vox', 'choir', VoxEngine(), pan=0.0, width=1.1, hall=0.42)
+shehnai = part('shehnai', 'choir', WindEngine(lambda: xs('Woodwinds/Oboe/Vib', 12, release=0.2)), pan=0.12, width=1.0, hall=0.35,
+               eq=[peq_sos(1300, 5, 1.1), peq_sos(2600, 4, 1.4), shelf_sos(5000, 2.0)])
 tabla = part('tabla', 'perc', TablaEngine(), room=0.2, hall=0.15)
 zap = part('zap', 'fx', ZapEngine(), hall=0.25)
 shim = part('shim', 'fx', ShimmerEngine(), width=1.4, hall=0.4)
@@ -125,7 +131,7 @@ TRIM = dict(taiko=-14, trailer=-16, sub=-21, kick=-4, snare=4, hh=9, hho=6, cras
             hn_su=15, hn_st=12, tp_su=4, tp_st=10, tb_su=9, tb_st=9, tu_su=10, tu_st=13, choir=1, oohs=1,
             timp=10, ocym=5, gong=3, riser=-3, boom=-17, braaam=-4, harp=14, celesta=10, glock=14, piano=2,
             kanun=2, darb=-4, tamb=10, oroll=3, bd=2,
-            flute_sv=8, flute_ex=8, flute_nv=8, oboe=8, vln_solo=8, cb_dr=7, vc_dr=6, vlnpz=8, vlapz=8, vcpz=8, cbpz=8, vsol_sp=8, vsol_tr=8,
-            dhol_h=2, dhol_s=2, conga_o=4, harp_d=19, pz_d=11, pno_d=2, sitar=0, tabla=0, zap=0, shim=0)
+            flute_sv=8, flute_ex=12, flute_nv=8, oboe=8, vln_solo=8, cb_dr=7, vc_dr=6, vlnpz=8, vlapz=8, vcpz=8, cbpz=8, vsol_sp=8, vsol_tr=8,
+            dhol_h=3.4, dhol_s=2, conga_o=4, harp_d=19, pz_d=11, pno_d=2, vln_si=2, vla_si=4, sitar=-10, harmon=-9, vox=-5, shehnai=7, tabla=-12, zap=0, shim=0)
 for _k, _db in TRIM.items():
     PARTS[_k].gain *= 10 ** (_db / 20)

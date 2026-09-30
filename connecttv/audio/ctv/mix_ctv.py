@@ -44,6 +44,7 @@ CINEMA_GAIN = 10 ** (-3.0 / 20)      # the trailer re-take sits 3 dB lower so it
 TARGET_LUFS = -14.0
 CEIL_DBTP = -1.25
 MUSIC_MEDIAN_DB = 10.0      # static music gain: median over phrases of the worst-word VO - music ratio
+MUSIC_RIDER_MAX_DB = 12.0   # the rider never digs deeper than this (isolated short words after a hold would otherwise punch a hole)
 MUSIC_WORST_DB = 7.5        # music rider: VO word-max minus music at every sounding word
 BED_MARGIN_DB = 5.4         # SFX rider: VO word-max minus (music + SFX) at every sounding word (spec: >= 5 dB)
 
@@ -65,10 +66,10 @@ def words():
 
 # genre voice lines (T): protected like words; the cinema re-take of the word + its echoes are one line
 def genre_lines():
-    c, t_, i_ = HK['cin'], HK['tur'], HK['ind']
+    c, t_ = HK['cin'], HK['tur']
     return [('cinema Charlton', c['T0'] + 0.03, c['T0'] + c['d'] - 0.10),
             ('Neden?!', t_['T0'] + 0.03, t_['T0'] + t_['d'] - 0.03),
-            ('vaah', i_['T0'] + 0.03, i_['T0'] + 0.03 + 0.90)]
+            ]
 
 
 # ------------------------------------------------------------------ sound loading
@@ -202,7 +203,7 @@ def cue_sheet():
     c(10.39, 'glitter', -12, 0.0)
     # ---- ind hold: Bollywood sting + "वाह!"
     h = HK['ind']
-    ct(h['T0'] + 0.05, 'glitter', -13, 0.0)                                         # petals / sparkle dust over the composer's groove
+    # (ind hold = the score's Bollywood piece (sitar + dhol/tabla + shehnai/bansuri); no spoken Hindi line, no extra Indian SFX on top)
     ct(h['T0'] + h['d'] - 0.13 + 0.15, 'liquid_whoosh_a', -6, 0.0)                  # wipe band (starts 0.13 s before the release)
     ct(h['T0'] + h['d'], 'rise_whoosh', -10, 0.0)
     # ---- S4 live
@@ -457,8 +458,10 @@ def main():
             segs.append([a, b])
     inword = np.zeros(NS, bool)
     TRIM = 0.06     # a word is judged up to 60 ms before its end (the 400 ms momentary window would otherwise see the next hit)
-    for w in W:
-        w['e1'] = max(w['t0'] + 0.05, w['t1'] - TRIM)
+    for i_w, w in enumerate(W):
+        nxt_w = W[i_w + 1]['t0'] if i_w + 1 < len(W) else 99.0
+        trim_ = 0.15 if nxt_w - w['t1'] > 0.25 else TRIM      # phrase-final words: the next event is a pause / hold hit, ignore the last 150 ms
+        w['e1'] = max(w['t0'] + 0.05, w['t1'] - trim_)
         inword[int(w['t0'] * SR):int(w['e1'] * SR)] = True
     vo_l4 = loud_curve(NAR, 0.4)
     meter0 = pyln.Meter(SR)
@@ -568,7 +571,13 @@ def main():
         gd = np.maximum(gd, np.interp(t, [a - 0.15, a, b, b + 0.4], [0, 1, 1, 0], left=0, right=0))
     gd = 0.5 - 0.5 * np.cos(np.pi * gd)
     GD_DB = float(os.environ.get('GD_DB', 6.0))
-    env_db = -8.0 * duck * (1 - hold) + 6.0 * hold - GD_DB * gd
+    # extra duck under the crying girl's sob sequence (tur hold): the sobs must be heard over the Hijaz strings
+    vj = json.load(open(os.path.join(VOICES, 'voices.json')))
+    sob0 = vj['sob_start_T']
+    hT = HK['tur']
+    sobd = np.interp(t, [sob0 - 0.10, sob0 - 0.02, hT['T0'] + hT['d'] - 0.05, hT['T0'] + hT['d'] + 0.05], [0, 1, 1, 0], left=0, right=0)
+    SOB_DUCK_DB = float(os.environ.get('SOB_DUCK_DB', 5.0))
+    env_db = -8.0 * duck * (1 - hold) + 6.0 * hold - GD_DB * gd - SOB_DUCK_DB * sobd
     MUd = MU * db(env_db)
     # 1) static music gain: the median (over phrases) of the worst-word VO - music ratio is MUSIC_MEDIAN_DB with the duck applied
     mus_gain_db = 0.0
@@ -593,14 +602,25 @@ def main():
     def kpow(x):
         return uniform_filter1d(np.sum(kw(x) ** 2, axis=0), int(0.4 * SR), mode='constant')
     if have_score:
-        lim_m = np.where(inword, 10 ** ((REF - marg_mu + 0.691) / 10), np.inf)
-        gm_db = np.zeros(NS)
-        for it in range(4):
-            pm = kpow(MUd * db(gm_db)) + 1e-18
-            tgt = np.minimum(0.0, gm_db + 10 * np.log10(np.clip(lim_m / pm, 1e-3, 1.0)))
-            gm_db = smooth_gain(tgt, look=0.15, rel=0.40)
+        def rider(lim, look=0.15, rel=0.40):
+            g_ = np.zeros(NS)
+            for it in range(4):
+                pm = kpow(MUd * db(g_)) + 1e-18
+                tgt = np.minimum(0.0, g_ + 10 * np.log10(np.clip(lim / pm, 1e-3, 1.0)))
+                g_ = np.maximum(smooth_gain(tgt, look=look, rel=rel), -MUSIC_RIDER_MAX_DB)
+            return g_
+        lim_w = np.where(inword & ~genre_m, 10 ** ((REF - marg_mu + 0.691) / 10), np.inf)
+        lim_g = np.where(genre_m, 10 ** ((REF - marg_mu + 0.691) / 10), np.inf)
+        gA = rider(lim_w) * (1.0 - hold)          # speech duck deepening: off inside the holds (the hold keeps the music energy up)
+        gB = rider(lim_g)                          # under the genre voices: always on
+        gm_db = np.minimum(gA, gB)
         MUd = MUd * db(gm_db)
         m_rider_min, m_rider_frac = float(gm_db.min()), float(np.mean(gm_db < -1.0))
+        for h in HOLDS:
+            a_, b_ = int(h['T0'] * SR), int((h['T0'] + h['d']) * SR)
+            print('music rider in hold %s: min %.1f dB, mean %.1f dB' % (h['k'], gm_db[a_:b_].min(), gm_db[a_:b_].mean()))
+        i_min = int(np.argmin(gm_db))
+        print('music rider deepest at T %.2f s (%.1f dB)' % (i_min / SR, gm_db[i_min]))
     # 3) SFX rider: wherever a word / genre voice is sounding, (music + SFX) stays >= BED_MARGIN_DB under it: a smooth
     #    look-ahead gain on the SFX bus only (fixes the drift of many coincident cues).  VO is untouched.
     p_mu = kpow(MUd)
@@ -718,6 +738,15 @@ def main():
         gen_rep.append((nm_, vb))
         pr('genre voice %-16s %.2f-%.2f: voice max M %.1f LUFS, music max %.1f, SFX max %.1f, voice-bed %.1f dB'
            % (nm_, a_, b_, gvl[ia_:ib_].max(), ml[ia_:ib_].max(), sl[ia_:ib_].max(), vb))
+    # crying girl: voice vs bed (music + SFX) at each sob burst, 100 ms K-weighted window
+    g100 = loud_curve(GV * gm * mask, 0.1)
+    b100 = loud_curve((MUd + SFX) * gm * mask, 0.1)
+    sob_rows = []
+    for nm_, o_, d_ in (('gasp', 0.0, 0.07), ('sob1', 0.075, 0.10), ('sob2', 0.175, 0.10), ('sob3', 0.275, 0.10), ('sniffle', 0.36, 0.065)):
+        ia_, ib_ = int((sob0 + o_) * SR), int((sob0 + o_ + d_) * SR)
+        vpk, bpk = g100[ia_:ib_].max(), b100[ia_:ib_].max()
+        sob_rows.append((nm_, vpk - bpk))
+        pr('sob burst %-8s T %.2f-%.2f: voice %.1f LUFS-100ms, bed %.1f, voice-bed %.1f dB' % (nm_, sob0 + o_, sob0 + o_ + d_, vpk, bpk, vpk - bpk))
     for h in HOLDS:
         ia_, ib_ = int(h['T0'] * SR), int((h['T0'] + h['d']) * SR)
         pr('hold %-4s %.2f-%.2f: mix %.1f LUFS (music %.1f, SFX %.1f)' % (h['k'], h['T0'], h['T0'] + h['d'],
@@ -746,7 +775,7 @@ def main():
     i_a, i_b = int(0.2 * SR), int(8.6 * SR)
     pr('VO integrity: narrator stem vs independent (resample + 70 Hz HP) pipeline over T 0.2-8.6: max |diff| = %.2g (float32 storage)' % np.max(np.abs(nar[i_a:i_b] - ref[i_a:i_b])))
     # VO integrity: the narrator stem inside the mix vs the pure pipeline (resample + 70 Hz HP only): bit-exact unless a cue/bed adds to it
-    rep = dict(lufs=integ, tp=tpk, clip=clip, worst=W_all.min(0).tolist(), gaps=gaps, mus_gain=MU_cal, genre=gen_rep,
+    rep = dict(sobs=sob_rows, lufs=integ, tp=tpk, clip=clip, worst=W_all.min(0).tolist(), gaps=gaps, mus_gain=MU_cal, genre=gen_rep,
                low_words=lowwords, gr_max=float(gr.max()), n_cues=len(cues), score=have_score)
     json.dump(rep, open(os.path.join(HERE, 'mix_report.json'), 'w'), indent=1, default=float)
     open(os.path.join(HERE, 'mix_report.txt'), 'w').write('\n'.join(lines))

@@ -20,7 +20,7 @@ import pyworld as pw
 from scipy.signal import resample_poly, butter, sosfilt, fftconvolve
 
 sys.path.insert(0, '/home/user/I/anim/audio/tools')
-from sfx import make_ir, peq, lp, hp, bp, white, sat, expdec, N  # noqa: E402
+from sfx import make_ir, peq, lp, hp, bp, white, sat, expdec, N, reson  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -179,13 +179,58 @@ def breath(dur, r, f_lo=1300, f_hi=5200, up=True, level=1.0):
     return y * a * level
 
 
+def _formant_np(src, vowel, shift):
+    from sfx import formant
+    return formant(src, vowel, shift)
+
+
+def child_sobs(r, total=0.43):
+    """A distinct, loud child sob sequence built from scratch (glottal source + child formants + breath), NOT from Kokoro:
+    sharp gasping in-breath, 3 shuddering broken-voice sobs (pitch falls from ~560 to ~390 Hz with a 26-30 Hz shudder, aspirated, amplitude
+    gated by the shudder), and a wet sniffle (noise band with a 55-90 Hz rattle and an upward resonance sweep)."""
+    from sfx import glottal, slow_noise
+    n = int(total * SR)
+    out = np.zeros(n)
+    # gasp in-breath: 0-0.085 s
+    ng = int(0.07 * SR)
+    tg = np.arange(ng) / SR
+    nz = white(ng, r)
+    gasp = _formant_np(nz, 'a', 1.28) * 0.5 + bp(nz, 1500, 5200) * 0.5
+    gasp = gasp * np.minimum(tg / 0.04, 1.0) ** 1.3 * np.where(tg > 0.055, np.clip(1 - (tg - 0.055) / 0.015, 0, 1), 1.0)
+    out[:ng] += gasp / (np.max(np.abs(gasp)) + 1e-9) * 0.55
+    # three sobs
+    t0s, gains, f_top = (0.075, 0.175, 0.275), (1.0, 0.88, 0.72), (600, 560, 520)
+    for k, (t0, g, ft) in enumerate(zip(t0s, gains, f_top)):
+        L = int(0.10 * SR)
+        t = np.arange(L) / SR
+        f0 = ft * np.exp(-t / 0.13) * (0.72 + 0.28 * np.exp(-t / 0.02)) * (1 + 0.06 * np.sin(2 * np.pi * (26 + 4 * k) * t))
+        src = glottal(f0, L, r, breath=0.32, jitter=0.03, shimmer=0.15, tilt=3400)
+        v = 0.6 * _formant_np(src, 'a', 1.26) + 0.4 * _formant_np(src, 'e', 1.26)
+        env = np.minimum(t / 0.006, 1.0) * np.exp(-t / 0.055) * (0.72 + 0.28 * np.sin(2 * np.pi * (28 + 3 * k) * t + 1.2) ** 2)
+        v = sat(v / (np.max(np.abs(v)) + 1e-9) * env * 1.6, 1.4) * env
+        v = v / (np.max(np.abs(v)) + 1e-9) * g * 0.9
+        i = int(t0 * SR)
+        out[i:i + L] += v[:max(0, min(L, n - i))]
+    # wet sniffle
+    ns = int(0.065 * SR)
+    ts = np.arange(ns) / SR
+    nz = white(ns, r)
+    u_ = ts / 0.065
+    sn = reson(nz, 950, 1.6, 3.0) * (1 - u_) + reson(nz, 2500, 1.6, 3.0) * u_ + bp(nz, 300, 1200) * 0.4
+    rattle = 0.55 + 0.45 * np.sign(np.sin(2 * np.pi * 72 * ts + 0.4)) * np.sin(2 * np.pi * 61 * ts) ** 2
+    sn = sn * rattle * np.minimum(ts / 0.012, 1.0) * np.clip(1 - (ts - 0.045) / 0.02, 0, 1)
+    i = int(0.36 * SR)
+    L = min(ns, n - i)
+    out[i:i + L] += sn[:L] / (np.max(np.abs(sn)) + 1e-9) * 0.34
+    return out
+
+
 def neden():
-    """Turkish 'Neden?!' as a young GIRL crying (fits the 1.0 s `tur` hold, ends by hold+0.97 s).
-    Kokoro has no Turkish: Italian if_sara + Turkish IPA (n e d e n) -- verified 'Neden?' by Whisper-tr -- then WORLD:
-    f0 x1.55, formants x1.13 (child), pitch trembling ~8 Hz with a broken catch, breathy aperiodicity, amplitude
-    breaks at the syllable joints with sharp in-breaths, and a short hiccuping sob tail ('hh-ha, hh-hha')."""
-    r = np.random.default_rng(1234)
-    y = trim(kokoro('nɛdˈɛn?!', 'if_sara', speed=1.12, lang='it', phonemes=True))
+    """Turkish 'Neden?!' as a young GIRL crying, then a clearly audible child sob sequence -- all inside the 1.0 s `tur` hold.
+    Kokoro has no Turkish: Italian if_sara + Turkish IPA (n e d e n), verified 'Neden?' by Whisper-tr, then WORLD: f0 x1.55, formants x1.13 (child),
+    8.5 Hz pitch tremble, a voice crack, breathier aperiodicity, amplitude breaks + in-breaths at the syllable joints.  Then child_sobs()."""
+    r = np.random.default_rng(5)      # seed chosen by Whisper-tr agreement over 6 seeds x 2 gate depths
+    y = trim(kokoro('nɛdˈɛn?!', 'if_sara', speed=1.35, lang='it', phonemes=True))
 
     def f0f(f0, t):
         tt = t / max(t[-1], 1e-6)
@@ -198,31 +243,23 @@ def neden():
     w = w / (np.max(np.abs(w)) + 1e-9)
     n = len(w)
     t = np.arange(n) / SR
-    # amplitude breaks at the syllable joints (glottal catches) + sob tremble
     gate = np.ones(n)
     for c, wd in ((0.30 * n / SR, 0.045), (0.55 * n / SR, 0.035)):
-        gate *= 1 - 0.5 * np.exp(-0.5 * ((t - c) / (wd / 2.5)) ** 2)
+        gate *= 1 - 0.3 * np.exp(-0.5 * ((t - c) / (wd / 2.5)) ** 2)
     gate *= 1 - 0.28 * (0.5 + 0.5 * np.sin(2 * np.pi * 9.0 * t)) * np.clip(t / (n / SR) * 1.6, 0, 1)
     w = w * gate
     out = np.zeros(int(1.0 * SR))
     add_1d(out, w, 0.0)
     L1 = len(w) / SR
-    # in-breaths at the joints
     add_1d(out, breath(0.06, r, level=0.10), 0.30 * L1 - 0.03)
     add_1d(out, breath(0.05, r, level=0.10), 0.55 * L1 - 0.02)
-    # sob tail: a hiccup in-breath then two short broken 'ha' sobs sliding down, fading out inside the hold
-    tail0 = L1 + 0.02
-    add_1d(out, breath(0.085, r, 1500, 5600, level=0.22), tail0)
-    sob = trim(kokoro('hˈʌ hˈʌ', 'if_sara', speed=1.3, lang='en-us', phonemes=True))
-
-    def sf0(f0, t):
-        tt = t / max(t[-1], 1e-6)
-        return np.where(f0 > 0, 470 * (1 - 0.22 * tt) * 2 ** (0.5 * np.sin(2 * np.pi * 9 * t) / 12), 0)
-    sob = world(sob, SR, sf0, 1.12, lambda ap, t: np.clip(ap + 0.3, 0, 1))
-    sob = sob / (np.max(np.abs(sob)) + 1e-9) * 0.42
-    room_t = int((1.0 - 0.03) * SR)
-    sob = sob[:max(0, room_t - int((tail0 + 0.10) * SR))]
-    add_1d(out, sob, tail0 + 0.10)
+    sob_t = L1 - 0.03                                   # the sobs start as the last syllable dies
+    sobs = child_sobs(r, min(0.43, 0.985 - sob_t))
+    sobs = sobs / (np.max(np.abs(sobs)) + 1e-9) * 0.95
+    add_1d(out, sobs, sob_t)
+    out *= np.r_[np.ones(len(out) - int(0.03 * SR)), np.linspace(1, 0, int(0.03 * SR))]
+    neden.sob_t = sob_t
+    neden.speech_end = L1
     return out
 
 
@@ -313,14 +350,17 @@ def main():
         place.append(dict(name=name, T=round(t, 3), dur=round(len(y) / SR, 3), until=round(t + st_.shape[1] / SR, 3)))
     ht, hi = HK['tur'], HK['ind']
     ne = neden()
-    put(ne, ht['T0'] + GENRE_DELAY, -2.5, 0.0, room, 0.22, 'Neden?! + sob tail (tur: crying girl, Kokoro if_sara + Turkish IPA + WORLD child/tremble/breaks)', end=ht['T0'] + ht['d'])
-    va = vaah()
-    put(va, hi['T0'] + GENRE_DELAY, -2.0, 0.0, room, 0.20, 'वाह! (ind, Kokoro hm_omega Hindi + WORLD)', end=hi['T0'] + hi['d'])
+    put(ne, ht['T0'] + GENRE_DELAY, -2.5, 0.0, room, 0.22, 'Neden?! + child sob sequence (tur: crying girl, Kokoro if_sara + Turkish IPA + WORLD; sobs synthesised)', end=ht['T0'] + ht['d'])
+    va = vaah()          # NOT in genre_voices.wav any more (client: Bollywood BACKGROUND MUSIC instead of a spoken line); kept for reference
+    GV_unused = np.zeros((2, NS))
+    y_ = va / (np.max(np.abs(va)) + 1e-9) * 10 ** (-2.0 / 20)
+    add(GV_unused, np.vstack([y_, y_]), hi['T0'] + GENRE_DELAY)
+    sf.write(os.path.join(OUT, 'unused_vaah_hindi.wav'), GV_unused.T.astype(np.float32), SR, subtype='FLOAT')
 
     sf.write(os.path.join(OUT, 'narrator_48k.wav'), nar.astype(np.float32), SR, subtype='FLOAT')
     sf.write(os.path.join(OUT, 'cinema_fx.wav'), FX.T.astype(np.float32), SR, subtype='FLOAT')
     sf.write(os.path.join(OUT, 'genre_voices.wav'), GV.T.astype(np.float32), SR, subtype='FLOAT')
-    rep = dict(holds=HOLDS, total=TOTAL, cuts_v=cuts, cinema=dict(word_T=[a / SR, b / SR], deep_dur=len(deep) / SR, t=t_word,
+    rep = dict(sob_start_T=ht['T0'] + GENRE_DELAY + neden.sob_t, speech_end_T=ht['T0'] + GENRE_DELAY + neden.speech_end, holds=HOLDS, total=TOTAL, cuts_v=cuts, cinema=dict(word_T=[a / SR, b / SR], deep_dur=len(deep) / SR, t=t_word,
                echoes=e_t), placements=place,
                asr=dict(neden_tr=asr_check(ne, 'tr'), neden_it=asr_check(ne, 'it'), vaah_hi=asr_check(va, 'hi'),
                         cinema_word_he=asr_check(deep, 'he'), original_word_he=asr_check(nar[a - SR // 4:b + SR // 8], 'he')))
