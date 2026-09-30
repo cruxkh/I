@@ -93,7 +93,7 @@ def env_pts(points):
     return np.interp(np.arange(N) / SR, [p[0] for p in points], [p[1] for p in points])
 
 
-GAPS = [(T_VORTEX - 0.085, T_VORTEX - 0.004), (T_LOGO - 0.085, T_LOGO - 0.004)]      # 'suck-in' micro gaps before the two big drops
+GAPS = [(T_VORTEX - 0.085, T_VORTEX - 0.004), (T_LOGO - 0.085, T_LOGO - 0.004), (T_NO1 - 0.07, T_NO1 - 0.004)]      # 'suck-in' micro gaps before the two big drops
 
 
 def mixdown(stems):
@@ -135,7 +135,7 @@ def mixdown(stems):
     dyn = [(0, -1.0), (T_OPEN - 0.05, -1.0), (T_OPEN, 0.5), (T_HOOK, -0.5), (T_SLAM - 0.05, -0.5), (T_SLAM, 1.5), (T_CIN0 + 0.4, 1.5),
            (T_LAND1 - 0.05, 1.5), (T_LAND1, 0.0), (T_TUR0 - 0.05, 0.0), (T_TUR0, 2.0), (T_TUR1 - 0.05, 2.0), (T_LAND2, -0.5),
            (T_IND0 - 0.05, -0.5), (T_IND0, 2.0), (T_IND1 - 0.05, 2.0), (T_LAND3, -0.5), (T_VORTEX - 0.1, -0.5), (T_VORTEX, 0.8),
-           (T_GOAL - 0.3, 0.8), (T_GOAL, 1.2), (T_WAIT, -1.0), (T_FUN - 0.05, -1.0), (T_FUN, 0.5), (T_NO1 - 0.1, 0.5), (T_NO1, 1.0),
+           (T_GOAL - 0.3, 0.8), (T_GOAL, 1.2), (T_WAIT, -1.0), (T_WAIT + 1.2, -0.5), (T_FUN - 0.05, 0.0), (T_FUN, 0.5), (T_NO1 - 0.1, 0.5), (T_NO1, 1.0),
            (T_RELIEF - 0.05, 0.0), (T_RELIEF, -1.5), (T_PICK + 0.4, -1.5), (T_PLAY, 0.0), (T_LOGO - 0.01, 0.5), (T_LOGO, 2.0), (DUR, 2.0)]
     dc = 10 ** (env_pts(dyn) / 20)
     fade = np.ones(N)
@@ -278,7 +278,7 @@ def report(mix, stems, lvl, path):
     hits = np.array(hits)
     for nm, tc in cues:
         j = int(np.argmin(np.abs(hits - tc)))
-        print('   %-9s cue T=%.3f (v=%.2f)  nearest impact %.3f  offset %+5.1f ms' % (nm, tc, tc - sum(d for _, hv, d in HOLDS if TofV(hv) < tc + 1e-6 and hv < tc), hits[j], (hits[j] - tc) * 1000), file=sys.stderr)
+        print('   %-9s cue T=%.3f   nearest impact %.3f  offset %+5.1f ms' % (nm, tc, hits[j], (hits[j] - tc) * 1000), file=sys.stderr)
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt

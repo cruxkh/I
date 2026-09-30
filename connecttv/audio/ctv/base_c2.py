@@ -96,7 +96,7 @@ flute_nv = part('flute_nv', 'choir', WindEngine(lambda: xs('Woodwinds/Flute/susN
 oboe = part('oboe', 'choir', WindEngine(lambda: xs('Woodwinds/Oboe/Vib', 12, release=0.2)), pan=0.15, width=1.0, hall=0.45)
 vln_solo = part('vln_solo', 'strings', WindEngine(lambda: xs('Strings/Solo Violin/Arco Vib', 0, release=0.3, parse=pf_parse)), pan=-0.1, hall=0.45)
 vlnpz = part('vlnpz', 'strings', E(lambda: xs('Strings/Violin Section/Pizz', 12, release=0.25)), pan=-0.3, width=1.2, hall=0.3)
-vlapz = part('vlapz', 'strings', E(lambda: xs('Strings/Viola Section/pizz', 0, release=0.25)), pan=0.1, hall=0.28)
+vlapz = part('vlapz', 'strings', E(lambda: xs('Strings/Viola Section/pizz', 12, release=0.25)), pan=0.1, hall=0.28)
 vcpz = part('vcpz', 'strings', E(lambda: xs('Strings/Cello Section/pizzT', 12, release=0.25)), pan=0.3, hall=0.25)
 cbpz = part('cbpz', 'strings', E(lambda: xs('Strings/Solo Contrabass/Pizz', 12, release=0.25)), pan=0.35, hall=0.22)
 vsol_sp = part('vsol_sp', 'strings', E(lambda: xs('Strings/Solo Violin/spic', 12, release=0.1)), pan=-0.15, hall=0.3)
@@ -120,12 +120,12 @@ cb_dr = part('cb_dr', 'strings', E(lambda: vs('Strings/Solo Contrabass/SusVib', 
 vc_dr = part('vc_dr', 'strings', E(lambda: vs('Strings/Cello Section/susvib', release=0.45)), pan=0.28, hall=0.35)
 
 # balance trims (dB); calibrated by the per-part level report (see report())
-TRIM = dict(taiko=-14, trailer=-13, sub=-18, kick=-4, snare=4, hh=9, hho=6, crash=2, tomh=4, toml=4, snc=2,
+TRIM = dict(taiko=-14, trailer=-16, sub=-21, kick=-4, snare=4, hh=9, hho=6, crash=2, tomh=4, toml=4, snc=2,
             vc_sp=7, vla_sp=7, vln_sp=9, cb_sp=12, vln_su=15, vla_su=3, vc_su=6, cb_su=7, vln_tr=3, vc_tr=3,
             hn_su=15, hn_st=12, tp_su=4, tp_st=10, tb_su=9, tb_st=9, tu_su=10, tu_st=13, choir=1, oohs=1,
-            timp=10, ocym=5, gong=3, riser=-3, boom=-14, braaam=-4, harp=14, celesta=10, glock=14, piano=2,
+            timp=10, ocym=5, gong=3, riser=-3, boom=-17, braaam=-4, harp=14, celesta=10, glock=14, piano=2,
             kanun=2, darb=-4, tamb=10, oroll=3, bd=2,
             flute_sv=8, flute_ex=8, flute_nv=8, oboe=8, vln_solo=8, cb_dr=7, vc_dr=6, vlnpz=8, vlapz=8, vcpz=8, cbpz=8, vsol_sp=8, vsol_tr=8,
-            dhol_h=2, dhol_s=2, conga_o=4, harp_d=14, pz_d=8, pno_d=2, sitar=0, tabla=0, zap=0, shim=0)
+            dhol_h=2, dhol_s=2, conga_o=4, harp_d=19, pz_d=11, pno_d=2, sitar=0, tabla=0, zap=0, shim=0)
 for _k, _db in TRIM.items():
     PARTS[_k].gain *= 10 ** (_db / 20)

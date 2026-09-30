@@ -40,9 +40,11 @@ SCORE_ND = os.path.join(HERE, 'score_ctv_nodays.wav')     # the composer's stem-
 OUT = os.path.join(ROOT, 'master_ctv.wav')
 OUT2 = os.path.join(HERE, 'master_ctv.wav')
 VOICES = os.path.join(HERE, 'voices')
+CINEMA_GAIN = 10 ** (-3.0 / 20)      # the trailer re-take sits 3 dB lower so it stays 3-5 dB above the bed
 TARGET_LUFS = -14.0
 CEIL_DBTP = -1.25
-MUSIC_WORST_DB = 7.5        # static music gain: VO word-max minus music max over the worst word
+MUSIC_MEDIAN_DB = 10.0      # static music gain: median over phrases of the worst-word VO - music ratio
+MUSIC_WORST_DB = 7.5        # music rider: VO word-max minus music at every sounding word
 BED_MARGIN_DB = 5.4         # SFX rider: VO word-max minus (music + SFX) at every sounding word (spec: >= 5 dB)
 
 
@@ -66,7 +68,7 @@ def genre_lines():
     c, t_, i_ = HK['cin'], HK['tur'], HK['ind']
     return [('cinema Charlton', c['T0'] + 0.03, c['T0'] + c['d'] - 0.10),
             ('Neden?!', t_['T0'] + 0.03, t_['T0'] + t_['d'] - 0.03),
-            ('vaah', i_['T0'] + 0.03, i_['T0'] + 0.03 + 0.74)]
+            ('vaah', i_['T0'] + 0.03, i_['T0'] + 0.03 + 0.90)]
 
 
 # ------------------------------------------------------------------ sound loading
@@ -247,7 +249,7 @@ def cue_sheet():
     c(20.09, 'harp_sparkle', -12, 0.0, root=hr, after=True)
     c(20.42, 'splash_slam', -3, 0.0, after=True)                                    # chest slam
     c(20.92, 'gloss_pop_b', -10, 0.0, after=True)                                   # bow pop
-    c(21.29, 'lib:confetti_popper', -9, 0.0, after=True)                            # box pops open
+    c(21.29, 'gloss_pop_c', -8, 0.0, after=True)                                    # box pops open (glossy pop, no paper confetti)
     c(21.29, 'harp_sparkle', -6, 0.0, root=hr, after=True)
     c(21.29, 'splash_slam', -4, 0.0, after=True)
     c(21.35, 'glitter', -12, 0.0, after=True)
@@ -282,7 +284,7 @@ def cue_sheet():
     c(26.94, 'harp_sparkle', -9, 0.0, root=hr, after=True)
     c(27.20, 'lib:stadium_goal_eruption', -6, 0.0, after=True, seg=(0.0, 2.3), fout=1.0)   # goal burst on the screen
     c(27.20, 'splash_small', -7, 0.0, after=True)
-    c(27.60, 'logo_suck', -6, 0.0, after=True)                                      # iris suck into the logo (under the last word)
+    c(27.60, 'logo_suck', -6, 0.0, after=True, var=1.6)                                    # iris suck into the logo (under the last word)
     c(27.60, 'logo_slam', 0.0, 0.0, after=True)                                     # LOGO SLAM: the final music hit lands on it
     c(28.10, 'gloss_pop', -9, 0.0, after=True)                                      # tagline pop
     c(28.10, 'glitter', -14, 0.0, after=True)
@@ -357,6 +359,60 @@ def score_gaps(path, min_len=0.10):
     return [(i / sr, j / sr) for i, j in zip(a, b) if (j - i) / sr >= min_len]
 
 
+
+NOTES_HEAD = """# ConnectTV mix notes (audio/ctv)
+
+**Verified by MEASUREMENT ONLY.  Nobody listened to this mix or to the foreign-language voices.**
+Everything below (LUFS, true peak, clip count, VO-to-bed ratio per word, click check, spectrogram, Whisper ASR) is a number or a picture, not an ear.
+
+## Build
+    python3 voices_ctv.py     # voices/  narrator_48k.wav, cinema_fx.wav, genre_voices.wav, voices.json
+    python3 sfx_ctv.py        # sfx/     new SFX (+ hits.json); v6/v7 sounds are reused through sfx_v6.build
+    python3 mix_ctv.py        # ../master_ctv.wav (+ copy here), master_ctv_spectrogram.png, mix_report.txt/json, this file
+Timeline: T = v + sum(hold.d for holds with hold.v < v) (timeline.js: cin 8.85 +1.4, tur 9.98 +1.0, ind 11.03 +1.1; total 34.1 s).
+
+## Voices
+- Narrator = the ORIGINAL TTS (audio/vo_original_tts.wav), Kaiser polyphase 44.1k -> 48k (160/147, beta 14) + 2nd-order 70 Hz high-pass, nothing else
+  (no EQ, no loudnorm, no compressor); split at the hold points on zero crossings with 5 ms fades; hold silences inserted.
+  The mix contains it unchanged (checked against an independent resample + high-pass pipeline).
+- `cin` hold: the narrator's word "צ'רלטון" (v 8.32-8.85) is re-spoken from the same audio as a deep trailer voice (WORLD pitch -5.5 st, formant warp 0.94,
+  chest EQ, saturation, 3.6 s hall) starting at hold + 0.03 s (T 8.88), two darker echoes at +0.60 and +1.02 s, a small hall send under the original word.
+  Whisper-he hears "...טון" for the processed word (the original word: "צ'לטון").  Level -3 dB vs. the first draft so it sits 3-5 dB over the bed.
+- `tur` hold (client request): a young crying GIRL saying "Neden?!".  Kokoro has no Turkish, so it is the Italian voice if_sara driven by Turkish IPA
+  (nɛdˈɛn), then WORLD: f0 x1.55 (about 420 Hz), formants x1.13 (child), 8.5 Hz pitch tremble that grows, a voice crack, breathier aperiodicity,
+  amplitude breaks + sharp in-breaths at the syllable joints, then a hiccup in-breath and two broken "ha" sobs (also Kokoro + WORLD, sliding down),
+  all inside the 1.0 s hold (T 11.41-12.38).  Whisper-tr reads the line as "Neden?" / "Ne den?" (the unprocessed base: "Ne dene?").
+- `ind` hold: a real Kokoro Hindi voice (hm_omega, lang hi) "वाह!", raised pitch with a rising contour and a 1.4x WORLD stretch (0.9 s), at hold + 0.03 s.
+  Whisper-hi returns only "ाहे" (its byte-level decoder drops the consonant 'व' in every Devanagari test, including the longer "वाह, क्या बात है!",
+  which came back as "ाह क्या ात"), so the Hindi line is NOT confirmed by ASR beyond its vowel/'ह' structure.  The longer phrase did not fit 1.1 s.
+- Whisper model: sherpa-onnx whisper-small int8 (GitHub release asr-models); Kokoro v1.0 from the kokoro-onnx GitHub release.
+
+## Score handling
+- Uses `score_ctv_nodays.wav` (the composer's stem split without its 7 day notes) and plays the day phrase from SFX (real VSCO harp + violin spiccato,
+  the composer's own notes G A B C D E F#, one octave up, on the scene CUEs 15.86 ... 16.75; F# = leading tone with a piano fifth + harp gliss).
+  `USE_SCORE_DAYS=1 python3 mix_ctv.py` uses the full score instead.
+- The score already plays its own dum-dum-DUM (tur), tabla + sitar groove (ind), braaam/gong/timpani roll (cin), so no SFX tur_dum / bolly_sting is cued
+  (they would flam); the hold SFX are the THX swell + projector (cin), a tear drop (tur), glitter (ind) and forward pickup whooshes into each hold end.
+- The score has no exact digital zero (its 'suck-in' gaps before T 17.32 and T 31.10 keep the risers), so the master has none either; mix_ctv.py would mask
+  any zero run >= 50 ms it finds in the score on every bus.
+- Music: -8 dB under speech (150 ms look-ahead attack, 400 ms release), +6 dB in the holds and held until 0.35 s before the next word, -6 dB under the genre
+  voices; a static gain so the median phrase-worst VO-music is 10 dB, then a look-ahead rider keeps VO - music >= 7.5 dB (4.5 dB under genre voices).
+- SFX: every cue gets static gains from a VO-protection solver (>= 6.5 dB under words full band, >= 8 dB in the speech band, big hits 5.5 / 7.5), then a
+  smooth look-ahead rider on the SFX bus keeps VO - (music + SFX) >= 5.4 dB at every word (4.0 dB under genre voices).  Master: static gain -> true-peak
+  look-ahead limiter (4x oversampling, 5 ms) -> -14 LUFS.  No compressor or EQ on the VO anywhere.
+
+## SFX list (all synthesised with the numpy toolkit, seeded, or real VSCO samples)
+bolt_crack, gloss_pop x3, zap, liquid_whoosh a/b/c, rise_whoosh, liquid_flood, splash_slam / splash_small, shockwave, glass_shatter, cross_out (two bolt slashes + slam),
+vortex_suck(_s), snare_hit (build-up roll), heart_lub, glitter, logo_suck + logo_slam, harp_sparkle, day_note x6 + week_finale, plus v6/v7 sounds for
+remote_click, curtain_swoosh, thx_swell, projector, tear_drop, boom_med, and the anim library (stadium_goal_eruption, stadium_crowd_bed, popcorn_burst, ball_kick).
+No marker / paper / hiss sounds, no metallic UI dings, nothing on the caption chips.  Cue list: `cue_sheet()` in mix_ctv.py (scene `// CUE` comments, v-clock).
+Not done / limits: cue names in the scenes are matched by hand (re-run after a scene change); the cross-out, glass and liquid sounds are physically plausible
+designs that nobody has listened to; the trailer voice may sound saturated; heavy sub layers from the SFX and the score add up (limiter GR is in the report).
+
+## Measured report (mix_report.txt)
+"""
+
+
 # ------------------------------------------------------------------ main
 def main():
     global SCORE
@@ -368,7 +424,7 @@ def main():
     # ---- voice bus
     nar, sr = sf.read(os.path.join(VOICES, 'narrator_48k.wav'))
     assert sr == SR
-    FXV = sf.read(os.path.join(VOICES, 'cinema_fx.wav'), always_2d=True)[0].T[:, :NS]
+    FXV = sf.read(os.path.join(VOICES, 'cinema_fx.wav'), always_2d=True)[0].T[:, :NS] * CINEMA_GAIN
     GV = sf.read(os.path.join(VOICES, 'genre_voices.wav'), always_2d=True)[0].T[:, :NS]
     NAR = np.zeros((2, NS))
     L = min(NS, len(nar))
@@ -411,9 +467,11 @@ def main():
         a_, b_ = int(w['t0'] * SR), max(int(w['e1'] * SR), int(w['t0'] * SR) + 1)
         REF[a_:b_] = np.minimum(REF[a_:b_], vo_l4[a_:b_].max())
     gv_l4 = loud_curve(VOICEX, 0.4)
+    genre_m = np.zeros(NS, bool)
     for _, a, b in GEN:                                 # genre voices are protected like words
         a_, b_ = int(a * SR), int(b * SR)
         inword[a_:b_] = True
+        genre_m[a_:b_] = True
         REF[a_:b_] = np.minimum(REF[a_:b_], gv_l4[a_:b_].max())
 
     # ---- SFX bus with per-cue VO protection (see v7: static gains, hit judged around the onset, tail judged on every word)
@@ -512,29 +570,41 @@ def main():
     GD_DB = float(os.environ.get('GD_DB', 6.0))
     env_db = -8.0 * duck * (1 - hold) + 6.0 * hold - GD_DB * gd
     MUd = MU * db(env_db)
-    # 1) static music gain: worst word keeps VO - music >= MUSIC_WORST_DB (momentary 400 ms), music alone
+    # 1) static music gain: the median (over phrases) of the worst-word VO - music ratio is MUSIC_MEDIAN_DB with the duck applied
     mus_gain_db = 0.0
     MU_cal = None
+    m_rider_min = m_rider_frac = 0.0
     if have_score:
         ml0 = loud_curve(MUd, 0.4)
-        worst = 99.0
-        for w in W:
-            wa_, wb_ = int(w['t0'] * SR), max(int(w['e1'] * SR), int(w['t0'] * SR) + 1)
-            worst = min(worst, vo_l4[wa_:wb_].max() - ml0[wa_:wb_].max())
         ph_ = {}
         for w in W:
             wa_, wb_ = int(w['t0'] * SR), max(int(w['e1'] * SR), int(w['t0'] * SR) + 1)
             ph_[w['ph']] = min(ph_.get(w['ph'], 99), vo_l4[wa_:wb_].max() - ml0[wa_:wb_].max())
         print('VO-music at 0 dB music gain, worst word per phrase:', ' '.join('%d:%.1f' % kv for kv in sorted(ph_.items())))
-        mus_gain_db = float(os.environ.get('MUSIC_DB', worst - MUSIC_WORST_DB))
+        med = float(np.median(list(ph_.values())))
+        mus_gain_db = float(os.environ.get('MUSIC_DB', med - MUSIC_MEDIAN_DB))
         MUd = MUd * db(mus_gain_db)
-        MU_cal = (worst, mus_gain_db)
-    # 2) SFX rider: wherever a word / genre voice is sounding, (music + SFX) stays >= BED_MARGIN_DB under it: a smooth
-    #    look-ahead gain on the SFX bus only (fixes the drift of many coincident cues).  Music and VO are untouched.
+        MU_cal = (med, mus_gain_db)
+    # 2) MUSIC rider: wherever a word is sounding VO - music >= 7.5 dB (genre voices: 4.5 dB): smooth look-ahead gain,
+    #    150 ms attack, 400 ms release (the spec's duck, deepened only where the score is louder than the static gain allows)
+    marg_mu = np.where(genre_m, 4.5, MUSIC_WORST_DB)
+    marg_bed = np.where(genre_m, 4.0, BED_MARGIN_DB)
+
     def kpow(x):
         return uniform_filter1d(np.sum(kw(x) ** 2, axis=0), int(0.4 * SR), mode='constant')
+    if have_score:
+        lim_m = np.where(inword, 10 ** ((REF - marg_mu + 0.691) / 10), np.inf)
+        gm_db = np.zeros(NS)
+        for it in range(4):
+            pm = kpow(MUd * db(gm_db)) + 1e-18
+            tgt = np.minimum(0.0, gm_db + 10 * np.log10(np.clip(lim_m / pm, 1e-3, 1.0)))
+            gm_db = smooth_gain(tgt, look=0.15, rel=0.40)
+        MUd = MUd * db(gm_db)
+        m_rider_min, m_rider_frac = float(gm_db.min()), float(np.mean(gm_db < -1.0))
+    # 3) SFX rider: wherever a word / genre voice is sounding, (music + SFX) stays >= BED_MARGIN_DB under it: a smooth
+    #    look-ahead gain on the SFX bus only (fixes the drift of many coincident cues).  VO is untouched.
     p_mu = kpow(MUd)
-    p_lim = np.where(inword, 10 ** ((REF - BED_MARGIN_DB + 0.691) / 10), np.inf)
+    p_lim = np.where(inword, 10 ** ((REF - marg_bed + 0.691) / 10), np.inf)
     g_db = np.zeros(NS)
     for it in range(4):
         p_sf = kpow(SFX * db(g_db)) + 1e-18
@@ -587,7 +657,7 @@ def main():
     pr('score_ctv.wav: %s | gaps (exact digital zero) in the score: %s' % ('YES' if have_score else 'NO (test mix, VO + SFX only)',
        ', '.join('%.3f-%.3f' % x for x in gaps) or 'none'))
     if MU_cal:
-        pr('music static gain %+.2f dB re the score file (worst word VO-music before calibration %.1f dB, target %.1f); SFX rider min %.1f dB, active (< -1 dB) %.1f %% of the film' % (MU_cal[1], MU_cal[0], MUSIC_WORST_DB, rider_min, 100 * rider_frac))
+        pr('music static gain %+.2f dB re the score file (median phrase-worst VO-music %.1f dB before, target %.1f); music rider min %.1f dB (active >1 dB %.1f %% of film); SFX rider min %.1f dB (active %.1f %%)' % (MU_cal[1], MU_cal[0], MUSIC_MEDIAN_DB, m_rider_min, 100 * m_rider_frac, rider_min, 100 * rider_frac))
     pr('master: %s  %d samples = %.3f s, %d ch, %d Hz, PCM_24' % (OUT, chk.shape[1], chk.shape[1] / SR, chk.shape[0], SR))
     integ = meter.integrated_loudness(chk.T)
     tpk = 20 * np.log10(true_peak(chk))
@@ -663,11 +733,24 @@ def main():
     ff = np.fft.rfftfreq(chk.shape[1], 1 / SR)
     tot = X.sum()
     pr('spectral balance (share of energy dB re total): ' + ', '.join('%d-%d Hz %.1f' % (lo, hi, 10 * np.log10(X[(ff >= lo) & (ff < hi)].sum() / tot)) for lo, hi in bands))
+    # click detector on the master: 2nd-difference spikes vs a 20 ms running median of the 2nd difference (outside the first 50 ms)
+    from scipy.ndimage import median_filter
+    d2 = np.abs(np.diff(chk.mean(0), 2))
+    loc_ = median_filter(d2[::8], size=60)
+    ratio = d2[::8] / (loc_ + 1e-7)
+    nspike = int(np.sum((ratio > 60) & (d2[::8] > 0.02)))
+    pr('click check: %d spikes (2nd difference > 60x local median and > 0.02 FS)' % nspike)
+    # VO integrity: narrator stem = original TTS through Kaiser polyphase 160/147 + 2nd-order 70 Hz high-pass only
+    x0, sr0 = sf.read(os.path.join(ROOT, 'vo_original_tts.wav'))
+    ref = sosfilt(butter(2, 70, 'highpass', fs=SR, output='sos'), resample_poly(x0, 160, 147, window=('kaiser', 14.0)))
+    i_a, i_b = int(0.2 * SR), int(8.6 * SR)
+    pr('VO integrity: narrator stem vs independent (resample + 70 Hz HP) pipeline over T 0.2-8.6: max |diff| = %.2g (float32 storage)' % np.max(np.abs(nar[i_a:i_b] - ref[i_a:i_b])))
     # VO integrity: the narrator stem inside the mix vs the pure pipeline (resample + 70 Hz HP only): bit-exact unless a cue/bed adds to it
     rep = dict(lufs=integ, tp=tpk, clip=clip, worst=W_all.min(0).tolist(), gaps=gaps, mus_gain=MU_cal, genre=gen_rep,
                low_words=lowwords, gr_max=float(gr.max()), n_cues=len(cues), score=have_score)
     json.dump(rep, open(os.path.join(HERE, 'mix_report.json'), 'w'), indent=1, default=float)
     open(os.path.join(HERE, 'mix_report.txt'), 'w').write('\n'.join(lines))
+    open(os.path.join(HERE, 'MIX_NOTES.md'), 'w').write(NOTES_HEAD + '\n```\n' + '\n'.join(lines) + '\n```\n\nSpectrogram: master_ctv_spectrogram.png (cyan lines = big hits, white bands = holds); voices_spectrogram.png = the three genre moments.\n')
     spectro(chk, cues, gaps)
     return cues
 

@@ -56,7 +56,7 @@ T_NAGISH = TofV(14.87)             # 18.37 tap
 T_DAY0, T_DAYN = TofV(15.86), TofV(16.75)      # 7 evenly spaced day pops 19.36 .. 20.25
 T_GOAL = TofV(17.40)               # 20.90
 T_WAIT = TofV(18.78)               # 22.28 anticipation
-T_FUN = TofV(21.30)                # 24.80 discover burst (v21.3 "כיף")
+T_FUN = TofV(21.29)                # 24.79 box pops open (v21.29 "כיף")
 T_NO1, T_NO2 = TofV(22.36), TofV(23.55)        # 25.86, 27.05
 T_XSLAM = TofV(23.18)              # 26.68 X on the magnifier
 T_XOUT = TofV(24.43)               # 27.93 bolts cross out
@@ -185,10 +185,15 @@ def pads(t0, t1, ch, lvl=80, strings=True, choir_on=False, low=True, hi=True):
         choir.n(t0, d, [near(pcs[0], m('E4')), near(pcs[1], m('G4')), near(pcs[2], m('B4'))], lvl)
 
 
-def kit16(t0, s, n, style, lvl=1.0, ph=0):
+def kit16(t0, s, n, style, lvl=1.0, ph=0, mute=None):
     for i in range(n):
         t = t0 + i * s + hum(2.0)
         p = (i + ph) % 16
+        if mute and mute[0] <= t <= mute[1]:
+            if style in ('drive', 'four', 'half', 'lite'):
+                if p % 2 == 0 and style != 'lite':
+                    hh.n(t, 0.08, 60, 60 + rv(-4, 4))
+                continue
         if style == 'half':          # half-time: kick 1 & 'and' of 2, snare on 3
             if p in (0, 6, 10):
                 kick.n(t, 0.3, 60, (118 if p == 0 else 100) * lvl + rv(-3, 3))
@@ -229,14 +234,14 @@ def kit16(t0, s, n, style, lvl=1.0, ph=0):
             hh.n(t, 0.08, 60, [90, 50, 70, 50][p % 4] * lvl + rv(-5, 5))
 
 
-def taiko8(t0, b, beats, style='A', lvl=1.0):
+def taiko8(t0, b, beats, style='A', lvl=1.0, mute=None):
     pats = {'A': [(0, 124), (1.75, 96), (2, 112), (3.5, 100)],
             'C': [(0, 124), (0.75, 90), (1.5, 104), (2, 118), (2.75, 90), (3, 100), (3.5, 110)],
             '8': [(i / 2, 118 if i % 2 == 0 else 96) for i in range(8)]}[style]
     for bar in range(int(np.ceil(beats / 4))):
         for off, v in pats:
             bt = bar * 4 + off
-            if bt < beats - 1e-6:
+            if bt < beats - 1e-6 and not (mute and mute[0] <= t0 + bt * b <= mute[1]):
                 taiko.n(t0 + bt * b + hum(3), 0.5, 60 if off % 1 == 0 else 64, v * lvl + rv(-4, 4))
 
 
@@ -401,13 +406,13 @@ def sectionA():
     for b0, d, ch in segs:
         n16 = int(round(d * 4))
         lay = ('vc', 'cb', 'vla') if b0 < 4 else ('vc', 'cb', 'vla', 'vln')
-        ost16(g(b0), s, n16, ch, lvl=0.8 if b0 < 4 else (0.9 if b0 < 8 else 1.0), layers=lay, ph=int(b0 * 4),
+        ost16(g(b0), s, n16, ch, lvl=0.92 if b0 < 4 else (1.0 if b0 < 8 else 1.05), layers=lay, ph=int(b0 * 4),
               cresc=(1.0, 1.25) if b0 == 8 else None)
-        pads(g(b0), g(b0 + d) - 0.02, ch, lvl=64, strings=True, low=False)
+        pads(g(b0), g(b0 + d) - 0.02, ch, lvl=74, strings=True, low=False)
         r, _ = ct(ch)
         sub.n(g(b0), g.b * d - 0.05, near(r, m('E1')), 84)
-    kit16(g(0), s, 16, 'half', 0.9)
-    kit16(g(4), s, 16, 'drive', 0.95, ph=0)
+    kit16(g(0), s, 16, 'half', 1.0)
+    kit16(g(4), s, 16, 'drive', 1.0, ph=0)
     taiko8(g(0), g.b, 8, 'A', 0.9)
     # bar 3 build: toms + snare accel to the slam (matches the scene's drum-roll hits 8.03 ... 8.31)
     for i in range(4):
@@ -419,9 +424,9 @@ def sectionA():
     for i in range(6):
         taiko.n(g(8 + i * 0.4), 0.3, 60 if i % 2 == 0 else 64, 100 + 4 * i)
     # hook (horns, then + trumpets), violins double from bar 2
-    brass_line(g, HOOK_MIN, 90, beats=(0, 4), parts=('hn',))
-    brass_line(g, HOOK_MIN, 96, beats=(4, 8), parts=('hn', 'tp'))
-    brass_line(g, [(0, 1, 'B4'), (1, .5, 'E5'), (1.5, .5, 'F#5'), (2, 1.5, 'G5'), (3.5, .5, 'F#5')], 88, beats=(0, 4), parts=('tp',))
+    brass_line(g, HOOK_MIN, 100, beats=(0, 4), parts=('hn',))
+    brass_line(g, HOOK_MIN, 106, beats=(4, 8), parts=('hn', 'tp'))
+    brass_line(g, [(0, 1, 'B4'), (1, .5, 'E5'), (1.5, .5, 'F#5'), (2, 1.5, 'G5'), (3.5, .5, 'F#5')], 98, beats=(0, 4), parts=('tp',))
     strings_line(g, HOOK_MIN, 84, octv=12, beats=(4, 8))
     # sustained trumpet + horn B (dominant) crescendo through the build
     tp_su.n(g(8), T_SLAM - g(8) - 0.02, ['B4', 'F#5'], 100)
@@ -665,23 +670,37 @@ def ind():
 
 
 def live():
-    """14.54 - 17.32: theme returns (E minor hook, driving), live wall; voice pause 16.16-16.58 = rising build; suck-in gap; vortex 17.32"""
+    """14.54 - 17.32: theme returns (E minor hook, driving), live wall; heartbeat break 15.14-15.62 (drums lay out for the lub-dub);
+    israel hit 15.66; voice pause 16.16-16.58 = rising build; all-burst 16.58; orbit riser; suck-in gap; vortex 17.32"""
     t0 = T_LAND3
     g = Grid(t0, (T_VORTEX - t0) / 6)
     s = g.b / 4
+    LUB, DUB, ISR, ALLB = TofV(11.78), TofV(12.03), TofV(12.16), TofV(13.08)          # 15.28, 15.53, 15.66, 16.58
+    mute = (LUB - 0.11, ISR - 0.05)
     tutti(t0, 'Em', 1.05, dur=0.35, crash_on=True)
     for b0, d, ch in [(0, 4, 'Em'), (4, 1, 'C'), (5, 1, 'D')]:
         n16 = int(round(d * 4))
         ost16(g(b0), s, n16, ch, lvl=1.0 if b0 < 4 else 1.08, ph=int(b0 * 4), cresc=(1.0, 1.3) if b0 == 5 else None)
-        pads(g(b0), g(b0 + d) - 0.02, ch, lvl=70, low=False)
-        r, _ = ct(ch)
-        sub.n(g(b0), g.b * d - 0.05, near(r, m('E1')), 92)
-    kit16(g(0), s, 16, 'drive', 1.0)
+        pads(g(b0), g(b0 + d) - 0.02, ch, lvl=70, low=False, choir_on=(b0 == 0))
+    r_, _ = ct('Em')
+    sub.n(t0, LUB - 0.14 - t0, 'E1', 92)
+    sub.n(ISR, g(4) - ISR - 0.03, 'E1', 92)
+    sub.n(g(4), g.b - 0.05, 'C1', 92)
+    sub.n(g(5), g.b - 0.05, 'D1', 96)
+    kit16(g(0), s, 16, 'drive', 1.0, mute=mute)
     kit16(g(4), s, 8, 'build', 1.0)
-    taiko8(g(0), g.b, 4, 'C', 1.0)
+    taiko8(g(0), g.b, 4, 'C', 1.0, mute=mute)
     brass_line(g, HOOK_MIN, 100, beats=(0, 4), parts=('hn', 'tp'))
     strings_line(g, HOOK_MIN, 92, octv=12, beats=(0, 4))
-    # pause build (16.16 - 17.32): rising strings scale, timpani, snare, riser, cymbal swell
+    LIVE2 = [(4, .75, 'E5'), (4.75, .25, 'E5'), (5, .5, 'F#5'), (5.5, .5, 'A5')]
+    brass_line(g, LIVE2, 108, parts=('hn', 'tp'))
+    # israel hit 15.66: the groove comes back with a stab
+    stab(ISR, 'Em', 112, 0.2)
+    timp.n(ISR, 0.8, 'E2', 112)
+    taiko.n(ISR, 0.5, 60, 118)
+    crash.n(ISR, 1.4, 60, 100)
+    sparkle(ISR, 11, notes=8, dur=0.25, scale=(0, 2, 4, 5, 7, 9, 11), base='B5', vel=74, dens=40)
+    # pause build (16.16 - 17.32): rising strings scale, timpani, snare, riser, cymbal swell; all-burst 16.58; orbit riser 16.90
     scl = ['E5', 'F#5', 'G5', 'A5', 'B5', 'C6', 'D6', 'E6']
     for k in range(8):
         nt = scl[k]
@@ -692,7 +711,11 @@ def live():
         u = (tt - g(4)) / (T_VORTEX - 0.12 - g(4))
         timp.n(tt, 0.1, 'D2', int(56 + 66 * u))
         tt += 0.075 - 0.03 * u
+    stab(ALLB, 'D', 112, 0.2)
+    crash.n(ALLB, 1.4, 60, 104)
+    sparkle(ALLB, 2, notes=10, dur=0.3, scale=(0, 2, 4, 6, 7, 9, 11), base='D5', vel=80, dens=60)
     riser.n(g(3.5), T_VORTEX - g(3.5) - 0.02, 60, 96, kind='noise', lo=300, hi=12000, n0=47, oct=3)
+    riser.n(TofV(13.40), T_VORTEX - TofV(13.40) - 0.02, 60, 90, kind='noise', lo=600, hi=14000, n0=59, oct=2.5)
     riser.n(T_VORTEX, T_VORTEX - g(4) - 0.05, 60, 100, kind='cym', len='m')
     tb_su.n(g(4), T_VORTEX - g(4) - 0.1, ['D2', 'A2', 'F#3'], 100)
     tb_su.ex(g(4), T_VORTEX - 0.1, -14, 0, 1.4, pre=False, post=False)
@@ -753,97 +776,184 @@ def chorus():
     pno_d.n(DAY_T[6], 1.0, ['F#4', 'C#5'], 70)
     for i, nn in enumerate(['A5', 'B5', 'D6', 'E6', 'F#6']):
         harp_d.n(DAY_T[6] + 0.05 + i * 0.03, 0.6, nn, 62 - i * 3)
-    # ---- GOAL 20.90 : G major tutti, the resolution of the F# leading tone; hook phrase 2
-    gg = Grid(T_GOAL, (T_WAIT - T_GOAL) / 3)
+    # ---- GOAL: ball lands 20.90 (G major tutti = the resolution of the F# leading tone), bounce 21.30, GOAL burst 21.84 (C major, IV lift)
+    TB, TG = TofV(17.80), TofV(18.34)
     tutti(T_GOAL, 'G', 1.3, dur=0.8)
     gong.n(T_GOAL, 3.0, 60, 108)
     trailer.n(T_GOAL, 1.5, 55, 124)
-    for b0, d, ch in [(0, 1.5, 'G'), (1.5, 1.5, 'D')]:
-        s = gg.b / 4
-        ost16(gg(b0), s, int(d * 4), ch, lvl=1.08, ph=0 if b0 == 0 else 6)
-        kit16(gg(b0), s, int(d * 4), 'four', 1.05, ph=0 if b0 == 0 else 6)
-        pads(gg(b0) + 0.01, gg(b0 + d) - 0.02, ch, lvl=92, choir_on=True)
-        r, _ = ct(ch)
-        sub.n(gg(b0), gg.b * d - 0.04, near(r, m('E1')), 100)
-    taiko8(gg(0), gg.b, 3, 'C', 1.0)
-    brass_line(gg, CHO_B, 114, parts=('hn', 'tp'), hn_oct=-12)
-    strings_line(gg, CHO_B, 102, octv=12)
     crash.n(T_GOAL, 2.0, 60, 118)
+    for a_, b_, ch, ph in [(T_GOAL, TG, 'G', 0), (TG, T_WAIT, 'C', 8)]:
+        n = max(1, int(round((b_ - a_) / 0.1165)))
+        s_ = (b_ - a_) / n
+        ost16(a_, s_, n, ch, lvl=1.08, ph=ph)
+        kit16(a_, s_, n, 'four', 1.05, ph=ph)
+        pads(a_ + 0.01, b_ - 0.02, ch, lvl=92, choir_on=True)
+        r, _ = ct(ch)
+        sub.n(a_, b_ - a_ - 0.04, near(r, m('E1')), 100)
+    taiko8(T_GOAL, 0.46, 3, 'C', 1.0)
+    # hook phrase 2 by time: D6 (goal), B5, then C6 lands on the GOAL burst
+    for pp in (tp_su, hn_su):
+        o = 0 if pp is tp_su else -12
+        pp.n(T_GOAL, TB - T_GOAL - 0.05, m('D6') + o, 114)
+        pp.n(TB, TG - TB - 0.03, m('B5') + o, 112)
+        pp.n(TG, T_WAIT - TG - 0.03, m('C6') + o, 116)
+    for (t_, d_, n_) in [(T_GOAL, TB - T_GOAL - 0.05, 'D6'), (TB, TG - TB - 0.03, 'B5'), (TG, T_WAIT - TG - 0.03, 'C6')]:
+        vln_su.n(t_ - 0.05, d_ + 0.05, m(n_) + 12, 100)
+    tutti(TG, 'C', 1.25, dur=0.6, crash_on=True)
+    gong.n(TG, 3.0, 60, 100)
+    sparkle(TG, 0, notes=12, dur=0.4, scale=(0, 2, 4, 7, 9), base='C6', vel=86, dens=100)
 
 
 def wait():
-    """22.28 - 24.80: anticipation (Em / Am), ticking, tremolo swell, timpani; flute tease of the brand motif; riser into the discover burst"""
-    g = Grid(T_WAIT, (T_FUN - T_WAIT) / 5)
-    s = g.b / 4
-    ch_plan = [(0, 2, 'Em'), (2, 1, 'Am'), (3, 1, 'Em'), (4, 1, 'B')]
-    for b0, d, ch in ch_plan:
+    """22.28 - 24.79 the premiere countdown: 3-2-1 hits (22.28 / 22.71 / 23.02), curtains open 23.59 (C major lift), chest slam 23.92,
+    bow pop 24.42, box opens 24.79 (fun()).  Em | Am | B | C | Am | D -> G"""
+    E3_, E2_, E1_, EOP, ECH, EBW = T_WAIT, TofV(19.21), TofV(19.52), TofV(20.09), TofV(20.42), TofV(20.92)
+    plan = [(E3_, E2_, 'Em'), (E2_, E1_, 'Am'), (E1_, EOP, 'B'), (EOP, ECH, 'C'), (ECH, EBW, 'Am'), (EBW, T_FUN, 'D')]
+    for k, (a, b, ch) in enumerate(plan):
         r, pcs = ct(ch)
-        a, b = g(b0) + 0.01, g(b0 + d) - 0.02
-        vla_su.n(a, b - a, [near(pcs[2], m('G3')), near(pcs[0], m('E4'))], 66 + 3 * b0)
-        vc_su.n(a, b - a, near(r, m('C3')), 72)
-        cb_su.n(a, b - a, near(r, m('C2')), 70)
-        sub.n(a, b - a, near(r, m('E1')), 78)
-        if b0 >= 2:
-            vln_tr.n(a, b - a, [near(pcs[1], m('B4')), near(pcs[0], m('E5'))], 76)
-        choir.n(a, b - a, [near(pcs[0], m('E4')), near(pcs[1], m('G4')), near(pcs[2], m('B4'))], 56 + 5 * b0)
-    vln_tr.ex(g(2), T_FUN, -14, -1, 1.4, pre=False, post=False)
-    # clock ticks / countdown: high solo-violin staccato + closed hat, 8ths, crescendo
-    i = 0
-    tt = T_WAIT + 0.02
-    while tt < T_FUN - 0.05:
-        u = (tt - T_WAIT) / (T_FUN - T_WAIT)
-        vsol_sp.n(tt, 0.08, 'E6' if i % 2 == 0 else 'B5', int(62 + 24 * u) if i % 2 == 0 else int(52 + 20 * u))
-        hh.n(tt, 0.05, 60, int(52 + 34 * u))
-        i += 1
-        tt = T_WAIT + 0.02 + i * g.b / 2
-    # heartbeat timpani on the beats, growing
-    for k in range(5):
-        timp.n(g(k), 0.5, 'E2' if k < 4 else 'B1', int(56 + 9 * k))
+        a += 0.01
+        b -= 0.02
+        vla_su.n(a, b - a, [near(pcs[2], m('G3')), near(pcs[0], m('E4'))], 86)
+        vln_su.n(a, b - a, [near(pcs[1], m('B4')), near(pcs[0], m('E5'))], 82 + 3 * k)
+        vc_su.n(a, b - a, near(r, m('C3')), 90)
+        cb_su.n(a, b - a, near(r, m('C2')), 86)
+        sub.n(a, b - a, near(r, m('E1')), 76)
+        choir.n(a, b - a, [near(pcs[0], m('E4')), near(pcs[1], m('G4')), near(pcs[2], m('B4'))], 70 + 4 * k)
         if k >= 2:
-            kick.n(g(k), 0.3, 60, int(70 + 10 * k))
-    # flute tease of the brand motif (B E F# G) 'the series you are waiting for'
-    for dt, n_, d, v in [(0.0, 'B5', 0.45, 74), (0.5, 'E6', 0.45, 76), (1.0, 'F#6', 0.45, 78), (1.5, 'G6', 1.0, 82)]:
-        flute_sv.n(T_WAIT + 0.35 + dt, d, n_, v)
-    # build to the burst
-    tt = T_FUN - 0.5
-    while tt < T_FUN - 0.01:
-        u = (tt - (T_FUN - 0.5)) / 0.5
+            vln_tr.n(a, b - a, [near(pcs[1], m('B4')), near(pcs[0], m('E5'))], 92)
+    # countdown hits 3 - 2 - 1
+    stab(E3_, 'Em', 116, 0.25)
+    timp.n(E3_, 1.0, 'E2', 118)
+    kick.n(E3_, 0.3, 60, 116)
+    crash.n(E3_, 1.6, 60, 100)
+    trailer.n(E3_, 1.2, 52, 100)
+    for tt, nt, v in ((E2_, 'A1', 108), (E1_, 'B1', 116)):
+        timp.n(tt, 0.7, nt, v)
+        kick.n(tt, 0.3, 60, int(v))
+        vsol_sp.n(tt, 0.1, 'E6', 96)
+        glock.n(tt, 0.5, 'B6', 70)
+        hho.n(tt, 0.2, 60, 90)
+    vln_tr.ex(E1_, EOP, -16, -1, 1.4, pre=False, post=False)
+    # brand motif teased in the flute, landing on G6 at the curtain (B E F# G)
+    for tt, n_, d, v in [(E1_ + 0.01, 'B5', 0.17, 90), (E1_ + 0.19, 'E6', 0.17, 92), (E1_ + 0.37, 'F#6', 0.2, 94), (EOP, 'G6', 0.9, 98)]:
+        flute_sv.n(tt, d, n_, v)
+    # build to the curtain: snare roll, riser, cymbal landing on 23.59
+    tt = EOP - 0.45
+    while tt < EOP - 0.01:
+        u = (tt - (EOP - 0.45)) / 0.45
         snc.n(tt, 0.05, 60, int(40 + 80 * u ** 1.3))
         tt += 0.04
-    riser.n(g(2), T_FUN - g(2) - 0.02, 60, 88, kind='noise', lo=300, hi=12000, n0=52, oct=3)
-    riser.n(T_FUN, T_FUN - g(3), 60, 96, kind='cym', len='m')
-    oroll.n(T_FUN - 0.9, 0.9, 60, 90)
-    oroll.ex(T_FUN - 0.9, T_FUN, -22, -2, 1.3, pre=False, post=False)
+    riser.n(E1_, EOP - E1_ - 0.02, 60, 90, kind='noise', lo=300, hi=12000, n0=52, oct=3)
+    riser.n(EOP, EOP - E1_, 60, 96, kind='cym', len='m')
+    # CURTAINS OPEN 23.59 : radiant C major swell + poster-wall burst
+    tutti(EOP, 'C', 1.05, dur=0.7, crash_on=True)
+    sparkle(EOP, 0, notes=14, dur=0.5, scale=(0, 2, 4, 7, 9), base='C5', vel=88, dens=90)
+    tp_su.n(EOP, 0.7, ['G5', 'C6'], 100)
+    # CHEST SLAM 23.92 (low thud) and BOW POP 24.42 (small pluck)
+    timp.n(ECH, 0.9, 'A1', 120)
+    bd.n(ECH, 1.4, 60, 116)
+    sub.n(ECH, 0.6, 'A1', 108)
+    vcpz.n(ECH, 0.2, ['A2', 'E3'], 110)
+    cbpz.n(ECH, 0.2, 'A1', 110)
+    kick.n(ECH, 0.3, 60, 112)
+    stab(ECH, 'Am', 100, 0.15)
+    tp_st.n(EBW, 0.1, ['D6', 'F#6'], 96)
+    glock.n(EBW, 0.5, ['D7', 'A6'], 82)
+    harp.n(EBW, 0.5, ['D5', 'A5', 'D6'], 76)
+    vlnpz.n(EBW, 0.1, ['D5', 'F#5', 'A5'], 88)
+    # pre-burst: snare roll + rising noise into 24.79
+    tt = T_FUN - 0.30
+    while tt < T_FUN - 0.01:
+        u = (tt - (T_FUN - 0.30)) / 0.30
+        snc.n(tt, 0.04, 60, int(50 + 76 * u ** 1.3))
+        tt += 0.035
+    riser.n(EBW, T_FUN - EBW - 0.02, 60, 80, kind='noise', lo=500, hi=13000, n0=57, oct=2.5)
+    riser.n(T_FUN, T_FUN - EBW, 60, 96, kind='cym', len='s')
 
 
 def fun():
-    """24.80 - 25.86: discover burst: C major (VI) sparkle, bouncy pizzicato, glock cascade, triangle-ish shimmer; drums light"""
-    g = Grid(T_FUN, (T_NO1 - T_FUN) / 2)
-    tutti(T_FUN, 'C', 1.0, dur=0.5, crash_on=True)
-    braaam.n(T_FUN, 0.4, 'C2', 70)
-    sparkle(T_FUN, 0, notes=20, dur=0.6, scale=(0, 2, 4, 7, 9), base='C5', vel=90, dens=120)
-    # bouncy pizzicato chords (8ths) + glock/celesta cascade
-    for k, (ch, dt) in enumerate([('C', 0.5), ('C', 0.75), ('G', 1.0), ('G', 1.25), ('G', 1.5), ('G', 1.75)]):
-        r, pcs = ct(ch)
-        tt = g(dt)
-        vlnpz.n(tt, 0.1, [near(pcs[0], m('E5')), near(pcs[1], m('E5'))], 84)
-        vlapz.n(tt, 0.1, near(pcs[2], m('G3')), 80)
-        vcpz.n(tt, 0.1, near(r, m('C3')), 90)
-    casc = ['G6', 'E6', 'D6', 'C6', 'G5', 'E6', 'C7']
-    for k, nt in enumerate(casc):
-        glock.n(g(0.5) + k * g.b * 0.25, 0.4, nt, 76)
-        celesta.n(g(0.5) + k * g.b * 0.25 + 0.005, 0.4, nt, 60)
+    """24.79 - 25.86: box pops open (G major burst); six reveals every 0.1 s (25.05 ... 25.55) = rising G major pentatonic cascade
+    (glock + celesta + harp); hot-wipe sweep 25.55; micro gap; NO at 25.86"""
+    REV = [TofV(21.55 + 0.1 * i) for i in range(6)]                 # 25.05 ... 25.55
+    tutti(T_FUN, 'G', 1.05, dur=0.5, crash_on=True)
+    braaam.n(T_FUN, 0.4, 'G1', 70)
+    sparkle(T_FUN, 7, notes=20, dur=0.6, scale=(0, 2, 4, 7, 9), base='G5', vel=92, dens=120)
+    choir.n(T_FUN, 0.9, ['G4', 'B4', 'D5', 'G5'], 96)
+    hn_su.n(T_FUN - 0.06, 1.0, ['G3', 'D4', 'B4'], 96)
+    tp_su.n(T_FUN, 0.7, ['D6', 'G6'], 96)
+    vln_su.n(T_FUN - 0.08, 1.0, ['B5', 'D6', 'G6'], 90)
+    # bouncy pizzicato chords between the burst and the first reveal
+    for k, dt in enumerate([0.10, 0.19]):
+        r, pcs = ct('G')
+        vlnpz.n(T_FUN + dt, 0.1, [near(pcs[0], m('B4')), near(pcs[1], m('B4'))], 84)
+        vlapz.n(T_FUN + dt, 0.1, near(pcs[2], m('D4')), 80)
+        vcpz.n(T_FUN + dt, 0.1, near(r, m('C3')), 90)
+    casc = ['G5', 'A5', 'B5', 'D6', 'E6', 'G6']
+    for k, (tt, nt) in enumerate(zip(REV, casc)):
+        glock.n(tt, 0.4, m(nt) + 12, 74 + 2 * k)
+        celesta.n(tt + 0.004, 0.4, m(nt) + 12, 58 + 2 * k)
+        harp.n(tt, 0.7, nt, 74 + 2 * k)
+        vlnpz.n(tt, 0.1, nt, 70 + 3 * k)
     kick.n(T_FUN, 0.3, 60, 116)
-    for k in (1.0, 1.5):
-        kick.n(g(k), 0.3, 60, 100)
-        snare.n(g(k + 0.5) if k < 1.5 else g(1.75), 0.2, 60, 96)
-    tamb.n(g(0.5), 0.2, 60, 90)
-    tamb.n(g(1.0), 0.2, 60, 84)
-    hn_su.n(T_FUN + 0.05, 0.95, ['C4', 'E4', 'G4'], 96)
-    tp_su.n(T_FUN + 0.05, 0.95, ['G5', 'C6'], 92)
-    vln_su.n(T_FUN + 0.05, 1.0, ['E5', 'G5', 'C6'], 90)
-    choir.n(T_FUN, 1.0, ['C4', 'E4', 'G4', 'C5'], 96)
-    pads(T_FUN + 0.5, T_NO1 - 0.02, 'G', lvl=84, choir_on=False)
+    for tt in REV[::2]:
+        kick.n(tt, 0.3, 60, 92)
+    for tt in REV[1::2]:
+        snare.n(tt, 0.2, 60, 84)
+    for tt in REV:
+        tamb.n(tt + 0.05, 0.2, 60, 76)
+    pads(T_FUN + 0.5, REV[-1], 'G', lvl=84, choir_on=False)
+    pads(REV[-1], T_NO1 - 0.02, 'D', lvl=80, choir_on=False)
+    # sweep 25.55 -> NO 25.86 : rising noise + reverse cymbal, snare roll crescendo (the micro gap before the NO is in GAPS)
+    riser.n(REV[-1], T_NO1 - REV[-1] - 0.02, 60, 96, kind='noise', lo=400, hi=13000, n0=55, oct=2.6)
+    riser.n(T_NO1, T_NO1 - REV[-1], 60, 100, kind='cym', len='s')
+    tt = REV[-1]
+    while tt < T_NO1 - 0.09:
+        u = (tt - REV[-1]) / (T_NO1 - 0.09 - REV[-1])
+        snc.n(tt, 0.04, 60, int(50 + 76 * u))
+        tt += 0.04 - 0.015 * u
+
+
+def accents():
+    """small accents on the scene agents' // CUE comments (voice clock v -> T)"""
+    # s0
+    glock.n(1.70, 0.5, 'B6', 62)
+    glock.n(1.85, 0.5, 'E7', 66)
+    harp.n(1.70, 0.5, 'B5', 58)
+    # s1: clapper slam 3.41, episode fan 3.92, flip-to-blue 5.35, plus-pop 6.43
+    snare.n(3.41, 0.2, 60, 108)
+    taiko.n(3.41, 0.4, 60, 104)
+    for k, nt in enumerate(['B5', 'E6', 'G6']):
+        glock.n(3.92 + k * 0.06, 0.4, nt, 70)
+    riser.n(5.08, 0.27, 60, 60, kind='noise', lo=600, hi=9000, n0=59, oct=2)
+    glock.n(TofV(6.43), 0.5, ['G6', 'D7'], 76)
+    harp.n(TofV(6.43), 0.6, ['G5', 'D6'], 70)
+    # s2: lights flash 6.78, hero slam 7.47
+    ocym.n(TofV(6.78), 1.5, 60, 66)
+    riser.n(6.78, 0.75, 60, 60, kind='noise', lo=500, hi=10000, n0=52, oct=1.5)
+    t = TofV(7.47)
+    stab(t, 'B', 108, 0.2)
+    timp.n(t, 0.8, 'B1', 112)
+    taiko.n(t, 0.5, 60, 112)
+    crash.n(t, 1.2, 60, 96)
+    # s3: turkish splash 10.67 (a Phrygian F stab), bollywood burst 12.79
+    t = TofV(9.27)
+    tb_st.n(t, 0.2, ['F2', 'C3'], 104)
+    timp.n(t, 0.8, 'F2', 104)
+    crash.n(t, 1.0, 60, 84)
+    t = TofV(10.39)
+    stab(t, 'E', 106, 0.15)
+    tabla.n(t, 0.2, 60, 100, kind='dha')
+    sparkle(t, 4, notes=8, dur=0.25, scale=(0, 1, 4, 5, 7, 8, 11), base='E5', vel=70, dens=40)
+    # s5: thumb enters 17.93, calendar-in 18.86
+    vlnpz.n(TofV(14.43), 0.1, ['B5', 'E6'], 86)
+    harp.n(TofV(14.43), 0.4, ['B5', 'E6'], 72)
+    for k, nt in enumerate(['G4', 'B4', 'D5', 'G5', 'B5', 'D6', 'G6']):
+        harp.n(TofV(15.36) - 0.02 + k * 0.045, 0.6, nt, 62 + 2 * k)
+    # s6: ball bounce 21.30 (small accent), GOAL burst 21.84 is in chorus()
+    t = TofV(17.80)
+    stab(t, 'G', 104, 0.15)
+    snare.n(t, 0.2, 60, 100)
+    crash.n(t, 1.0, 60, 84)
 
 
 def nos():
@@ -1003,6 +1113,7 @@ def relief():
 
 def compose():
     intro()
+    accents()
     sectionA()
     cin()
     series1()

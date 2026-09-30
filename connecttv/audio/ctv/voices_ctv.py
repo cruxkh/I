@@ -241,7 +241,7 @@ def vaah():
     def f0f(f0, t):
         tt = t / max(t[-1], 1e-6)
         return f0 * 1.12 * (1 + 0.22 * np.clip(tt, 0, 1) ** 1.3)
-    return world(y, SR, f0f, 1.0, None, stretch=1.15)
+    return world(y, SR, f0f, 1.0, None, stretch=1.4)
 
 
 # ------------------------------------------------------------------ main

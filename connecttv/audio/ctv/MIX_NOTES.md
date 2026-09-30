@@ -1,0 +1,97 @@
+# ConnectTV mix notes (audio/ctv)
+
+**Verified by MEASUREMENT ONLY.  Nobody listened to this mix or to the foreign-language voices.**
+Everything below (LUFS, true peak, clip count, VO-to-bed ratio per word, click check, spectrogram, Whisper ASR) is a number or a picture, not an ear.
+
+## Build
+    python3 voices_ctv.py     # voices/  narrator_48k.wav, cinema_fx.wav, genre_voices.wav, voices.json
+    python3 sfx_ctv.py        # sfx/     new SFX (+ hits.json); v6/v7 sounds are reused through sfx_v6.build
+    python3 mix_ctv.py        # ../master_ctv.wav (+ copy here), master_ctv_spectrogram.png, mix_report.txt/json, this file
+Timeline: T = v + sum(hold.d for holds with hold.v < v) (timeline.js: cin 8.85 +1.4, tur 9.98 +1.0, ind 11.03 +1.1; total 34.1 s).
+
+## Voices
+- Narrator = the ORIGINAL TTS (audio/vo_original_tts.wav), Kaiser polyphase 44.1k -> 48k (160/147, beta 14) + 2nd-order 70 Hz high-pass, nothing else
+  (no EQ, no loudnorm, no compressor); split at the hold points on zero crossings with 5 ms fades; hold silences inserted.
+  The mix contains it unchanged (checked against an independent resample + high-pass pipeline).
+- `cin` hold: the narrator's word "צ'רלטון" (v 8.32-8.85) is re-spoken from the same audio as a deep trailer voice (WORLD pitch -5.5 st, formant warp 0.94,
+  chest EQ, saturation, 3.6 s hall) starting at hold + 0.03 s (T 8.88), two darker echoes at +0.60 and +1.02 s, a small hall send under the original word.
+  Whisper-he hears "...טון" for the processed word (the original word: "צ'לטון").  Level -3 dB vs. the first draft so it sits 3-5 dB over the bed.
+- `tur` hold (client request): a young crying GIRL saying "Neden?!".  Kokoro has no Turkish, so it is the Italian voice if_sara driven by Turkish IPA
+  (nɛdˈɛn), then WORLD: f0 x1.55 (about 420 Hz), formants x1.13 (child), 8.5 Hz pitch tremble that grows, a voice crack, breathier aperiodicity,
+  amplitude breaks + sharp in-breaths at the syllable joints, then a hiccup in-breath and two broken "ha" sobs (also Kokoro + WORLD, sliding down),
+  all inside the 1.0 s hold (T 11.41-12.38).  Whisper-tr reads the line as "Neden?" / "Ne den?" (the unprocessed base: "Ne dene?").
+- `ind` hold: a real Kokoro Hindi voice (hm_omega, lang hi) "वाह!", raised pitch with a rising contour and a 1.4x WORLD stretch (0.9 s), at hold + 0.03 s.
+  Whisper-hi returns only "ाहे" (its byte-level decoder drops the consonant 'व' in every Devanagari test, including the longer "वाह, क्या बात है!",
+  which came back as "ाह क्या ात"), so the Hindi line is NOT confirmed by ASR beyond its vowel/'ह' structure.  The longer phrase did not fit 1.1 s.
+- Whisper model: sherpa-onnx whisper-small int8 (GitHub release asr-models); Kokoro v1.0 from the kokoro-onnx GitHub release.
+
+## Score handling
+- Uses `score_ctv_nodays.wav` (the composer's stem split without its 7 day notes) and plays the day phrase from SFX (real VSCO harp + violin spiccato,
+  the composer's own notes G A B C D E F#, one octave up, on the scene CUEs 15.86 ... 16.75; F# = leading tone with a piano fifth + harp gliss).
+  `USE_SCORE_DAYS=1 python3 mix_ctv.py` uses the full score instead.
+- The score already plays its own dum-dum-DUM (tur), tabla + sitar groove (ind), braaam/gong/timpani roll (cin), so no SFX tur_dum / bolly_sting is cued
+  (they would flam); the hold SFX are the THX swell + projector (cin), a tear drop (tur), glitter (ind) and forward pickup whooshes into each hold end.
+- The score has no exact digital zero (its 'suck-in' gaps before T 17.32 and T 31.10 keep the risers), so the master has none either; mix_ctv.py would mask
+  any zero run >= 50 ms it finds in the score on every bus.
+- Music: -8 dB under speech (150 ms look-ahead attack, 400 ms release), +6 dB in the holds and held until 0.35 s before the next word, -6 dB under the genre
+  voices; a static gain so the median phrase-worst VO-music is 10 dB, then a look-ahead rider keeps VO - music >= 7.5 dB (4.5 dB under genre voices).
+- SFX: every cue gets static gains from a VO-protection solver (>= 6.5 dB under words full band, >= 8 dB in the speech band, big hits 5.5 / 7.5), then a
+  smooth look-ahead rider on the SFX bus keeps VO - (music + SFX) >= 5.4 dB at every word (4.0 dB under genre voices).  Master: static gain -> true-peak
+  look-ahead limiter (4x oversampling, 5 ms) -> -14 LUFS.  No compressor or EQ on the VO anywhere.
+
+## SFX list (all synthesised with the numpy toolkit, seeded, or real VSCO samples)
+bolt_crack, gloss_pop x3, zap, liquid_whoosh a/b/c, rise_whoosh, liquid_flood, splash_slam / splash_small, shockwave, glass_shatter, cross_out (two bolt slashes + slam),
+vortex_suck(_s), snare_hit (build-up roll), heart_lub, glitter, logo_suck + logo_slam, harp_sparkle, day_note x6 + week_finale, plus v6/v7 sounds for
+remote_click, curtain_swoosh, thx_swell, projector, tear_drop, boom_med, and the anim library (stadium_goal_eruption, stadium_crowd_bed, popcorn_burst, ball_kick).
+No marker / paper / hiss sounds, no metallic UI dings, nothing on the caption chips.  Cue list: `cue_sheet()` in mix_ctv.py (scene `// CUE` comments, v-clock).
+Not done / limits: cue names in the scenes are matched by hand (re-run after a scene change); the cross-out, glass and liquid sounds are physically plausible
+designs that nobody has listened to; the trailer voice may sound saturated; heavy sub layers from the SFX and the score add up (limiter GR is in the report).
+
+## Measured report (mix_report.txt)
+
+```
+==============================================================================
+score_ctv.wav: YES | gaps (exact digital zero) in the score: none
+music static gain -2.98 dB re the score file (median phrase-worst VO-music 7.0 dB before, target 10.0); music rider min -8.1 dB (active >1 dB 17.8 % of film); SFX rider min -4.4 dB (active 12.3 %)
+master: /home/user/I/connecttv/audio/master_ctv.wav  1636800 samples = 34.100 s, 2 ch, 48000 Hz, PCM_24
+integrated -13.99 LUFS | true peak -1.25 dBTP | sample peak -1.26 dBFS | clipped samples 0
+master gain -1.16 dB | limiter GR max 2.24 dB at 7.49 s, >1 dB for 0.78 s, >3 dB for 0.000 s
+total exact-zero time in master: 0.001 s (score gaps total 0.000 s)
+  cue splash_slam @4.34 protection gain hit/tail: -6.3 / -6.3 dB
+  cue logo_suck @31.10 protection gain hit/tail: 0.0 / 0.0 dB
+  cue logo_slam @31.10 protection gain hit/tail: 0.0 / 0.0 dB
+cues 147; hit tucked under the voice: 91; tail tucked: 91
+phrase window | VO LUFS | integrated over phrase (LU): VO-bed VO-SFX VO-music | worst word (momentary 400 ms): bed SFX SFX>200Hz music
+  0   0.12-  1.07 |  -13.9 |   11.2   11.6   16.3 |   5.9   7.2   7.5  10.1  פותחים את המסך
+  1   1.26-  3.17 |  -14.3 |    9.6   12.1   13.4 |   5.2   8.7   7.5   7.6  והעולם של הבידור נפתח בפ
+  2   3.41-  5.23 |  -14.3 |    9.6   10.3   17.6 |   7.3   7.8   7.4  14.9  סרטים וסדרות מנטפליקס
+  3   5.35-  6.66 |  -13.6 |    9.2   10.0   16.7 |   5.6   7.0   7.1  10.1  תכנים מדיסני פלוס
+  4   6.78-  8.85 |  -13.3 |    7.9    9.0   14.8 |   6.2   7.1   6.5  11.7  כל ערוצי הספורט כולל צ'ר
+  5  10.28- 11.38 |  -13.8 |    8.8   10.4   14.4 |   5.8   7.8   7.6  10.0  סדרות טורקיות
+  6  12.40- 13.43 |  -14.2 |    7.8    8.3   16.3 |   7.2   8.0   7.2  12.2  סדרות הודיות
+  7  14.55- 16.16 |  -14.5 |   10.2   10.5   21.5 |   5.4   7.0   6.9  10.6  וכל השידורים החיים מישרא
+  8  16.58- 17.59 |  -14.8 |   10.0   13.3   13.2 |   5.1   8.6   7.8   7.8  הכול במקום אחד
+  9  17.93- 18.73 |  -15.8 |    8.7   11.4   12.1 |   6.0   7.9   8.3  10.0  הכול נגיש
+ 10  18.86- 20.47 |  -13.4 |    7.2    7.5   18.4 |   7.0   7.2   7.2  15.5  והכול מתעדכן לאורך השבוע
+ 11  20.90- 22.16 |  -13.6 |    7.6    9.7   12.0 |   5.8   7.4   7.2   8.9  משחקים בשידור חי
+ 12  22.28- 23.86 |  -13.8 |    8.3    8.5   20.7 |   5.6   5.9   5.4  18.2  הסדרות שאתם מחכים להן
+ 13  23.92- 25.45 |  -13.8 |    8.9   10.6   13.9 |   5.4   9.3   8.9   7.6  והתוכן שתמיד כיף לגלות
+ 14  25.86- 27.03 |  -17.3 |    7.1    7.9   15.5 |   7.3   7.8   6.4  11.0  לא צריך לחפש
+ 15  27.05- 28.30 |  -12.0 |   11.6   12.8   17.8 |   7.2   7.8   6.6  14.7  לא צריך לעבור בין שירותי
+ 16  28.58- 29.78 |  -13.9 |   13.4   14.4   20.2 |   5.2   8.0   7.7   8.8  פשוט בוחרים מה לראות
+ 17  29.80- 30.93 |  -15.4 |    7.4    9.0   10.5 |   5.8   7.7   7.8   9.6  ומתחילים לצפות
+genre voice cinema Charlton  8.88-10.15: voice max M -9.7 LUFS, music max -16.5, SFX max -19.8, voice-bed 5.5 dB
+genre voice Neden?!          11.41-12.35: voice max M -12.2 LUFS, music max -16.7, SFX max -22.4, voice-bed 4.2 dB
+genre voice vaah             13.46-14.36: voice max M -11.4 LUFS, music max -17.2, SFX max -26.2, voice-bed 5.3 dB
+hold cin  8.85-10.25: mix -10.7 LUFS (music -17.3, SFX -23.4)
+hold tur  11.38-12.38: mix -13.3 LUFS (music -17.7, SFX -28.7)
+hold ind  13.43-14.53: mix -12.4 LUFS (music -18.3, SFX -28.5)
+words under 5 dB VO-bed: none
+5 worst words (VO-bed): אחד@17.32 5.1, בפניכם@2.57 5.2, לראות@29.55 5.2, לגלות@25.05 5.4, וכל@14.55 5.4
+worst word over the whole ad: VO-bed 5.1 | VO-SFX 5.9 | VO-SFX speech band 5.4 | VO-music 7.6 dB
+spectral balance (share of energy dB re total): 20-60 Hz -9.4, 60-250 Hz -5.3, 250-2000 Hz -2.8, 2000-6000 Hz -13.4, 6000-16000 Hz -17.7
+click check: 4 spikes (2nd difference > 60x local median and > 0.02 FS)
+VO integrity: narrator stem vs independent (resample + 70 Hz HP) pipeline over T 0.2-8.6: max |diff| = 5.8e-08 (float32 storage)
+```
+
+Spectrogram: master_ctv_spectrogram.png (cyan lines = big hits, white bands = holds); voices_spectrogram.png = the three genre moments.
