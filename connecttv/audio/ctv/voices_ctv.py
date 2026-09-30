@@ -221,7 +221,7 @@ def child_sobs(r, total=0.43):
     sn = sn * rattle * np.minimum(ts / 0.012, 1.0) * np.clip(1 - (ts - 0.045) / 0.02, 0, 1)
     i = int(0.36 * SR)
     L = min(ns, n - i)
-    out[i:i + L] += sn[:L] / (np.max(np.abs(sn)) + 1e-9) * 0.62
+    out[i:i + L] += sn[:L] / (np.max(np.abs(sn)) + 1e-9) * 0.85
     return out
 
 
