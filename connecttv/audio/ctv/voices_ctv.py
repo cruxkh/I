@@ -199,7 +199,7 @@ def child_sobs(r, total=0.43):
     gasp = gasp * np.minimum(tg / 0.04, 1.0) ** 1.3 * np.where(tg > 0.055, np.clip(1 - (tg - 0.055) / 0.015, 0, 1), 1.0)
     out[:ng] += gasp / (np.max(np.abs(gasp)) + 1e-9) * 0.55
     # three sobs
-    t0s, gains, f_top = (0.075, 0.175, 0.275), (1.0, 0.88, 0.72), (600, 560, 520)
+    t0s, gains, f_top = (0.075, 0.175, 0.275), (1.0, 0.93, 0.86), (600, 560, 520)
     for k, (t0, g, ft) in enumerate(zip(t0s, gains, f_top)):
         L = int(0.10 * SR)
         t = np.arange(L) / SR
@@ -221,7 +221,7 @@ def child_sobs(r, total=0.43):
     sn = sn * rattle * np.minimum(ts / 0.012, 1.0) * np.clip(1 - (ts - 0.045) / 0.02, 0, 1)
     i = int(0.36 * SR)
     L = min(ns, n - i)
-    out[i:i + L] += sn[:L] / (np.max(np.abs(sn)) + 1e-9) * 0.34
+    out[i:i + L] += sn[:L] / (np.max(np.abs(sn)) + 1e-9) * 0.62
     return out
 
 
@@ -334,7 +334,7 @@ def main():
     place = []
     room = make_ir(rt60=0.9, predelay=0.01, hf=0.5, er=10, er_span=0.04, bright=9000, seed=81)
 
-    def put(y, t, g_db, pan=0.0, room=None, rev=0.18, name='', end=None):
+    def put(y, t, g_db, pan=0.0, room=None, rev=0.18, name='', end=None, fade=0.14):
         y = y / (np.max(np.abs(y)) + 1e-9) * 10 ** (g_db / 20)
         y = fade_io(y, int(0.004 * SR))
         st_ = np.vstack([y * np.cos((pan + 1) * np.pi / 4), y * np.sin((pan + 1) * np.pi / 4)]) * np.sqrt(2)
@@ -343,14 +343,14 @@ def main():
             st_ = np.hstack([st_, np.zeros((2, w.shape[1] - st_.shape[1]))]) + w
         if end is not None:      # everything must have died by the end of the hold (the narrator resumes)
             n_end = int(round((end - t) * SR))
-            n_f = int(0.14 * SR)
+            n_f = int(fade * SR)
             st_ = st_[:, :n_end].copy()
             st_[:, -n_f:] *= np.linspace(1, 0, n_f)
         add(GV, st_, t)
         place.append(dict(name=name, T=round(t, 3), dur=round(len(y) / SR, 3), until=round(t + st_.shape[1] / SR, 3)))
     ht, hi = HK['tur'], HK['ind']
     ne = neden()
-    put(ne, ht['T0'] + GENRE_DELAY, -2.5, 0.0, room, 0.22, 'Neden?! + child sob sequence (tur: crying girl, Kokoro if_sara + Turkish IPA + WORLD; sobs synthesised)', end=ht['T0'] + ht['d'])
+    put(ne, ht['T0'] + GENRE_DELAY, -2.5, 0.0, room, 0.22, 'Neden?! + child sob sequence (tur: crying girl, Kokoro if_sara + Turkish IPA + WORLD; sobs synthesised)', end=ht['T0'] + ht['d'], fade=0.035)
     va = vaah()          # NOT in genre_voices.wav any more (client: Bollywood BACKGROUND MUSIC instead of a spoken line); kept for reference
     GV_unused = np.zeros((2, NS))
     y_ = va / (np.max(np.abs(va)) + 1e-9) * 10 ** (-2.0 / 20)
