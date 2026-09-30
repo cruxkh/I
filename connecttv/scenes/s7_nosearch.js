@@ -26,7 +26,7 @@
 
   // ---------------------------------------------------------------- impacts (cue times) for shake / glow / flash
   const IMPACTS = [[22.36, 20, C.red], [23.23, 8, C.red], [23.29, 16, C.red], [23.36, 14, C.cyan], [23.55, 18, C.pink], [24.36, 8, C.red], [24.41, 18, C.red]];
-  const shakeAt = t => { let x = 0, y = 0; for (const [t0, a] of IMPACTS) { const s = CL.shake(t, t0, .42, a); x += s[0]; y += s[1]; } return [x, y]; };
+  const shakeAt = t => { let x = 0, y = 0; for (const [t0, a] of IMPACTS) { const s = CL.shake(t, t0, .7, a * .7); x += s[0]; y += s[1]; } return [x, y]; };
 
   // ---------------------------------------------------------------- the candy NO sign (circle + slash)
   function noSign(ctx, cx, cy, R, o = {}) {
@@ -51,17 +51,17 @@
 
   // cartoon impact burst behind a slam: splash + rings + speed lines. t0 = landing time
   function impactFx(ctx, t, t0, x, y, R, cols, seed) {
-    const dt = t - t0; if (dt < -.001 || dt > .8) return;
-    const p = ease.out(cl(dt / .38)), fade = 1 - sm(.3, .62, dt);
+    const dt = t - t0; if (dt < -.001 || dt > 1.2) return;
+    const p = ease.out(cl(dt / .65)), fade = 1 - sm(.5, 1.0, dt);
     if (fade > 0) { ctx.save(); ctx.globalAlpha *= fade; CL.splash(ctx, x, y, R * (.95 + .35 * p), p, seed, cols); ctx.restore(); }
-    CL.ring(ctx, x, y, R * 1.25, dt / .5, '#ffffff', 26); CL.ring(ctx, x, y, R * 1.7, (dt - .07) / .55, cols[0], 16);
-    if (dt < .28) { const k = dt / .28; ctx.save(); ctx.strokeStyle = '#fff'; ctx.lineCap = 'round'; ctx.globalAlpha *= 1 - k; for (let i = 0; i < 22; i++) { const a = i / 22 * TAU + hash(seed + i) * .2, r0 = R * (1.05 + .3 * ease.out(k)), r1 = r0 + R * (.22 + .3 * hash(i + seed * 3)) * (1 - k * .5); ctx.lineWidth = 10 * (1 - k * .6); ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * r0, y + Math.sin(a) * r0); ctx.lineTo(x + Math.cos(a) * r1, y + Math.sin(a) * r1); ctx.stroke(); } ctx.restore(); }
+    CL.ring(ctx, x, y, R * 1.25, dt / .8, '#ffffff', 26); CL.ring(ctx, x, y, R * 1.7, (dt - .1) / .9, cols[0], 16);
+    if (dt < .45) { const k = dt / .45; ctx.save(); ctx.strokeStyle = '#fff'; ctx.lineCap = 'round'; ctx.globalAlpha *= 1 - k; for (let i = 0; i < 22; i++) { const a = i / 22 * TAU + hash(seed + i) * .2, r0 = R * (1.05 + .3 * ease.out(k)), r1 = r0 + R * (.22 + .3 * hash(i + seed * 3)) * (1 - k * .5); ctx.lineWidth = 10 * (1 - k * .6); ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * r0, y + Math.sin(a) * r0); ctx.lineTo(x + Math.cos(a) * r1, y + Math.sin(a) * r1); ctx.stroke(); } ctx.restore(); }
   }
   // generic droplet burst (drag + gravity, shrink out)
   function burst(ctx, t, t0, x, y, n, cols, sp, seed, life, r0, g = 1500) {
     const dt = t - t0; if (dt < 0 || dt > life + .05) return;
     for (let i = 0; i < n; i++) {
-      const a = hash(seed * 7 + i * 3.3) * TAU, v = sp * (.45 + hash(seed + i * 1.9) * .75), dist = v / 4 * (1 - Math.exp(-4 * dt)), px = x + Math.cos(a) * dist, py = y + Math.sin(a) * dist + g * dt * dt;
+      const a = hash(seed * 7 + i * 3.3) * TAU, v = sp * (.45 + hash(seed + i * 1.9) * .75), dist = v / 2.6 * (1 - Math.exp(-2.6 * dt)), px = x + Math.cos(a) * dist, py = y + Math.sin(a) * dist + g * .5 * dt * dt;
       const r = r0 * (.55 + hash(seed + i * 5.5) * .9) * (1 - ease.in(cl(dt / life))); if (r > 1.5) CL.drop(ctx, px, py, r, cols[i % cols.length], t, i + seed);
     }
   }
@@ -70,10 +70,10 @@
   const QCOL = [C.pink, C.cyan, C.yellow, C.lime, C.orange, C.purple, C.blue, C.green];
   const qSprite = ci => CL.layer('s7q' + ci, 320, 360, g => { CL.title(g, '?', 160, 190, { size: 270, dir: 'ltr', fill: [hexMix(QCOL[ci], '#ffffff', .62), QCOL[ci]] }); });
   const QI = [], TI = [];
-  for (let i = 0; i < 18; i++) { const c = i % 6, r = Math.floor(i / 6); QI.push({ x: cl((c + .5) * 320 + (r % 2 ? 90 : -60) + (hash(i * 3.1) - .5) * 100, 110, 1810), y: 165 + r * 240 + (hash(i * 5.3) - .5) * 70, k: .78 + hash(i * 7.9) * .6, ci: i % 8, ph: hash(i * 1.7) * TAU, tin: 22.64 + hash(i * 1.37) * .34, tout: 23.37 + hash(i * 2.31 + 5) * .15 }); }
-  for (let i = 0; i < 16; i++) { const c = i % 8, r = Math.floor(i / 8); TI.push({ x: cl((c + .5) * 240 + (hash(i * 4.4) - .5) * 90, 120, 1800), y: 260 + r * 300 + (c % 2) * 90 - 40 + (hash(i * 9.1) - .5) * 80, k: .85 + hash(i * 3.3) * .5, a: CAND[i % 8], b: CAND[(i + 3) % 8], ph: hash(i * 2.9) * TAU, tin: 22.66 + hash(i * .77 + 2) * .32, tout: 23.39 + hash(i * 1.93 + 8) * .14 });
+  for (let i = 0; i < 18; i++) { const c = i % 6, r = Math.floor(i / 6); QI.push({ x: cl((c + .5) * 320 + (r % 2 ? 90 : -60) + (hash(i * 3.1) - .5) * 100, 110, 1810), y: 165 + r * 240 + (hash(i * 5.3) - .5) * 70, k: .78 + hash(i * 7.9) * .6, ci: i % 8, ph: hash(i * 1.7) * TAU, tin: 22.64 + hash(i * 1.37) * .5, tout: 23.40 + hash(i * 2.31 + 5) * .5 }); }
+  for (let i = 0; i < 16; i++) { const c = i % 8, r = Math.floor(i / 8); TI.push({ x: cl((c + .5) * 240 + (hash(i * 4.4) - .5) * 90, 120, 1800), y: 260 + r * 300 + (c % 2) * 90 - 40 + (hash(i * 9.1) - .5) * 80, k: .85 + hash(i * 3.3) * .5, a: CAND[i % 8], b: CAND[(i + 3) % 8], ph: hash(i * 2.9) * TAU, tin: 22.66 + hash(i * .77 + 2) * .46, tout: 23.42 + hash(i * 1.93 + 8) * .45 });
   }
-  function outScale(t, tout) { const u = (t - tout) / .17; if (u <= 0) return 1; if (u >= 1) return 0; return Math.max(0, 1 - ease.inBack(u)); }
+  function outScale(t, tout) { const u = (t - tout) / .5; if (u <= 0) return 1; if (u >= 1) return 0; return Math.max(0, 1 - ease.inBack(u)); }
   function thumb(ctx, x, y, k, rot, a, b) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(k, k);
     ctx.fillStyle = 'rgba(2,4,30,.4)'; ctx.beginPath(); ctx.roundRect(-72, -44, 150, 104, 18); ctx.fill();
@@ -84,16 +84,16 @@
     ctx.restore();
   }
   function world(ctx, t) {
-    for (let i = 0; i < TI.length; i++) { const q = TI[i]; const s = CL.pop(t, q.tin, .26) * outScale(t, q.tout); if (s <= .01) continue; thumb(ctx, q.x + 34 * Math.sin(t * (1.2 + hash(i) * .8) + q.ph), q.y + 30 * Math.cos(t * (1.0 + hash(i + 4) * .8) + q.ph * 2) - 20 * (t - 22.6), q.k * s, .3 * Math.sin(t * 1.7 + q.ph), q.a, q.b); }
+    for (let i = 0; i < TI.length; i++) { const q = TI[i]; const s = CL.pop(t, q.tin, .4) * outScale(t, q.tout); if (s <= .01) continue; thumb(ctx, q.x + 34 * Math.sin(t * (1.2 + hash(i) * .8) + q.ph), q.y + 30 * Math.cos(t * (1.0 + hash(i + 4) * .8) + q.ph * 2) - 20 * (t - 22.6), q.k * s, .3 * Math.sin(t * 1.7 + q.ph), q.a, q.b); }
     for (let i = 0; i < QI.length; i++) {
-      const q = QI[i]; const s = CL.pop(t, q.tin, .26) * outScale(t, q.tout); if (s <= .01) continue;
+      const q = QI[i]; const s = CL.pop(t, q.tin, .4) * outScale(t, q.tout); if (s <= .01) continue;
       const x = q.x + 30 * Math.sin(t * (1.3 + hash(i + 2) * .7) + q.ph), y = q.y + 26 * Math.cos(t * (1.1 + hash(i + 7) * .7) + q.ph * 2) - 20 * (t - 22.6), k = q.k * s;
       ctx.save(); ctx.translate(x, y); ctx.rotate(.28 * Math.sin(t * 1.9 + q.ph)); ctx.drawImage(qSprite(q.ci), -160 * k, -190 * k, 320 * k, 360 * k); ctx.restore();
     }
   }
   // vanish pops (rings + drops) for the search wall
   function worldPops(ctx, t) {
-    for (const q of QI.concat(TI)) { const dt = t - (q.tout + .1); if (dt < 0 || dt > .5) continue; const x = q.x, y = q.y - 20 * (q.tout - 22.6); CL.ring(ctx, x, y, 130 * (q.k), dt / .4, '#ffffff', 12); burst(ctx, t, q.tout + .1, x, y, 4, [q.ci != null ? QCOL[q.ci] : q.a, '#ffffff'], 380, q.tout * 3, .4, 12, 600); }
+    for (const q of QI.concat(TI)) { const dt = t - (q.tout + .3); if (dt < 0 || dt > .8) continue; const x = q.x, y = q.y - 20 * (q.tout - 22.6); CL.ring(ctx, x, y, 130 * (q.k), dt / .7, '#ffffff', 12); burst(ctx, t, q.tout + .3, x, y, 4, [q.ci != null ? QCOL[q.ci] : q.a, '#ffffff'], 380, q.tout * 3, .7, 12, 400); }
   }
 
   // ---------------------------------------------------------------- the giant magnifier

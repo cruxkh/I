@@ -3,7 +3,7 @@
 //        -> NETFLIX slam (red) -> flip to blue/purple magic (תכנים) -> DISNEY+ logo bursts out of a portal (מדיסני)
 //        -> giant candy plus pops (פלוס).
 (() => {
-  const { clamp, lerp, ease, hash } = A, C = CL.C, W = 1920, H = 1080, TAU = A.TAU, CX = 960;   // LANDSCAPE 1920x1080; hero centre (960,400), caption band y>820
+  const { clamp, lerp, ease, hash } = A, C = CL.C, W = 1920, H = 1080, TAU = tAU, CX = 960;   // LANDSCAPE 1920x1080; hero centre (960,400), caption band y>820
   const P = (t, a, b) => clamp((t - a) / (b - a)), eo = ease.out, eio = ease.inOut;
   const RED = '#E50914', REDH = '#FF3B4E';
   const CENTER_Y = 400;
@@ -97,10 +97,10 @@
 
   // ---------------------------------------------------------------- world 1 (Netflix side)
   function plate1(ctx, t) {   // NETFLIX plate: real logo on white gel, slams on 4.36
-    const pre = P(t, 4.14, 4.36), post = t - 4.36, flip = P(t, 5.35, 5.55);
-    if (t < 4.14) return; let sc = lerp(3.3, 1, ease.in(pre)); const wob = post > 0 ? .13 * kick(t, 4.36, 6, 32) : 0;
-    let sx = sc * (1 + wob), sy = sc * (1 - wob), rot = post > 0 ? .05 * Math.exp(-post * 6) * Math.sin(post * 26) : -.2 * (1 - ease.in(pre));
-    let x = CX, y = CENTER_Y + (post > 0 ? 8 * Math.sin(A.T * 2.2) : 0); const al = clamp((t - 4.14) / .05);
+    const pre = P(t, 4.06, 4.36), post = t - 4.36, flip = P(t, 5.35, 5.68);
+    if (t < 4.06) return; let sc = lerp(2.6, 1, Math.pow(pre, 2.2)); const wob = post > 0 ? .13 * kick(t, 4.36, 6, 32) : 0;
+    let sx = sc * (1 + wob), sy = sc * (1 - wob), rot = post > 0 ? .05 * Math.exp(-post * 6) * Math.sin(post * 26) : -.2 * (1 - Math.pow(pre, 2.2));
+    let x = CX, y = CENTER_Y + (post > 0 ? 8 * Math.sin(t * 2.2) : 0); const al = clamp((t - 4.06) / .14);
     if (flip > 0) { const f = eio(flip); sx *= Math.max(.001, Math.cos(f * 1.5)); sy *= 1 - .25 * f; x -= 300 * f; rot -= .5 * f; }
     ctx.save(); ctx.globalAlpha *= al; ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sx, sy);
     A.glow(ctx, 0, 0, 900, RED, .55 * clamp(post / .1));
@@ -110,6 +110,7 @@
   function world1(ctx, t) {
     CL.bg(ctx, t, { tint: [C.pink, C.purple, C.orange] });
     const rk = t >= 4.36 ? (.35 + .65 * Math.exp(-(t - 4.36) * 3.5)) * (1 - P(t, 5.4, 5.7)) : 0; if (rk > 0) A.glow(ctx, CX, CENTER_Y, 1300, RED, .6 * rk);
+    if (t > 3.98 && t < 4.36) A.glow(ctx, CX, CENTER_Y, 500 + 800 * ease.in(P(t, 3.98, 4.36)), RED, .7 * ease.in(P(t, 3.98, 4.36)));   // lead-in: red energy builds behind the cards
     drops(ctx, t, [C.pink, C.orange, C.yellow, C.cyan], 1);
     // CUE 3.41 clapper-slam + popcorn-burst (film strips whoosh in)
     const stA = 1 - .68 * P(t, 4.36, 5.1);
@@ -128,7 +129,7 @@
     if (t >= 3.41) { CL.ring(ctx, CX, 300, 700, P(t, 3.41, 3.85), '#fff', 22); popBurst(ctx, t, CX, 300, 3.41); }
     plate1(ctx, t);
     if (t >= 4.36) { CL.ring(ctx, CX, CENTER_Y, 1200, P(t, 4.36, 5.2), '#fff', 34); CL.ring(ctx, CX, CENTER_Y, 1500, P(t, 4.40, 5.3), REDH, 48);
-      const fb = (t < 4.8 ? 1 : .55 + .25 * Math.sin(A.T * 26)) * (1 - P(t, 5.4, 5.6));   // bolts stay lit (flicker on the global clock) through the hold [[80, 60, 380, 260, 3], [1840, 80, 1540, 260, 5], [80, 760, 400, 560, 9], [1840, 740, 1520, 560, 12]].forEach(([a, b, c2, d, sd]) => CL.bolt(ctx, a, b, c2, d, P(t, 4.34, 4.46), sd, { col: REDH, lw: 12, alpha: fb }));
+      const fb = (t < 4.8 ? 1 : .55 + .25 * Math.sin(t * 26)) * (1 - P(t, 5.4, 5.6));   // bolts stay lit (flicker on the global clock) through the hold [[80, 60, 380, 260, 3], [1840, 80, 1540, 260, 5], [80, 760, 400, 560, 9], [1840, 740, 1520, 560, 12]].forEach(([a, b, c2, d, sd]) => CL.bolt(ctx, a, b, c2, d, P(t, 4.34, 4.46), sd, { col: REDH, lw: 12, alpha: fb }));
       ctx.save(); ctx.globalAlpha *= P(t, 4.52, 4.8) * (1 - P(t, 5.4, 5.6)); CL.twinkle(ctx, t, 60, 60, 1800, 760, 22, 3, ['#fff', REDH, C.yellow, C.pink]); ctx.restore(); }
     if (t < 3.6) CL.twinkle(ctx, t, 100, 100, 1700, 700, 12, 5, ['#fff', C.yellow, C.pink]);
   }
@@ -141,9 +142,9 @@
     if (em === 0 || em === 4) { star(g, 0, -42, 56, 24); g.fill(); } else if (em === 1) { heart(g, 0, -42, 40); g.fill(); } else if (em === 2) { tri(g, 6, -42, 38); g.fill(); } else { CL.spark(g, 0, -42, 62, 0, '#fff'); }
     g.fillStyle = 'rgba(5,8,38,.5)'; g.beginPath(); g.roundRect(-78, 56, 130, 18, 9); g.fill(); g.fillStyle = 'rgba(5,8,38,.28)'; g.beginPath(); g.roundRect(-78, 88, 90, 14, 7); g.fill();
   });
-  // Disney plate glides from centre (960) to the left (700) on 6.3..6.5 to make room for the big plus on the right
+  // Disney plate glides from centre (960) to the left (700) on 6.2..6.6 to make room for the big plus on the right
   const LOGO_W = 840, PLATE_Y = 400, PLUS_X = 1560, PLUS_Y = 400, PLATE_W = 1040, PLATE_H = 560;
-  const plx = t => lerp(960, 700, eio(P(t, 6.28, 6.5)));
+  const plx = t => lerp(960, 700, eio(P(t, 6.2, 6.62)));
   const logoPt = (ix, iy, x) => { const s = LOGO_W / 512; return [x + (ix - 256) * s, PLATE_Y + (iy - 139) * s]; };
   const arcPt = (u, x) => logoPt(110 + 360 * u, lerp(78, 132, u) - 100 * Math.sin(Math.PI * u), x);
 
@@ -156,7 +157,7 @@
   }
 
   function plate2(ctx, t) {
-    const sc0 = CL.pop(t, 5.97, .16); if (sc0 <= 0) return; const im = CL.logoImg('disney'); const bump = 1 + .05 * kick(t, 6.54, 11, 36) + .03 * kick(t, 6.06, 12, 38);
+    const sc0 = CL.pop(t, 5.84, .32); if (sc0 <= 0) return; const im = CL.logoImg('disney'); const bump = 1 + .05 * kick(t, 6.54, 11, 36) + .03 * kick(t, 6.06, 12, 38);
     ctx.save(); ctx.translate(plx(t), PLATE_Y + 8 * Math.sin(t * 2.3)); ctx.rotate(.012 * Math.sin(t * 1.6) + (t > 6.06 ? .03 * Math.exp(-(t - 6.06) * 8) * Math.sin((t - 6.06) * 30) : 0)); ctx.scale(sc0 * bump, sc0 * bump);
     const hw = PLATE_W / 2, hh = PLATE_H / 2;
     A.glow(ctx, 0, 0, 800, '#4FA8FF', .6);
@@ -175,7 +176,7 @@
     CL.twinkle(ctx, t, 40, 40, 1840, 800, 30, 8, ['#fff', C.cyan, '#B9A8FF', C.yellow]);
     drops(ctx, t, [C.blue, C.cyan, C.purple, '#7A6BFF'], 6);
     // CUE 5.35 flip-to-blue "תכנים": mini content posters burst out and spiral into a magic portal
-    const q = P(t, 5.62, 6.06), qe = ease.in(q);
+    const q = P(t, 5.5, 6.06), qe = ease.in(q);
     if (t < 6.06) {
       const pg = .25 + .75 * P(t, 5.3, 6.06); A.glow(ctx, icx, icy, 220 + 560 * qe + 80 * pg, '#8FC3FF', .35 + .6 * qe);
       ctx.save(); ctx.translate(icx, icy); ctx.rotate(t * 1.4); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 12; i++) { ctx.rotate(TAU / 12); ctx.fillStyle = `rgba(160,210,255,${.22 * qe})`; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-30, -1200); ctx.lineTo(30, -1200); ctx.fill(); } ctx.restore();
@@ -188,24 +189,28 @@
     }
     // CUE 6.06 disney-logo-burst (blue splash, sparkle arc, shockwave, flash)
     const px0 = plx(t);
-    if (t >= 6.06) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 6.37, 6.67); CL.splash(ctx, CX, PLATE_Y, 820, CL.spring(t, 6.06, .6), 11, [C.blue, C.cyan, C.purple, '#A8C8FF', '#7A6BFF']); ctx.restore(); }
+    if (t >= 6.06) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 6.5, 7.0); CL.splash(ctx, CX, PLATE_Y, 820, CL.spring(t, 6.06, 1.0), 11, [C.blue, C.cyan, C.purple, '#A8C8FF', '#7A6BFF']); ctx.restore(); }
     // CUE 6.54 plus-splash (behind)
-    if (t >= 6.54) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 6.8, 7.0) * .5; CL.splash(ctx, PLUS_X, PLUS_Y, 520, CL.spring(t, 6.54, .5), 12, [C.pink, C.purple, C.cyan, '#FFB0E0', C.blue]); ctx.restore(); }
+    if (t >= 6.54) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 6.8, 7.0) * .5; CL.splash(ctx, PLUS_X, PLUS_Y, 520, CL.spring(t, 6.54, .8), 12, [C.pink, C.purple, C.cyan, '#FFB0E0', C.blue]); ctx.restore(); }
     plate2(ctx, t);
     if (t >= 6.04) {   // sparkle arc following the logo's own arc
-      const uh = eo(P(t, 6.04, 6.50)), fade = 1 - P(t, 6.50, 6.78);
+      const uh = eo(P(t, 6.0, 6.6)), fade = 1 - P(t, 6.62, 7.0);
       for (let i = 0; i < 18; i++) { const u = uh - i * .026; if (u < 0 || u > 1.001) continue; const [x, y] = arcPt(u, px0), s0 = (50 - i * 2.4) * (.6 + .4 * Math.sin(t * 20 + i)); CL.spark(ctx, x, y - 6, Math.max(6, s0) * fade, t * 3 + i, i % 3 ? '#fff' : (i % 2 ? '#9FE8FF' : '#C8B6FF')); }
       if (uh > 0) { const [x, y] = arcPt(Math.min(1, uh), px0); A.glow(ctx, x, y, 140, '#9FE8FF', .9 * fade); }
-      CL.ring(ctx, CX, PLATE_Y, 1250, P(t, 6.06, 6.57), '#9FE8FF', 34); CL.ring(ctx, CX, PLATE_Y, 900, P(t, 6.09, 6.47), '#fff', 22);
+      CL.ring(ctx, CX, PLATE_Y, 1250, P(t, 6.06, 6.9), '#9FE8FF', 34); CL.ring(ctx, CX, PLATE_Y, 900, P(t, 6.09, 6.75), '#fff', 22);
     }
     // CUE 6.54 plus-pop: giant glowing candy "+" lands on "פלוס"
-    { const pp = CL.pop(t, 6.44, .16);
-      if (pp > 0) { const rot = .05 - .6 * (1 - CL.spring(t, 6.44, .5)), sc = pp * (1 + .06 * kick(t, 6.54, 10, 40)), by = PLUS_Y + 6 * Math.sin(t * 3);
-        A.glow(ctx, PLUS_X, by, 520, C.pink, .55 + .15 * Math.sin(t * 9)); A.glow(ctx, PLUS_X, by, 380, C.purple, .5);
+    // lead-in 6.14..6.40: a glowing spark leaves the logo's own "+" and flies to the right, then swells into the candy plus
+    if (t > 6.14 && t < 6.5) { const e = eio(P(t, 6.14, 6.40)), [ox, oy] = logoPt(470, 190, px0), x = lerp(ox, PLUS_X, e), y = lerp(oy, PLUS_Y, e) - 120 * Math.sin(Math.PI * e), al = 1 - P(t, 6.40, 6.5);
+      for (let i = 0; i < 9; i++) { const e2 = Math.max(0, e - i * .035), x2 = lerp(ox, PLUS_X, e2), y2 = lerp(oy, PLUS_Y, e2) - 120 * Math.sin(Math.PI * e2); CL.spark(ctx, x2, y2, (40 - i * 3.5) * al, t * 5 + i, i % 2 ? '#fff' : C.pink); }
+      A.glow(ctx, x, y, 90 + 140 * e, C.pink, .9 * al); }
+    { const pp = CL.pop(t, 6.36, .30);
+      if (pp > 0) { const rot = .05 - .6 * (1 - CL.spring(t, 6.36, .7)), sc = pp * (1 + .06 * kick(t, 6.54, 10, 40)), by = PLUS_Y + 6 * Math.sin(t * 3);
+        A.glow(ctx, PLUS_X, by, 520, C.pink, Math.min(1, pp) * (.55 + .15 * Math.sin(t * 9))); A.glow(ctx, PLUS_X, by, 380, C.purple, Math.min(1, pp) * .5);
         ctx.save(); ctx.translate(PLUS_X, by); ctx.rotate(rot); ctx.scale(sc, sc); plusShape(ctx, 400); ctx.restore(); } }
     if (t >= 6.54) {
-      CL.ring(ctx, PLUS_X, PLUS_Y, 900, P(t, 6.54, 7.06), '#fff', 16); CL.ring(ctx, PLUS_X, PLUS_Y, 700, P(t, 6.57, 7.0), C.pink, 44);
-      const [px, py] = logoPt(470, 190, px0), pk = P(t, 6.54, 6.96);
+      CL.ring(ctx, PLUS_X, PLUS_Y, 900, P(t, 6.54, 7.3), '#fff', 16); CL.ring(ctx, PLUS_X, PLUS_Y, 700, P(t, 6.57, 7.2), C.pink, 44);
+      const [px, py] = logoPt(470, 190, px0), pk = P(t, 6.54, 7.2);
       for (let i = 0; i < 9; i++) { const a = i / 9 * TAU + .3, d = eo(pk) * (150 + 90 * hash(i)); CL.spark(ctx, px + Math.cos(a) * d, py + Math.sin(a) * d, 24 * (1 - pk) * (.6 + hash(i + 2)), t * 4 + i, i % 2 ? '#fff' : C.yellow); }
       for (let i = 0; i < 14; i++) { const a = i / 14 * TAU + hash(i) * .5, d = eo(pk) * (260 + 260 * hash(i + 5)); CL.spark(ctx, PLUS_X + Math.cos(a) * d, PLUS_Y + Math.sin(a) * d * .8, 38 * (1 - pk * .8) * (.5 + hash(i + 8)), t * 3 + i, ['#fff', C.cyan, C.yellow, C.pink][i % 4]); }
     }
@@ -220,15 +225,15 @@
     ctx.save();
     if (wp < 1) { frontPath(ctx, t, SCENE_OFF, 0); ctx.clip(); }
     // camera: punch + shake on every impact
-    const sh = [CL.shake(t, 3.41, .35, 9), CL.shake(t, 4.36, .55, 30), CL.shake(t, 6.06, .4, 15), CL.shake(t, 6.54, .45, 22)];
+    const sh = [CL.shake(t, 3.41, .45, 9), CL.shake(t, 4.36, .8, 26), CL.shake(t, 6.06, .55, 12), CL.shake(t, 6.54, .5, 14)];
     const sx = sh.reduce((a, v) => a + v[0], 0), sy = sh.reduce((a, v) => a + v[1], 0);
-    const z = 1.06 + (t > 4.36 ? .05 * Math.exp(-(t - 4.36) * 9) : 0) + (t > 6.06 ? .03 * Math.exp(-(t - 6.06) * 9) : 0) + (t > 6.54 ? .04 * Math.exp(-(t - 6.54) * 9) : 0);
+    const z = 1.06 + (t > 4.36 ? .05 * Math.exp(-(t - 4.36) * 4.5) : 0) + (t > 6.06 ? .03 * Math.exp(-(t - 6.06) * 5) : 0) + (t > 6.54 ? .03 * Math.exp(-(t - 6.54) * 5) : 0);
     ctx.translate(CX + sx, 540 + sy); ctx.scale(z, z); ctx.translate(-CX, -540);
     if (t < 5.95) world1(ctx, t);
     world2(ctx, t);
     ctx.restore();
     // impact flashes
-    const fl = Math.max(t >= 4.36 ? .45 * (1 - P(t, 4.36, 4.52)) : 0, t >= 6.06 ? .4 * (1 - P(t, 6.06, 6.22)) : 0, t >= 6.54 ? .3 * (1 - P(t, 6.54, 6.66)) : 0, t >= 3.41 ? .25 * (1 - P(t, 3.41, 3.5)) : 0);
+    const fl = Math.max(t >= 4.36 ? .3 * (1 - P(t, 4.36, 4.43)) : 0, t >= 6.06 ? .25 * (1 - P(t, 6.06, 6.13)) : 0, t >= 6.54 ? .2 * (1 - P(t, 6.54, 6.61)) : 0, t >= 3.41 ? .2 * (1 - P(t, 3.41, 3.48)) : 0);
     if (fl > 0) { ctx.fillStyle = `rgba(255,255,255,${fl})`; ctx.fillRect(0, 0, W, H); }
   } });
 })();

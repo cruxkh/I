@@ -120,9 +120,9 @@
     for (let i = 0; i < 60; i++) { const sp = 800 + hash(i) * 500, x = ((hash(i * 3.3) * (PW + 260) - idle * 120) % (PW + 260) + PW + 260) % (PW + 260) - 130, y = ((idle * sp + hash(i * 9) * PH) % (PH + 120)) - 60; ctx.moveTo(x, y); ctx.lineTo(x - 16, y + 60); }
     ctx.stroke();
     tornHeart(ctx, 585, 205, 62, idle, CL.pop(t, 8.95, .35) || 0);
-    const cu = ease.inOut(inv(9.185, 9.515, t));    // velvet curtain rips open on 9.215
+    const cu = (g => g * g * (3 - 2 * g))(inv(9.0, 9.43, t));    // velvet curtain rips open on 9.215
     if (cu < 1) { const cl = curtainLayer(), w = PW / 2 + 12, sx = lerp(1, .12, cu); ctx.save(); ctx.translate(22, 0); ctx.scale(sx, 1); ctx.drawImage(cl, 0, 0, w, PH); ctx.restore(); ctx.save(); ctx.translate(PW - 22, 0); ctx.scale(-sx, 1); ctx.drawImage(cl, 0, 0, w, PH); ctx.restore(); }
-    const gs = inv(9.245, 9.95, t); if (gs > 0 && gs < 1) { ctx.globalAlpha = Math.sin(gs * Math.PI) * .55; ctx.fillStyle = '#fff'; ctx.save(); ctx.translate(lerp(-200, PW + 200, gs), 0); ctx.transform(1, 0, -.35, 1, 0, 0); ctx.fillRect(-50, 0, 100, PH); ctx.restore(); ctx.globalAlpha = 1; }
+    const gs = inv(9.25, 9.95, t); if (gs > 0 && gs < 1) { ctx.globalAlpha = Math.sin(gs * Math.PI) * .55; ctx.fillStyle = '#fff'; ctx.save(); ctx.translate(lerp(-200, PW + 200, gs), 0); ctx.transform(1, 0, -.35, 1, 0, 0); ctx.fillRect(-50, 0, 100, PH); ctx.restore(); ctx.globalAlpha = 1; }
     ctx.restore();
     ctx.drawImage(frameLayer('s3_frameTur', [[0, '#ffe6a8'], [.5, '#e8a0b0'], [1, '#c98a2c']], 22), 0, 0, PW, PH);
     CL.spark(ctx, 40, 40, 16 + 6 * Math.sin(idle * 4), 0, '#fff'); CL.spark(ctx, PW - 44, PH - 44, 14 + 5 * Math.sin(idle * 3.4 + 1), 0, '#fff');
@@ -210,41 +210,44 @@
     for (let i = 0; i < 60; i++) { const sp = 1100 + hash(i + 5) * 800, x = hash(i * 1.7) * (W + 300), y = ((idle * sp + hash(i * 4.4) * H) % (H + 200)) - 100; ctx.moveTo(x, y); ctx.lineTo(x - 26, y + 100); }
     ctx.stroke();
     // CUE 9.215 turkish-splash (big candy splash + curtain rip; drama sting comes with the hold at 9.98)
-    const sp = CL.spring(t, 9.145, 1.0); if (sp > 0) CL.splash(ctx, PCX, PCY, 780, sp * (1 + .03 * Math.sin(idle * 3)), 4, [C.pink, C.red, C.orange, C.purple, '#FF7A9C']);
-    const rp = inv(9.205, 9.9, t); if (rp > 0 && rp < 1) { CL.ring(ctx, PCX, PCY, 900, rp, '#ffd0dc', 26); CL.ring(ctx, PCX, PCY, 620, inv(9.245, 9.95, t), '#ff5a8a', 16); }
+    const sp = CL.spring(t, 9.12, 1.6); if (sp > 0) CL.splash(ctx, PCX, PCY, 780, sp * (1 + .03 * Math.sin(idle * 3)), 4, [C.pink, C.red, C.orange, C.purple, '#FF7A9C']);
+    const rp = inv(9.215, 9.98, t); if (rp > 0 && rp < 1) CL.ring(ctx, PCX, PCY, 900, rp, '#ffd0dc', 26);
     // floating glossy hearts drifting up on the sides (idle time)
     for (let i = 0; i < 7; i++) { const side = i % 2 ? 1 : -1, x = 960 + side * (640 + hash(i) * 250), y = 1180 - ((idle * (60 + hash(i * 3) * 50) + hash(i * 7) * H) % (H + 240)), s = 26 + hash(i * 5) * 26, pts = heartPts(s); ctx.save(); ctx.translate(x + Math.sin(idle * 1.4 + i) * 18, y); ctx.rotate(Math.sin(idle + i) * .3); ctx.beginPath(); pts.forEach((p, k) => k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.fillStyle = A.radial(ctx, -s * .3, -s * .3, 2, s * 1.4, [[0, '#ffb0bd'], [.4, '#ff2e4e'], [1, '#7a0018']]); ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = '#3a0010'; ctx.stroke(); ctx.restore(); }
     // side drapes frame the stage
     const dl = drapeLayer(); ctx.drawImage(dl, 0, 0); ctx.save(); ctx.translate(W, 0); ctx.scale(-1, 1); ctx.drawImage(dl, 0, 0); ctx.restore();
     // poster: pendulum swing-in (8.88), bump on 9.215, whip away (10.0)
-    const uu = Math.max(0, t - 8.85), ang = .55 * Math.exp(-3.6 * uu) * Math.cos(TAU * uu / .92) + Math.sin(idle * 1.3) * .005;
-    const wp = inv(10.0, 10.45, t), we = ease.in(wp), k = t - 9.145, bump = k < 0 ? 0 : .09 * Math.min(1, k / .1) * Math.exp(-Math.max(0, k - .1) * 4) * Math.cos(Math.max(0, k - .1) * 12);
-    ctx.save(); ctx.translate(-we * 2300, -we * 120); ctx.rotate(-.5 * we);
+    const uu = Math.max(0, t - 8.85), ang = .42 * Math.exp(-2.6 * uu) * Math.cos(TAU * uu / 1.15) + Math.sin(idle * 1.3) * .005;
+    const wp = inv(10.0, 10.6, t), we = ease.inOut(wp), k = t - 9.09, bump = k < 0 ? 0 : .08 * Math.sin(Math.min(1, k / .25) * Math.PI / 2) * Math.exp(-Math.max(0, k - .25) * 3) * Math.cos(Math.max(0, k - .25) * 8);
+    ctx.save(); ctx.translate(PCX, PCY); ctx.scale(1 - .12 * we, 1 - .12 * we); ctx.rotate(-.18 * we); ctx.translate(-PCX - we * 1100, -PCY - we * 40);
     ctx.translate(960, -300); ctx.rotate(ang); ctx.translate(-960, 300);
-    const ra = 1 - inv(9.185, 9.43, t);   // cords retract as the poster pops
+    const ra = 1 - inv(9.1, 9.5, t);   // cords retract as the poster pops
     if (ra > 0 && t >= 8.85) { ctx.strokeStyle = `rgba(255,214,140,${ra})`; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(700, -300); ctx.lineTo(PCX - 460, PCY - PH * PSC / 2 + 28); ctx.moveTo(1220, -300); ctx.lineTo(PCX + 460, PCY - PH * PSC / 2 + 28); ctx.stroke(); }
     ctx.translate(PCX, PCY); ctx.scale(PSC * (1 + bump), PSC * (1 + bump)); posterTur(ctx, t, idle); ctx.restore();
     CL.twinkle(ctx, idle, 240, 60, 1440, 900, 16, 3, ['#fff', '#ffb3c6', '#ffd23f']);
-    const fl = 1 - inv(9.205, 9.27, t); if (fl > 0 && t >= 9.205) { ctx.fillStyle = `rgba(255,235,240,${fl * .55})`; ctx.fillRect(0, 0, W, H); }
+    const fl = 1 - inv(9.215, 9.28, t); if (fl > 0 && t >= 9.215) { ctx.fillStyle = `rgba(255,235,240,${fl * .35})`; ctx.fillRect(0, 0, W, H); }
   }
-  function drawInd(ctx, t, idle) {
+  function drawInd(ctx, t, idle, mode) {
+    if (mode !== 'fg') {
     CL.bg(ctx, idle * .6, { base: '#3A0A4A', tint: [C.orange, C.pink, C.yellow] });
     ctx.save(); ctx.translate(PCX, PCY); ctx.rotate(-idle * .3); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 16; i++) { ctx.rotate(TAU / 16); ctx.fillStyle = i % 2 ? 'rgba(255,138,31,.22)' : 'rgba(255,46,147,.2)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-130, -2300); ctx.lineTo(130, -2300); ctx.fill(); } ctx.restore();
     // huge rotating mandalas on both side edges
     [[0, 1], [W, -1]].forEach(([x, sd]) => { ctx.save(); ctx.translate(x, 560); ctx.globalAlpha = .9; mandala(ctx, 1.25, sd * idle * .16); ctx.restore(); });
     // hanging marigold garlands (idle sway)
     [[0, 960], [960, 1920]].forEach(([a, b], gi) => { for (let i = 0; i <= 34; i++) { const u = i / 34, x = lerp(a, b, u), y = 30 + 88 * Math.sin(u * Math.PI) + Math.sin(idle * 1.6 + u * 6 + gi) * 5; ctx.fillStyle = i % 2 ? '#ff8a1f' : '#ffd23f'; ctx.beginPath(); ctx.arc(x, y, 15, 0, TAU); ctx.fill(); ctx.strokeStyle = '#a34a00'; ctx.lineWidth = 2; ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.arc(x - 4, y - 4, 4.5, 0, TAU); ctx.fill(); } });
+    }
+    if (mode === 'bg') return;
     // CUE 10.345 bollywood-burst (petals, sparkles, splash; the Bollywood sting comes with the hold at 11.03)
-    const sp = CL.spring(t, 10.255, 1.0); if (sp > 0) CL.splash(ctx, PCX, PCY, 800, sp * (1 + .03 * Math.sin(idle * 3)), 9, [C.orange, C.pink, C.yellow, '#FF5A00', '#D81B8A']);
-    const pop = CL.pop(t, 10.09, .48), xe = ease.in(inv(11.05, 11.455, t));
+    const sp = CL.spring(t, 10.24, 1.6); if (sp > 0) CL.splash(ctx, PCX, PCY, 800, sp * (1 + .03 * Math.sin(idle * 3)), 9, [C.orange, C.pink, C.yellow, '#FF5A00', '#D81B8A']);
+    const pop = CL.pop(t, 10.17, .5), xe = ease.inOut(inv(11.05, 11.5, t));
     if (pop > 0) { ctx.save(); ctx.translate(PCX, PCY - xe * 1500); ctx.rotate((1 - Math.min(1, pop)) * -.7 + Math.sin(idle * 1.2) * .006 + xe * .5); ctx.scale(pop * PSC, pop * PSC); posterInd(ctx, t, idle); ctx.restore(); }
     const u = t - 10.315;    // marigold petal burst + sparkle ring + flash
-    if (u > 0 && u < .715) { const a = 1 - u / .715, w = u / 1.4;
+    if (u > 0 && u < .715) { const a = 1 - u / .715, w = u / 1.9;
       for (let i = 0; i < 90; i++) { const an = hash(i * 3.1) * TAU, spd = 700 + hash(i * 7.7) * 1400, d = spd * (1 - Math.exp(-w * 3.5)) / 3.5, x = PCX + Math.cos(an) * d * 1.25, y = PCY + Math.sin(an) * d * .8 + 520 * w * w; ctx.save(); ctx.globalAlpha = Math.min(1, a * 1.6); ctx.translate(x, y); ctx.rotate(i + w * (4 + hash(i) * 7)); ctx.scale(1, .55 + .45 * Math.cos(w * 9 + i)); petal(ctx, 14 + hash(i * 4) * 16, i % 3 ? '#ffd23f' : '#ff7a00', i % 3 ? '#ff8a1f' : '#ff2e93'); ctx.restore(); }
-      for (let i = 0; i < 30; i++) { const an = i / 30 * TAU + hash(i) * .4, d = (400 + hash(i * 2) * 520) * ease.out(clamp(u / .75)); CL.spark(ctx, PCX + Math.cos(an) * d * 1.3, PCY + Math.sin(an) * d * .85, (28 + hash(i * 3) * 36) * a, u * 3, i % 2 ? '#fff' : C.yellow); }
-      CL.ring(ctx, PCX, PCY, 900, inv(10.315, 11.03, t), '#fff3a0', 26);
+      for (let i = 0; i < 30; i++) { const an = i / 30 * TAU + hash(i) * .4, d = (400 + hash(i * 2) * 520) * ease.out(clamp(u / 1.0)); CL.spark(ctx, PCX + Math.cos(an) * d * 1.3, PCY + Math.sin(an) * d * .85, (28 + hash(i * 3) * 36) * a, u * 3, i % 2 ? '#fff' : C.yellow); }
+      CL.ring(ctx, PCX, PCY, 900, inv(10.345, 11.03, t), '#fff3a0', 26);
     }
-    const fl = 1 - inv(10.325, 10.39, t); if (fl > 0 && t >= 10.325) { ctx.fillStyle = `rgba(255,240,180,${fl * .5})`; ctx.fillRect(0, 0, W, H); }
+    const fl = 1 - inv(10.345, 10.41, t); if (fl > 0 && t >= 10.345) { ctx.fillStyle = `rgba(255,240,180,${fl * .35})`; ctx.fillRect(0, 0, W, H); }
     CL.twinkle(ctx, idle, 200, 100, 1520, 880, 26, 8, ['#fff', C.yellow, '#ffb3d9', C.orange]);
   }
 
@@ -256,12 +259,12 @@
       CL.HOLDFOC.ind = [880, 418, 1.2];
       if (t < 8.85) return;                // the cinema hold (Charlton) owns the frame until v=8.85
       // CUE 8.85 liquid-whoosh (candy wave floods over the sports scene)  // CUE 8.88 frame-swing-in
-      const p1 = inv(8.85, 9.3, t), p2 = inv(10.0, 10.4, t);
+      const p1 = inv(8.85, 9.3, t), p2 = inv(10.0, 10.6, t);
       if (p2 <= 0) {
         if (p1 < 1) bandReveal(ctx, p1, 'up', [C.pink, C.orange, C.purple], () => drawTur(ctx, t, idle)); else drawTur(ctx, t, idle);
       } else if (p2 < 1) {
         // CUE 10.00 poster-whip-away (liquid wipe sweeps left, turkish poster flies off)
-        drawTur(ctx, t, idle); bandReveal(ctx, p2, 'left', [C.purple, C.pink, C.yellow], () => drawInd(ctx, t, idle));
+        drawTur(ctx, t, idle); bandReveal(ctx, p2, 'left', [C.purple, C.pink, C.yellow], () => drawInd(ctx, t, idle, 'bg')); drawInd(ctx, t, idle, 'fg');   // Bollywood poster bursts through the liquid, overlapping both
       } else drawInd(ctx, t, idle);
       // CUE 11.05 poster-exit (bollywood poster whips up as the live scene takes over)
     },
