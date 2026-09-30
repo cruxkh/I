@@ -6,7 +6,7 @@
   const { clamp, lerp, inv, ease, hash, rng } = A, C = CL.C, TAU = A.TAU, PI = Math.PI, W = 1920, H = 1080;   // LANDSCAPE 16:9; captions occupy y > ~830
 
   // ---------------------------------------------------------------- timings (voice clock)
-  const T_WIPE = 12.85, T_BURST = 13.08, T_ORBIT = 13.435, T_IMPACT = 13.82;
+  const T_WIPE = 12.85, T_BURST = 13.08, T_SOFT = 13.25, T_ORBIT = 13.435, T_IMPACT = 13.815;   // T_SOFT: swarm starts to orbit + vortex builds (0.56 s of anticipation), T_ORBIT: word במקום
   const T_BTN = 14.43, T_TAP = 14.89;
   const T_CAL = 15.36, T_DAY0 = 15.98, T_SAT = 16.855;
   const DAY_T = Array.from({ length: 7 }, (_, i) => T_DAY0 + i * (T_SAT - T_DAY0) / 6);   // 15.98 ... 16.855 evenly spaced
@@ -30,7 +30,7 @@
   const DAYPOS = (() => { const N = 600, L = [0]; let prev = ptAt(0); for (let i = 1; i <= N; i++) { const q = ptAt(PI * i / N); L.push(L[i - 1] + Math.hypot(q[0] - prev[0], q[1] - prev[1])); prev = q; }
     return Array.from({ length: 7 }, (_, d) => { const target = L[N] * d / 6; let i = 0; while (i < N && L[i + 1] < target) i++; const f = (target - L[i]) / Math.max(1e-6, L[i + 1] - L[i]); return ptAt(PI * (i + f) / N); }); })();   // evenly spaced along the arch
   const dayPos = i => DAYPOS[i];   // i=0 (א) right end ... i=6 (ש) left end (RTL reading)
-  const bump = (t, t0) => { const a = t0 - .09; if (t < a) return 0; if (t < t0) return ease.out((t - a) / .09); return Math.exp(-(t - t0) * 8) * Math.cos((t - t0) * 24); };   // lands on t0, then jelly settle
+  const bump = (t, t0) => { const a = t0 - .13; if (t < a) return 0; if (t < t0) return ease.inOut((t - a) / .13); return Math.exp(-(t - t0) * 4.2) * Math.cos((t - t0) * 14); };   // lands on t0, then jelly settle
 
   // ---------------------------------------------------------------- small drawing helpers
   const starPath = (ctx, r, n = 5, inner = .46) => { ctx.beginPath(); for (let i = 0; i < n * 2; i++) { const a = -PI / 2 + i * PI / n, rr = i % 2 ? r * inner : r; i ? ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : ctx.moveTo(Math.cos(a) * rr, Math.sin(a) * rr); } ctx.closePath(); };
@@ -88,21 +88,17 @@
   const OC = { x: 960, y: 480 };   // swarm / vortex centre
   const ITEMS = SPEC.map((s, i) => {
     const g = i * 2.399963, rad = .3 + .7 * Math.sqrt((i + .6) / SPEC.length), bx = OC.x + Math.cos(g) * rad * 850, by = OC.y + Math.sin(g) * rad * 340;
-    return { type: s[0], name: s[1], w: s[2] * .95, h: s[3] * .95, ex: s[4] || {}, bx, by, s: .78 + hash(i * 3.1) * .3, rot: (hash(i * 7.7) - .5) * .5, dly: hash(i * 1.9) * .07,
-      ax: 40 + hash(i * 5.3) * 55, ay: 40 + hash(i * 2.7) * 55, f1: 1.6 + hash(i * 9.1) * 1.8, f2: 2.2 + hash(i * 4.4) * 1.8, p1: hash(i) * TAU, p2: hash(i + 50) * TAU, ta: T_IMPACT - .05 * hash(i * 6.6), z: hash(i * 8.8) };
+    return { type: s[0], name: s[1], w: s[2] * .95, h: s[3] * .95, ex: s[4] || {}, bx, by, s: .78 + hash(i * 3.1) * .3, rot: (hash(i * 7.7) - .5) * .5, dly: hash(i * 1.9) * .06,
+      ax: 40 + hash(i * 5.3) * 55, ay: 40 + hash(i * 2.7) * 55, f1: 1.6 + hash(i * 9.1) * 1.8, f2: 2.2 + hash(i * 4.4) * 1.8, p1: hash(i) * TAU, p2: hash(i + 50) * TAU, ta: T_IMPACT - .12 * hash(i * 6.6), z: hash(i * 8.8) };
   }).sort((a, b) => a.z - b.z);
   const chaosPos = (it, t) => [it.bx + it.ax * Math.sin(t * it.f1 + it.p1) + 26 * Math.sin(t * it.f2 * 1.7 + it.p2), it.by + it.ay * Math.sin(t * it.f2 + it.p2) + 26 * Math.sin(t * it.f1 * 1.6 + it.p1)];
-  function itemPose(it, t) {   // -> {x,y,rot,sc,alpha} or null
-    const L = clamp((t - T_BURST - it.dly) / .3); if (L <= 0) return null;
-    let [x, y] = chaosPos(it, t), rot = it.rot + .12 * Math.sin(t * it.f1 + it.p2), sc = it.s * (.5 + .5 * ease.outBack(L)) * (1 + .04 * Math.sin(t * 4 + it.p1));
-    x = lerp(OC.x, x, ease.outBack(L)); y = lerp(OC.y, y, ease.outBack(L)); if (L < 1) sc *= ease.out(L);
-    if (t >= T_ORBIT) {
-      const u = (t - T_ORBIT) / (it.ta - T_ORBIT); if (u >= 1) return null;
-      const [x0, y0] = chaosPos(it, T_ORBIT), dx = x0 - OC.x, dy = y0 - OC.y, R0 = Math.hypot(dx, dy), th0 = Math.atan2(dy, dx);
-      const spin = 1.4 * TAU * Math.pow(u, 1.7), R = R0 * (1 - Math.pow(u, 2.3)), [cx, cy] = chaosPos(it, t), [c0x, c0y] = chaosPos(it, T_ORBIT);
-      x = OC.x + Math.cos(th0 + spin) * R + (cx - c0x) * (1 - u); y = OC.y + Math.sin(th0 + spin) * R + (cy - c0y) * (1 - u);
-      rot += spin * .9; sc = it.s * (1 - .9 * Math.pow(u, 2.6)) * (1 + .04 * Math.sin(t * 4 + it.p1));
-    }
+  function itemPose(it, t) {   // polar motion around the vortex centre: burst out, swirl in slowly, spiral into the TV exactly at the impact
+    const L = clamp((t - T_BURST - it.dly) / .32); if (L <= 0 || t >= it.ta) return null;
+    const Lr = ease.outBack(L), dx = it.bx - OC.x, dy = it.by - OC.y, R0 = Math.hypot(dx, dy), th0 = Math.atan2(dy, dx);
+    const P = inv(T_SOFT, it.ta, t), u = inv(T_SOFT + .05, it.ta, t), [cx, cy] = chaosPos(it, t);
+    const spin = 1.7 * TAU * P * P, R = R0 * Lr * (1 - Math.pow(u, 1.9)), w = (1 - ease.inOut(P)) * Math.min(1, L * 2);   // floating wobble fades as the swirl takes over
+    const x = OC.x + Math.cos(th0 + spin) * R + (cx - it.bx) * w, y = OC.y + Math.sin(th0 + spin) * R + (cy - it.by) * w;
+    const rot = it.rot + .12 * Math.sin(t * it.f1 + it.p2) * (1 - P) + spin * .8, sc = it.s * (.45 + .55 * Lr) * Math.min(1, ease.out(L) * 1.2) * (1 - .93 * Math.pow(u, 2.2)) * (1 + .04 * Math.sin(t * 4 + it.p1) * (1 - u));
     return { x, y, rot, sc };
   }
   function drawItem(ctx, it, p) {
@@ -124,8 +120,8 @@
 
   // ---------------------------------------------------------------- TV screens
   function screenVortex(ctx, sw, sh, t) {
-    const k = ease.out(clamp((t - T_ORBIT) / .35)), fl = ease.in(clamp((t - T_ORBIT) / (T_IMPACT - T_ORBIT)));
-    ctx.fillStyle = '#070b2e'; ctx.fillRect(-sw / 2, -sh / 2, sw, sh); vortex(ctx, 0, 0, sw * .7, 6 + (t - T_ORBIT) * (10 + fl * 16), k, 6);
+    const k = ease.inOut(clamp((t - T_SOFT) / .5)), fl = ease.in(clamp((t - T_SOFT) / (T_IMPACT - T_SOFT)));
+    ctx.fillStyle = '#070b2e'; ctx.fillRect(-sw / 2, -sh / 2, sw, sh); vortex(ctx, 0, 0, sw * .7, 6 + (t - T_SOFT) * 6 + Math.pow(t - T_SOFT, 2) * 14, k, 6);
     A.glow(ctx, 0, 0, sw * .5, '#ffffff', .15 + .75 * fl); A.glow(ctx, 0, 0, sw * .7, C.cyan, .3 * fl);
   }
   function screenCandy(ctx, sw, sh, t) {
@@ -149,7 +145,7 @@
     MENU.forEach((m, i) => {
       const col = i % 3, row = Math.floor(i / 3), x = (1 - col) * (tw + g), y = (row - 1) * (th + g);
       let sc = 1, sx = 1, back = -1;
-      if (mode === 'open') sc = CL.pop(t, T_TAP - .05 + MRANK[i] * .028, .26); else { const d = FLIPS.indexOf(i); if (d >= 0 && d < 7) { const f = (t - (DAY_T[d] - .12)) / .24; if (f > 0 && f < 1) sx = Math.max(.03, Math.abs(Math.cos(f * PI))); back = f > .5 ? d : -1; if (f >= 1) back = d; } }
+      if (mode === 'open') sc = CL.pop(t, T_TAP + .05 + MRANK[i] * .045, .5); else { const d = FLIPS.indexOf(i); if (d >= 0 && d < 7) { const f = (t - (DAY_T[d] - .12)) / .24; if (f > 0 && f < 1) sx = Math.max(.03, Math.abs(Math.cos(f * PI))); back = f > .5 ? d : -1; if (f >= 1) back = d; } }
       if (sc <= 0) return; ctx.save(); ctx.translate(x, y); ctx.scale(sc * sx, sc);
       if (back >= 0) { const bc = DCOL[back]; CL.gel(ctx, 0, 0, tw, th, { fill: bc, dark: A.mixc(bc, '#4a1fb8', .55), r: th * .28, shadow: 6, rimW: 4 }); ctx.save(); ctx.translate(-tw * .18, 0); ctx.fillStyle = '#fff'; ctx.strokeStyle = C.ink; ctx.lineWidth = 5; starPath(ctx, th * .34, 5, .48); ctx.fill(); ctx.stroke(); ctx.restore(); ctx.font = `900 ${th * .26}px Rubik`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.lineJoin = 'round'; ctx.strokeStyle = C.ink; ctx.lineWidth = th * .08; ctx.strokeText('NEW', tw * .2, th * .02); ctx.fillStyle = '#fff'; ctx.fillText('NEW', tw * .2, th * .02); }
       else { CL.gel(ctx, 0, 0, tw, th, { fill: m.c, dark: A.mixc(m.c, '#2a1a8a', .5), r: th * .28, shadow: 6, rimW: 4 });
@@ -159,26 +155,26 @@
   }
   function drawTVScreen(ctx, sw, sh, t) {
     if (t < T_IMPACT) return screenVortex(ctx, sw, sh, t);
-    if (t < T_TAP - .02) return screenCandy(ctx, sw, sh, t);
-    if (t < T_CAL + .2) screenMenu(ctx, sw, sh, t, 'open'); else screenMenu(ctx, sw, sh, t, 'week');
-    const o = ease.out(clamp((t - (T_TAP - .01)) / .34));
+    if (t < T_TAP - .02) { screenCandy(ctx, sw, sh, t); const x = 1 - ease.inOut(clamp((t - T_IMPACT) / .3)); if (x > 0) { ctx.save(); ctx.globalAlpha = x; screenVortex(ctx, sw, sh, Math.min(t, T_IMPACT)); ctx.restore(); } return; }
+    if (t < T_CAL + .6) screenMenu(ctx, sw, sh, t, 'open'); else screenMenu(ctx, sw, sh, t, 'week');
+    const o = ease.inOut(clamp((t - (T_TAP - .02)) / .62));
     if (o < 1) for (const sd of [-1, 1]) {   // candy doors split open
       ctx.save(); ctx.translate(sd * o * sw * .5, 0); ctx.beginPath(); ctx.rect(sd < 0 ? -sw / 2 : 0, -sh / 2, sw / 2, sh); ctx.clip(); screenCandy(ctx, sw, sh, t); ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fillRect(sd < 0 ? -6 : 0, -sh / 2, 6, sh); ctx.restore();
     }
-    if (t >= T_TAP - .01) { const f = Math.exp(-(t - T_TAP) * 14); if (f > .02) { ctx.fillStyle = `rgba(255,255,255,${.5 * f})`; ctx.fillRect(-sw / 2, -sh / 2, sw, sh); } }
+    { const f = 1 - (t - T_TAP) / .066; if (f > 0 && t >= T_TAP) { ctx.fillStyle = `rgba(255,255,255,${.45 * f})`; ctx.fillRect(-sw / 2, -sh / 2, sw, sh); } }   // 2-frame glint
   }
   function tvPose(t) {
     let x = TV.x, y = TV.y, s = 1, rot = 0, sx = 1, sy = 1;
-    if (t < T_IMPACT) { s = .25 + .75 * ease.outBack(clamp((t - 13.28) / .42)); rot = Math.sin(t * 38) * .012 * ease.in(inv(T_ORBIT, T_IMPACT, t)); }
-    else { const u = t - T_IMPACT, k = Math.exp(-u * 4.4) * Math.sin(u * 27); sx = 1 + .2 * k; sy = 1 - .2 * k; s += .09 * Math.exp(-u * 6) * Math.cos(u * 21); }
-    const u2 = t - T_TAP; if (u2 > 0) s *= 1 + .07 * Math.exp(-u2 * 9) * Math.cos(u2 * 30);
-    if (t >= T_TAP - .08 && t < T_TAP) s *= 1 - .03 * ease.out(inv(T_TAP - .08, T_TAP, t));
-    rot += Math.sin(t * 1.5) * .009; y += Math.sin(t * 2.2) * 7 * (1 - clamp((t - T_CAL) / .3) * .5);
-    const pb = ease.inOut(clamp((t - 14.1) / .32));   // slide left to make room for the button
+    if (t < T_IMPACT) { s = .25 + .75 * ease.outBack(clamp((t - 13.18) / .62)); rot = Math.sin(t * 30) * .012 * ease.in(inv(T_SOFT, T_IMPACT, t)); }
+    else { const u = t - T_IMPACT, k = Math.exp(-u * 2.5) * Math.sin(u * 15); sx = 1 + .22 * k; sy = 1 - .22 * k; s += .09 * Math.exp(-u * 3.2) * Math.cos(u * 11); }
+    const u2 = t - T_TAP; if (u2 > 0) s *= 1 + .07 * Math.exp(-u2 * 5) * Math.cos(u2 * 15);
+    if (t >= T_TAP - .12 && t < T_TAP) s *= 1 - .03 * ease.inOut(inv(T_TAP - .12, T_TAP, t));
+    rot += Math.sin(t * 1.5) * .009; y += Math.sin(t * 2.2) * 7;
+    const pb = ease.inOut(clamp((t - 14.03) / .4));   // slide left to make room for the button
     x = lerp(x, TV_B.x, pb); y = lerp(y, TV_B.y, pb); s *= lerp(1, TV_B.s, pb);
-    const p = CL.pop(t, T_CAL - .08, .5);   // shrink into the arch (springy)
-    x = lerp(x, MINI.x, p); y = lerp(y, MINI.y, p); s = lerp(s, MINI.s, p) * (1);
-    const u3 = t - T_SAT; if (u3 > 0) s *= 1 + .1 * Math.exp(-u3 * 8) * Math.cos(u3 * 24);
+    const p = ease.inOut(clamp((t - 15.4) / .8));   // glide + shrink into the arch while the bubbles pop in around it
+    x = lerp(x, MINI.x, p); y = lerp(y, MINI.y, p); s = lerp(s, MINI.s, p);
+    const u3 = t - T_SAT; if (u3 > 0) s *= 1 + .1 * Math.exp(-u3 * 3.5) * Math.cos(u3 * 13);
     return { x, y, s, rot, sx, sy };
   }
 

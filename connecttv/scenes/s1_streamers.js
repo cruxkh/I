@@ -3,7 +3,7 @@
 //        -> NETFLIX slam (red) -> flip to blue/purple magic (תכנים) -> DISNEY+ logo bursts out of a portal (מדיסני)
 //        -> giant candy plus pops (פלוס).
 (() => {
-  const { clamp, lerp, ease, hash } = A, C = CL.C, W = 1920, H = 1080, TAU = tAU, CX = 960;   // LANDSCAPE 1920x1080; hero centre (960,400), caption band y>820
+  const { clamp, lerp, ease, hash } = A, C = CL.C, W = 1920, H = 1080, TAU = A.TAU, CX = 960;   // LANDSCAPE 1920x1080; hero centre (960,400), caption band y>820
   const P = (t, a, b) => clamp((t - a) / (b - a)), eo = ease.out, eio = ease.inOut;
   const RED = '#E50914', REDH = '#FF3B4E';
   const CENTER_Y = 400;
