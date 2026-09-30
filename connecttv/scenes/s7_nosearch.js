@@ -16,11 +16,11 @@
     [22.30, [C.red, C.pink, C.orange]],
     [22.75, [C.pink, C.purple, C.orange]],
     [23.20, [C.red, C.pink, C.purple]],
-    [23.42, [C.cyan, C.green, C.blue]],
-    [23.62, [C.purple, C.pink, C.blue]],
+    [23.50, [C.cyan, C.green, C.blue]],
+    [23.95, [C.purple, C.pink, C.blue]],
     [24.30, [C.pink, C.purple, C.orange]],
     [24.60, [C.red, C.purple, C.pink]],
-    [24.80, [C.cyan, C.blue, C.purple]],
+    [25.05, [C.cyan, C.blue, C.purple]],
   ];
   const tintAt = t => { let i = 0; while (i < TINTS.length - 1 && t >= TINTS[i + 1][0]) i++; if (i >= TINTS.length - 1) return TINTS[TINTS.length - 1][1]; const [t0, a] = TINTS[i], [t1, b] = TINTS[i + 1], k = sm(t0, t1, t); return a.map((c, j) => hexMix(c, b[j], k)); };
 
@@ -97,7 +97,7 @@
   }
 
   // ---------------------------------------------------------------- the giant magnifier
-  function magnifier(ctx, cx, cy, R, rot, lensFn, crack, tt) {
+  function magnifier(ctx, cx, cy, R, rot, lensFn, crack, tt, glass = 1) {
     const lw = R * .2, ol = R * .05;
     ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot);
     // shadow
@@ -109,20 +109,20 @@
     ctx.beginPath(); ctx.roundRect(hx - R * .04, -hw * .68, R * .22, hw * 1.36, R * .1); ctx.lineWidth = ol * 1.6; ctx.strokeStyle = INK; ctx.stroke(); ctx.fillStyle = A.linear(ctx, 0, -hw * .68, 0, hw * .68, [[0, '#FFF3A8'], [.4, C.yellow], [1, '#D9780F']]); ctx.fill();
     ctx.restore();
     // glass
-    ctx.save(); ctx.beginPath(); ctx.arc(0, 0, R - lw * .4, 0, TAU); ctx.clip();
+    if (glass > 0) { ctx.save(); ctx.beginPath(); ctx.arc(0, 0, R - lw * .4, 0, TAU); ctx.clip();
     ctx.fillStyle = 'rgba(14,22,100,.5)'; ctx.fillRect(-R, -R, R * 2, R * 2);
     ctx.save(); ctx.rotate(-rot); ctx.scale(1.55, 1.55); ctx.translate(-cx, -cy); lensFn(); ctx.restore();
     ctx.fillStyle = 'rgba(160,235,255,.16)'; ctx.fillRect(-R, -R, R * 2, R * 2);
     ctx.fillStyle = A.linear(ctx, -R, -R, R, R, [[0, 'rgba(255,255,255,.34)'], [.32, 'rgba(255,255,255,.06)'], [.33, 'rgba(255,255,255,0)'], [.7, 'rgba(255,255,255,0)'], [.8, 'rgba(255,255,255,.14)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-R, -R, R * 2, R * 2);
     if (crack > 0) { ctx.lineCap = 'round'; ctx.lineJoin = 'round'; for (let i = 0; i < 9; i++) { const a = i / 9 * TAU + hash(i) * .5, L = R * (.8 + hash(i * 2 + 1) * .5) * ease.out(crack); ctx.beginPath(); ctx.moveTo(0, 0); let px = 0, py = 0; for (let j = 1; j <= 5; j++) { const r = L * j / 5, aa = a + (hash(i * 7 + j) - .5) * .35; px = Math.cos(aa) * r; py = Math.sin(aa) * r; ctx.lineTo(px, py); } ctx.lineWidth = 12; ctx.strokeStyle = 'rgba(5,8,38,.6)'; ctx.stroke(); ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke(); } }
-    ctx.restore();
+    ctx.restore(); }
     // rim
     ctx.beginPath(); ctx.arc(0, 0, R, 0, TAU); ctx.lineWidth = lw + ol * 2; ctx.strokeStyle = INK; ctx.stroke();
     ctx.lineWidth = lw; ctx.strokeStyle = A.linear(ctx, -R * .7, -R, R * .7, R, [[0, '#FFF3A8'], [.3, C.yellow], [.7, C.orange], [1, '#C4570A']]); ctx.stroke();
     ctx.lineCap = 'round'; ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = lw * .2; ctx.beginPath(); ctx.arc(0, 0, R + lw * .18, Math.PI * 1.08, Math.PI * 1.5); ctx.stroke();
     ctx.beginPath(); ctx.arc(0, 0, R - lw * .4, 0, TAU); ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.stroke();
     // glass glint
-    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.ellipse(-R * .42, -R * .5, R * .2, R * .07, -.8, 0, TAU); ctx.fill();
+    if (glass > 0) { ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.ellipse(-R * .42, -R * .5, R * .2, R * .07, -.8, 0, TAU); ctx.fill(); }
     ctx.restore();
   }
 
@@ -135,51 +135,46 @@
     ctx.restore();
   }
   function xOverLens(ctx, t) {
-    if (t < 23.13 || t >= 23.46) return; const cx = CX, cy = CY, v = inv(23.36, 23.45, t), sc = 1 + .3 * v, al = 1 - v;
+    if (t < 22.95 || t >= 24.05) return; const cx = CX, cy = CY, v = sm(23.55, 24.0, t), sc = 1 + .15 * v, al = 1 - v;
     [[Math.PI / 4, 23.23, -1], [-Math.PI / 4, 23.29, 1]].forEach(([ang, t0, d]) => {
-      const u = cl((t - (t0 - .09)) / .09), off = (1 - u * u) * 1700 * d, dt = Math.max(0, t - t0), b = 1 + .1 * Math.exp(-dt * 10) * Math.cos(dt * 40);
-      candyBar(ctx, cx, cy, ang, 900, 104, off, sc * b, al * cl(u * 6));
+      const u = cl((t - (t0 - .26)) / .26), off = (1 - u * u) * 1700 * d, dt = Math.max(0, t - t0), b = 1 + .08 * Math.exp(-dt * 6) * Math.cos(dt * 24);
+      candyBar(ctx, cx, cy, ang, 900, 104, off, sc * b, al * cl(u * 5));
     });
   }
   // shards of glass + drops when the lens shatters
   function shatter(ctx, t, cx, cy, R) {
-    const t0 = 23.36, dt = t - t0; if (dt < 0 || dt > .9) return;
-    const p = ease.out(cl(dt / .32)), fade = 1 - sm(.24, .5, dt);
+    const t0 = 23.36, dt = t - t0; if (dt < 0 || dt > 1.4) return;
+    const p = ease.out(cl(dt / .7)), fade = 1 - sm(.5, 1.1, dt);
     if (fade > 0) { ctx.save(); ctx.globalAlpha *= fade; CL.splash(ctx, cx, cy, R * 1.35, p, 4, [C.cyan, C.blue, '#ffffff', C.cyan, C.purple]); ctx.restore(); }
-    CL.ring(ctx, cx, cy, R * 1.6, dt / .5, C.cyan, 22); CL.ring(ctx, cx, cy, R * 2.1, (dt - .06) / .55, '#ffffff', 14);
+    CL.ring(ctx, cx, cy, R * 1.6, dt / .9, C.cyan, 22); CL.ring(ctx, cx, cy, R * 2.1, (dt - .1) / 1.0, '#ffffff', 14);
     for (let i = 0; i < 12; i++) {
-      const a = hash(i * 3.7 + 1) * TAU, v = 2200 + hash(i * 2.2) * 2000, dist = v / 4.5 * (1 - Math.exp(-4.5 * dt)), x = cx + Math.cos(a) * dist, y = cy + Math.sin(a) * dist + 1500 * dt * dt, s = (34 + hash(i * 5.3) * 46) * (1 - ease.in(cl(dt / .6)));
-      if (s < 2) continue; ctx.save(); ctx.translate(x, y); ctx.rotate(dt * (6 + hash(i) * 12) * (i % 2 ? 1 : -1) + i); ctx.beginPath(); ctx.moveTo(-s, s * .6); ctx.lineTo(s * .2, -s); ctx.lineTo(s, s * .5); ctx.closePath(); ctx.fillStyle = A.linear(ctx, -s, -s, s, s, [[0, 'rgba(255,255,255,.95)'], [.5, 'rgba(120,225,255,.85)'], [1, 'rgba(40,120,255,.85)']]); ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = INK; ctx.lineJoin = 'round'; ctx.stroke(); ctx.restore();
+      const a = hash(i * 3.7 + 1) * TAU, v = 1900 + hash(i * 2.2) * 1500, dist = v / 2.8 * (1 - Math.exp(-2.8 * dt)), x = cx + Math.cos(a) * dist, y = cy + Math.sin(a) * dist + 700 * dt * dt, s = (34 + hash(i * 5.3) * 46) * (1 - ease.in(cl(dt / 1.0)));
+      if (s < 2) continue; ctx.save(); ctx.translate(x, y); ctx.rotate(dt * (3 + hash(i) * 6) * (i % 2 ? 1 : -1) + i); ctx.beginPath(); ctx.moveTo(-s, s * .6); ctx.lineTo(s * .2, -s); ctx.lineTo(s, s * .5); ctx.closePath(); ctx.fillStyle = A.linear(ctx, -s, -s, s, s, [[0, 'rgba(255,255,255,.95)'], [.5, 'rgba(120,225,255,.85)'], [1, 'rgba(40,120,255,.85)']]); ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = INK; ctx.lineJoin = 'round'; ctx.stroke(); ctx.restore();
     }
-    burst(ctx, t, t0, cx, cy, 40, [C.cyan, C.blue, '#ffffff', C.cyan, C.yellow, C.pink], 4200, 11, .62, 38, 1800);
-    burst(ctx, t, t0 + .02, cx + 140, cy + 190, 12, [C.pink, C.purple, C.orange], 2800, 23, .55, 32, 1800);   // handle pieces
-  }
-  // red X bursts into drops after the shatter
-  function xPop(ctx, t) {
-    const t0 = 23.36; if (t < t0 || t > 23.95) return;
-    for (let s = 0; s < 2; s++) for (let k = -3; k <= 3; k++) { const a = s ? -Math.PI / 4 : Math.PI / 4, d = k * 115; burst(ctx, t, t0 + .02 + Math.abs(k) * .01, CX + Math.cos(a) * d, CY + Math.sin(a) * d, 3, [C.red, C.pink, C.orange], 900, s * 10 + k + 40, .4, 24, 1200); }
+    burst(ctx, t, t0, cx, cy, 40, [C.cyan, C.blue, '#ffffff', C.cyan, C.yellow, C.pink], 3000, 11, 1.1, 38, 1400);
+    burst(ctx, t, t0 + .02, cx + 140, cy + 190, 12, [C.pink, C.purple, C.orange], 2000, 23, 1.0, 32, 1400);   // handle pieces
   }
 
   // ---------------------------------------------------------------- devices, tiles, arrows
   const PH = [430, 470], TVP = [1490, 440], PA = [430, 450], PB = [1490, 430], TSC = 1.25;
   const TILES = [
     { k: 'netflix', ts: 23.88, off: 0 }, { k: 'disney', ts: 23.93, off: Math.PI }, { k: 'prime', ts: 23.98, off: 0 }, { k: 'hbo', ts: 24.03, off: Math.PI }, { k: 'appletv', ts: 24.08, off: 0 },
-    { k: 'hulu', ts: 24.22, off: Math.PI }, { k: 'paramount', ts: 24.27, off: 0 }, { k: 'netflix', ts: 24.32, off: Math.PI },
+    { k: 'hulu', ts: 24.22, off: Math.PI }, { k: 'paramount', ts: 24.27, off: 0 },
   ];
-  function Th(t) {
-    const a = 23.88, b = 24.22, c = 24.41, w0 = TAU / .70, w1 = TAU / .38;
-    let th = w0 * (Math.max(a, Math.min(t, b)) - a);
-    if (t > b) th += w1 * (Math.min(t, c) - b);
-    if (t > c) { const tau = .05; th += w1 * tau * (1 - Math.exp(-(t - c) / tau)); }
+  function Th(t) {   // smooth chirp: slow ping-pong, speeds up gently from 24.10 to 24.36, eases to a stop after 24.41
+    const a = 23.88, T0 = 24.10, T1 = 24.36, c = 24.41, w0 = TAU / 1.0, w1 = TAU / .62, D = T1 - T0;
+    const tt = Math.max(a, Math.min(t, c)), G = tt <= T0 ? 0 : tt >= T1 ? D * .5 + (tt - T1) : (x => D * (x * x * x - x * x * x * x / 2))((tt - T0) / D);
+    let th = w0 * (tt - a) + (w1 - w0) * G;
+    if (t > c) { const tau = .12; th += w1 * tau * (1 - Math.exp(-(t - c) / tau)); }
     return th;
   }
   function tileStates(t) {
-    const out = []; let bl = 0, br = 0; const T0 = Th(t), dx = PB[0] - PA[0], dy = PB[1] - PA[1], L = Math.hypot(dx, dy), px = -dy / L, py = dx / L, sp0 = Th(24.22);
+    const out = []; let bl = 0, br = 0; const T0 = Th(t), dx = PB[0] - PA[0], dy = PB[1] - PA[1], L = Math.hypot(dx, dy), px = -dy / L, py = dx / L, sp0 = Th(24.14);
     TILES.forEach((tl, i) => {
-      const sc = CL.pop(t, tl.ts - .14, .22); if (sc <= 0.01) return;
+      const sc = CL.pop(t, tl.ts - .2, .3); if (sc <= 0.01) return;
       const th = T0 - Th(tl.ts) + tl.off, u = .5 - .5 * Math.cos(th), sg = Math.sin(th) >= 0 ? 1 : -1, arc = 140 + 50 * hash(i * 3.1);
       const bow = Math.sin(Math.PI * u) * arc * sg;
-      const x = PA[0] + dx * u + px * bow, y = PA[1] + dy * u + py * bow, z = 1 + .34 * Math.sin(Math.PI * u), spin = .4 * Math.max(0, T0 - sp0) * (i % 2 ? 1 : -1);
+      const x = PA[0] + dx * u + px * bow, y = PA[1] + dy * u + py * bow, z = 1 + .34 * Math.sin(Math.PI * u), spin = .25 * Math.max(0, T0 - sp0) * (i % 2 ? 1 : -1);
       const rot = .35 * Math.sin(th * .5 + i * 1.3) + spin;
       const d = Math.min(u, 1 - u), g = cl(1 - d / .1); if (u < .5) bl += g; else br += g;
       out.push({ k: tl.k, x, y, s: sc * z, rot, z, u });
@@ -238,7 +233,7 @@
   function boltX(ctx, t, alpha) {
     const pieces = [[[380, 30, 1540, 800], 24.34, 5], [[1540, 30, 380, 800], 24.41, 9]];   // second stroke lands on the word
     pieces.forEach(([[x0, y0, x1, y1], t0, seed]) => {
-      const f = cl((t - (t0 - .1)) / .08); if (f <= 0) return; const pts = partial(boltPts(x0, y0, x1, y1, seed, seed > 6 ? .62 : .3), f), dt = t - t0, hot = dt < .08 ? 1 - Math.max(0, dt) / .08 : 0, fl = .85 + .15 * hash(CL.qs(t, 24) * 3 + seed);
+      const f = cl((t - (t0 - .22)) / .2); if (f <= 0) return; const pts = partial(boltPts(x0, y0, x1, y1, seed, seed > 6 ? .62 : .3), f), dt = t - t0, hot = dt < .12 ? 1 - Math.max(0, dt) / .12 : 0, fl = .85 + .15 * hash(CL.qs(t, 24) * 3 + seed);
       const stroke = (lw, col, a, comp) => { ctx.save(); ctx.globalAlpha *= a * alpha; if (comp) ctx.globalCompositeOperation = 'lighter'; ctx.lineJoin = 'miter'; ctx.miterLimit = 6; ctx.lineCap = 'round'; ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.stroke(); ctx.restore(); };
       stroke(250, C.red, .16 * fl, true);
       ctx.save(); ctx.translate(8, 18); stroke(150, 'rgba(2,4,30,.45)', 1); ctx.restore();
@@ -252,80 +247,82 @@
     const cx = CX, cy = CY + 10, br = .5 + .5 * Math.sin(t * 2.2);
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(cx, cy); ctx.rotate(t * .25); for (let i = 0; i < 14; i++) { ctx.rotate(TAU / 14); ctx.fillStyle = i % 2 ? 'rgba(25,200,255,.10)' : 'rgba(139,61,255,.10)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-160, -1600); ctx.lineTo(160, -1600); ctx.fill(); } ctx.restore();
     A.glow(ctx, cx, cy, 900 + 40 * br, C.cyan, .5 + .12 * br); A.glow(ctx, cx, cy + 40, 640, C.purple, .55);
-    const pop = CL.pop(t, 24.56, .27), sc = pop * (1 + .012 * Math.sin(t * 2.2));   // lands 24.80 (overshoot 24.72)
-    // CUE 24.80 calm-tv-resolve
-    CL.ring(ctx, cx, cy, 520, (t - 24.78) / .9, '#ffffff', 20); CL.ring(ctx, cx, cy, 800, (t - 24.86) / 1.0, C.cyan, 12);
+    const pop = CL.pop(t, 24.72, .36), sc = pop * (1 + .012 * Math.sin(t * 2.2));   // lands 24.80 (overshoot 24.72)
+    // CUE 24.95 calm-tv-resolve
+    CL.ring(ctx, cx, cy, 520, (t - 24.92) / 1.0, '#ffffff', 20); CL.ring(ctx, cx, cy, 800, (t - 25.02) / 1.1, C.cyan, 12);
     CL.brand(ctx, cx, cy + 10 * Math.sin(t * 2.6), 760 * sc, 'icon');
     CL.twinkle(ctx, t, 100, 40, 1720, 780, 24, 3, ['#ffffff', C.cyan, C.yellow, C.pink]);
-    const s = cl((t - 24.80) / .3); if (s > 0) for (let i = 0; i < 8; i++) { const a = i / 8 * TAU + t * .8, r = 560 + 30 * Math.sin(t * 2 + i); CL.spark(ctx, cx + Math.cos(a) * r, cy + Math.sin(a) * r * .55, 26 * s * (.6 + .4 * Math.sin(t * 5 + i)), t * 2 + i, i % 2 ? '#fff' : C.yellow); }
+    const s = cl((t - 24.95) / .4); if (s > 0) for (let i = 0; i < 8; i++) { const a = i / 8 * TAU + t * .8, r = 560 + 30 * Math.sin(t * 2 + i); CL.spark(ctx, cx + Math.cos(a) * r, cy + Math.sin(a) * r * .55, 26 * s * (.6 + .4 * Math.sin(t * 5 + i)), t * 2 + i, i % 2 ? '#fff' : C.yellow); }
   }
 
   // ---------------------------------------------------------------- stamp state helpers
   function stampSlam(t, t0, dur, big, ox = 0, oy = 0) {
-    if (t < t0 - dur) return null; if (t < t0) { const u = (t - (t0 - dur)) / dur; return { sc: 1 + big * (1 - u * u), al: cl(u * 5), rot: -.5 * (1 - u), dx: ox * (1 - u * u), dy: oy * (1 - u * u) }; }
-    const dt = t - t0; return { sc: 1 + Math.exp(-dt * 8) * Math.sin(dt * 30) * .1, al: 1, rot: 0, dx: 0, dy: 0 };
+    if (t < t0 - dur) return null; if (t < t0) { const u = (t - (t0 - dur)) / dur; return { sc: 1 + big * (1 - u * u), al: cl(u * 3), rot: -.5 * (1 - u), dx: ox * (1 - u * u), dy: oy * (1 - u * u) }; }
+    const dt = t - t0; return { sc: 1 + Math.exp(-dt * 5) * Math.sin(dt * 20) * .09, al: 1, rot: 0, dx: 0, dy: 0 };
   }
 
   // ---------------------------------------------------------------- main composition of the "chaos" state
   function chaos(ctx, t, push) {
     const tint = tintAt(t); CL.bg(ctx, t, { tint, speed: .35 });
     // impact glows (unshaken, additive)
-    IMPACTS.forEach(([t0, , col]) => { const dt = t - t0; if (dt >= 0 && dt < .5) A.glow(ctx, CX, CY, 1300, col, .55 * Math.exp(-dt * 8)); });
-    const rel = sm(23.36, 23.44, t) * (1 - sm(23.52, 23.62, t));
+    IMPACTS.forEach(([t0, , col]) => { const dt = t - t0; if (dt >= 0 && dt < .9) A.glow(ctx, CX, CY, 1300, col, .5 * Math.exp(-dt * 4.5)); });
+    const rel = sm(23.45, 23.7, t) * (1 - sm(23.9, 24.2, t));
     if (rel > 0) { A.glow(ctx, CX, CY, 1200, C.cyan, .45 * rel); A.glow(ctx, CX, CY, 700, C.lime, .25 * rel); }
-    const sh = shakeAt(t), dz = sm(24.22, 24.4, t);
+    const sh = shakeAt(t), dz = sm(24.22, 24.55, t);
     ctx.save(); ctx.translate(sh[0], sh[1]);
     if (push > 0) { ctx.translate(CX + push * 900, 700); ctx.rotate(push * .16); ctx.translate(-CX, -700); }
-    const wob = .028 * Math.sin(t * 23) * dz * (1 - push); if (wob) { ctx.translate(CX, 440); ctx.rotate(wob); ctx.translate(-CX, -440); }
+    const wob = .02 * Math.sin(t * 14) * dz * (1 - push); if (wob) { ctx.translate(CX, 440); ctx.rotate(wob); ctx.translate(-CX, -440); }
 
     // ---- NO #1 : slam + recede as ghost behind the search wall
     // CUE 22.36 no-slam-1 (giant red NO drops in, shockwave)
-    const s1 = stampSlam(t, 22.36, .22, 2.4);
-    if (t >= 22.34 && t < 23.4) impactFx(ctx, t, 22.36, CX, CY, 330, [C.red, C.pink, C.orange, C.yellow], 3);
-    if (s1) { const r = sm(22.68, 22.94, t), o = sm(23.27, 23.37, t); noSign(ctx, CX, CY, 335, { scale: s1.sc * (1 + .12 * r + .3 * o), alpha: s1.al * lerp(1, .22, r) * (1 - o), rot: s1.rot - .04 * r }); }
+    const s1 = stampSlam(t, 22.36, .34, 3.0);
+    if (t >= 22.34 && t < 23.6) impactFx(ctx, t, 22.36, CX, CY, 330, [C.red, C.pink, C.orange, C.yellow], 3);
+    if (s1) { const r = sm(22.70, 23.25, t), o = sm(23.3, 23.9, t); noSign(ctx, CX, CY, 335, { scale: s1.sc * (1 + .12 * r + .3 * o), alpha: s1.al * lerp(1, .3, r) * (1 - o), rot: s1.rot - .04 * r }); }
 
     // ---- search wall + magnifier
     // CUE 22.70 search-wall-magnifier-pop (chaotic wall of question marks + hunting magnifier)
-    if (t > 22.5 && t < 23.7) {
+    if (t > 22.4 && t < 24.4) {
       world(ctx, t);
-      const u = t - 22.70, hunt = [CX + 560 * Math.sin(u * 10 + .6) + 90 * Math.sin(u * 23), CY - 10 + 130 * Math.sin(u * 14.5) + 30 * Math.sin(u * 31)], k = ease.inOut(inv(23.09, 23.23, t)), e = ease.out(inv(22.58, 22.84, t));
-      let mx = lerp(CX, hunt[0], e), my = lerp(CY, hunt[1], e); mx = lerp(mx, CX, k); my = lerp(my, CY, k);
-      const rot = .38 * Math.sin(u * 11) * (1 - k) * e, wb = 1 + .05 * Math.sin(u * 19) * (1 - k), pop = CL.pop(t, 22.56, .2);
-      const gasp = 1 - .05 * Math.exp(-Math.max(0, t - 23.29) * 12) * 1 + .1 * Math.sin(inv(23.16, 23.23, t) * Math.PI) * 0;
-      if (t < 23.36 && pop > 0) magnifier(ctx, mx, my, 235 * pop * wb * gasp, rot, () => world(ctx, t), t >= 23.29 ? cl((t - 23.29) / .07) : 0, t);
+      const u = t - 22.70, bb = ease.inOut(inv(22.55, 23.05, t)), k = ease.inOut(inv(23.0, 23.22, t));
+      let mx = CX + (520 * Math.sin(u * 6 + .6) + 70 * Math.sin(u * 13)) * bb, my = CY - 10 + (120 * Math.sin(u * 8.5) + 25 * Math.sin(u * 17)) * bb; mx = lerp(mx, CX, k); my = lerp(my, CY, k);
+      let rot = .3 * Math.sin(u * 7) * (1 - k) * bb; const wb = 1 + .04 * Math.sin(u * 11) * (1 - k), pop = CL.pop(t, 22.44, .32);
+      if (t < 23.36 && pop > 0) magnifier(ctx, mx, my, 235 * pop * wb, rot, () => world(ctx, t), t >= 23.29 ? cl((t - 23.29) / .07) : 0, t, 1);
+      else if (t >= 23.36 && t < 24.05) {   // rim + handle of the shattered magnifier sag and fade slowly under the red X
+        const mf = inv(23.36, 24.0, t); ctx.save(); ctx.globalAlpha *= 1 - sm(23.5, 24.0, t); magnifier(ctx, CX, CY + 220 * ease.in(mf), 235 * (1 + .08 * mf), .5 * mf, null, 0, t, 0); ctx.restore();
+      }
       worldPops(ctx, t);
     }
     // CUE 23.29 x-slam-on-magnifier (giant red X crosses the magnifier, cracks the glass)
-    if (t >= 23.13 && t < 23.7) impactFx(ctx, t, 23.29, CX, CY, 260, [C.red, C.orange, C.pink], 6);
+    if (t >= 23.13 && t < 24.5) impactFx(ctx, t, 23.29, CX, CY, 260, [C.red, C.orange, C.pink], 6);
     xOverLens(ctx, t);
     // CUE 23.36 magnifier-shatter (lens bursts into liquid drops + glass shards, question marks pop and vanish 23.37 to 23.55)
-    shatter(ctx, t, CX, CY, 235); xPop(ctx, t);
+    shatter(ctx, t, CX, CY, 235);
     // relief beat 23.40 to 23.55: calm sparkles
-    if (rel > 0) { ctx.save(); ctx.globalAlpha *= rel; CL.twinkle(ctx, t * 1.2, 100, 40, 1720, 780, 30, 7, ['#ffffff', C.cyan, C.lime, C.yellow]); ctx.restore(); }
+    if (rel > 0) { ctx.save(); ctx.globalAlpha *= rel * .6; CL.twinkle(ctx, t * 1.2, 100, 40, 1720, 780, 30, 7, ['#ffffff', C.cyan, C.lime, C.yellow]); ctx.restore(); }
 
     // ---- NO #2 : pink slam at the top; devices pop; tiles ping-pong
     // CUE 23.55 no-slam-2 (pink NO stamp, top, tilted)
-    const s2 = stampSlam(t, 23.55, .09, 1.5, 420, -260);
+    const s2 = stampSlam(t, 23.55, .18, 1.6, 420, -260);
     if (t >= 23.5 && t < 25) impactFx(ctx, t, 23.55, CX, CY - 10, 290, [C.pink, C.purple, C.orange], 8);
+    if (s2) { const br = 1 + .02 * Math.sin(t * 5); noSign(ctx, CX + s2.dx, CY - 10 + s2.dy, 290, { scale: s2.sc * br, alpha: s2.al * lerp(1, .4, sm(24.05, 24.5, t)), rot: .14 + s2.rot, col: C.pink, hi: '#FFA6D4', lo: '#A00E62' }); }
     // CUE 23.67 devices-pop (phone + TV appear)
-    const dv1 = CL.pop(t, 23.48, .26), dv2 = CL.pop(t, 23.56, .26), ts = t > 23.5 ? tileStates(t) : { tiles: [], bl: 0, br: 0 };
+    const dv1 = CL.pop(t, 23.62, .4), dv2 = CL.pop(t, 23.68, .4), ts = t > 23.5 ? tileStates(t) : { tiles: [], bl: 0, br: 0 };
     if (t > 23.5) {
-      const arA = CL.pop(t, 23.68, .25), fast = sm(24.22, 24.3, t), off = t * 90 + Th(t) * 30;
+      const arA = CL.pop(t, 23.70, .4), fast = sm(24.2, 24.45, t), off = t * 90 + Th(t) * 30;
       swoosh(ctx, [580, 330], [960, 20], [1290, 260], C.cyan, off, arA);
       swoosh(ctx, [1330, 640], [960, 900], [590, 620], C.pink, -off, arA);
       if (fast > 0) { swoosh(ctx, [600, 430], [960, 300], [1290, 400], C.yellow, off * 1.3, fast, 26); swoosh(ctx, [1330, 500], [960, 610], [610, 510], C.lime, -off * 1.3, fast, 26); }
-      const jit = dz * 8 * Math.sin(t * 40);
+      const jit = dz * 6 * Math.sin(t * 18);
       phone(ctx, t, dv1, ts.bl, jit); tvDev(ctx, t, dv2, ts.br, -jit);
       // CUE 23.88 tiles-start (Netflix, Disney+, Prime, HBO, Apple TV ping-pong between phone and TV) ; CUE 24.22 tiles-faster-dizzy (more tiles, spin)
       ts.tiles.forEach(tl => tile(ctx, tl));
-      if (dz > 0 && push < .5) { for (let i = 0; i < 8; i++) { const a = t * 7 + i / 8 * TAU, r = 760 + 30 * Math.sin(t * 9 + i); CL.spark(ctx, CX + Math.cos(a) * r, 430 + Math.sin(a) * r * .5, 28 * dz, t * 3 + i, i % 2 ? C.yellow : '#fff'); } }
+      if (dz > 0 && push < .5) { for (let i = 0; i < 8; i++) { const a = t * 4 + i / 8 * TAU, r = 760 + 30 * Math.sin(t * 5 + i); CL.spark(ctx, CX + Math.cos(a) * r, 430 + Math.sin(a) * r * .5, 28 * dz, t * 3 + i, i % 2 ? C.yellow : '#fff'); } }
     }
-    if (s2) { const br = 1 + .02 * Math.sin(t * 8); noSign(ctx, CX + s2.dx, CY - 10 + s2.dy, 290, { scale: s2.sc * br, alpha: s2.al * lerp(1, .3, sm(23.72, 23.95, t)), rot: .14 + s2.rot, col: C.pink, hi: '#FFA6D4', lo: '#A00E62' }); }
     // CUE 24.41 x-cross-out (two red lightning bolts cross out everything)
-    if (t >= 24.24) { impactFx(ctx, t, 24.41, CX, 420, 420, [C.red, C.orange, C.pink], 12); boltX(ctx, t, 1); }
+    if (t >= 24.10) { impactFx(ctx, t, 24.41, CX, 420, 420, [C.red, C.orange, C.pink], 12); boltX(ctx, t, 1); }
     ctx.restore();
     // white impact flashes
-    for (const [t0] of [[22.36], [23.29], [23.55], [24.41]]) { const dt = t - t0; if (dt >= 0 && dt < .09) { ctx.fillStyle = `rgba(255,255,255,${.5 * (1 - dt / .09)})`; ctx.fillRect(0, 0, W, H); } }
+    for (const [t0] of [[22.36], [23.29], [23.55], [24.41]]) { const dt = t - t0; if (dt >= 0 && dt < .066) { ctx.fillStyle = `rgba(255,255,255,${.4 * (1 - dt / .066)})`; ctx.fillRect(0, 0, W, H); } }
   }
 
   // ---------------------------------------------------------------- liquid wipe helpers (edge sweeps across the frame)
@@ -354,9 +351,9 @@
         ctx.save(); edgePath(ctx, E, -1, INNER, 1.3); ctx.clip(); chaos(ctx, t, 0); ctx.restore();
         return;
       }
-      if (t < 24.56) { chaos(ctx, t, 0); return; }
-      if (t < 24.90) {   // CUE 24.56 liquid-wave-sweep (tiles swept away, calm TV revealed, lands 24.80)
-        const u = cl((t - 24.56) / .32), e = ease.inOut(u), E = lerp(-60, 2440, e), push = ease.in(cl((t - 24.5) / .36));
+      if (t < 24.58) { chaos(ctx, t, 0); return; }
+      if (t < 25.14) {   // CUE 24.58 liquid-wave-sweep (slow wave carries bolt X + tiles away, calm TV revealed ~24.9, settles 25.05)
+        const u = cl((t - 24.58) / .52), e = ease.inOut(u), E = lerp(-60, 2440, e), push = ease.in(cl((t - 24.52) / .6));
         chaos(ctx, t, push);
         fringes(ctx, E, 1, [C.cyan, C.blue, C.purple, C.pink], 2.1);
         ctx.save(); edgePath(ctx, E, 1, INNER, 2.1); ctx.clip(); calm(ctx, t); ctx.restore();

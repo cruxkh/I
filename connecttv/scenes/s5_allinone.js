@@ -202,30 +202,31 @@
 
   // ---------------------------------------------------------------- day bubbles, rainbow
   function dayBubble(ctx, i, t) {
-    const [x, y] = dayPos(i), t0 = DAY_T[i], tin = T_CAL + i * .05, pin = CL.pop(t, tin, .32); if (pin <= 0) return;
-    const lit = t >= t0 - .03, b = bump(t, t0), wave = t > T_SAT ? .12 * Math.max(0, bump(t, T_SAT + (6 - i) * .045 + .05)) * (i < 6 ? 1 : 0) : 0, r = 86;
-    const sc = pin * (1 + .34 * b + wave) * (1 + (lit ? .015 * Math.sin(t * 3 + i) : 0)), col = DCOL[i], by = y + (lit ? Math.sin(t * 2.6 + i * .9) * 4 : 0);
-    if (lit) { A.glow(ctx, x, by, r * 2.6 * sc, col, .55 * (.7 + .3 * Math.max(0, b))); }
-    ctx.save(); ctx.translate(x, by); ctx.scale(sc, sc); CL.drop(ctx, 0, 0, r, lit ? col : '#4350c0', t, i); ctx.restore();
+    const [x, y] = dayPos(i), t0 = DAY_T[i], tin = T_CAL + .04 + i * .06, pin = CL.pop(t, tin, .5); if (pin <= 0) return;
+    const lp = ease.inOut(clamp((t - (t0 - .12)) / .12)), lit = lp > 0, b = bump(t, t0), r = 86;
+    const wave = t > T_SAT ? .1 * bump(t, T_SAT + (6 - i) * .06 + .05) * (i < 6 ? 1 : 0) : 0;
+    const sc = pin * (1 + .3 * b + wave) * (1 + (lit ? .015 * Math.sin(t * 3 + i) : 0)), col = DCOL[i], by = y + (lit ? Math.sin(t * 2.6 + i * .9) * 4 * lp : 0);
+    if (lit) A.glow(ctx, x, by, r * 2.6 * sc, col, .55 * lp * (.75 + .25 * Math.max(0, b)));
+    ctx.save(); ctx.translate(x, by); ctx.scale(sc, sc); CL.drop(ctx, 0, 0, r, '#4350c0', t, i); if (lit) { ctx.globalAlpha = lp; CL.drop(ctx, 0, 0, r, col, t, i); } ctx.restore();
     ctx.save(); ctx.translate(x, by + 4); ctx.scale(sc, sc); ctx.font = '900 104px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'rtl'; ctx.lineJoin = 'round';
-    if (lit) { ctx.strokeStyle = C.ink; ctx.lineWidth = 16; ctx.strokeText(DAYS[i], 0, 0); ctx.fillStyle = '#fff'; ctx.fillText(DAYS[i], 0, 0); } else { ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fillText(DAYS[i], 0, 0); } ctx.restore();
+    ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fillText(DAYS[i], 0, 0); if (lit) { ctx.globalAlpha = lp; ctx.strokeStyle = C.ink; ctx.lineWidth = 16; ctx.strokeText(DAYS[i], 0, 0); ctx.fillStyle = '#fff'; ctx.fillText(DAYS[i], 0, 0); } ctx.restore();
     if (lit) {
-      const u = (t - t0) / .5;   // little sparkle burst + ring on the new pop
-      if (u >= 0 && u < 1) { CL.ring(ctx, x, by, r * 2.6, u, '#fff', 14); for (let k = 0; k < 6; k++) { const a = k / 6 * TAU + hash(i * 3 + k) * .8, d = r * (1.15 + 1.3 * ease.out(u)) * (.8 + .4 * hash(k + i)); CL.spark(ctx, x + Math.cos(a) * d, by + Math.sin(a) * d, (26 + hash(k * 3 + i) * 18) * (1 - u) * (1 + .3 * (k % 2)), a + u * 3, k % 2 ? '#fff' : (k % 4 === 0 ? C.yellow : col)); } }
-      const nb = CL.pop(t, t0 + .02, .26); if (nb > 0) { ctx.save(); ctx.translate(x + r * .78, by - r * .92); ctx.rotate(.22); ctx.scale(nb * sc, nb * sc); CL.chip(ctx, 'NEW', 0, 0, { size: 30, dir: 'ltr', fill: C.red, ink: '#fff', pad: 14, shadow: 4 }); ctx.restore(); }
+      const u = (t - t0) / .85;   // sparkle burst + ring on the new pop (settles slowly)
+      if (u >= 0 && u < 1) { CL.ring(ctx, x, by, r * 2.6, u, '#fff', 14); for (let k = 0; k < 6; k++) { const a = k / 6 * TAU + hash(i * 3 + k) * .8, d = r * (1.15 + 1.3 * ease.out(u)) * (.8 + .4 * hash(k + i)); CL.spark(ctx, x + Math.cos(a) * d, by + Math.sin(a) * d, (26 + hash(k * 3 + i) * 18) * (1 - u) * (1 + .3 * (k % 2)), a + u * 2, k % 2 ? '#fff' : (k % 4 === 0 ? C.yellow : col)); } }
+      const nb = CL.pop(t, t0 + .02, .42); if (nb > 0) { ctx.save(); ctx.translate(x + r * .78, by - r * .92); ctx.rotate(.22); ctx.scale(nb * sc, nb * sc); CL.chip(ctx, 'NEW', 0, 0, { size: 30, dir: 'ltr', fill: C.red, ink: '#fff', pad: 14, shadow: 4 }); ctx.restore(); }
     }
   }
   function rainbow(ctx, t) {
-    const track = ease.out(clamp((t - T_CAL) / .45));   // dim track that draws on with the bubbles (from the right end, RTL)
+    const track = ease.out(clamp((t - T_CAL) / .7));   // dim track that draws on with the bubbles (from the right end, RTL)
     if (track > 0) { ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.1)'; ctx.lineWidth = 40; ctx.lineCap = 'round'; ctx.beginPath(); ctx.ellipse(AC.x, AC.y, AC.rx, AC.ry, 0, 2 * PI, 2 * PI - track * PI, true); ctx.stroke(); ctx.restore(); }
-    const q = ease.out(clamp((t - T_SAT) / .5)); if (q <= 0) return;
+    const q = ease.inOut(clamp((t - T_SAT) / 1.0)); if (q <= 0) return;
     ctx.save(); ctx.lineCap = 'butt'; for (let i = 0; i < 7; i++) { const o = -66 + i * 22; ctx.strokeStyle = RAIN[i]; ctx.lineWidth = 23; ctx.beginPath(); ctx.ellipse(AC.x, AC.y, AC.rx + o, AC.ry + o, 0, PI, PI + q * PI); ctx.stroke(); }
     ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 6; ctx.beginPath(); ctx.ellipse(AC.x, AC.y, AC.rx + 84, AC.ry + 84, 0, PI, PI + q * PI); ctx.stroke(); ctx.restore();
   }
 
   // ---------------------------------------------------------------- transitions / atmosphere
   function wipe(ctx, t, content) {   // candy liquid sweeps right -> left (RTL) and the new scene shows behind its crest
-    const p = clamp((t - T_WIPE) / .36); if (p <= 0) return; if (p >= 1) return content();
+    const p = clamp((t - T_WIPE) / .4); if (p <= 0) return; if (p >= 1) return content();
     const e = ease.inOut(p), edge = y => W * (1.12 - e * 1.32) + Math.sin(y * .012 + p * 8) * 80 + Math.sin(y * .031 - p * 5) * 28;
     const bands = [[C.cyan, 200], [C.purple, 135], [C.orange, 80], [C.pink, 32]];
     const poly = off => { ctx.beginPath(); ctx.moveTo(W + 60, -10); for (let y = -10; y <= H + 30; y += 24) ctx.lineTo(edge(y) - off, y); ctx.lineTo(W + 60, H + 30); ctx.closePath(); };
@@ -238,7 +239,7 @@
   }
   function candyDrops(ctx, t, x0, y0, t0, n, seed, R, life = 1.1) {   // flying drops with gravity
     const u = t - t0; if (u < 0 || u > life) return; const rg = rng(seed);
-    for (let i = 0; i < n; i++) { const a = rg() * TAU, sp = R * (.6 + rg() * .9), r = 10 + rg() * 20, x = x0 + Math.cos(a) * sp * ease.out(clamp(u / .7)), y = y0 + Math.sin(a) * sp * ease.out(clamp(u / .7)) + 900 * u * u * .5 * .5; ctx.save(); ctx.globalAlpha = clamp((life - u) / .3); CL.drop(ctx, x, y, r * (1 - .3 * u / life), CL.CAND[i % 8], t, i); ctx.restore(); }
+    for (let i = 0; i < n; i++) { const a = rg() * TAU, sp = R * (.6 + rg() * .9), r = 10 + rg() * 20, x = x0 + Math.cos(a) * sp * ease.out(clamp(u / 1.1)), y = y0 + Math.sin(a) * sp * ease.out(clamp(u / 1.1)) + 300 * u * u; ctx.save(); ctx.globalAlpha = clamp((life - u) / .6); CL.drop(ctx, x, y, r * (1 - .3 * u / life), CL.CAND[i % 8], t, i); ctx.restore(); }
   }
 
   // ---------------------------------------------------------------- scene
@@ -247,12 +248,12 @@
     // CUE 12.85 whoosh-liquid-wipe (covers s4)
     wipe(ctx, t, () => content(ctx, t));
     // full-screen flashes drawn above the wipe
-    const fl = t >= T_IMPACT ? Math.exp(-(t - T_IMPACT) * 20) : 0; if (fl > .02) { ctx.fillStyle = `rgba(255,255,255,${.8 * fl})`; ctx.fillRect(0, 0, W, H); }
+    const fl = t >= T_IMPACT ? 1 - (t - T_IMPACT) / .066 : 0; if (fl > 0) { ctx.fillStyle = `rgba(255,255,255,${.7 * fl})`; ctx.fillRect(0, 0, W, H); }   // 2-frame flash
   } });
 
   function content(ctx, t) {
     // camera shake on the impacts
-    const sh1 = CL.shake(t, T_IMPACT, .45, 20), sh2 = CL.shake(t, T_TAP, .3, 12), sh3 = CL.shake(t, T_SAT, .4, 14);
+    const sh1 = CL.shake(t, T_IMPACT, .7, 12), sh2 = CL.shake(t, T_TAP, .5, 6), sh3 = CL.shake(t, T_SAT, .6, 8);
     ctx.save(); ctx.translate(sh1[0] + sh2[0] + sh3[0], sh1[1] + sh2[1] + sh3[1]);
     CL.bg(ctx, t, { tint: [C.purple, C.pink, C.cyan] }); bgDrops(ctx, t);
     // phase colour push
@@ -263,49 +264,49 @@
     // anticipation: a candy blob swells in the centre and bursts on 13.08
     if (t < T_BURST + .06) { const k = ease.in(inv(12.9, T_BURST, t)); if (k > 0) CL.drop(ctx, OC.x, OC.y, 30 + 150 * k, C.pink, t * 3, 2); }
     // CUE 13.08 all-burst (everything pops out of a splash)
-    const sp0 = CL.spring(t, T_BURST - .02, .5); if (sp0 > 0 && t < T_ORBIT) { ctx.save(); ctx.globalAlpha = 1 - ease.in(inv(13.14, 13.36, t)); CL.splash(ctx, OC.x, OC.y, 520, sp0, 4); ctx.restore(); for (let k = 0; k < 3; k++) CL.ring(ctx, OC.x, OC.y, 900 + k * 150, (t - T_BURST - k * .05) / .5, [C.white, C.yellow, C.pink][k], 22); }
+    const sp0 = CL.spring(t, T_BURST - .02, .8); if (sp0 > 0 && t < 13.65) { ctx.save(); ctx.globalAlpha = 1 - ease.inOut(inv(13.2, 13.65, t)); CL.splash(ctx, OC.x, OC.y, 520, sp0, 4); ctx.restore(); CL.ring(ctx, OC.x, OC.y, 1000, (t - T_BURST) / .9, C.white, 22); }
     // CUE 13.435 orbit-start (swirl riser)
-    const vk = t < T_IMPACT ? ease.out(clamp((t - T_ORBIT) / .3)) : 1 - ease.in(clamp((t - T_IMPACT) / .16));
-    if (vk > .01) { ctx.save(); ctx.globalAlpha = .95; vortex(ctx, TV.x, TV.y, 900, 5 + (t - T_ORBIT) * (9 + 15 * ease.in(inv(T_ORBIT, T_IMPACT, t))), vk, 6); ctx.restore(); }
+    const vk = t < T_IMPACT ? ease.inOut(clamp((t - T_SOFT) / .55)) : 1 - ease.inOut(clamp((t - T_IMPACT) / .45));
+    if (vk > .01) { ctx.save(); ctx.globalAlpha = .95; vortex(ctx, TV.x, TV.y, 900, 5 + (t - T_SOFT) * 5 + Math.pow(Math.max(0, t - T_SOFT), 2) * 12, vk, 6); ctx.restore(); }
     // CUE 13.82 vortex-impact (big splash + shockwave + TV jelly)
-    const sp = CL.spring(t, T_IMPACT, .7); if (sp > 0 && t < T_CAL + .6) { const fade = 1 - ease.in(inv(T_CAL - .1, T_CAL + .45, t)); ctx.save(); ctx.globalAlpha = fade; CL.splash(ctx, pose.x, pose.y, lerp(720, 330, ease.inOut(inv(T_CAL - .1, T_CAL + .4, t))), sp * (1 + .015 * Math.sin(t * 5)), 7); ctx.restore(); }
+    const sp = CL.spring(t, T_IMPACT, 1.2); if (sp > 0 && t < 16.3) { const fade = 1 - ease.inOut(inv(15.5, 16.3, t)); ctx.save(); ctx.globalAlpha = fade; CL.splash(ctx, pose.x, pose.y, lerp(720, 330, ease.inOut(inv(15.4, 16.2, t))), sp * (1 + .015 * Math.sin(t * 3)), 7); ctx.restore(); }
     // TV (also inside the arc later); its own bolt link during the tap
-    if (t >= 13.28) {
+    if (t >= 13.15) {
       ctx.save(); ctx.translate(pose.x, pose.y + TV.h / 2 * pose.s); ctx.scale(pose.sx, pose.sy); ctx.translate(-pose.x, -pose.y - TV.h / 2 * pose.s);
       CL.tv(ctx, pose.x, pose.y, TV.w, TV.h, (c, sw, sh) => drawTVScreen(c, sw, sh, t), { scale: pose.s, rot: pose.rot, t }); ctx.restore();
     }
-    if (t >= T_IMPACT) { for (let k = 0; k < 3; k++) CL.ring(ctx, TV.x, TV.y, 1000 + k * 160, (t - T_IMPACT - k * .07) / .6, [C.white, C.cyan, C.pink][k], 26 - k * 5); candyDrops(ctx, t, TV.x, TV.y, T_IMPACT, 18, 21, 800, 1.2); }
+    if (t >= T_IMPACT) { for (let k = 0; k < 2; k++) CL.ring(ctx, TV.x, TV.y, 1100 + k * 200, (t - T_IMPACT - k * .16) / 1.2, [C.white, C.cyan][k], 26 - k * 6); candyDrops(ctx, t, TV.x, TV.y, T_IMPACT, 14, 21, 800, 2.0); }
     // swarm items
     if (t < T_IMPACT + .02) for (const it of ITEMS) { const p = itemPose(it, t); if (p) drawItem(ctx, it, p); }
-    if (t < T_ORBIT + .2 && t > T_BURST - .05) { /* sparkles in the chaos */ CL.twinkle(ctx, t, 80, 60, 1760, 740, 22, 5); }
+    if (t < 13.7 && t > T_BURST - .05) { ctx.save(); ctx.globalAlpha = ease.inOut(clamp((t - T_BURST) / .2)) * (1 - ease.inOut(inv(13.35, 13.7, t))); CL.twinkle(ctx, t, 80, 60, 1760, 740, 22, 5); ctx.restore(); }
 
     // ---- 2. accessible: button (right of the TV), thumb, tap
-    const bIn = CL.pop(t, T_BTN - .06, .34), bOut = 1 - ease.in(clamp((t - 15.15) / .2)), bs = bIn * bOut, BX = BTN.x, BY = BTN.y;
+    const bIn = CL.pop(t, T_BTN - .06, .34), bOut = 1 - ease.inOut(clamp((t - 15.1) / .45)), bs = bIn * bOut, BX = BTN.x, BY = BTN.y;
     if (bs > .01) {
-      const press = clamp((t - (T_TAP - .025)) / .03) * (1 - clamp((t - (T_TAP + .12)) / .16));   // CUE 14.89 tap-click
+      const press = clamp((t - (T_TAP - .025)) / .03) * (1 - ease.inOut(clamp((t - (T_TAP + .14)) / .3)));   // CUE 14.89 tap-click
       // CUE 14.43 button-pop (thumb enters)
-      if (t >= T_TAP - .1 && t < T_TAP + .3) { const ub = clamp((t - T_TAP) / .25); CL.bolt(ctx, BX - 150, BY - 6, TV.x + 0 + (pose.x - TV.x) + 250, pose.y, clamp((t - T_TAP + .02) / .05), 3, { col: C.cyan, lw: 22, alpha: 1 - ub }); }
+      if (t >= T_TAP - .1 && t < T_TAP + .5) { const ub = ease.inOut(clamp((t - T_TAP) / .4)); CL.bolt(ctx, BX - 150, BY - 6, TV.x + 0 + (pose.x - TV.x) + 250, pose.y, clamp((t - T_TAP + .02) / .05), 3, { col: C.cyan, lw: 22, alpha: 1 - ub }); }
       button(ctx, BX, BY, bs * BTN.s, press, t);
       const dir = [Math.sin(.45), Math.cos(.45)], hit = [BX + 50, BY + 40], off = d => [hit[0] + dir[0] * d, hit[1] + dir[1] * d];
-      if (t > T_BTN - .05 && t < 15.35) {
-        const pp = A.key(t, [[T_BTN - .03, off(1000)], [T_BTN + .29, off(190), 'out'], [T_TAP, off(0), 'in'], [T_TAP + .07, off(-18), 'out'], [15.0, off(-18)], [15.3, off(1000), 'inOut']]);
-        const ts = 1.15 * (t > T_TAP ? 1 - .05 * Math.exp(-(t - T_TAP) * 10) : 1);
+      if (t > T_BTN - .05 && t < 15.55) {
+        const pp = A.key(t, [[T_BTN - .03, off(1000)], [T_BTN + .3, off(150), 'out'], [T_TAP, off(0), 'inOut'], [T_TAP + .12, off(-18), 'out'], [15.05, off(-18)], [15.5, off(1000), 'inOut']]);
+        const ts = 1.15 * (t > T_TAP ? 1 - .05 * Math.exp(-(t - T_TAP) * 6) : 1);
         thumb(ctx, pp[0], pp[1], -.45, ts);
       }
-      if (t >= T_TAP) { const u = (t - T_TAP) / .55; CL.ring(ctx, BX, BY, 380, u, '#fff', 24); CL.ring(ctx, BX, BY, 620, u - .1, C.cyan, 16); CL.ring(ctx, pose.x, pose.y, 1000, (t - T_TAP) / .5, C.cyan, 24); candyDrops(ctx, t, BX, BY, T_TAP, 12, 33, 380, 1.0);
-        for (let k = 0; k < 8; k++) { const a = k / 8 * TAU + .3, d = 200 + 300 * ease.out(clamp((t - T_TAP) / .5)) * (.7 + hash(k) * .5), uu = (t - T_TAP) / .6; if (uu < 1) CL.spark(ctx, BX + Math.cos(a) * d, BY + Math.sin(a) * d, 40 * (1 - uu), k, k % 2 ? '#fff' : C.yellow); } }
+      if (t >= T_TAP) { const u = (t - T_TAP) / .9; CL.ring(ctx, BX, BY, 460, u, '#fff', 24); CL.ring(ctx, pose.x, pose.y, 1000, (t - T_TAP) / .9, C.cyan, 24); candyDrops(ctx, t, BX, BY, T_TAP, 9, 33, 380, 1.6);
+        for (let k = 0; k < 6; k++) { const a = k / 6 * TAU + .3, d = 200 + 300 * ease.out(clamp((t - T_TAP) / .9)) * (.7 + hash(k) * .5), uu = (t - T_TAP) / 1.0; if (uu < 1) CL.spark(ctx, BX + Math.cos(a) * d, BY + Math.sin(a) * d, 40 * (1 - uu), k, k % 2 ? '#fff' : C.yellow); } }
     }
 
     // ---- 3. updated all week: arc of 7 day bubbles + rainbow + counter
-    if (t >= T_CAL - .05) {
+    if (t >= T_CAL - .05 && t >= 15.3) {
       rainbow(ctx, t);
       // CUE 15.36 calendar-in (bubbles pop in right to left)
       let n = 0; DAY_T.forEach(d => { if (t >= d - .03) n++; });
       // CUE 16.855 day7 rainbow-splash (Saturday): splash behind the bubbles, sparks in front
       const [sx, sy] = dayPos(6);
-      if (t >= T_SAT) { const spr = CL.spring(t, T_SAT - .02, .7); ctx.save(); ctx.globalAlpha = 1 - ease.in(inv(17.1, 17.5, t)); CL.splash(ctx, sx, sy, 470, spr, 11, RAIN); ctx.restore(); for (let k = 0; k < 7; k++) CL.ring(ctx, sx, sy, 700 + k * 110, (t - T_SAT - k * .045) / .6, RAIN[k], 22); candyDrops(ctx, t, sx, sy, T_SAT, 24, 41, 900, 1.3); }
+      if (t >= T_SAT) { const spr = CL.spring(t, T_SAT - .02, 1.2); ctx.save(); ctx.globalAlpha = 1 - ease.inOut(inv(17.2, 17.55, t)); CL.splash(ctx, sx, sy, 470, spr, 11, RAIN); ctx.restore(); for (let k = 0; k < 7; k++) CL.ring(ctx, sx, sy, 700 + k * 110, (t - T_SAT - k * .06) / 1.0, RAIN[k], 22); candyDrops(ctx, t, sx, sy, T_SAT, 18, 41, 900, 2.0); }
       for (let i = 0; i < 7; i++) dayBubble(ctx, i, t);
-      if (t >= T_SAT) { const uu = (t - T_SAT) / .8; if (uu < 1) for (let k = 0; k < 12; k++) { const a = -PI / 2 + (hash(k * 2.2) - .3) * 1.6, d = 200 + 900 * ease.out(uu) * (.5 + hash(k)); CL.spark(ctx, sx + Math.cos(a) * d, sy + Math.sin(a) * d, 40 * (1 - uu) * (.6 + hash(k * 9)), k, RAIN[k % 7]); } }
+      if (t >= T_SAT) { const uu = (t - T_SAT) / 1.2; if (uu < 1) for (let k = 0; k < 10; k++) { const a = -PI / 2 + (hash(k * 2.2) - .3) * 1.6, d = 200 + 900 * ease.out(uu) * (.5 + hash(k)); CL.spark(ctx, sx + Math.cos(a) * d, sy + Math.sin(a) * d, 40 * (1 - uu) * (.6 + hash(k * 9)), k, RAIN[k % 7]); } }
       if (n > 0) { const d = DAY_T[n - 1], b = bump(t, d), sc = 1 + .3 * b; CL.title(ctx, `${n}/7`, 960, 150, { size: 200, dir: 'ltr', fill: ['#ffffff', DCOL[n - 1]], scale: CL.pop(t, DAY_T[0] - .05, .3) * sc, rot: -.04 + .03 * Math.sin(t * 2) }); }
     }
     ctx.restore();

@@ -1,5 +1,5 @@
 // s2_sports: "כל ערוצי הספורט כולל צ'רלטון"  (v 6.5 to 9.3, HOLD `cin` at v=8.85)   LANDSCAPE 1920x1080
-// 6.46 liquid wipe covers s1 | 6.78 כל: stadium light rig ignites | 7.02 ערוצי: Sport 1..4 cards fly in as a 2x2 strip, 7.47 Sport 5 hero slams
+// 6.72 liquid wipe covers s1 | 6.78 כל: stadium light rig ignites | 7.02 ערוצי: Sport 1..4 cards fly in as a 2x2 strip, 7.47 Sport 5 hero slams
 // 7.58 הספורט: ball/trophy splash burst + crowd | 8.045 כולל: build-up (sweeping spotlights, drumroll, implosion)
 // 8.36 צ'רלטון: CHARLTON wordmark SLAMS (shockwave + lightning), camera pushes in (main.js), hold = cinema trailer moment
 (() => {
@@ -10,7 +10,7 @@
 
   // ---------------------------------------------------------------- entry wipe (candy liquid sweeping left to right on a diagonal)
   const WIPE_COLS = [C.lime, C.cyan, C.blue];
-  const WT0 = 6.46, WDUR = .34;
+  const WT0 = 6.72, WDUR = .30;
   function front(p, i) { const pp = clamp((p - i * .15) / .55), e = ease.inOut(pp); return { e, base: lerp(-700, W + 700, e), ph: i * 2 + p * 7 }; }
   function frontPath(ctx, f) {   // region to the LEFT of a wobbly diagonal edge sweeping right
     const amp = 90 * Math.sin(Math.PI * clamp(f.e)); ctx.beginPath(); ctx.moveTo(-60, -40);
@@ -156,7 +156,7 @@
     ctx.restore();
   }
 
-  A.scene({ name: 's2_sports', start: 6.4, end: 9.3, draw(ctx, s) {
+  A.scene({ name: 's2_sports', start: 6.7, end: 9.3, draw(ctx, s) {
     const t = s.t, T = A.T; if (!WM) buildWM(); CL.HOLDFOC.cin = [FX, FY, 1.3];
     const wp = (t - WT0) / WDUR, wiping = wp < 1; if (wp <= 0) return;
     if (wiping) {   // entry wipe: candy bands ahead of the reveal edge
@@ -170,7 +170,6 @@
 
     // ---- light rig + beams
     const aim = sm(8.2, 8.8, t); beams(ctx, t, aim, 1); rig(ctx, t, 1);
-    if (t >= 6.78 && t < 6.846) { ctx.fillStyle = `rgba(255,255,255,${.6 * (1 - (t - 6.78) / .066)})`; ctx.fillRect(0, 0, W, H); }   // the flash (CUE 6.78 light-flash)
 
     const bo = ease.out(clamp((t - 8.36) / .5));   // stage is pushed out smoothly by the slam
     if (bo < .995) { ctx.save(); ctx.translate(FX, FY); ctx.scale(1 + bo * .3, 1 + bo * .3); ctx.translate(-FX, -FY); ctx.globalAlpha *= 1 - bo;
@@ -259,5 +258,6 @@
       for (let i = 0; i < 26; i++) { const sp2 = 40 + hash(i) * 70, x = (hash(i * 3.3) * 1.2 - .1) * W + Math.sin(T * .9 + i) * 30, y = 1000 - ((T * sp2 + hash(i * 7) * 900) % 900), k = .5 + .5 * Math.sin(T * 4 + i * 2); CL.spark(ctx, x, y, (5 + hash(i + 2) * 12) * (0.4 + k), T * 2 + i, i % 3 ? '#ffd98a' : '#ffffff'); }
     }
     if (wiping) ctx.restore();
+    if (t >= 6.78 && t < 6.846) { const k = 1 - (t - 6.78) / .066; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, 960, 540, 420, 1150, [[0, 'rgba(255,255,255,0)'], [1, `rgba(255,255,255,${.55 * k})`]]); ctx.fillRect(0, 0, W, H); ctx.restore(); }   // CUE 6.78 light-flash (soft edge pulse)
   } });
 })();
