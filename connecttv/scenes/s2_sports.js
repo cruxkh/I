@@ -99,12 +99,12 @@
   }
 
   // ---------------------------------------------------------------- CHARLTON wordmark (glossy gold + candy, built once)
-  const HEB = "צ'רלטון", LAT = 'CHARLTON', WMW = 1300, WMH = 640, CX = 650, CY = 300, HY = 150, LY = 360, HW = 860, LW = 930, HSY = 1.12, LSY = 1.15;
+  const HEB = "צ'רלטון", LAT = 'CHARLTON', WMW = 1300, WMH = 560, CX = 650, CY = 256, HY = 170, LY = 385, HW = 980, LW = 1000, HSY = .92, LSY = 1.0, WK = .94;
   let WM = null, MASK = null, SC = null;
-  function hebPath(g, kind, lw) { g.save(); g.font = '900 200px Rubik'; g.direction = 'rtl'; g.textAlign = 'center'; g.textBaseline = 'middle'; const k = HW / g.measureText(HEB).width; g.translate(CX, HY); g.scale(k, k * HSY); if (kind === 'stroke') { g.lineWidth = lw; g.strokeText(HEB, 0, 0); } else g.fillText(HEB, 0, 0); g.restore(); }
-  function latPath(g, kind, lw) {
+  function hebPath(g, kind, lw, su) { g.save(); g.font = '900 200px Rubik'; g.direction = 'rtl'; g.textAlign = 'center'; g.textBaseline = 'middle'; const k = HW / g.measureText(HEB).width; g.translate(CX, HY); g.scale(k, k * HSY); if (su) su(g); if (kind === 'stroke') { g.lineWidth = lw; g.strokeText(HEB, 0, 0); } else if (kind === 'fill') g.fillText(HEB, 0, 0); g.restore(); }
+  function latPath(g, kind, lw, su) {
     g.save(); g.font = '900 200px Rubik'; g.direction = 'ltr'; g.textAlign = 'left'; g.textBaseline = 'middle'; const ws = [...LAT].map(c => g.measureText(c).width), tr = 34, tot = ws.reduce((a, b) => a + b, 0) + tr * (ws.length - 1), k = LW / tot;
-    g.translate(CX - LW / 2, LY); g.scale(k, k * LSY); let x = 0; [...LAT].forEach((c, i) => { if (kind === 'stroke') { g.lineWidth = lw; g.strokeText(c, x, 0); } else g.fillText(c, x, 0); x += ws[i] + tr; }); g.restore();
+    g.translate(CX - LW / 2, LY); g.scale(k, k * LSY); if (su) su(g); let x = 0; [...LAT].forEach((c, i) => { if (kind === 'stroke') { g.lineWidth = lw; g.strokeText(c, x, 0); } else if (kind === 'fill') g.fillText(c, x, 0); x += ws[i] + tr; }); g.restore();
   }
   function buildWM() {
     WM = CL.layer('s2_wm', WMW, WMH, g => {
@@ -118,23 +118,23 @@
       // gold bevel rim + face with gloss (face painted on a scratch canvas so gloss only lands on glyph pixels)
       const sc = document.createElement('canvas'); sc.width = WMW; sc.height = WMH; const s = sc.getContext('2d'); s.lineJoin = 'round';
       lines.forEach(([path, y, sy, EX, lw]) => {
-        const hh = y === HY ? 118 : 72;
-        g.save(); g.strokeStyle = A.linear(g, 0, y - hh, 0, y + hh, [[0, '#fff4b8'], [.5, '#ff9d1a'], [1, '#8a3200']]); path(g, 'stroke', lw * .75); g.restore();
-        s.save(); s.fillStyle = A.linear(s, 0, y - hh, 0, y + hh, [[0, '#fff3a8'], [.25, '#ffd21f'], [.47, '#ff9a0a'], [.5, '#b84400'], [.6, '#ff8a10'], [1, '#ffd23f']]); path(s, 'fill');
-        s.globalCompositeOperation = 'source-atop';
-        s.fillStyle = A.linear(s, 0, y - hh, 0, y, [[0, 'rgba(255,255,255,.5)'], [1, 'rgba(255,255,255,0)']]); s.fillRect(0, y - hh, WMW, hh);
-        s.fillStyle = A.linear(s, 0, y + hh * .2, 0, y + hh, [[0, 'rgba(255,46,147,0)'], [1, 'rgba(255,46,147,.2)']]); s.fillRect(0, y + hh * .2, WMW, hh * .8);
-        s.strokeStyle = 'rgba(255,255,255,.75)'; path(s, 'stroke', 5); s.restore();
+        const hh = y === HY ? 88 : 95;   // local (font-space) half height for the vertical gradients
+        path(g, 'stroke', lw * .75, q => { q.strokeStyle = A.linear(q, 0, -hh, 0, hh, [[0, '#fff4b8'], [.5, '#ff9d1a'], [1, '#8a3200']]); });
+        path(s, 'fill', 0, q => { q.fillStyle = A.linear(q, 0, -hh, 0, hh, [[0, '#fff3a8'], [.25, '#ffd21f'], [.47, '#ff9a0a'], [.5, '#b84400'], [.6, '#ff8a10'], [1, '#ffd23f']]); });
+        s.save(); s.globalCompositeOperation = 'source-atop';
+        path(s, 'custom', 0, q => { q.fillStyle = A.linear(q, 0, -hh, 0, 0, [[0, 'rgba(255,255,255,.5)'], [1, 'rgba(255,255,255,0)']]); q.fillRect(-1200, -hh, 2400, hh); q.fillStyle = A.linear(q, 0, hh * .2, 0, hh, [[0, 'rgba(255,46,147,0)'], [1, 'rgba(255,46,147,.22)']]); q.fillRect(-1200, hh * .2, 2400, hh * .8); });
+        path(s, 'stroke', 5, q => { q.strokeStyle = 'rgba(255,255,255,.75)'; });
+        s.restore();
       });
       g.drawImage(sc, 0, 0);
       // gold rules with diamond under the Latin line
-      const ly = 500; g.fillStyle = A.linear(g, 100, 0, 1200, 0, [[0, 'rgba(255,214,90,0)'], [.2, '#ffd86a'], [.8, '#ffd86a'], [1, 'rgba(255,214,90,0)']]); g.fillRect(100, ly - 3, 1100, 6);
+      const ly = 505; g.fillStyle = A.linear(g, 100, 0, 1200, 0, [[0, 'rgba(255,214,90,0)'], [.2, '#ffd86a'], [.8, '#ffd86a'], [1, 'rgba(255,214,90,0)']]); g.fillRect(100, ly - 3, 1100, 6);
       g.fillStyle = '#fff1a8'; g.save(); g.translate(CX, ly); g.rotate(Math.PI / 4); g.fillRect(-14, -14, 28, 28); g.strokeStyle = '#050826'; g.lineWidth = 4; g.strokeRect(-14, -14, 28, 28); g.restore();
     });
     MASK = CL.layer('s2_wm_mask', WMW, WMH, g => { g.fillStyle = '#fff'; g.strokeStyle = '#fff'; g.lineJoin = 'round'; hebPath(g, 'fill'); latPath(g, 'fill'); hebPath(g, 'stroke', 8); latPath(g, 'stroke', 8); });
     SC = document.createElement('canvas'); SC.width = WMW; SC.height = WMH;
   }
-  const GLINTS = [[CX - 420, HY - 95], [CX - 90, HY - 110], [CX + 250, HY - 100], [CX + 440, HY - 30], [CX - 470, LY - 40], [CX - 120, LY - 55], [CX + 260, LY - 60], [CX + 490, LY + 10]];
+  const GLINTS = [[CX - 430, HY - 90], [CX - 90, HY - 110], [CX + 280, HY - 95], [CX + 470, HY - 20], [CX - 480, LY - 30], [CX - 130, LY - 45], [CX + 250, LY - 50], [CX + 500, LY + 10]];
 
   // ---------------------------------------------------------------- the scene
   const TILES = [   // 2x2 strip (grid) that springs to two side columns when Sport 5 slams
@@ -222,8 +222,8 @@
     }
 
     // ---- CHARLTON
-    if (t >= 8.2) {   // CUE 8.32 charlton-slam (impact + shockwave + lightning; the narrator turns trailer-voice, hold starts 8.85)
-      const u = Math.max(0, t - 8.32), on = clamp((t - 8.22) / .04);
+    if (t >= 8.23) {   // CUE 8.32 charlton-slam (impact + shockwave + lightning; the narrator turns trailer-voice, hold starts 8.85)
+      const u = Math.max(0, t - 8.32), on = clamp((t - 8.24) / .03);
       // backdrop: warm glow, rotating god rays (idle life on the output clock), candy splash
       ctx.save(); ctx.globalAlpha = on; A.glow(ctx, FX, FY, 980, '#ff8a1f', .5); A.glow(ctx, FX, FY, 760, C.pink, .32);
       ctx.translate(FX, FY); ctx.rotate(T * .1); ctx.globalCompositeOperation = 'lighter'; const RN = 18;
@@ -232,8 +232,8 @@
       const sp = CL.spring(t, 8.32 - .05, .65); ctx.save(); ctx.globalAlpha = .95; CL.splash(ctx, FX, FY, 560 * (1 + .015 * Math.sin(T * 2.4)), sp, 3, [C.pink, C.orange, C.yellow, C.purple, C.cyan, C.lime]); ctx.restore();
       ctx.save(); ctx.translate(FX, FY); ctx.scale(1.7, 1); ctx.fillStyle = A.radial(ctx, 0, 0, 0, 420, [[0, 'rgba(3,5,24,.78)'], [.6, 'rgba(3,5,24,.5)'], [1, 'rgba(3,5,24,0)']]); ctx.globalAlpha = on; ctx.fillRect(-430, -430, 860, 860); ctx.restore();
       // the wordmark
-      const pop = land(t, 8.32, .30), sc = lerp(2.0, 1, pop) * (1 + .012 * Math.sin(T * 2.6)), shk = CL.shake(t, 8.32, .55, 18);
-      ctx.save(); ctx.translate(FX + shk[0], FY + shk[1]); ctx.rotate((1 - pop) * .05 + .004 * Math.sin(T * 1.7)); ctx.scale(sc, sc); ctx.globalAlpha = on;
+      const pop = land(t, 8.32, .22), sc = lerp(3.0, 1, pop) * (1 + .012 * Math.sin(T * 2.6)), shk = CL.shake(t, 8.32, .55, 18);
+      ctx.save(); ctx.translate(FX + shk[0], FY + shk[1]); ctx.rotate((1 - pop) * .05 + .004 * Math.sin(T * 1.7)); ctx.scale(sc * WK, sc * WK); ctx.globalAlpha = on;
       ctx.drawImage(WM, -CX, -CY);
       const cyc = (T % 2.3) / .9;
       if (cyc < 1 && t > 8.4) {   // gold shine sweep across both lines (idle life)
@@ -249,9 +249,9 @@
       ctx.fillStyle = A.radial(ctx, FX, fy, 0, 900, [[0, 'rgba(255,240,200,.85)'], [.3, 'rgba(255,190,90,.35)'], [1, 'rgba(255,190,90,0)']]); ctx.save(); ctx.translate(FX, fy); ctx.scale(1, .02); ctx.translate(-FX, -fy); ctx.fillRect(FX - 950, fy - 950, 1900, 1900); ctx.restore(); ctx.restore();
       // shockwave rings + impact flash
       [0, .07, .15].forEach((d, i) => CL.ring(ctx, FX, FY, 1500, (u - d) / .6, ['#ffffff', C.yellow, C.pink][i], 46 - i * 10));
-      if (u < .3) { ctx.fillStyle = `rgba(255,250,235,${.92 * Math.exp(-u * 14)})`; ctx.fillRect(0, 0, W, H); }
+      if (t >= 8.32 && u < .3) { ctx.fillStyle = `rgba(255,250,235,${.92 * Math.exp(-u * 14)})`; ctx.fillRect(0, 0, W, H); }
       // lightning: slam bolts, then idle crackle (output clock) around the letters
-      if (u < .4) { const p = ease.out(clamp(u / .07)), a = 1 - u / .4; [[240, 180, 520, 400, 3], [1690, 190, 1420, 410, 4], [960, 160, 900, 330, 5], [200, 720, 500, 560, 6], [1730, 700, 1430, 570, 7]].forEach(([x0, y0, x1, y1, sd]) => CL.bolt(ctx, x0, y0, x1, y1, p, sd, { col: sd % 2 ? C.cyan : C.pink, lw: 15, alpha: a })); }
+      if (t >= 8.32 && u < .4) { const p = ease.out(clamp(u / .07)), a = 1 - u / .4; [[240, 180, 520, 400, 3], [1690, 190, 1420, 410, 4], [960, 160, 900, 330, 5], [200, 720, 500, 560, 6], [1730, 700, 1430, 570, 7]].forEach(([x0, y0, x1, y1, sd]) => CL.bolt(ctx, x0, y0, x1, y1, p, sd, { col: sd % 2 ? C.cyan : C.pink, lw: 15, alpha: a })); }
       const bq = Math.floor(T / .8), bph = T - bq * .8; if (bph < .13 && t > 8.5) { const a = 1 - bph / .13, sd = bq % 5, sx0 = 400 + hash(bq) * 1120; CL.bolt(ctx, sx0, 170, 420 + hash(bq + 3) * 1080, 330 + hash(bq + 5) * 250, 1, 20 + sd, { col: bq % 2 ? C.cyan : '#ffd98a', lw: 10, alpha: a }); }
       // drifting embers / sparkles (output clock)
       for (let i = 0; i < 26; i++) { const sp2 = 40 + hash(i) * 70, x = (hash(i * 3.3) * 1.2 - .1) * W + Math.sin(T * .9 + i) * 30, y = 1000 - ((T * sp2 + hash(i * 7) * 900) % 900), k = .5 + .5 * Math.sin(T * 4 + i * 2); CL.spark(ctx, x, y, (5 + hash(i + 2) * 12) * (0.4 + k), T * 2 + i, i % 3 ? '#ffd98a' : '#ffffff'); }

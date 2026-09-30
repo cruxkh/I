@@ -267,6 +267,9 @@
   const BW = 712, BCY = 455;
   function brandSheen(ctx, cx, cy, sheen) {
     ox.clearRect(0, 0, 1100, 1000); CL.brand(ox, 550, 500, BW, 'full');
+    // the icon PNG has a hard-cropped smoke halo at its top/right edges: fade those edges so no box shows over bright backgrounds
+    ox.save(); ox.globalCompositeOperation = 'destination-out'; ox.fillStyle = A.linear(ox, 0, 130, 0, 260, [[0, 'rgba(0,0,0,1)'], [1, 'rgba(0,0,0,0)']]); ox.fillRect(0, 100, 1100, 160);
+    ox.fillStyle = A.linear(ox, 906, 0, 776, 0, [[0, 'rgba(0,0,0,1)'], [1, 'rgba(0,0,0,0)']]); ox.fillRect(776, 100, 200, 640); ox.restore();
     if (sheen > 0 && sheen < 1) { ox.save(); ox.globalCompositeOperation = 'source-atop'; const x = lerp(-300, 1400, ease.inOut(sheen)); ox.fillStyle = A.linear(ox, x - 90, 200, x + 90, 800, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.75)'], [1, 'rgba(255,255,255,0)']]); ox.fillRect(0, 0, 1100, 1000); ox.restore(); }
     ctx.drawImage(off, cx - 550, cy - 500);
   }
@@ -294,11 +297,13 @@
     }
     // ---- the big splash behind the logo + shockwaves  (CUE 27.60 logo-slam)
     if (u >= 0) {
-      const sa = lerp(1, .32, sm(.05, 1.4, u));
+      const sa = lerp(1, .14, sm(.05, 1.5, u));
       ctx.save(); ctx.globalAlpha = sa; CL.splash(ctx, CX, 450, 860, CL.spring(u, 0, .62), 2); ctx.restore();
       ctx.save(); ctx.globalAlpha = sa * .9; CL.splash(ctx, CX, 460, 560, CL.spring(u, .07, .55), 6, [C.cyan, C.yellow, C.pink, C.lime, C.purple]); ctx.restore();
       CL.ring(ctx, CX, 460, 1300, clamp(u / .7), '#fff', 34); CL.ring(ctx, CX, 460, 1000, clamp((u - .08) / .7), C.pink, 26); CL.ring(ctx, CX, 460, 780, clamp((u - .18) / .7), C.cyan, 20);
     }
+    // ---- slam flash (under the logo so the impact frame stays crisp)
+    if (u >= 0 && u < .2) { ctx.save(); ctx.globalAlpha = .3 * (1 - u / .2); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore(); A.glow(ctx, CX, 460, 1100, '#ffffff', .8 * (1 - u / .2)); }
     // ---- LOGO: slams down from big to 1.0 landing exactly on SLAM, squash rebound, then float + breathe
     {
       const pre = inv(SLAM - .10, SLAM, t); let sx, sy, al = 1;
@@ -336,8 +341,6 @@
       const ik = sm(.5, 1.5, u);
       for (let i = 0; i < 34; i++) { const sp = 16 + hash(i * 1.3) * 40, x = hash(i * 8.3) * W + Math.sin(t * .6 + i * 2) * 40, y = ((hash(i * 2.9) * H * 1.3 + t * sp * .6) % (H + 80) + H + 80) % (H + 80) - 40, tw = .5 + .5 * Math.sin(t * (1.4 + hash(i) * 2.4) + i * 3); ctx.save(); ctx.globalAlpha = ik * (.35 + .65 * tw); CL.spark(ctx, x, y, 8 + hash(i * 6) * 24 * tw, t * .5 + i, ['#fff', C.yellow, C.cyan, C.pink, '#fff'][i % 5]); ctx.restore(); }
     }
-    // ---- slam flash
-    if (u >= 0 && u < .3) { ctx.save(); ctx.globalAlpha = .9 * (1 - u / .3); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
     CL.vignette(ctx, .4);
   }
 

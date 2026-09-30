@@ -161,7 +161,7 @@
   }
 
   // ---------------------------------------------------------------- devices, tiles, arrows
-  const PH = [430, 470], TVP = [1490, 440], PA = [430, 450], PB = [1490, 430], TSC = 1.12;
+  const PH = [430, 470], TVP = [1490, 440], PA = [430, 450], PB = [1490, 430], TSC = 1.25;
   const TILES = [
     { k: 'netflix', ts: 23.92, off: 0 }, { k: 'disney', ts: 23.97, off: Math.PI }, { k: 'prime', ts: 24.02, off: 0 }, { k: 'hbo', ts: 24.07, off: Math.PI }, { k: 'appletv', ts: 24.12, off: 0 },
     { k: 'hulu', ts: 24.22, off: Math.PI }, { k: 'paramount', ts: 24.27, off: 0 }, { k: 'netflix', ts: 24.32, off: Math.PI },
@@ -282,15 +282,15 @@
     // CUE 22.36 no-slam-1 (giant red NO drops in, shockwave)
     const s1 = stampSlam(t, 22.36, .22, 2.4);
     if (t >= 22.34 && t < 23.3) impactFx(ctx, t, 22.36, CX, CY, 330, [C.red, C.pink, C.orange, C.yellow], 3);
-    if (s1) { const r = sm(22.6, 22.85, t), o = sm(23.18, 23.28, t); noSign(ctx, CX, CY, 335, { scale: s1.sc * (1 + .12 * r + .3 * o), alpha: s1.al * lerp(1, .22, r) * (1 - o), rot: s1.rot - .04 * r }); }
+    if (s1) { const r = sm(22.64, 22.9, t), o = sm(23.18, 23.28, t); noSign(ctx, CX, CY, 335, { scale: s1.sc * (1 + .12 * r + .3 * o), alpha: s1.al * lerp(1, .22, r) * (1 - o), rot: s1.rot - .04 * r }); }
 
     // ---- search wall + magnifier
     // CUE 22.66 search-wall-magnifier-pop (chaotic wall of question marks + hunting magnifier)
-    if (t > 22.58 && t < 23.7) {
+    if (t > 22.5 && t < 23.7) {
       world(ctx, t);
-      const u = t - 22.66, hunt = [CX + 560 * Math.sin(u * 10 + .6) + 90 * Math.sin(u * 23), CY - 10 + 130 * Math.sin(u * 14.5) + 30 * Math.sin(u * 31)], k = ease.inOut(inv(22.98, 23.12, t)), e = ease.out(inv(22.46, 22.74, t));
+      const u = t - 22.66, hunt = [CX + 560 * Math.sin(u * 10 + .6) + 90 * Math.sin(u * 23), CY - 10 + 130 * Math.sin(u * 14.5) + 30 * Math.sin(u * 31)], k = ease.inOut(inv(22.98, 23.12, t)), e = ease.out(inv(22.54, 22.80, t));
       let mx = lerp(CX, hunt[0], e), my = lerp(CY, hunt[1], e); mx = lerp(mx, CX, k); my = lerp(my, CY, k);
-      const rot = .38 * Math.sin(u * 11) * (1 - k) * e, wb = 1 + .05 * Math.sin(u * 19) * (1 - k), pop = CL.pop(t, 22.46, .22);
+      const rot = .38 * Math.sin(u * 11) * (1 - k) * e, wb = 1 + .05 * Math.sin(u * 19) * (1 - k), pop = CL.pop(t, 22.52, .2);
       const gasp = 1 - .05 * Math.exp(-Math.max(0, t - 23.18) * 12) * 1 + .1 * Math.sin(inv(23.05, 23.12, t) * Math.PI) * 0;
       if (t < 23.26 && pop > 0) magnifier(ctx, mx, my, 235 * pop * wb * gasp, rot, () => world(ctx, t), cl((t - 23.18) / .07) > 0 && t >= 23.18 ? cl((t - 23.18) / .07) : 0, t);
       worldPops(ctx, t);

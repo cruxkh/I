@@ -76,6 +76,8 @@ def bubble_cloud(dur, r, dens, f_range=(500, 2600), amp=0.25, tau_range=(0.008, 
     cdf = np.cumsum(p) / p.sum()
     for u in r.uniform(0, 1, cnt):
         i = int(np.searchsorted(cdf, u))
+        if i > n - N(0.1):
+            continue
         b = bubble(r.uniform(*f_range), 0.09, r.uniform(*rise_range), r.uniform(*tau_range)) * r.uniform(0.3, 1.0)
         add_at(y, pan(b, r.uniform(-0.85, 0.85)), i / SR, amp)
     return y

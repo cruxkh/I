@@ -98,7 +98,7 @@
     const [wx, wy, ww, wh] = tl.wall, [fx, fy] = tl.fl;
     let x = lerp(wx, fx, e), y = lerp(wy, fy, e) - Math.sin(q * Math.PI) * 60, w = lerp(ww, FW, eb), h = lerp(wh, FH, eb);
     const arr = ease.out(inv(12.55, 12.8, tv)); y += Math.sin(tv * 2.3 + i * 1.3) * 6 * arr; x += Math.sin(tv * 1.7 + i * 2.1) * 3 * arr;
-    let bump = 0; const d = Math.hypot(x - 540, y - WALL_CY);
+    let bump = 0; const d = Math.hypot(x - CX, y - WALL_CY);
     for (const r of RINGS) { if (!r.amp) continue; const u = (tv - r.t) / r.dur; if (u > 0 && u < 1) bump += r.amp * G(d, r.R * ease.out(u), 130) * (1 - u); }
     const rot = (1 - Math.min(1, wp)) * (i % 2 ? -.4 : .4) + Math.sin(q * Math.PI) * tl.spin;
     return { x, y, w, h, sc: wp * (1 + bump), rot, wp, q };
@@ -132,34 +132,34 @@
   function drawMap(g, tv, states) {
     const pm = clamp((tv - T_ISR) / .55); if (pm <= 0) return;
     const sc = .86 + .14 * CL.pop(tv, T_ISR - .03, .5);
-    g.save(); g.translate(540, MAP_CY); g.scale(sc, sc); g.translate(-540, -MAP_CY);
+    g.save(); g.translate(CX, MAP_CY); g.scale(sc, sc); g.translate(-CX, -MAP_CY);
     const path = () => { g.beginPath(); OPX.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath(); };
-    path(); g.save(); g.globalAlpha = ease.inOut(inv(.25, 1, pm)) * .5; g.fillStyle = A.linear(g, 0, 340, 0, 1330, [[0, '#ffffff'], [.4, '#9fd4ff'], [1, '#2F6BFF']]); g.fill(); g.restore();
+    path(); g.save(); g.globalAlpha = ease.inOut(inv(.25, 1, pm)) * .5; g.fillStyle = A.linear(g, 0, 190, 0, 820, [[0, '#ffffff'], [.4, '#9fd4ff'], [1, '#2F6BFF']]); g.fill(); g.restore();
     g.save(); g.lineJoin = 'round'; g.lineCap = 'round'; g.setLineDash([PL * pm, PL * 2]);
     path(); g.globalCompositeOperation = 'lighter';
-    g.strokeStyle = '#19C8FF'; g.globalAlpha = .13; g.lineWidth = 46; g.stroke(); g.globalAlpha = .22; g.lineWidth = 24; g.stroke();
-    g.globalCompositeOperation = 'source-over'; g.globalAlpha = .95; g.strokeStyle = '#fff'; g.lineWidth = 9; g.stroke();
+    g.strokeStyle = '#19C8FF'; g.globalAlpha = .13; g.lineWidth = 40; g.stroke(); g.globalAlpha = .22; g.lineWidth = 20; g.stroke();
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = .95; g.strokeStyle = '#fff'; g.lineWidth = 7; g.stroke();
     g.restore();
-    if (pm >= 1) { g.save(); g.lineJoin = 'round'; g.lineCap = 'round'; g.globalCompositeOperation = 'lighter'; g.setLineDash([PL * .06, PL * .94]); g.lineDashOffset = -tv * PL * .3; path(); g.strokeStyle = '#9fe0ff'; g.lineWidth = 26; g.globalAlpha = .5; g.stroke(); g.strokeStyle = '#fff'; g.lineWidth = 11; g.globalAlpha = 1; g.stroke(); g.restore(); }
+    if (pm >= 1) { g.save(); g.lineJoin = 'round'; g.lineCap = 'round'; g.globalCompositeOperation = 'lighter'; g.setLineDash([PL * .06, PL * .94]); g.lineDashOffset = -tv * PL * .3; path(); g.strokeStyle = '#9fe0ff'; g.lineWidth = 22; g.globalAlpha = .5; g.stroke(); g.strokeStyle = '#fff'; g.lineWidth = 9; g.globalAlpha = 1; g.stroke(); g.restore(); }
     // constellation links + nodes
     const cal = ease.inOut(inv(.35, 1, pm));
     g.save(); g.strokeStyle = 'rgba(220,240,255,.7)'; g.lineWidth = 3; g.globalAlpha = cal * .8;
     CITY_LINKS.forEach(([a, b]) => { const p = P(a[0], a[1]), q = P(b[0], b[1]); g.beginPath(); g.moveTo(p[0], p[1]); g.lineTo(q[0], q[1]); g.stroke(); });
     g.restore();
     g.save(); g.globalAlpha = cal;
-    OPX.forEach((p, i) => { if (i % 3 === 0) { g.fillStyle = '#fff'; g.beginPath(); g.arc(p[0], p[1], 6, 0, TAU); g.fill(); } });
+    OPX.forEach((p, i) => { if (i % 3 === 0) { g.fillStyle = '#fff'; g.beginPath(); g.arc(p[0], p[1], 5, 0, TAU); g.fill(); } });
     let ni = 0; const seen = new Set();
-    [...CITY_LINKS.flat(), ...EXTRA_NODES].forEach(c => { const key = c.join(','); if (seen.has(key)) return; seen.add(key); const p = P(c[0], c[1]); NODE_TW(g, p[0], p[1], tv, ni++, 1); });
+    [...CITY_LINKS.flat(), ...EXTRA_NODES].forEach(c => { const key = c.join(','); if (seen.has(key)) return; seen.add(key); const p = P(c[0], c[1]); NODE_TW(g, p[0], p[1], tv, ni++, .75); });
     // red LIVE dot on Tel Aviv
     const ta = P(TEL_AVIV_0(), TEL_AVIV_1()), pl = pulse(tv), bl = .5 + .5 * Math.sin(tv * 7);
-    g.fillStyle = A.radial(g, ta[0], ta[1], 0, 70, [[0, 'rgba(255,59,78,.75)'], [1, 'rgba(255,59,78,0)']]); g.beginPath(); g.arc(ta[0], ta[1], 70 * (.8 + .3 * bl + .2 * pl), 0, TAU); g.fill();
-    g.fillStyle = '#FF2A3F'; g.strokeStyle = '#fff'; g.lineWidth = 4; g.beginPath(); g.arc(ta[0], ta[1], 15 + 3 * pl, 0, TAU); g.fill(); g.stroke();
+    g.fillStyle = A.radial(g, ta[0], ta[1], 0, 60, [[0, 'rgba(255,59,78,.75)'], [1, 'rgba(255,59,78,0)']]); g.beginPath(); g.arc(ta[0], ta[1], 60 * (.8 + .3 * bl + .2 * pl), 0, TAU); g.fill();
+    g.fillStyle = '#FF2A3F'; g.strokeStyle = '#fff'; g.lineWidth = 4; g.beginPath(); g.arc(ta[0], ta[1], 12 + 2.5 * pl, 0, TAU); g.fill(); g.stroke();
     g.restore();
     g.restore();
     // feed lines from tiles to their city
     const la = ease.out(inv(12.42, 12.75, tv));
     if (la > 0) states.forEach((st, i) => {
-      const tl = TILES[i], right = tl.fl[0] > 540, x0 = tl.fl[0] + (right ? -FW / 2 : FW / 2) * ease.inOut(st.q), y0 = st.y, c = P(tl.city[0], tl.city[1]);
+      const tl = TILES[i], right = tl.fl[0] > CX, x0 = tl.fl[0] + (right ? -FW / 2 : FW / 2) * ease.inOut(st.q), y0 = st.y, c = P(tl.city[0], tl.city[1]);
       const cx = (x0 + c[0]) / 2, cy = (y0 + c[1]) / 2 + (i % 2 ? 34 : -34);
       g.save(); g.globalAlpha = la * .85; g.strokeStyle = 'rgba(200,232,255,.85)'; g.lineWidth = 3.5; g.setLineDash([12, 10]); g.lineDashOffset = -tv * 60; g.beginPath(); g.moveTo(x0, y0); g.quadraticCurveTo(cx, cy, c[0], c[1]); g.stroke(); g.setLineDash([]);
       const u = (tv * .55 + i * .137) % 1, mx = (1 - u) * (1 - u) * x0 + 2 * (1 - u) * u * cx + u * u * c[0], my = (1 - u) * (1 - u) * y0 + 2 * (1 - u) * u * cy + u * u * c[1];
@@ -171,27 +171,27 @@
   // ---------------------------------------------------------------- liquid rise (blue/white splash)
   function liquid(g, tv) {
     const k = ease.out(inv(12.06, 12.62, tv)); if (k <= 0) return;
-    const y0 = lerp(H + 60, 1290, k) + Math.sin(tv * 2.4) * 6 * k;
+    const y0 = lerp(H + 60, 855, k) + Math.sin(tv * 2.4) * 6 * k;
     [['#2F6BFF', .6, 46, 0], ['#19C8FF', .55, 22, 1.7], [ICE, 1, 0, 3.1]].forEach(([col, al, off, ph], li) => {
       g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W + 12; x += 12) g.lineTo(x, y0 + off + Math.sin(x * .008 + tv * 2.1 + ph) * 24 * (.6 + .4 * k) + Math.sin(x * .021 - tv * 3.3 + ph * 2) * 9); g.lineTo(W, H); g.closePath();
-      g.fillStyle = li < 2 ? A.linear(g, 0, y0, 0, H, [[0, A.hex(col, al)], [1, A.hex(col, al * .5)]]) : A.linear(g, 0, y0, 0, y0 + 300, [[0, A.hex('#ffffff', .92)], [1, A.hex('#7fb8ff', .4)]]); g.fill();
+      g.fillStyle = li < 2 ? A.linear(g, 0, y0, 0, H, [[0, A.hex(col, al)], [1, A.hex(col, al * .5)]]) : A.linear(g, 0, y0, 0, y0 + 220, [[0, A.hex('#ffffff', .92)], [.1, A.hex('#a9d6ff', .55)], [1, A.hex('#3a6bff', .45)]]); g.fill();
     });
-    for (let i = 0; i < 9; i++) { const bx = hash(i * 3.7) * W, by = y0 + 60 + ((hash(i) * 500 - tv * (60 + hash(i + 3) * 60)) % 500 + 500) % 500; g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.arc(bx + Math.sin(tv * 2 + i) * 10, by, 6 + hash(i + 8) * 10, 0, TAU); g.fill(); }
+    for (let i = 0; i < 16; i++) { const bx = hash(i * 3.7) * W, by = y0 + 40 + ((hash(i) * 200 - tv * (30 + hash(i + 3) * 40)) % 200 + 200) % 200; g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.arc(bx + Math.sin(tv * 2 + i) * 10, by, 6 + hash(i + 8) * 10, 0, TAU); g.fill(); }
   }
 
   // ---------------------------------------------------------------- header: LIVE badge + ECG monitor
-  function ecgStrip(g, tv, hk) {
-    const x0 = 545, x1 = 1044, yb = 250, al = ease.out(inv(11.25, 11.45, tv)); if (al <= 0) return;
+  function ecgStrip(g, tv) {
+    const x0 = 470, x1 = 1876, yb = 112, y0 = 36, hh = 152, al = ease.out(inv(11.25, 11.45, tv)); if (al <= 0) return;
     const isk = ease.inOut(inv(12.16, 12.4, tv)), lc = mixHex('#FF3B4E', '#9fe0ff', isk);
     g.save(); g.globalAlpha = al;
-    g.fillStyle = 'rgba(5,8,38,.55)'; g.beginPath(); g.roundRect(x0 - 12, 168, x1 - x0 + 24, 164, 40); g.fill(); g.lineWidth = 3; g.strokeStyle = 'rgba(255,255,255,.25)'; g.stroke();
-    g.strokeStyle = 'rgba(255,255,255,.08)'; g.lineWidth = 2; for (let x = x0 + 20; x < x1; x += 50) { g.beginPath(); g.moveTo(x, 180); g.lineTo(x, 320); g.stroke(); } for (let y = 190; y < 320; y += 30) { g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke(); }
-    const SPD = 520, pts = []; for (let x = x0; x <= x1; x += 3) pts.push([x, yb - ecg(tv - (x1 - x) / SPD) * 80]);
-    g.save(); g.beginPath(); g.roundRect(x0 - 12, 100, x1 - x0 + 24, 300, 40); g.clip(); g.lineJoin = 'round'; g.lineCap = 'round';
+    g.fillStyle = 'rgba(5,8,38,.55)'; g.beginPath(); g.roundRect(x0 - 12, y0, x1 - x0 + 24, hh, 44); g.fill(); g.lineWidth = 3; g.strokeStyle = 'rgba(255,255,255,.25)'; g.stroke();
+    g.strokeStyle = 'rgba(255,255,255,.08)'; g.lineWidth = 2; for (let x = x0 + 20; x < x1; x += 60) { g.beginPath(); g.moveTo(x, y0 + 14); g.lineTo(x, y0 + hh - 14); g.stroke(); } for (let y = y0 + 20; y < y0 + hh - 10; y += 28) { g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke(); }
+    const SPD = 680, pts = []; for (let x = x0; x <= x1; x += 3) pts.push([x, yb - ecg(tv - (x1 - x) / SPD) * 46]);
+    g.save(); g.beginPath(); g.roundRect(x0 - 12, 6, x1 - x0 + 24, 200, 44); g.clip(); g.lineJoin = 'round'; g.lineCap = 'round';
     const draw = () => { g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.stroke(); };
-    g.globalCompositeOperation = 'lighter'; g.strokeStyle = lc; g.globalAlpha = al * .3; g.lineWidth = 26; draw(); g.globalAlpha = al * .8; g.lineWidth = 12; draw();
-    g.globalCompositeOperation = 'source-over'; g.globalAlpha = al; g.strokeStyle = '#fff'; g.lineWidth = 5.5; draw();
-    const hy = pts[pts.length - 1][1]; A.glow(g, x1, hy, 50, lc, .9); g.fillStyle = '#fff'; g.beginPath(); g.arc(x1, hy, 11, 0, TAU); g.fill();
+    g.globalCompositeOperation = 'lighter'; g.strokeStyle = lc; g.globalAlpha = al * .3; g.lineWidth = 24; draw(); g.globalAlpha = al * .8; g.lineWidth = 11; draw();
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = al; g.strokeStyle = '#fff'; g.lineWidth = 5; draw();
+    const hy = pts[pts.length - 1][1]; A.glow(g, x1, hy, 46, lc, .9); g.fillStyle = '#fff'; g.beginPath(); g.arc(x1, hy, 10, 0, TAU); g.fill();
     g.restore(); g.restore();
   }
 
@@ -204,11 +204,11 @@
     CL.bg(g, tv, { tint: [mixHex(C.red, C.cyan, bl), mixHex(C.purple, C.blue, bl), mixHex(C.pink, '#9fd4ff', bl * .8)] });
     CL.vignette(g, .5);
     // heartbeat glow pulses on the whole stage
-    [[T_HEART, '#FF3B4E', .5], [12.03, '#FF2E93', .35], [T_ISR, '#8fd0ff', .55]].forEach(([t, col, a]) => { if (tv > t) A.glow(g, 540, WALL_CY, 1100, col, a * Math.exp(-(tv - t) * 6)); });
+    [[T_HEART, '#FF3B4E', .5], [12.03, '#FF2E93', .35], [T_ISR, '#8fd0ff', .55]].forEach(([t, col, a]) => { if (tv > t) A.glow(g, CX, WALL_CY, 1300, col, a * Math.exp(-(tv - t) * 6)); });
     g.save(); g.globalAlpha = .06; g.fillStyle = '#fff'; const ry = ((tv * .35) % 1.3 - .15) * H; g.fillRect(0, ry, W, 90); g.restore();
     liquid(g, tv);
     // rising blue/white splash burst
-    const spu = (tv - 12.12) / .55; if (spu > 0 && spu < 1) { g.save(); g.globalAlpha = 1 - spu * spu; CL.splash(g, 540, 1240, 560, ease.out(spu), 7, ['#ffffff', '#9fd4ff', '#19C8FF', '#2F6BFF']); g.restore(); }
+    const spu = (tv - 12.12) / .55; if (spu > 0 && spu < 1) { g.save(); g.globalAlpha = 1 - spu * spu; CL.splash(g, CX, 850, 520, ease.out(spu), 7, ['#ffffff', '#9fd4ff', '#19C8FF', '#2F6BFF']); g.restore(); }
     // tile states, pop splashes
     const states = TILES.map((tl, i) => tileState(tl, i, tv));
     drawMap(g, tv, states);
@@ -220,7 +220,7 @@
     TILES.forEach((tl, i) => { if (states[i].wp > .002) drawTile(g, tl, i, tv, states[i]); });
     TILES.forEach((tl, i) => { const u = (tv - tl.t0) / .45; if (u > 0 && u < 1) { const st = states[i]; CL.spark(g, st.x + st.w / 2 - 20, st.y - st.h / 2 + 10, 44 * Math.sin(u * Math.PI), tv * 3, '#fff'); CL.spark(g, st.x - st.w / 2 + 30, st.y + st.h / 2 - 14, 30 * Math.sin(u * Math.PI), -tv * 2, C.yellow); } });
     // idle twinkles (voice pause)
-    const twk = ease.inOut(inv(12.4, 12.9, tv)); if (twk > 0) { g.save(); g.globalAlpha = twk; CL.twinkle(g, tv, 40, 340, 1000, 980, 30, 5, ['#ffffff', '#9fd4ff', C.cyan, '#ffffff', C.yellow]); g.restore(); }
+    const twk = ease.inOut(inv(12.4, 12.9, tv)); if (twk > 0) { g.save(); g.globalAlpha = twk; CL.twinkle(g, tv, 60, 200, 1800, 620, 40, 5, ['#ffffff', '#9fd4ff', C.cyan, '#ffffff', C.yellow]); g.restore(); }
     // rings (giant live beat ring etc.)
     RINGS.forEach(r => {
       const u = (tv - r.t) / r.dur; if (u <= 0 || u >= 1) return; const rr = r.R * ease.out(u), a = Math.pow(1 - u, 1.3), lw = r.lw * (1 - u * .7) + 4;
@@ -228,19 +228,19 @@
       g.strokeStyle = '#fff'; g.globalAlpha = a * .8; g.lineWidth = lw * .3; g.stroke(); g.restore();
     });
     // header: ECG monitor + LIVE badge (big slam, then it shrinks to the header)
-    ecgStrip(g, tv, 0);
-    const hb = ease.outBack(clamp((tv - 11.27) / .4)), bx = lerp(540, 300, hb), by = lerp(285, 250, hb), bs = lerp(1, .6, hb);
-    const k = clamp((tv - 10.92) / .13), u0 = Math.max(0, tv - T_LIVE), squash = 1 - .14 * Math.exp(-u0 * 14) * Math.cos(u0 * 36) * (tv > T_LIVE ? 1 : 0);
-    const slam = lerp(2.6, 1, ease.out(k)) * squash;
+    ecgStrip(g, tv);
+    const hb = ease.outBack(clamp((tv - 11.17) / .42)), bx = lerp(CX, 250, hb), by = lerp(430, 112, hb), bs = lerp(1.5, .5, hb);
+    const k = clamp((tv - 10.93) / .12), u0 = Math.max(0, tv - T_LIVE), squash = 1 - .14 * Math.exp(-u0 * 14) * Math.cos(u0 * 36) * (tv > T_LIVE ? 1 : 0);
+    const slam = lerp(2.0, 1, ease.out(k)) * squash;
     g.save(); g.translate(bx, by); liveBadge(g, tv, bs * slam * (1 + .06 * pulse(tv)), 0); g.restore();
     // entry bolts + glow
     const bp = clamp((tv - 11.0) / .05), ba = tv < 11.08 ? 1 : 1 - inv(11.08, 11.17, tv);
-    if (bp > 0 && ba > 0) { CL.bolt(g, 150, -40, 420, 240, bp, 4, { col: '#FF5A6E', lw: 16, alpha: ba }); CL.bolt(g, 960, -40, 700, 240, bp, 9, { col: '#FF5A6E', lw: 16, alpha: ba }); }
+    if (bp > 0 && ba > 0) { CL.bolt(g, 330, -40, 700, 300, bp, 4, { col: '#FF5A6E', lw: 16, alpha: ba }); CL.bolt(g, 1590, -40, 1220, 300, bp, 9, { col: '#FF5A6E', lw: 16, alpha: ba }); }
     // held beat: sparkle burst + sheen (voice pause 12.7 to 13.08)
     const bu = (tv - 12.72) / .8;
-    if (bu > 0 && bu < 1) for (let j = 0; j < 18; j++) { const an = j / 18 * TAU + hash(j) * .3, rr = lerp(80, 340 + hash(j + 4) * 260, ease.out(bu)); CL.spark(g, 540 + Math.cos(an) * rr, MAP_CY + Math.sin(an) * rr * 1.25, (16 + hash(j * 2) * 24) * Math.sin(Math.min(1, bu * 1.15) * Math.PI), tv * 2 + j, j % 3 ? '#fff' : '#9fe0ff'); }
+    if (bu > 0 && bu < 1) for (let j = 0; j < 18; j++) { const an = j / 18 * TAU + hash(j) * .3, rr = lerp(80, 300 + hash(j + 4) * 260, ease.out(bu)); CL.spark(g, CX + Math.cos(an) * rr * 1.9, MAP_CY + Math.sin(an) * rr * .95, (16 + hash(j * 2) * 24) * Math.sin(Math.min(1, bu * 1.15) * Math.PI), tv * 2 + j, j % 3 ? '#fff' : '#9fe0ff'); }
     const sh = (tv - 12.66) / .42;
-    if (sh > 0 && sh < 1) { const sx = lerp(-400, W + 300, ease.inOut(sh)); g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .33 * Math.sin(sh * Math.PI); g.fillStyle = A.linear(g, sx - 120, 0, sx + 120, 0, [[0, 'rgba(255,255,255,0)'], [.5, '#cfe9ff'], [1, 'rgba(255,255,255,0)']]); g.translate(540, 960); g.rotate(.35); g.translate(-540, -960); g.fillRect(sx - 120, -600, 240, H + 1200); g.restore(); }
+    if (sh > 0 && sh < 1) { const sx = lerp(-400, W + 300, ease.inOut(sh)); g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .33 * Math.sin(sh * Math.PI); g.fillStyle = A.linear(g, sx - 120, 0, sx + 120, 0, [[0, 'rgba(255,255,255,0)'], [.5, '#cfe9ff'], [1, 'rgba(255,255,255,0)']]); g.translate(CX, 540); g.rotate(.35); g.translate(-CX, -540); g.fillRect(sx - 120, -700, 240, H + 1400); g.restore(); }
     // blue-white flash on "מישראל"
     if (tv > T_ISR && tv < T_ISR + .16) { g.save(); g.globalAlpha = .45 * Math.pow(1 - (tv - T_ISR) / .16, 2); g.fillStyle = ICE; g.fillRect(0, 0, W, H); g.restore(); }
     g.restore();
@@ -249,9 +249,9 @@
   // ---------------------------------------------------------------- entry wipe: candy liquid band pours down (top to bottom), glitch + white flash on the word
   function entry(ctx, tv) {
     const off = getOff(), og = off.getContext('2d'); content(og, tv);
-    const yT = 500 + (tv - T_LIVE) * WAVE_V, OFFS = [0, 36, 170, 300, 410, 540];
-    const drip = (x, f) => f * (150 * Math.pow(Math.max(0, Math.sin(x * .021 + 1.1)), 8) + 90 * Math.pow(Math.max(0, Math.sin(x * .037 + 4)), 10));
-    const edge = (j, x) => yT + OFFS[j] + Math.sin(x * .012 + tv * 20 + j * 1.9) * (10 + 6 * j) + Math.sin(x * .031 - tv * 27 + j) * 7 + (j === 5 ? drip(x, 1) : j === 4 ? drip(x, .5) : 0);
+    const yT = 620 + (tv - T_LIVE) * WAVE_V, OFFS = [0, 26, 120, 210, 290, 380];
+    const drip = (x, f) => f * (120 * Math.pow(Math.max(0, Math.sin(x * .014 + 1.1)), 8) + 70 * Math.pow(Math.max(0, Math.sin(x * .025 + 4)), 10));
+    const edge = (j, x) => yT + OFFS[j] + Math.sin(x * .008 + tv * 20 + j * 1.9) * (10 + 5 * j) + Math.sin(x * .021 - tv * 27 + j) * 7 + (j === 5 ? drip(x, 1) : j === 4 ? drip(x, .5) : 0);
     ctx.save();
     ctx.beginPath(); ctx.moveTo(0, -10); for (let x = 0; x <= W + 12; x += 12) ctx.lineTo(x, edge(0, x)); ctx.lineTo(W, -10); ctx.closePath(); ctx.clip();
     ctx.drawImage(off, 0, 0);
@@ -259,7 +259,7 @@
     const ga = tv < 11.0 ? 0 : 1 - inv(11.03, 11.17, tv);
     if (ga > 0) {
       const q = Math.floor(tv * 30 + 1e-6);
-      for (let i = 0; i < 9; i++) { const sy = hash(q * 7 + i * 3.3) * H, shh = 14 + hash(q * 3 + i * 1.7) * 64, dx = (hash(q * 5 + i * 2.1) - .5) * 130 * ga; ctx.drawImage(off, 0, sy, W, shh, dx, sy, W, shh); }
+      for (let i = 0; i < 9; i++) { const sy = hash(q * 7 + i * 3.3) * H, shh = 10 + hash(q * 3 + i * 1.7) * 44, dx = (hash(q * 5 + i * 2.1) - .5) * 220 * ga; ctx.drawImage(off, 0, sy, W, shh, dx, sy, W, shh); }
       ctx.globalCompositeOperation = 'lighter';
       for (let i = 0; i < 4; i++) { ctx.globalAlpha = .55 * ga; ctx.fillStyle = i % 2 ? '#19C8FF' : '#FF2E93'; ctx.fillRect(0, hash(q * 9 + i * 4.4) * H, W, 4 + hash(q + i) * 9); }
     }
@@ -271,7 +271,7 @@
       for (let x = W + 12; x >= 0; x -= 12) ctx.lineTo(x, edge(j + 1, x)); ctx.closePath(); ctx.fillStyle = cols[j]; ctx.fill();
     }
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .35; ctx.strokeStyle = '#fff'; ctx.lineWidth = 8; ctx.beginPath(); for (let x = 0; x <= W + 12; x += 12) x ? ctx.lineTo(x, edge(2, x) + 12) : ctx.moveTo(x, edge(2, x) + 12); ctx.stroke(); ctx.restore();
-    for (let i = 0; i < 10; i++) { const x = hash(i * 3.1 + 1) * W, y = edge(5, x) + 20 + hash(i) * 150 * Math.min(1, Math.max(0, (yT + 500) / 700)); if (y < H + 40) CL.drop(ctx, x, y, 14 + hash(i + 5) * 26, CL.CAND[i % 8], tv, i); }
+    for (let i = 0; i < 10; i++) { const x = hash(i * 3.1 + 1) * W, y = edge(5, x) + 20 + hash(i) * 110; if (y < H + 40) CL.drop(ctx, x, y, 14 + hash(i + 5) * 26, CL.CAND[i % 8], tv, i); }
     // white flash on "וכל"
     const fa = tv < T_LIVE ? .75 * inv(10.99, T_LIVE, tv) : .75 * Math.pow(1 - inv(T_LIVE, 11.2, tv), 2);
     if (fa > 0) { ctx.save(); ctx.globalAlpha = fa; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
@@ -283,10 +283,10 @@
       const hd = TLF.holdAt(A.T), inHold = hd && hd.k === 'ind';
       if (!inHold && s.t < HOLD_V) return;                                   // the s3 Bollywood poster owns the screen until the hold ends
       const tv = inHold ? HOLD_V + hd.age - hd.d : s.t;                        // virtual voice clock (runs into the last 0.11 s of the hold)
-      if (tv < 10.92) return;
-      // CUE 11.03 wipe-whoosh (band starts 0.11 s before the hold releases; output T = 14.42)
+      if (tv < 10.9) return;
+      // CUE 11.03 wipe-whoosh (band starts 0.13 s before the hold releases; output T = 14.40)
       // CUE 11.05 live-slam (white flash + glitch + bolts + LIVE badge impact on "וכל")
-      if (500 + (tv - T_LIVE) * WAVE_V > H + 90) content(ctx, tv); else entry(ctx, tv);
+      if (620 + (tv - T_LIVE) * WAVE_V > H + 90) content(ctx, tv); else entry(ctx, tv);
       // CUE 11.15 tile-pop-1 (Channel 14 + Kan 11 on "ה" of השידורים)
       // CUE 11.30 tile-pop-2 (Channel 9 + Reshet 13)
       // CUE 11.45 tile-pop-3 (Keshet 12 + i24)
