@@ -521,6 +521,11 @@ def main():
         for w in W:
             wa_, wb_ = int(w['t0'] * SR), max(int(w['e1'] * SR), int(w['t0'] * SR) + 1)
             worst = min(worst, vo_l4[wa_:wb_].max() - ml0[wa_:wb_].max())
+        ph_ = {}
+        for w in W:
+            wa_, wb_ = int(w['t0'] * SR), max(int(w['e1'] * SR), int(w['t0'] * SR) + 1)
+            ph_[w['ph']] = min(ph_.get(w['ph'], 99), vo_l4[wa_:wb_].max() - ml0[wa_:wb_].max())
+        print('VO-music at 0 dB music gain, worst word per phrase:', ' '.join('%d:%.1f' % kv for kv in sorted(ph_.items())))
         mus_gain_db = float(os.environ.get('MUSIC_DB', worst - MUSIC_WORST_DB))
         MUd = MUd * db(mus_gain_db)
         MU_cal = (worst, mus_gain_db)

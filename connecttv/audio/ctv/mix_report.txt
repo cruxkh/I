@@ -1,40 +1,40 @@
 ==============================================================================
 score_ctv.wav: YES | gaps (exact digital zero) in the score: none
-music static gain -40.00 dB re the score file (worst word VO-bed pre-master 4.8 dB, target 5.3)
+music static gain -10.18 dB re the score file (worst word VO-music before calibration -2.7 dB, target 7.5); SFX rider min -7.4 dB, active (< -1 dB) 3.4 % of the film
 master: /home/user/I/connecttv/audio/master_ctv.wav  1636800 samples = 34.100 s, 2 ch, 48000 Hz, PCM_24
 integrated -13.99 LUFS | true peak -1.25 dBTP | sample peak -1.26 dBFS | clipped samples 0
-master gain -0.99 dB | limiter GR max 3.40 dB at 9.97 s, >1 dB for 1.22 s, >3 dB for 0.042 s
+master gain -0.83 dB | limiter GR max 3.53 dB at 9.97 s, >1 dB for 1.67 s, >3 dB for 0.077 s
 total exact-zero time in master: 0.001 s (score gaps total 0.000 s)
   cue splash_slam @4.34 protection gain hit/tail: -6.3 / -6.3 dB
   cue logo_suck @31.10 protection gain hit/tail: -2.8 / -2.8 dB
   cue logo_slam @31.10 protection gain hit/tail: 0.0 / 0.0 dB
 cues 147; hit tucked under the voice: 93; tail tucked: 93
 phrase window | VO LUFS | integrated over phrase (LU): VO-bed VO-SFX VO-music | worst word (momentary 400 ms): bed SFX SFX>200Hz music
-  0   0.12-  1.07 |  -13.7 |   11.6   11.6   53.2 |   7.2   7.2   7.5  49.4  פותחים את המסך
-  1   1.26-  3.17 |  -14.2 |   11.7   11.7   46.8 |   7.5   7.5   7.5  42.1  והעולם של הבידור נפתח בפ
-  2   3.41-  5.23 |  -14.1 |   10.2   10.2   54.4 |   7.8   7.8   7.3  50.7  סרטים וסדרות מנטפליקס
-  3   5.35-  6.66 |  -13.4 |   10.0   10.0   55.4 |   7.0   7.0   7.1  50.3  תכנים מדיסני פלוס
-  4   6.78-  8.85 |  -13.1 |    9.0    9.0   49.5 |   7.1   7.1   6.5  47.2  כל ערוצי הספורט כולל צ'ר
-  5  10.28- 11.38 |  -13.7 |   10.4   10.4   49.5 |   7.8   7.8   7.6  45.3  סדרות טורקיות
-  6  12.40- 13.43 |  -14.0 |    8.3    8.3   54.7 |   8.0   8.0   7.2  50.1  סדרות הודיות
-  7  14.55- 16.16 |  -14.3 |   10.5   10.5   50.9 |   7.0   7.0   6.9  38.1  וכל השידורים החיים מישרא
-  8  16.58- 17.59 |  -14.7 |   12.5   12.5   50.9 |   7.3   7.3   7.1  43.7  הכול במקום אחד
-  9  17.93- 18.73 |  -15.6 |   10.5   10.5   49.6 |   7.2   7.2   7.6  45.1  הכול נגיש
- 10  18.86- 20.47 |  -13.3 |    7.5    7.5   51.0 |   7.2   7.2   7.2  50.4  והכול מתעדכן לאורך השבוע
- 11  20.90- 22.16 |  -13.5 |    9.7    9.7   48.9 |   7.4   7.4   7.2  45.3  משחקים בשידור חי
- 12  22.28- 23.86 |  -13.6 |    8.5    8.5   55.8 |   4.8   4.8   4.4  53.9  הסדרות שאתם מחכים להן
- 13  23.92- 25.45 |  -13.7 |    9.9    9.9   48.9 |   8.8   8.8   7.4  42.4  והתוכן שתמיד כיף לגלות
- 14  25.86- 27.03 |  -17.1 |    7.4    7.4   49.8 |   7.7   7.7   6.3  44.8  לא צריך לחפש
- 15  27.05- 28.30 |  -11.9 |   12.8   12.8   55.4 |   7.8   7.8   6.6  52.7  לא צריך לעבור בין שירותי
- 16  28.58- 29.78 |  -13.7 |   14.3   14.4   54.3 |   7.2   7.2   7.1  46.0  פשוט בוחרים מה לראות
- 17  29.80- 30.93 |  -15.2 |    9.0    9.0   46.0 |   7.2   7.2   7.3  46.3  ומתחילים לצפות
-genre voice cinema Charlton  8.88-10.15: voice max M -6.5 LUFS, music max -53.1, SFX max -19.6, voice-bed 13.1 dB
-genre voice Neden?!          11.41-12.35: voice max M -12.0 LUFS, music max -55.1, SFX max -22.2, voice-bed 10.2 dB
-genre voice vaah             13.46-14.20: voice max M -11.7 LUFS, music max -55.1, SFX max -26.0, voice-bed 14.3 dB
-hold cin  8.85-10.25: mix -9.7 LUFS (music -54.1, SFX -23.3)
-hold tur  11.38-12.38: mix -14.9 LUFS (music -56.1, SFX -28.5)
-hold ind  13.43-14.53: mix -13.7 LUFS (music -55.9, SFX -28.4)
-words under 5 dB VO-bed: להן@23.59(bed 4.8: music 55.2, SFX 4.8)
-5 worst words (VO-bed): להן@23.59 4.8, וכל@14.55 7.0, פלוס@6.43 7.0, כולל@8.03 7.1, לצפות@30.44 7.2
-worst word over the whole ad: VO-bed 4.8 | VO-SFX 4.8 | VO-SFX speech band 4.4 | VO-music 38.1 dB
-spectral balance (share of energy dB re total): 20-60 Hz -9.1, 60-250 Hz -5.1, 250-2000 Hz -3.0, 2000-6000 Hz -13.7, 6000-16000 Hz -17.7
+  0   0.12-  1.07 |  -13.6 |   11.6   11.6   24.8 |   7.2   7.2   7.5  18.5  פותחים את המסך
+  1   1.26-  3.17 |  -14.0 |   11.1   11.7   20.8 |   6.7   7.5   7.5  14.6  והעולם של הבידור נפתח בפ
+  2   3.41-  5.23 |  -13.9 |   10.1   10.2   26.7 |   7.7   7.8   7.3  22.5  סרטים וסדרות מנטפליקס
+  3   5.35-  6.66 |  -13.2 |    9.9   10.0   26.2 |   6.8   7.0   7.1  19.1  תכנים מדיסני פלוס
+  4   6.78-  8.85 |  -12.9 |    8.8    9.0   22.8 |   6.9   7.1   6.5  18.8  כל ערוצי הספורט כולל צ'ר
+  5  10.28- 11.38 |  -13.5 |   10.0   10.4   22.2 |   7.4   7.8   7.6  17.5  סדרות טורקיות
+  6  12.40- 13.43 |  -13.8 |    8.2    8.3   24.4 |   8.0   8.0   7.2  19.2  סדרות הודיות
+  7  14.55- 16.16 |  -14.2 |   12.4   12.8   22.7 |   5.2   8.6   8.8   7.5  וכל השידורים החיים מישרא
+  8  16.58- 17.59 |  -14.5 |   11.8   12.5   21.0 |   6.5   7.3   7.1  13.9  הכול במקום אחד
+  9  17.93- 18.73 |  -15.4 |    9.9   10.5   19.5 |   6.7   7.2   7.6  15.3  הכול נגיש
+ 10  18.86- 20.47 |  -13.1 |    7.4    7.5   26.2 |   7.2   7.2   7.2  22.8  והכול מתעדכן לאורך השבוע
+ 11  20.90- 22.16 |  -13.3 |    9.2    9.7   19.7 |   7.3   7.4   7.2  16.8  משחקים בשידור חי
+ 12  22.28- 23.86 |  -13.4 |    8.5    8.5   30.4 |   5.6   5.6   5.2  27.5  הסדרות שאתם מחכים להן
+ 13  23.92- 25.45 |  -13.5 |   10.0   10.4   21.0 |   8.3   9.4   7.6  14.4  והתוכן שתמיד כיף לגלות
+ 14  25.86- 27.03 |  -17.0 |    7.3    7.4   23.1 |   7.6   7.7   6.3  18.3  לא צריך לחפש
+ 15  27.05- 28.30 |  -11.7 |   12.6   12.8   25.9 |   7.7   7.8   6.6  22.2  לא צריך לעבור בין שירותי
+ 16  28.58- 29.78 |  -13.6 |   14.2   14.4   28.7 |   6.7   7.2   7.1  16.9  פשוט בוחרים מה לראות
+ 17  29.80- 30.93 |  -15.1 |    9.0    9.0   18.2 |   6.9   7.2   7.3  17.3  ומתחילים לצפות
+genre voice cinema Charlton  8.88-10.15: voice max M -6.4 LUFS, music max -23.5, SFX max -19.4, voice-bed 11.7 dB
+genre voice Neden?!          11.41-12.35: voice max M -11.9 LUFS, music max -23.9, SFX max -22.1, voice-bed 9.1 dB
+genre voice vaah             13.46-14.20: voice max M -11.5 LUFS, music max -23.7, SFX max -25.8, voice-bed 10.1 dB
+hold cin  8.85-10.25: mix -9.6 LUFS (music -24.4, SFX -23.1)
+hold tur  11.38-12.38: mix -14.3 LUFS (music -25.0, SFX -28.4)
+hold ind  13.43-14.53: mix -13.7 LUFS (music -24.3, SFX -28.3)
+words under 5 dB VO-bed: none
+5 worst words (VO-bed): וכל@14.55 5.2, להן@23.59 5.6, אחד@17.32 6.5, בפניכם@2.57 6.7, לראות@29.55 6.7
+worst word over the whole ad: VO-bed 5.2 | VO-SFX 5.6 | VO-SFX speech band 5.2 | VO-music 7.5 dB
+spectral balance (share of energy dB re total): 20-60 Hz -9.1, 60-250 Hz -5.1, 250-2000 Hz -2.9, 2000-6000 Hz -13.6, 6000-16000 Hz -17.7

@@ -156,7 +156,7 @@ def mixdown(stems):
     nb = N // blk
     pw = np.convolve((sc[:nb * blk] ** 2).reshape(nb, blk).mean(1), np.ones(10) / 10, mode='same')
     lv = 10 * np.log10(pw + 1e-12)
-    thr, ratio, knee = -20.0, 2.0, 6.0
+    thr, ratio, knee = -23.0, 2.5, 6.0
     over = lv - thr
     gr = np.where(over <= -knee / 2, 0.0, np.where(over >= knee / 2, (1 - 1 / ratio) * over,
                                                    (1 - 1 / ratio) * (over + knee / 2) ** 2 / (2 * knee)))
@@ -171,9 +171,18 @@ def mixdown(stems):
     mix *= gcomp[:, None]
     g1 = 10 ** ((-14.5 - meter.integrated_loudness(mix)) / 20)
     mix *= g1
+    # soft peak shaper (gain applied to mix AND stems so they still sum): tames the tutti-hit crest factor
+    pk = np.max(np.abs(mix), 1)
+    knee0 = 0.45
+    shp = np.where(pk <= knee0, pk, knee0 + (1 - knee0) * np.tanh((pk - knee0) / (1 - knee0)))
+    gsh = shp / np.maximum(pk, 1e-9)
+    mix *= gsh[:, None]
+    g3 = 10 ** ((-14.5 - meter.integrated_loudness(mix)) / 20)
+    mix *= g3
+    g1 = g1 * g3
     # lookahead limiter
     from scipy.ndimage import minimum_filter1d, uniform_filter1d
-    ceil = 10 ** (-1.05 / 20)
+    ceil = 10 ** (-1.6 / 20)
     need = np.minimum(1.0, ceil / np.maximum(np.max(np.abs(mix), 1), 1e-9))
     la = int(0.003 * SR)
     need = minimum_filter1d(need, 2 * la + 1)
@@ -186,10 +195,10 @@ def mixdown(stems):
         lim[i] = pv
     lim = uniform_filter1d(lim, la, mode='nearest')
     mix *= lim[:, None]
-    gt = gcomp * g1 * lim
+    gt = gcomp * g1 * gsh * lim
     for s in STEMS:
         stems[s] *= gt[:, None]
-    g2 = 10 ** (-1.0 / 20) / np.max(np.abs(mix))
+    g2 = 10 ** (-1.5 / 20) / np.max(np.abs(mix))
     mix *= g2
     for s in STEMS:
         stems[s] *= g2
