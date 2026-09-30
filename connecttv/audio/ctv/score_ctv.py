@@ -933,9 +933,9 @@ vc_dr = part('vc_dr', 'strings', E(lambda: vs('Strings/Cello Section/susvib', re
 TRIM = dict(taiko=-14, trailer=-16, sub=-21, kick=-4, snare=4, hh=9, hho=6, crash=2, tomh=4, toml=4, snc=2,
             vc_sp=7, vla_sp=7, vln_sp=9, cb_sp=12, vln_su=15, vla_su=3, vc_su=6, cb_su=7, vln_tr=3, vc_tr=3,
             hn_su=15, hn_st=12, tp_su=4, tp_st=10, tb_su=9, tb_st=9, tu_su=10, tu_st=13, choir=1, oohs=1,
-            timp=10, ocym=5, gong=3, riser=-3, boom=-17, braaam=-4, harp=14, celesta=10, glock=14, piano=2,
+            timp=10, ocym=5, gong=3, riser=-3, boom=-17, braaam=-4, harp=14, celesta=10, glock=17, piano=-2,
             kanun=2, darb=-4, tamb=10, oroll=3, bd=2,
-            flute_sv=8, flute_ex=12, flute_nv=8, oboe=8, vln_solo=8, cb_dr=7, vc_dr=6, vlnpz=8, vlapz=8, vcpz=8, cbpz=8, vsol_sp=8, vsol_tr=8,
+            flute_sv=12, flute_ex=12, flute_nv=8, oboe=8, vln_solo=8, cb_dr=7, vc_dr=6, vlnpz=8, vlapz=8, vcpz=8, cbpz=8, vsol_sp=8, vsol_tr=8,
             dhol_h=3.4, dhol_s=2, conga_o=4, harp_d=19, pz_d=11, pno_d=2, vln_si=2, vla_si=4, sitar=-10, harmon=-9, vox=-5, shehnai=7, tabla=-12, zap=0, shim=0)
 for _k, _db in TRIM.items():
     PARTS[_k].gain *= 10 ** (_db / 20)
@@ -1072,6 +1072,22 @@ def tk_n(ch):
     """taiko note number tuned to the chord root (55-103 Hz)"""
     r, _ = ct(ch)
     return 60 + 12 * np.log2(55 * 2 ** (((r - 9) % 12) / 12) / 62.0)
+
+
+def _tune(ch, base):
+    r, _ = ct(ch)
+    cand = [r + 12 * k for k in range(1, 6)]
+    return 60 + (min(cand, key=lambda x: abs(x - base)) - base)
+
+
+def bdn(ch):
+    """concert bass drum note number so its body (~F2) sits on the chord root"""
+    return _tune(ch, 41.0)
+
+
+def kn(ch):
+    """kick note number so its body (~E2) sits on the chord root"""
+    return _tune(ch, 40.5)
 
 
 def bm(ch):
@@ -1230,7 +1246,7 @@ def tutti(t, ch, big=1.0, dur=0.45, crash_on=True, choir_on=True, top=None, lead
     cb_su.n(t - 0.03, dur + 0.03, near(r, m('C2')), v)
     timp.n(t, 1.0, near(r, m('D2')), v)
     trailer.n(t, 1.5, tr_n(ch), v)
-    bd.n(t, 2.0, 60, v)
+    bd.n(t, 2.0, bdn(ch), v)
     boom.n(t, 1.6, 60, int(100 * big), **bm(ch))
     sub.n(t, dur + 0.6, near(r, m('E1')), int(100 * big))
     if choir_on:
@@ -1333,7 +1349,7 @@ def groove(g, b0, nb, ch, lvl=1.0, mode='verse', mute=None, ph=0):
                 hh.n(t + hum(3), 0.05, 60, 46 + rv(-4, 4))
             continue
         if on:
-            kick.n(t + hum(2.5), 0.3, 60, (114 if p8 == 0 else 104) * lvl * hi + rv(-4, 3))
+            kick.n(t + hum(2.5), 0.3, kn(ch), (114 if p8 == 0 else 104) * lvl * hi + rv(-4, 3))
         if p8 in (2, 6):
             snare.n(t + hum(3), 0.3, 60, 92 * lvl * hi + rv(-5, 4))
             tamb.n(t + 0.004 + hum(2), 0.15, 60, 76 * lvl + rv(-5, 5))
@@ -1353,7 +1369,7 @@ def groove(g, b0, nb, ch, lvl=1.0, mode='verse', mute=None, ph=0):
         if p8 in (0, 3, 6):                              # syncopated piano stabs
             piano.n(t + hum(6), 0.32, [near(pcs[0], m('C4')), near(pcs[1], m('C4')), near(pcs[2], m('C4'))], (88 if p8 == 0 else 78) * lvl * (1.0 if mode != 'verse' else 0.92) + rv(-6, 6))
             if mode != 'verse':
-                hn_st.n(t + hum(5), 0.2, [near(pcs[0], m('C4')), near(pcs[1], m('C4'))], 84 * lvl + rv(-5, 5))
+                hn_st.n(t + hum(5), 0.2, [near(pcs[0], m('C4')), near(pcs[1], m('C4'))], 74 * lvl + rv(-5, 5))
                 tp_st.n(t + hum(5), 0.2, near(pcs[1], m('G4')), 80 * lvl + rv(-5, 5))
         if not on:
             vln_sp.n(t + hum(6), 0.11, [near(pcs[1], m('B4')), near(pcs[2], m('B4'))], (64 if mode == 'verse' else 78) * lvl + rv(-6, 6))
@@ -1366,7 +1382,7 @@ def bed(t0, t1, ch, lvl=76, horn=False, hi=True):
     r, pcs = ct(ch)
     d = t1 - t0
     if hi:
-        vln_su.n(t0 + hum(8), d, [near(pcs[1], m('B4')), near(pcs[0], m('E5'))], lvl)
+        vln_su.n(t0 + hum(8), d, [near(pcs[1], m('B4')), near(pcs[0], m('E5'))], lvl - 8)
     vla_su.n(t0 + hum(8), d, [near(pcs[2], m('G3')), near(pcs[0], m('E4'))], lvl)
     vc_su.n(t0 + hum(6), d, near(r, m('C3')), lvl + 4)
     cb_su.n(t0 + hum(6), d, near(r, m('C2')), lvl)
@@ -1395,9 +1411,9 @@ T_DAY0, T_DAYN = DAY_T[0], DAY_T[-1]
 T_GOAL, T_BNC, T_GOALB2 = V(17.40), V(17.845), V(18.295)
 T_WAIT, T_C2, T_C1, T_OPENC, T_CHEST, T_BOW, T_FUN = V(18.78), V(19.21), V(19.58), V(20.09), V(20.42), V(20.97), V(21.29)
 REV = [V(x) for x in (21.58, 21.65, 21.75, 21.85, 21.95, 22.08)]
-T_NO1, T_XSLAM, T_NO2, T_DEV, T_XOUT, T_RELIEF = V(22.36), V(23.29), V(23.55), V(23.67), V(24.41), V(24.80)
+T_NO1, T_XSLAM, T_NO2, T_DEV, T_XOUT, T_RELIEF = V(22.36), V(23.29), V(23.55), V(23.67), V(24.41), V(24.95)
 T_PICK, T_BNCE, T_TAP, T_BURST, T_PLAY = V(25.08), V(25.365), V(26.055), V(26.30), V(26.99)
-T_GOALB, T_SUCK, T_LOGO, T_TAG = V(27.20), V(27.42), V(27.60), V(28.10)
+T_GOALB, T_SUCK, T_LOGO, T_TAG = V(27.18), V(27.42), V(27.60), V(28.10)
 T_CIN0, T_CIN1 = HOLD_T['cin']
 T_LAND1 = 10.26
 T_TUR0, T_TUR1 = HOLD_T['tur']
@@ -1446,7 +1462,7 @@ def intro():
     # 0.74 the bolt cracks the screen
     zap.n(T_BOLT, 0.5, 60, 118)
     timp.n(T_BOLT, 1.2, 'D2', 127)
-    bd.n(T_BOLT, 2.0, 60, 124)
+    bd.n(T_BOLT, 2.0, bdn('Dm'), 124)
     trailer.n(T_BOLT, 1.5, tr_n('Dm'), 116)
     boom.n(T_BOLT, 1.6, 60, 110, **bm('Dm'))
     sub.n(T_BOLT, 1.4, 'D1', 96)
@@ -1546,6 +1562,7 @@ def sectionA():
     tp_su.n(T_NFX, 0.7, 'F#5', 100)
     # DISNEY+ 6.06 magical sparkle (D lydian, pickup into bar 2 at 6.36)
     sparkle(T_DIS - 0.02, 2, notes=16, dur=0.5, scale=(0, 2, 4, 6, 7, 9, 11), base='F#5', vel=84)
+    ocym.n(T_DIS, 2.0, 60, 72)
     hn_su.n(T_DIS, 0.6, ['F#4', 'A4'], 84)
     vln_su.n(T_DIS, 0.7, ['A5', 'D6'], 74)
     glock.n(T_PLUS, 0.5, ['A6', 'D7'], 76)                          # plus-pop 6.54
@@ -1578,7 +1595,7 @@ def cin():
     trailer.n(t0, 2.0, tr_n('Dm'), 127)
     boom.n(t0, 2.0, 60, 120, **bm('Dm'))
     gong.n(t0 + 0.01, 3.0, 60, 118)
-    bd.n(t0, 2.0, 60, 124)
+    bd.n(t0, 2.0, bdn('Dm'), 124)
     ocym.n(t0, 2.0, 60, 110)
     sub.n(t0, 1.2, 'D1', 108)
     t2 = t0 + 0.7
@@ -1803,7 +1820,7 @@ def wait():
     sparkle(T_OPENC, 8, notes=14, dur=0.5, scale=(0, 2, 4, 6, 7, 9, 11), base='C5', vel=88)
     tp_su.n(T_OPENC, 0.7, ['Eb6', 'Ab5'], 100)
     timp.n(T_CHEST, 0.9, 'C2', 120)
-    bd.n(T_CHEST, 1.4, 60, 116)
+    bd.n(T_CHEST, 1.4, bdn('Cm'), 116)
     sub.n(T_CHEST, 0.5, 'C1', 96)
     vcpz.n(T_CHEST, 0.2, ['C2', 'G2'], 110)
     cbpz.n(T_CHEST, 0.2, 'C1', 110)
@@ -1884,7 +1901,7 @@ def nos():
         stab(t, ch, 124, 0.35)
         tb_su.n(t, 0.5, [near(ct(ch)[0], m('C2')), near(ct(ch)[0], m('C2')) + 7, near(ct(ch)[0], m('C2')) + 12], 122)
         timp.n(t, 1.2, 'C2' if ch == 'Cm' else 'Db2', 127)
-        bd.n(t, 2.0, 60, 124)
+        bd.n(t, 2.0, bdn(ch), 124)
         trailer.n(t, 1.6, tr_n(ch), 122)
         boom.n(t, 1.6, 60, 116, **bm(ch))
         sub.n(t, 1.4, 'C1' if ch == 'Cm' else 'Db1', 104)

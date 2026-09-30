@@ -149,40 +149,40 @@ def cue_sheet():
     c(1.26, 'glass_shatter', -4, 0.0)                                               # glass explodes toward camera
     c(1.26, 'liquid_whoosh_c', -8, 0.0)                                             # liquid iris floods in
     c(1.30, 'splash_small', -8, 0.0)
-    c(1.70, 'glitter', -15, 0.0)                                                    # sparkle
-    c(1.85, 'gloss_pop_b', -12, -0.3)                                               # icons pop
-    c(2.33, 'liquid_flood', -3, 0.0)                                                # MEGA SPLASH on "נפתח"
-    c(2.33, 'shockwave', -7, 0.0)
+    c(1.76, 'glitter', -15, 0.0)                                                    # sparkle
+    c(1.90, 'gloss_pop_b', -12, -0.3)                                               # icons pop
+    c(2.36, 'liquid_flood', -3, 0.0)                                                # MEGA SPLASH on "נפתח"
+    c(2.36, 'shockwave', -7, 0.0)
     # ---- S1 streamers
     c(3.25 + 0.14, 'liquid_whoosh_a', -5, 0.0)                                      # liquid wipe covers s0 (peak mid-wipe)
     c(3.41, 'splash_small', -8, 0.0)                                                # clapper slam
     c(3.41, 'lib:popcorn_burst', -15, 0.0)
-    for k, tt in enumerate((3.92, 4.00, 4.08)):                                     # episode cards fan
+    for k, tt in enumerate((3.95, 4.03, 4.11)):                                     # episode cards fan
         c(tt, 'gloss_pop_b', -14, (-0.4, 0.0, 0.4)[k], var=(1.0, 1.1, 1.22)[k])
-    c(4.34, 'splash_slam', -1, 0.0, m_all=5.5, m_hi=7.5)                            # NETFLIX slam
-    c(4.34, 'shockwave', -6, 0.0)
-    c(4.36, 'zap', -13, 0.3)
+    c(4.36, 'splash_slam', -1, 0.0, m_all=5.5, m_hi=7.5)                            # NETFLIX slam
+    c(4.36, 'shockwave', -6, 0.0)
+    c(4.38, 'zap', -13, 0.3)
     c(5.35 + 0.05, 'liquid_whoosh_b', -10, 0.0)                                     # flip to blue
     c(5.45, 'glitter', -18, 0.0)
-    c(5.99, 'splash_slam', -2, 0.0, m_all=5.5, m_hi=7.5)                            # DISNEY+ logo burst
-    c(5.99, 'harp_sparkle', -9, 0.0, root=hr)
-    c(5.99, 'shockwave', -8, 0.0)
-    c(6.43, 'gloss_pop_c', -8, 0.0)                                                 # plus pop
-    c(6.43, 'splash_small', -10, 0.0)
+    c(6.06, 'splash_slam', -2, 0.0, m_all=5.5, m_hi=7.5)                            # DISNEY+ logo burst
+    c(6.06, 'harp_sparkle', -9, 0.0, root=hr)
+    c(6.06, 'shockwave', -8, 0.0)
+    c(6.54, 'gloss_pop_c', -8, 0.0)                                                 # plus pop
+    c(6.54, 'splash_small', -10, 0.0)
     # ---- S2 sports
     c(6.55 + 0.10, 'liquid_whoosh_b', -6, 0.0)                                      # wipe into the sports scene (speech gap)
     c(6.78, 'zap', -13, -0.3)                                                       # lights on
     c(6.78, 'glitter', -17, 0.0)
-    for k, tt in enumerate((6.95, 7.08, 7.21, 7.34)):                               # sport 1-4 pops
+    for k, tt in enumerate((7.02, 7.13, 7.24, 7.35)):                               # sport 1-4 pops
         c(tt, 'gloss_pop_b', -14, (-0.6, 0.6, -0.4, 0.4)[k], var=(1.0, 1.08, 0.94, 1.14)[k])
     c(7.47, 'splash_slam', -3, 0.0)                                                 # sport 5 hero slam
     c(7.58, 'splash_small', -7, 0.0)                                                # ball / trophy burst
     c(7.58, 'shockwave', -9, 0.0)
-    for k, tt in enumerate((8.03, 8.09, 8.15, 8.20, 8.24, 8.27, 8.29, 8.31)):       # drum-roll build-up (accelerating)
+    for k, tt in enumerate((8.045, 8.105, 8.165, 8.215, 8.26, 8.295, 8.32, 8.34)):       # drum-roll build-up (accelerating)
         c(tt, 'snare_hit', -17 + 0.8 * k, (-0.15, 0.15)[k % 2], var=1.0 + 0.02 * k)
-    c(8.32, 'bolt_crack', -3, 0.0, m_all=5.5, m_hi=7.5)                             # CHARLTON slam
-    c(8.32, 'shockwave', -3, 0.0)
-    c(8.32, 'boom_med', -3, 0.0, m_all=5.5, m_hi=7.5)
+    c(8.36, 'bolt_crack', -3, 0.0, m_all=5.5, m_hi=7.5)                             # CHARLTON slam
+    c(8.36, 'shockwave', -3, 0.0)
+    c(8.36, 'boom_med', -3, 0.0, m_all=5.5, m_hi=7.5)
     # ---- cin hold: the narrator becomes a cinema-trailer voice
     h = HK['cin']
     ct(h['T0'] - 0.02, 'thx_swell', -9, 0.0, root=KEY['cin'], m_all=4.5, m_hi=6.5)  # boom + THX swell, peaks at the hold end (score: braaam, gong, timpani roll)
@@ -191,16 +191,16 @@ def cue_sheet():
     # ---- S3 series
     c(8.85 + 0.12, 'liquid_whoosh_a', -5, 0.0, after=True)                          # candy wave floods over the sports scene
     c(8.88, 'splash_small', -13, 0.0, after=True)                                   # frame swing in
-    c(9.27, 'splash_slam', -3, 0.0)                                                 # TURKISH poster splash
-    c(9.27, 'curtain_swoosh', -12, 0.0)                                             # + curtain rip
+    c(9.215, 'splash_slam', -3, 0.0)                                                 # TURKISH poster splash
+    c(9.215, 'curtain_swoosh', -12, 0.0)                                             # + curtain rip
     # ---- tur hold: crying girl "Neden?!"
     h = HK['tur']
     # (no tur_dum / bolly_sting: the score plays its own dum-dum-DUM at 0 / 0.25 / 0.50 and a tabla + sitar groove; SFX would flam)
     ct(h['T0'] + 0.62, 'tear_drop', -15, -0.3)
     ct(h['T0'] + h['d'], 'rise_whoosh', -9, 0.0)
     c(10.00 + 0.10, 'liquid_whoosh_b', -6, 0.0, after=True)                         # poster whip away (wipe sweeps left)
-    c(10.39, 'splash_slam', -4, 0.0)                                                # BOLLYWOOD burst
-    c(10.39, 'glitter', -12, 0.0)
+    c(10.345, 'splash_slam', -4, 0.0)                                                # BOLLYWOOD burst
+    c(10.345, 'glitter', -12, 0.0)
     # ---- ind hold: Bollywood sting + "वाह!"
     h = HK['ind']
     # (ind hold = the score's Bollywood piece (sitar + dhol/tabla + shehnai/bansuri); no spoken Hindi line, no extra Indian SFX on top)
@@ -209,7 +209,7 @@ def cue_sheet():
     # ---- S4 live
     c(11.05, 'bolt_crack', -4, 0.0, after=True, m_all=5.5, m_hi=7.5)                # LIVE slam on "וכל"
     c(11.05, 'splash_small', -6, 0.0, after=True)
-    for k, tt in enumerate((11.15, 11.30, 11.45, 11.60)):                           # channel tile pops
+    for k, tt in enumerate((11.185, 11.30, 11.45, 11.60)):                           # channel tile pops
         c(tt, 'gloss_pop_b', -13, (-0.5, 0.5, -0.3, 0.3)[k], var=(0.96, 1.0, 1.06, 1.14)[k], after=True)
     c(11.78, 'heart_lub', -8, 0.0, after=True)                                      # heartbeat lub-dub
     c(12.03, 'heart_lub', -11, 0.0, var=1.12, after=True)
@@ -224,32 +224,32 @@ def cue_sheet():
     c(13.82, 'splash_slam', -2, 0.0, after=True, m_all=5.5, m_hi=7.5)
     c(13.82, 'shockwave', -5, 0.0, after=True)
     c(14.43, 'gloss_pop_c', -13, 0.3, after=True)                                   # thumb enters
-    c(14.87, 'remote_click', -4, 0.0, after=True)                                   # TAP
-    c(14.87, 'shockwave', -12, 0.0, after=True)
-    c(14.87, 'glitter', -15, 0.0, after=True)
+    c(14.89, 'remote_click', -4, 0.0, after=True)                                   # TAP
+    c(14.89, 'shockwave', -12, 0.0, after=True)
+    c(14.89, 'glitter', -15, 0.0, after=True)
     c(15.36 + 0.06, 'liquid_whoosh_b', -12, 0.0, after=True)                        # calendar bubbles pop in
     wk = KEY['week']
-    for k, tt in enumerate((15.86, 16.01, 16.16, 16.31, 16.45, 16.60)):             # the week plays a rising harp phrase
+    for k, tt in enumerate((15.98, 16.126, 16.271, 16.417, 16.563, 16.709)):             # the week plays a rising harp phrase
         c(tt, 'day_note', -7 + 0.35 * k, -0.35 + 0.14 * k, root=wk[k], after=True, m_all=5.5, m_hi=7.5)
-    c(16.75, 'week_finale', -5, 0.0, root=wk[6], after=True, m_all=5.5, m_hi=7.5)   # Saturday: chord + gliss
+    c(16.855, 'week_finale', -5, 0.0, root=wk[6], after=True, m_all=5.5, m_hi=7.5)   # Saturday: chord + gliss
     # ---- S6 discover
     c(17.10 + 0.15, 'liquid_whoosh_a', -6, 0.0, after=True)                         # wave in (speech gap)
     c(17.40, 'splash_small', -8, 0.0, after=True)                                   # ball landing
     c(17.40, 'lib:ball_kick', -11, 0.2, after=True)
     c(17.15, 'lib:stadium_crowd_bed', -19, 0.0, after=True, seg=(4.6, 5.9), fin=0.45, fout=0.05)   # crowd builds to the goal
-    c(17.80, 'splash_small', -8, 0.0, after=True)                                   # LIVE badge slam
-    c(17.80, 'zap', -14, 0.0, after=True)
-    c(18.34, 'lib:stadium_goal_eruption', -2, 0.0, after=True, seg=(0.0, 3.4), fout=1.0, m_all=5.5, m_hi=7.5)   # GOAL: crowd eruption
-    c(18.34, 'splash_slam', -3, 0.0, after=True, m_all=5.5, m_hi=7.5)
-    c(18.34, 'shockwave', -5, 0.0, after=True)
-    for k, tt in enumerate((18.78, 19.21, 19.52)):                                  # countdown 3-2-1
+    c(17.845, 'splash_small', -8, 0.0, after=True)                                   # LIVE badge slam
+    c(17.845, 'zap', -14, 0.0, after=True)
+    c(18.295, 'lib:stadium_goal_eruption', -2, 0.0, after=True, seg=(0.0, 3.4), fout=1.0, m_all=5.5, m_hi=7.5)   # GOAL: crowd eruption
+    c(18.295, 'splash_slam', -3, 0.0, after=True, m_all=5.5, m_hi=7.5)
+    c(18.295, 'shockwave', -5, 0.0, after=True)
+    for k, tt in enumerate((18.78, 19.21, 19.58)):                                  # countdown 3-2-1
         c(tt, 'gloss_pop_c', -10, 0.0, var=(0.88, 1.0, 1.14)[k], after=True)
     c(18.78, 'curtain_swoosh', -11, 0.0, after=True)                                # curtain slam
     c(19.21, 'lib:popcorn_burst', -14, 0.0, after=True)                             # popcorn bucket pop
     c(20.09, 'curtain_swoosh', -7, 0.0, after=True)                                 # curtains fly open
     c(20.09, 'harp_sparkle', -12, 0.0, root=hr, after=True)
     c(20.42, 'splash_slam', -3, 0.0, after=True)                                    # chest slam
-    c(20.92, 'gloss_pop_b', -10, 0.0, after=True)                                   # bow pop
+    c(20.97, 'gloss_pop_b', -10, 0.0, after=True)                                   # bow pop
     c(21.29, 'gloss_pop_c', -8, 0.0, after=True)                                    # box pops open (glossy pop, no paper confetti)
     c(21.29, 'harp_sparkle', -6, 0.0, root=hr, after=True)
     c(21.29, 'splash_slam', -4, 0.0, after=True)
@@ -258,33 +258,33 @@ def cue_sheet():
     c(22.05 + 0.15, 'liquid_whoosh_b', -4, 0.0, after=True)                         # hot wipe in
     c(22.36, 'splash_slam', -2, 0.0, after=True, m_all=5.5, m_hi=7.5)               # NO slam 1
     c(22.36, 'shockwave', -6, 0.0, after=True)
-    c(22.66, 'gloss_pop_b', -11, -0.3, after=True)                                  # magnifier pops
-    c(22.72, 'gloss_pop_b', -13, 0.3, var=1.15, after=True)
-    c(22.70, 'glitter', -17, 0.0, after=True)
-    c(23.18 + 0.02, 'cross_out', -1, 0.0, after=True, m_all=5.5, m_hi=7.5)          # RED X lands on the magnifier
-    c(23.30, 'glass_shatter', -3, 0.0, after=True)                                  # lens shatters
+    c(22.70, 'gloss_pop_b', -11, -0.3, after=True)                                  # magnifier pops
+    c(22.76, 'gloss_pop_b', -13, 0.3, var=1.15, after=True)
+    c(22.74, 'glitter', -17, 0.0, after=True)
+    c(23.29 + 0.0, 'cross_out', -1, 0.0, after=True, m_all=5.5, m_hi=7.5)          # RED X lands on the magnifier
+    c(23.36, 'glass_shatter', -3, 0.0, after=True)                                  # lens shatters
     c(23.55, 'splash_slam', -4, 0.0, after=True)                                    # NO slam 2
-    c(23.69, 'gloss_pop_c', -11, -0.4, after=True)                                  # phone + TV appear
-    c(23.76, 'gloss_pop_c', -12, 0.4, var=1.2, after=True)
-    for k, tt in enumerate((23.92, 24.06, 24.16, 24.24)):                           # tiles ping-pong
+    c(23.67, 'gloss_pop_c', -11, -0.4, after=True)                                  # phone + TV appear
+    c(23.74, 'gloss_pop_c', -12, 0.4, var=1.2, after=True)
+    for k, tt in enumerate((23.88, 24.02, 24.12, 24.24)):                           # tiles ping-pong
         c(tt, 'gloss_pop_b', -16, (-0.5, 0.5, -0.5, 0.5)[k], var=(0.9, 1.0, 1.1, 1.2)[k], after=True)
-    c(24.43 + 0.05, 'cross_out', -3, 0.0, after=True)                               # two bolts cross out everything
+    c(24.41 + 0.05, 'cross_out', -3, 0.0, after=True)                               # two bolts cross out everything
     c(24.56 + 0.12, 'liquid_whoosh_a', -5, 0.0, after=True)                         # tiles swept away
-    c(24.80, 'gloss_pop_c', -9, 0.0, after=True)                                    # calm TV resolves
+    c(24.95, 'gloss_pop_c', -9, 0.0, after=True)                                    # calm TV resolves
     # ---- S8 pick + end card
     c(24.95 + 0.15, 'liquid_whoosh_b', -5, 0.0, after=True)                         # wipe covers s7 (speech gap)
     c(25.08 + 0.10, 'liquid_whoosh_c', -13, 0.0, after=True)                        # candy tiles glide in
-    c(25.43, 'gloss_pop_b', -14, -0.3, after=True)                                  # tiles bounce / finger hover
-    c(25.60, 'gloss_pop_b', -15, 0.3, var=1.1, after=True)
+    c(25.365, 'gloss_pop_b', -14, -0.3, after=True)                                  # tiles bounce / finger hover
+    c(25.55, 'gloss_pop_b', -15, 0.3, var=1.1, after=True)
     c(26.05, 'remote_click', -4, 0.0, after=True)                                   # TAP impact on the football tile
     c(26.05, 'splash_small', -8, 0.0, after=True)
     c(26.05, 'shockwave', -12, 0.0, after=True)
     c(26.30, 'splash_slam', -3, 0.0, after=True)                                    # tile bursts fullscreen
     c(26.30 + 0.10, 'liquid_whoosh_a', -9, 0.0, after=True)
-    c(26.94, 'splash_slam', -3, 0.0, after=True)                                    # playback burst
-    c(26.94, 'harp_sparkle', -9, 0.0, root=hr, after=True)
-    c(27.20, 'lib:stadium_goal_eruption', -6, 0.0, after=True, seg=(0.0, 2.3), fout=1.0)   # goal burst on the screen
-    c(27.20, 'splash_small', -7, 0.0, after=True)
+    c(26.99, 'splash_slam', -3, 0.0, after=True)                                    # playback burst
+    c(26.99, 'harp_sparkle', -9, 0.0, root=hr, after=True)
+    c(27.18, 'lib:stadium_goal_eruption', -6, 0.0, after=True, seg=(0.0, 2.3), fout=1.0)   # goal burst on the screen
+    c(27.18, 'splash_small', -7, 0.0, after=True)
     c(27.60, 'logo_suck', -6, 0.0, after=True, var=1.6)                                    # iris suck into the logo (under the last word)
     c(27.60, 'logo_slam', 0.0, 0.0, after=True)                                     # LOGO SLAM: the final music hit lands on it
     c(28.10, 'gloss_pop', -9, 0.0, after=True)                                      # tagline pop
@@ -699,7 +699,7 @@ def main():
     nzero = np.sum(np.all(chk == 0, axis=0)) / SR
     pr('total exact-zero time in master: %.3f s (score gaps total %.3f s)' % (nzero, sum(b - a for a, b in gaps)))
     for q in cues:
-        if q['nm'] in ('logo_slam', 'logo_suck', 'splash_slam') and q['v'] in (27.6, 4.34):
+        if q['nm'] in ('logo_slam', 'logo_suck', 'splash_slam') and q['v'] in (27.6, 4.36):
             pr('  cue %s @%.2f protection gain hit/tail: %.1f / %.1f dB' % (q['nm'], q['t'], q['prot'][0], q['prot'][1]))
     pr('cues %d; hit tucked under the voice: %d; tail tucked: %d' % (len(cues), sum(q['prot'][0] < -0.5 for q in cues), sum(q['prot'][1] < -0.5 for q in cues)))
     gm = db(g)
