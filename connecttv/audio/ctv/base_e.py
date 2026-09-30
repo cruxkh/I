@@ -247,24 +247,27 @@ def stab(t, ch, vel=110, dur=0.18):
     tu_st.n(t, dur, near(r, m('E1')), vel)
 
 
-def tutti(t, ch, big=1.0, dur=0.45, crash_on=True, choir_on=True, top=None):
+def tutti(t, ch, big=1.0, dur=0.45, crash_on=True, choir_on=True, top=None, lead=0.08):
+    """full-orchestra hit. Slow-attack sustains (horns, violins, violas, choir) start `lead` s early so their body peaks on the hit."""
     r, pcs = ct(ch)
     v = int(min(127, 124 * big))
-    hn_su.n(t, dur, [near(r, m('E3')), near(pcs[1], m('E3')), near(pcs[2], m('E3'))], v)
-    tp_su.n(t, dur, [near(pcs[1], m('G4')), near(r, m('C5'))], v)
-    tb_su.n(t, dur, [near(r, m('E2')), near(pcs[2], m('B2')), near(r, m('E3'))], v)
-    tu_su.n(t, dur, near(r, m('E1')), v)
-    vln_su.n(t, dur, [near(r, m('E5')), near(pcs[1], m('G5'))], v)
-    vla_su.n(t, dur, near(pcs[2], m('G3')), v)
-    vc_su.n(t, dur, near(r, m('C3')), v)
-    cb_su.n(t, dur, near(r, m('C2')), v)
+    tl = t - lead
+    dl = dur + lead
+    hn_su.n(tl, dl, [near(r, m('E3')), near(pcs[1], m('E3')), near(pcs[2], m('E3'))], v)
+    tp_su.n(t - 0.02, dur + 0.02, [near(pcs[1], m('G4')), near(r, m('C5'))], v)
+    tb_su.n(t - 0.02, dur + 0.02, [near(r, m('E2')), near(pcs[2], m('B2')), near(r, m('E3'))], v)
+    tu_su.n(t - 0.02, dur + 0.02, near(r, m('E1')), v)
+    vln_su.n(tl, dl, [near(r, m('E5')), near(pcs[1], m('G5'))], v)
+    vla_su.n(tl, dl, near(pcs[2], m('G3')), v)
+    vc_su.n(t - 0.04, dur + 0.04, near(r, m('C3')), v)
+    cb_su.n(t - 0.03, dur + 0.03, near(r, m('C2')), v)
     timp.n(t, 1.0, near(r, m('D2')), v)
     trailer.n(t, 1.5, 58, v)
     bd.n(t, 2.0, 60, v)
     boom.n(t, 1.6, 60, int(100 * big), f0=85, f1=30)
     sub.n(t, dur + 0.6, near(r, m('E1')), int(100 * big))
     if choir_on:
-        choir.n(t, dur, [near(pcs[0], m('E4')), near(pcs[1], m('G4')), near(pcs[2], m('B4'))], int(min(127, 110 * big)))
+        choir.n(tl - 0.03, dl + 0.03, [near(pcs[0], m('E4')), near(pcs[1], m('G4')), near(pcs[2], m('B4'))], int(min(127, 110 * big)))
     if crash_on:
         ocym.n(t, 3.0, 60, v)
         crash.n(t + 0.004, 2.0, 60, v)
@@ -667,7 +670,7 @@ def live():
     g = Grid(t0, (T_VORTEX - t0) / 6)
     s = g.b / 4
     tutti(t0, 'Em', 1.05, dur=0.35, crash_on=True)
-    for b0, d, ch in [(0, 4, 'Em'), (4, 1, 'C'), (5, 1, 'B')]:
+    for b0, d, ch in [(0, 4, 'Em'), (4, 1, 'C'), (5, 1, 'D')]:
         n16 = int(round(d * 4))
         ost16(g(b0), s, n16, ch, lvl=1.0 if b0 < 4 else 1.08, ph=int(b0 * 4), cresc=(1.0, 1.3) if b0 == 5 else None)
         pads(g(b0), g(b0 + d) - 0.02, ch, lvl=70, low=False)
@@ -687,11 +690,11 @@ def live():
     tt = g(4)
     while tt < T_VORTEX - 0.12:
         u = (tt - g(4)) / (T_VORTEX - 0.12 - g(4))
-        timp.n(tt, 0.1, 'B1', int(56 + 66 * u))
+        timp.n(tt, 0.1, 'D2', int(56 + 66 * u))
         tt += 0.075 - 0.03 * u
     riser.n(g(3.5), T_VORTEX - g(3.5) - 0.02, 60, 96, kind='noise', lo=300, hi=12000, n0=47, oct=3)
     riser.n(T_VORTEX, T_VORTEX - g(4) - 0.05, 60, 100, kind='cym', len='m')
-    tb_su.n(g(4), T_VORTEX - g(4) - 0.1, ['B1', 'B2', 'F#3'], 100)
+    tb_su.n(g(4), T_VORTEX - g(4) - 0.1, ['D2', 'A2', 'F#3'], 100)
     tb_su.ex(g(4), T_VORTEX - 0.1, -14, 0, 1.4, pre=False, post=False)
 
 
@@ -919,7 +922,8 @@ def relief():
     # ---- finale build (chords: G | D | Em | C | D ...): 16ths enter soft and grow
     g = PW([(0, T_PICK), (2, T_TAP), (2 + (T_PLAY - T_TAP) / 0.46, T_PLAY), (2 + (T_LOGO - T_TAP) / 0.46, T_LOGO)])
     s0 = 0.485 / 4
-    plan = [(T_PICK, T_TAP, 'G', 0.62, (0.55, 0.9)), (T_TAP, T_BURST, 'C', 1.0, None), (T_BURST, T_PLAY, 'D', 1.05, None),
+    tm_ = 0.5 * (T_PICK + T_TAP)
+    plan = [(T_PICK, tm_, 'G', 0.6, (0.5, 0.75)), (tm_, T_TAP, 'Em', 0.8, (0.75, 0.95)), (T_TAP, T_PLAY, 'C', 1.02, None),
             (T_PLAY, T_LOGO - 0.10, 'D', 1.12, (1.0, 1.3))]
     for a, b, ch, lvl, cr in plan:
         n = max(1, int(round((b - a) / s0)))
@@ -936,14 +940,14 @@ def relief():
         harp.n(T_PICK + k * 0.23, 0.6, nn, 64 + 4 * k)
     flute_sv.n(T_PICK, 0.9, 'D6', 60)
     # TAP 29.55: accent (C chord stab + timpani + harp) ; BURST 29.80: cymbal + D chord hit ; PLAYBACK 30.44: hit ; GOAL BURST 30.70 crowd-lift
-    for t, ch, big in ((T_TAP, 'C', 0.8), (T_BURST, 'D', 0.95), (T_PLAY, 'D', 1.0)):
+    for t, ch, big in ((T_TAP, 'C', 0.8), (T_BURST, 'C', 0.95), (T_PLAY, 'D', 1.0)):
         stab(t, ch, 108 + int(10 * big), 0.2)
         timp.n(t, 0.8, near(ct(ch)[0], m('D2')), 100 + int(20 * big))
         crash.n(t, 1.6, 60, 96 + int(14 * big))
         taiko.n(t, 0.5, 60, 118)
         tutti(t, ch, big * 0.85, dur=0.28, crash_on=False, choir_on=False)
     sparkle(T_TAP, 0, notes=8, dur=0.25, scale=(0, 2, 4, 7, 9), base='E5', vel=78, dens=40)
-    sparkle(T_BURST, 2, notes=10, dur=0.3, scale=(0, 2, 4, 7, 9), base='F#5', vel=84, dens=60)
+    sparkle(T_BURST, 0, notes=10, dur=0.3, scale=(0, 2, 4, 7, 9), base='E5', vel=84, dens=60)
     riser.n(T_PLAY, T_LOGO - T_PLAY - 0.02, 60, 100, kind='noise', lo=300, hi=12000, n0=50, oct=3)
     riser.n(T_LOGO, T_LOGO - T_PLAY, 60, 100, kind='cym', len='m')
     # goal-burst run 30.70 -> 30.92 (D major scale run) and the brand motif before the slam: D5 G5 A5 -> B5 on the slam

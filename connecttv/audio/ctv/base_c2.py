@@ -120,10 +120,10 @@ cb_dr = part('cb_dr', 'strings', E(lambda: vs('Strings/Solo Contrabass/SusVib', 
 vc_dr = part('vc_dr', 'strings', E(lambda: vs('Strings/Cello Section/susvib', release=0.45)), pan=0.28, hall=0.35)
 
 # balance trims (dB); calibrated by the per-part level report (see report())
-TRIM = dict(taiko=-14, trailer=-7, sub=-13, kick=-2, snare=4, hh=9, hho=6, crash=2, tomh=4, toml=4, snc=2,
-            vc_sp=7, vla_sp=10, vln_sp=9, cb_sp=12, vln_su=15, vla_su=3, vc_su=6, cb_su=7, vln_tr=3, vc_tr=3,
-            hn_su=8, hn_st=9, tp_su=4, tp_st=10, tb_su=9, tb_st=9, tu_su=10, tu_st=13, choir=17, oohs=15,
-            timp=10, ocym=5, gong=3, riser=-3, boom=-10, braaam=-4, harp=14, celesta=10, glock=14, piano=2,
+TRIM = dict(taiko=-14, trailer=-13, sub=-18, kick=-4, snare=4, hh=9, hho=6, crash=2, tomh=4, toml=4, snc=2,
+            vc_sp=7, vla_sp=7, vln_sp=9, cb_sp=12, vln_su=15, vla_su=3, vc_su=6, cb_su=7, vln_tr=3, vc_tr=3,
+            hn_su=15, hn_st=12, tp_su=4, tp_st=10, tb_su=9, tb_st=9, tu_su=10, tu_st=13, choir=1, oohs=1,
+            timp=10, ocym=5, gong=3, riser=-3, boom=-14, braaam=-4, harp=14, celesta=10, glock=14, piano=2,
             kanun=2, darb=-4, tamb=10, oroll=3, bd=2,
             flute_sv=8, flute_ex=8, flute_nv=8, oboe=8, vln_solo=8, cb_dr=7, vc_dr=6, vlnpz=8, vlapz=8, vcpz=8, cbpz=8, vsol_sp=8, vsol_tr=8,
             dhol_h=2, dhol_s=2, conga_o=4, harp_d=14, pz_d=8, pno_d=2, sitar=0, tabla=0, zap=0, shim=0)

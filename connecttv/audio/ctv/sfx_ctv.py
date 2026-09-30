@@ -16,7 +16,7 @@ Everything registers in sfx_v6.REG, so sfx_v6.build(name, root) works for the ne
   glass_shatter   glass shatter (screen tear / magnifier), hit 0.0
   cross_out       red X: two bolt slashes + slam (hit 0.26)
   vortex_suck     spiral suck into the TV (hit 1.15 = the gulp)
-  logo_slam       END-CARD slam (hit 0.55): reverse suck + bolt + boom + splash + shockwave + glitter + hall
+  logo_suck / logo_slam  END-CARD: reverse suck (hit at its end) + slam (hit 0.0): bolt + boom + splash + shockwave + glitter + hall
   harp_sparkle    real harp glissando (pitched, hit 0.0)
   day_note        one day of the week: real harp + violin spiccato note (pitched)  |  week_finale: chord + gliss
   bolly_sting     tabla + sitar flourish (pitched, hit 0.0)
@@ -353,29 +353,37 @@ def _(r):
 
 
 # ---------------------------------------------------------------- the end-card slam
-@reg('logo_slam', 0.55, 'END CARD logo slam: reverse-air suck (0-0.55), bolt crack + big boom + splash + shockwave at 0.55, '
-     'glitter, hall bloom. 4.6 s.')
+@reg('logo_suck', 0.55, 'END CARD pre-hit: reverse-air suck rising for 0.55 s then dead stop (hit = 0.55). 0.6 s.')
 def _(r):
-    dur = 4.6
+    dur = 0.6
+    hit = 0.55
     n = N(dur)
     t = tax(n)
-    hit = 0.55
-    y = np.zeros((2, n))
     nz = pink(n, r) * 0.6 + white(n, r) * 0.4
     suck = stft_shape(nz, bandsweep(lambda tt: 500 * 18 ** np.clip(tt / hit, 0, 1) ** 1.2, 0.9), nper=2048)
-    suck = suck * (np.clip(t / hit, 0, 1) ** 3.0) * (t < hit) * 1.0
+    suck = suck * (np.clip(t / hit, 0, 1) ** 3.0) * (t < hit)
     suck[t >= hit] = 0
-    y += pan_dyn(suck, np.interp(t, [0, hit], [-0.4, 0.4]))
-    big = _boom(r, 1.0)
-    add_at(y, big, hit, 1.0)
-    bolt = S6.build('bolt_crack', write=False)
-    add_at(y, bolt, hit, 0.55)
-    add_at(y, splash_noise(r, 1.8, 10000, 800, 0.3, 1.8), hit, 0.6)
-    sw = S6.build('shockwave', write=False)
-    add_at(y, sw, hit, 0.6)
-    add_at(y, S6.build('glitter', write=False), hit + 0.05, 0.9)
-    add_at(y, S6.build('glitter', suffix='', write=False), hit + 0.6, 0.5)
+    return pan_dyn(suck, np.interp(t, [0, hit], [-0.4, 0.4]))
+
+
+@reg('logo_slam', 0.0, 'END CARD logo slam (hit 0.0): bolt crack + big boom (sub, kick, stamp) + splash + shockwave + glitter, hall bloom. 4.1 s.')
+def _(r):
+    dur = 4.1
+    n = N(dur)
+    y = np.zeros((2, n))
+    add_at(y, _boom(r, 1.0), 0.0, 1.0)
+    add_at(y, S6.build('bolt_crack', write=False), 0.0, 0.55)
+    add_at(y, splash_noise(r, 1.8, 10000, 800, 0.3, 1.8), 0.0, 0.6)
+    add_at(y, S6.build('shockwave', write=False), 0.0, 0.6)
+    add_at(y, S6.build('glitter', write=False), 0.05, 0.9)
+    add_at(y, vary_(S6.build('glitter', write=False), 0.93), 0.6, 0.5)
     return reverb(y, IR_CINEMA(), 0.14, tail=False)
+
+
+def vary_(x, ratio):
+    m = int(x.shape[1] / ratio)
+    pos = np.arange(m) * ratio
+    return np.vstack([np.interp(pos, np.arange(x.shape[1]), c) for c in x])
 
 
 # ---------------------------------------------------------------- real-sample harp sounds (VSCO-2-CE, CC0)
@@ -436,15 +444,16 @@ def _(r, root=72):
     return _room_small(x).T
 
 
-@reg('week_finale', 0.0, 'Last day of the week: harp+violin note, upright-piano triad and a rising harp gliss sparkle. 2.4 s.', True)
-def _(r, root=86):
+@reg('week_finale', 0.0, 'Last day of the week (F#, the leading tone that resolves to G at the goal): harp+violin note, upright-piano fifth '
+     'and a rising harp gliss sparkle. root = F#6 (90). 2.4 s.', True)
+def _(r, root=90):
     S = _samplers()
     Nn = int(2.4 * SR)
     x = 0.85 * S['harp'].render([(0.0, 0.55, root, 88, {}), (0.004, 0.5, root - 12, 64, {})], Nn)
     x += 0.4 * S['vln'].render([(0.002, 0.12, root, 76, {})], Nn)
-    x += 0.5 * S['piano'].render([(0.0, 1.2, root, 78, {}), (0.0, 1.2, root - 12, 70, {}), (0.0, 1.2, root - 5, 64, {})], Nn)
-    for i, m in enumerate([root + d for d in (3, 5, 7, 10)]):     # E minor pentatonic above E (root must be an E)
-        x += 0.8 * S['harp'].render([(0.12 + i * 0.05, 0.6, m, 66 - i * 2, {})], Nn)
+    x += 0.5 * S['piano'].render([(0.0, 1.2, root - 24, 78, {}), (0.0, 1.2, root - 17, 70, {}), (0.0, 1.2, root - 12, 64, {})], Nn)
+    for i, m in enumerate([root + d for d in (-9, -7, -4, -2, 0)]):        # A B D E F# (the score's own gliss notes)
+        x += 0.8 * S['harp'].render([(0.05 + i * 0.03, 0.6, m, 62 - i * 3, {})], Nn)
     return _room_small(x).T
 
 
