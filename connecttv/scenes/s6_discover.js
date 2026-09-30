@@ -304,7 +304,7 @@
     CL.title(ctx, 'בכורה', 0, 4, { size: 92, fill: ['#fff7c0', '#ffb300'] }); ctx.restore();
   }
   function countdown(ctx, t) {
-    const T3 = 18.78, T2 = 19.21, T1 = 19.58, TE = 20.09; if (t < T3 - .14 || t > TE + .3) return;
+    const T3 = 18.78, T2 = 19.21, T1 = 19.58, TE = 20.09; if (t < T3 - .22 || t > TE + .3) return;
     const cx = 960, cy = 560; let ringK = land(t, T3, .5); const ex = P(t, TE, TE + .18); ringK *= 1 + .5 * eo(ex); const ga = 1 - ex; if (ga <= 0) return;
     ctx.save(); ctx.globalAlpha = ga; ctx.translate(cx, cy); ctx.scale(ringK, ringK);
     const beat = t > T1 ? 1 + .045 * Math.sin((t - T1) * 22) * P(t, T1, T1 + .1) + .015 * P(t, T1, TE) : 1;
@@ -485,12 +485,12 @@
   }
   function catmull(p0, p1, p2, p3, u) { const u2 = u * u, u3 = u2 * u; return [0, 1].map(k => .5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * u + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * u2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * u3)); }
   function spotPos(t) {
-    const R0 = 21.58, dt = .08, pts = [[960, 440]].concat(Array.from({ length: 6 }, (_, i) => tileC(i)), [[960, 520]]);   // pts[i+1] = tile i
+    const R0 = 21.58, dt = .065, pts = [[960, 440]].concat(Array.from({ length: 6 }, (_, i) => tileC(i)), [[960, 520]]);   // pts[i+1] = tile i
     const u = (t - (R0 - dt)) / dt, i = Math.floor(clamp(u, 0, 6.999)), f = clamp(u, 0, 6.999) - i;
     return catmull(pts[Math.max(0, i - 1)], pts[i], pts[Math.min(7, i + 1)], pts[Math.min(7, i + 2)], f);
   }
   function tiles(ctx, t) {
-    const R0 = 21.58, dt = .08; if (t < 21.28) return;
+    const R0 = 21.58, dt = .065; if (t < 21.28) return;
     const spot = spotPos(t), spotR = 300 + 260 * P(t, R0 + 4 * dt, R0 + 6.5 * dt), dimA = .66 * (1 - P(t, R0 + 3.5 * dt, R0 + 6.5 * dt));
     const state = i => { const rt = R0 + i * dt, fs = rt - .2; const tt = i * .02 + 21.29, pp = CL.pop(t, tt, .4); let flip = 0; if (t >= fs) flip = (t - fs) / .2; return { pp, flip, rt }; };
     const drawTile = (i, revealedPass) => {
@@ -536,8 +536,8 @@
       sparkBurst(ctx, t, 21.29, BOX.x, BOX.base - 320, 700, 24, 43, 1.3);
     }
     tiles(ctx, t);
-    // CUE 21.58 first tile reveal (spotlight lands), then every 0.08 s: 21.66 21.74 21.82 21.90 21.98
-    if (t > 21.95) confetti(ctx, t, 21.98, 960, 470, 50, 71, { spread: 1.4, speed: 1.0, life: 1.6 });
+    // CUE 21.58 first tile reveal (spotlight lands), then every 0.065 s: 21.645 21.71 21.775 21.84 21.905
+    if (t > 21.88) confetti(ctx, t, 21.905, 960, 470, 50, 71, { spread: 1.4, speed: 1.0, life: 1.6 });
   }
 
   // ------------------------------------------------------------------ scene

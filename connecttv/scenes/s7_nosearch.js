@@ -285,7 +285,7 @@
       world(ctx, t);
       const u = t - 22.70, bb = ease.inOut(inv(22.55, 23.05, t)), k = ease.inOut(inv(23.0, 23.22, t));
       let mx = CX + (520 * Math.sin(u * 6 + .6) + 70 * Math.sin(u * 13)) * bb, my = CY - 10 + (120 * Math.sin(u * 8.5) + 25 * Math.sin(u * 17)) * bb; mx = lerp(mx, CX, k); my = lerp(my, CY, k);
-      let rot = .3 * Math.sin(u * 7) * (1 - k) * bb; const wb = 1 + .04 * Math.sin(u * 11) * (1 - k), pop = CL.pop(t, 22.44, .32);
+      let rot = .3 * Math.sin(u * 7) * (1 - k) * bb; const wb = 1 + .04 * Math.sin(u * 11) * (1 - k), pop = CL.pop(t, 22.50, .32);
       if (t < 23.36 && pop > 0) magnifier(ctx, mx, my, 235 * pop * wb, rot, () => world(ctx, t), t >= 23.29 ? cl((t - 23.29) / .07) : 0, t, 1);
       else if (t >= 23.36 && t < 24.05) {   // rim + handle of the shattered magnifier sag and fade slowly under the red X
         const mf = inv(23.36, 24.0, t); ctx.save(); ctx.globalAlpha *= 1 - sm(23.5, 24.0, t); magnifier(ctx, CX, CY + 220 * ease.in(mf), 235 * (1 + .08 * mf), .5 * mf, null, 0, t, 0); ctx.restore();

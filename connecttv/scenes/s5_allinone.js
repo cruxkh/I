@@ -219,7 +219,7 @@
   function rainbow(ctx, t) {
     const track = ease.out(clamp((t - T_CAL) / .7));   // dim track that draws on with the bubbles (from the right end, RTL)
     if (track > 0) { ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.1)'; ctx.lineWidth = 40; ctx.lineCap = 'round'; ctx.beginPath(); ctx.ellipse(AC.x, AC.y, AC.rx, AC.ry, 0, 2 * PI, 2 * PI - track * PI, true); ctx.stroke(); ctx.restore(); }
-    const q = ease.inOut(clamp((t - T_SAT) / 1.0)); if (q <= 0) return;
+    const q = ease.out(clamp((t - T_SAT) / .75)); if (q <= 0) return;
     ctx.save(); ctx.lineCap = 'butt'; for (let i = 0; i < 7; i++) { const o = -66 + i * 22; ctx.strokeStyle = RAIN[i]; ctx.lineWidth = 23; ctx.beginPath(); ctx.ellipse(AC.x, AC.y, AC.rx + o, AC.ry + o, 0, PI, PI + q * PI); ctx.stroke(); }
     ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 6; ctx.beginPath(); ctx.ellipse(AC.x, AC.y, AC.rx + 84, AC.ry + 84, 0, PI, PI + q * PI); ctx.stroke(); ctx.restore();
   }
