@@ -169,15 +169,70 @@ def asr_check(y, lang, sr=SR):
         return 'n/a (%s)' % e
 
 
+def breath(dur, r, f_lo=1300, f_hi=5200, up=True, level=1.0):
+    """a sharp sobbing in-breath ('hih'): band-passed noise, pitch-swept, quick attack, softer decay"""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    nz = white(n, r)
+    y = bp(nz, f_lo, f_hi) * 0.6 + peq(bp(nz, 2000, 3600), 2700, 3, 6) * 0.5
+    a = np.minimum(t / (dur * 0.35), 1.0) ** 1.5 * np.exp(-np.maximum(t - dur * 0.45, 0) / (dur * 0.3))
+    return y * a * level
+
+
 def neden():
-    """Turkish 'Neden?!' -- Kokoro has no Turkish: Italian if_sara voice + Turkish IPA (n e d e n), the previous film's recipe"""
-    y = trim(kokoro('nɛdˈɛn?!', 'if_sara', speed=0.9, lang='it', phonemes=True))
-    # dramatic: a touch higher, trembling, pitch lifting on the last syllable ("Neden?!"), a bit breathy, slightly stretched
+    """Turkish 'Neden?!' as a young GIRL crying (fits the 1.0 s `tur` hold, ends by hold+0.97 s).
+    Kokoro has no Turkish: Italian if_sara + Turkish IPA (n e d e n) -- verified 'Neden?' by Whisper-tr -- then WORLD:
+    f0 x1.55, formants x1.13 (child), pitch trembling ~8 Hz with a broken catch, breathy aperiodicity, amplitude
+    breaks at the syllable joints with sharp in-breaths, and a short hiccuping sob tail ('hh-ha, hh-hha')."""
+    r = np.random.default_rng(1234)
+    y = trim(kokoro('nɛdˈɛn?!', 'if_sara', speed=1.12, lang='it', phonemes=True))
+
     def f0f(f0, t):
         tt = t / max(t[-1], 1e-6)
-        lift = 1 + 0.16 * np.clip((tt - 0.55) / 0.45, 0, 1) ** 1.5
-        return f0 * 1.10 * lift * 2 ** (0.45 * np.sin(2 * np.pi * 6.5 * t) / 12)
-    return world(y, SR, f0f, 1.0, lambda ap, t: np.clip(ap + 0.06, 0, 1), stretch=1.05)
+        lift = 1 + 0.20 * np.clip((tt - 0.5) / 0.5, 0, 1) ** 1.4              # pleading rise on "-den?!"
+        trem = 2 ** ((0.25 + 0.75 * tt) * np.sin(2 * np.pi * 8.5 * t) / 12)      # sob-vibrato, growing
+        jit = 2 ** (0.35 * np.convolve(r.standard_normal(len(t)), np.ones(3) / 3, 'same') / 12)
+        catch = 1 + 0.07 * np.exp(-((tt - 0.62) / 0.03) ** 2)                    # voice break upward (a crack)
+        return f0 * 1.55 * lift * trem * jit * catch
+    w = world(y, SR, f0f, 1.13, lambda ap, t: np.clip(ap + 0.22 + 0.15 * (t / t[-1]), 0, 1), stretch=1.0)
+    w = w / (np.max(np.abs(w)) + 1e-9)
+    n = len(w)
+    t = np.arange(n) / SR
+    # amplitude breaks at the syllable joints (glottal catches) + sob tremble
+    gate = np.ones(n)
+    for c, wd in ((0.30 * n / SR, 0.045), (0.55 * n / SR, 0.035)):
+        gate *= 1 - 0.85 * np.exp(-0.5 * ((t - c) / (wd / 2.5)) ** 2)
+    gate *= 1 - 0.28 * (0.5 + 0.5 * np.sin(2 * np.pi * 9.0 * t)) * np.clip(t / (n / SR) * 1.6, 0, 1)
+    w = w * gate
+    out = np.zeros(int(1.0 * SR))
+    add_1d(out, w, 0.0)
+    L1 = len(w) / SR
+    # in-breaths at the joints
+    add_1d(out, breath(0.06, r, level=0.10), 0.30 * L1 - 0.03)
+    add_1d(out, breath(0.05, r, level=0.10), 0.55 * L1 - 0.02)
+    # sob tail: a hiccup in-breath then two short broken 'ha' sobs sliding down, fading out inside the hold
+    tail0 = L1 + 0.02
+    add_1d(out, breath(0.085, r, 1500, 5600, level=0.22), tail0)
+    sob = trim(kokoro('hˈʌ hˈʌ', 'if_sara', speed=1.3, lang='en-us', phonemes=True))
+
+    def sf0(f0, t):
+        tt = t / max(t[-1], 1e-6)
+        return np.where(f0 > 0, 470 * (1 - 0.22 * tt) * 2 ** (0.5 * np.sin(2 * np.pi * 9 * t) / 12), 0)
+    sob = world(sob, SR, sf0, 1.12, lambda ap, t: np.clip(ap + 0.3, 0, 1))
+    sob = sob / (np.max(np.abs(sob)) + 1e-9) * 0.42
+    room_t = int((1.0 - 0.03) * SR)
+    sob = sob[:max(0, room_t - int((tail0 + 0.10) * SR))]
+    add_1d(out, sob, tail0 + 0.10)
+    return out
+
+
+def add_1d(dst, src, t):
+    i = int(round(t * SR))
+    if i < 0:
+        src, i = src[-i:], 0
+    L = min(len(src), len(dst) - i)
+    if L > 0:
+        dst[i:i + L] += src[:L]
 
 
 def vaah():
@@ -258,7 +313,7 @@ def main():
         place.append(dict(name=name, T=round(t, 3), dur=round(len(y) / SR, 3), until=round(t + st_.shape[1] / SR, 3)))
     ht, hi = HK['tur'], HK['ind']
     ne = neden()
-    put(ne, ht['T0'] + GENRE_DELAY, -2.5, 0.0, room, 0.22, 'Neden?! (tur, Kokoro if_sara + Turkish IPA + WORLD)', end=ht['T0'] + ht['d'])
+    put(ne, ht['T0'] + GENRE_DELAY, -2.5, 0.0, room, 0.22, 'Neden?! + sob tail (tur: crying girl, Kokoro if_sara + Turkish IPA + WORLD child/tremble/breaks)', end=ht['T0'] + ht['d'])
     va = vaah()
     put(va, hi['T0'] + GENRE_DELAY, -2.0, 0.0, room, 0.20, 'वाह! (ind, Kokoro hm_omega Hindi + WORLD)', end=hi['T0'] + hi['d'])
 

@@ -231,8 +231,8 @@
       const gs = CL.pop(t, GT + .02, .22); if (gs > 0) CL.title(ctx, 'גול!', CX, 560, { size: 330, scale: gs, rot: -.05, fill: ['#ffffff', '#FFD23F'], dir: 'rtl' });
     }
     // HUD: LIVE badge + score
-    const lb = CL.pop(t, T_PLAY + .1, .25); if (lb > 0) { ctx.save(); ctx.translate(150, 74); ctx.scale(lb, lb); ctx.fillStyle = C.red; ctx.strokeStyle = '#fff'; ctx.lineWidth = 7; ctx.beginPath(); ctx.roundRect(-96, -34, 192, 68, 34); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-54, 0, 12 + 3 * Math.sin(t * 9), 0, TAU); ctx.fill(); ctx.font = '900 40px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.fillText('LIVE', 18, 3); ctx.restore(); }
-    const sc = CL.pop(t, T_PLAY + .15, .25); if (sc > 0) CL.chip(ctx, t >= GT ? '1 : 0' : '0 : 0', CX + 620, 74, { size: 56, dir: 'ltr', fill: t >= GT ? C.yellow : '#fff', scale: sc * (1 + kick(t, GT, .25, 20, 7)) });
+    const lb = CL.pop(t, T_PLAY + .1, .25); if (lb > 0) { ctx.save(); ctx.translate(150, 96); ctx.scale(lb, lb); ctx.fillStyle = C.red; ctx.strokeStyle = '#fff'; ctx.lineWidth = 7; ctx.beginPath(); ctx.roundRect(-96, -34, 192, 68, 34); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-54, 0, 12 + 3 * Math.sin(t * 9), 0, TAU); ctx.fill(); ctx.font = '900 40px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.fillText('LIVE', 18, 3); ctx.restore(); }
+    const sc = CL.pop(t, T_PLAY + .15, .25); if (sc > 0) CL.chip(ctx, t >= GT ? '1 : 0' : '0 : 0', CX + 620, 96, { size: 56, dir: 'ltr', fill: t >= GT ? C.yellow : '#fff', scale: sc * (1 + kick(t, GT, .25, 20, 7)) });
   }
   const goalK = t => Math.max(0, 1 - (t - 27.20) / .4) * (t >= 27.2 ? 1 : 0);
 

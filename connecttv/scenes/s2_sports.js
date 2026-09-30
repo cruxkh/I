@@ -170,7 +170,7 @@
 
     // ---- light rig + beams
     const aim = Math.max(ie * .9, sm(8.32, 8.55, t)); beams(ctx, t, aim, 1); rig(ctx, t, 1);
-    if (t >= 6.78 && t < 7.05) { ctx.fillStyle = `rgba(255,255,255,${.85 * Math.exp(-(t - 6.78) * 11)})`; ctx.fillRect(0, 0, W, H); }   // the flash (CUE 6.78 light-flash)
+    if (t >= 6.78 && t < 7.05) { ctx.fillStyle = `rgba(255,255,255,${.85 * Math.exp(-(t - 6.78) * 18)})`; ctx.fillRect(0, 0, W, H); }   // the flash (CUE 6.78 light-flash)
 
     if (ie < 1) {
       // ---- ball/trophy burst (behind logos)

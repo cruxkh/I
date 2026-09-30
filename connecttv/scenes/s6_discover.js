@@ -413,7 +413,6 @@
   function world2(ctx, t) {
     const open = t >= 20.09 - .02; const edge = openCurtains(ctx, t);
     if (open) { stageBg(ctx, t); posterWall(ctx, t); }
-    else { CL.bg(ctx, t, { tint: [C.purple, C.pink, C.red], base: '#2a0a4a' }); }
     // curtains
     const ph = t * 3, amp = t < 18.78 ? 30 * (1 - closingK(t)) + 12 : 8, trem = t > 19.52 && t < 20.09 ? Math.sin(t * 73) * (2 + 12 * Math.pow(P(t, 19.52, 20.09), 2)) : 0;
     const sway = t >= 18.78 && t < 19.52 ? Math.sin((t - 18.78) * 20) * 5 * Math.exp(-(t - 18.78) * 3) : 0;
@@ -461,7 +460,7 @@
   }
   function giftBox(ctx, x, yb, o) {
     const { sx = 1, sy = 1, rot = 0, lidOff = null, glow = 0, bowSpin = 0, bowS = 1 } = o;
-    ctx.save(); ctx.translate(x, yb); ctx.rotate(rot); ctx.scale(sx, sy);
+    ctx.save(); ctx.translate(x, yb); ctx.rotate(rot); ctx.scale(sx * 1.3, sy * 1.3);
     ctx.fillStyle = 'rgba(2,4,30,.4)'; ctx.beginPath(); ctx.ellipse(10, 6, 290, 32, 0, 0, TAU); ctx.fill();
     if (glow > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.linear(ctx, 0, -330, 0, -1100, [[0, A.hex('#fff2a0', .9 * glow)], [1, A.hex('#ffd23f', 0)]]); ctx.beginPath(); ctx.moveTo(-200, -320); ctx.lineTo(200, -320); ctx.lineTo(420, -1100); ctx.lineTo(-420, -1100); ctx.closePath(); ctx.fill(); ctx.restore(); }
     // body

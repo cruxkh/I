@@ -125,7 +125,7 @@ A.scene = def => { def.shift = def.shift ?? A.SHIFT; A.scenes.push(def); };
 
 A.renderFrame = f => {
   const T = f / A.FPS, t = A.tMap ? A.tMap(T) : T, cv = document.getElementById('c'), ctx = cv.getContext('2d');
-  A.T = T; A.H = A.holdAt ? A.holdAt(T) : null;   // A.H = {i,u,dur,kind,v,label} while the voice-over is paused (scene clock frozen), else null
+  A.T = T; A.HOLD = A.holdAt ? A.holdAt(T) : null;   // A.H = {i,u,dur,kind,v,label} while the voice-over is paused (scene clock frozen), else null
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.filter = 'none';
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, A.W, A.H);
   for (const s of A.scenes) {
