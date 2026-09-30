@@ -55,7 +55,7 @@
     g.restore();
   }
   function arm(g, side, spec, t, p) {
-    const Sx = side * 92, Sy = 14, len = 58 * (spec.L ?? 1), a = spec.a + (spec.spin ? sin(t * spec.spin) * (spec.amp ?? .3) : 0), dx = cos(a), dy = sin(a);
+    const Sx = side * 92, Sy = 14, len = 68 * (spec.L ?? 1), a = spec.a + (spec.spin ? sin(t * spec.spin) * (spec.amp ?? .3) : 0), dx = cos(a), dy = sin(a);
     const Hx = Sx + dx * len, Hy = Sy + dy * len, bend = (spec.bend ?? 0) * len * .5, cx = (Sx + Hx) / 2 - dy * bend, cy = (Sy + Hy) / 2 + dx * bend;
     g.lineCap = 'round'; g.beginPath(); g.moveTo(Sx, Sy); g.quadraticCurveTo(cx, cy, Hx, Hy); g.strokeStyle = INK; g.lineWidth = 27; g.stroke();
     g.strokeStyle = A.mixc('#4a7dff', '#7a4dff', .35); g.lineWidth = 17; g.stroke(); g.strokeStyle = 'rgba(255,255,255,.4)'; g.lineWidth = 4; g.beginPath(); g.moveTo(Sx, Sy - 4); g.quadraticCurveTo(cx, cy - 4, Hx, Hy - 4); g.stroke();

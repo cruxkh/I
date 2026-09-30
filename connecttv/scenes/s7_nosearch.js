@@ -4,7 +4,7 @@
 // bolt X (24.43) -> liquid wave sweeps everything away -> one calm glowing TV (24.8).
 (() => {
   const { clamp, lerp, inv, ease, hash, TAU } = A;
-  const C = CL.C, W = 1080, H = 1920, CAND = CL.CAND;
+  const C = CL.C, W = CL.W, H = CL.H, CX = 960, CY = 410, CAND = CL.CAND;
   const INK = C.ink;
   const cl = clamp;
   const hexMix = (a, b, k) => { const p = s => parseInt(s.slice(1), 16), x = p(a), y = p(b), c = s => Math.round(lerp((x >> s) & 255, (y >> s) & 255, k)); return '#' + ((1 << 24) | (c(16) << 16) | (c(8) << 8) | c(0)).toString(16).slice(1); };
@@ -70,8 +70,8 @@
   const QCOL = [C.pink, C.cyan, C.yellow, C.lime, C.orange, C.purple, C.blue, C.green];
   const qSprite = ci => CL.layer('s7q' + ci, 320, 360, g => { CL.title(g, '?', 160, 190, { size: 270, dir: 'ltr', fill: [hexMix(QCOL[ci], '#ffffff', .62), QCOL[ci]] }); });
   const QI = [], TI = [];
-  for (let i = 0; i < 18; i++) { const c = i % 3, r = Math.floor(i / 3); QI.push({ x: cl((c + .5) * 360 + (r % 2 ? 100 : -100) + (hash(i * 3.1) - .5) * 120, 70, 1010), y: 175 + r * 205 + (hash(i * 5.3) - .5) * 80, k: .78 + hash(i * 7.9) * .6, ci: i % 8, ph: hash(i * 1.7) * TAU, tin: 22.60 + hash(i * 1.37) * .34, tout: 23.34 + hash(i * 2.31 + 5) * .2 }); }
-  for (let i = 0; i < 16; i++) { const c = i % 4, r = Math.floor(i / 4); TI.push({ x: cl((c + .5) * 270 + (hash(i * 4.4) - .5) * 100, 90, 990), y: 250 + r * 290 + (c % 2) * 120 + (hash(i * 9.1) - .5) * 100, k: .85 + hash(i * 3.3) * .5, a: CAND[i % 8], b: CAND[(i + 3) % 8], ph: hash(i * 2.9) * TAU, tin: 22.62 + hash(i * .77 + 2) * .32, tout: 23.36 + hash(i * 1.93 + 8) * .18 });
+  for (let i = 0; i < 18; i++) { const c = i % 6, r = Math.floor(i / 6); QI.push({ x: cl((c + .5) * 320 + (r % 2 ? 90 : -60) + (hash(i * 3.1) - .5) * 100, 110, 1810), y: 165 + r * 240 + (hash(i * 5.3) - .5) * 70, k: .78 + hash(i * 7.9) * .6, ci: i % 8, ph: hash(i * 1.7) * TAU, tin: 22.60 + hash(i * 1.37) * .34, tout: 23.34 + hash(i * 2.31 + 5) * .2 }); }
+  for (let i = 0; i < 16; i++) { const c = i % 8, r = Math.floor(i / 8); TI.push({ x: cl((c + .5) * 240 + (hash(i * 4.4) - .5) * 90, 120, 1800), y: 260 + r * 300 + (c % 2) * 90 - 40 + (hash(i * 9.1) - .5) * 80, k: .85 + hash(i * 3.3) * .5, a: CAND[i % 8], b: CAND[(i + 3) % 8], ph: hash(i * 2.9) * TAU, tin: 22.62 + hash(i * .77 + 2) * .32, tout: 23.36 + hash(i * 1.93 + 8) * .18 });
   }
   function outScale(t, tout) { const u = (t - tout) / .17; if (u <= 0) return 1; if (u >= 1) return 0; return Math.max(0, 1 - ease.inBack(u)); }
   function thumb(ctx, x, y, k, rot, a, b) {

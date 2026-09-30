@@ -97,7 +97,7 @@
 
   // ---------------------------------------------------------------- world 1 (Netflix side)
   function plate1(ctx, t) {   // NETFLIX plate: real logo on white gel, slams on 4.34
-    const pre = P(t, 4.16, 4.34), post = t - 4.34, flip = P(t, 5.28, 5.5);
+    const pre = P(t, 4.16, 4.34), post = t - 4.34, flip = P(t, 5.10, 5.34);
     if (t < 4.16) return; let sc = lerp(3.3, 1, ease.in(pre)); const wob = post > 0 ? .13 * kick(t, 4.34, 9, 32) : 0;
     let sx = sc * (1 + wob), sy = sc * (1 - wob), rot = post > 0 ? .05 * Math.exp(-post * 9) * Math.sin(post * 30) : -.2 * (1 - ease.in(pre));
     let x = CX, y = CENTER_Y + (post > 0 ? 8 * Math.sin(t * 2.2) : 0); const al = clamp((t - 4.16) / .05);
@@ -118,7 +118,7 @@
     // CUE 3.92 episode-cards-fan
     fan(ctx, t);
     // CUE 4.34 netflix-slam (red splash, shockwave, shake, flash, bolts)
-    if (t >= 4.34) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 5.0, 5.3); CL.splash(ctx, CX, CENTER_Y, 800, CL.spring(t, 4.34, .6), 7, [RED, '#FF7A1F', C.pink, REDH, '#B3001B']); ctx.restore(); }
+    if (t >= 4.34) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 4.9, 5.2); CL.splash(ctx, CX, CENTER_Y, 800, CL.spring(t, 4.34, .6), 7, [RED, '#FF7A1F', C.pink, REDH, '#B3001B']); ctx.restore(); }
     if (t >= 3.41) CL.splash(ctx, CX, 330, 560, CL.spring(t, 3.41, .5) * (1 - P(t, 3.62, 3.9)), 5, [C.yellow, C.orange, C.pink, '#FFF6E6', C.cyan]);   // candy splash behind the clapper
     // clapper: slams shut on 3.41, then parks top-left, blasted away by the Netflix slam
     { const pop = CL.pop(t, 3.20, .2), park = eio(P(t, 3.82, 4.02)), bl = eo(P(t, 4.34, 4.8));
@@ -167,7 +167,7 @@
   }
 
   function world2(ctx, t) {
-    const k = P(t, 5.28, 5.72); if (k <= 0) return; const R = lerp(0, 2150, eo(k)), icx = CX, icy = CENTER_Y;
+    const k = P(t, 5.30, 5.72); if (k <= 0) return; const R = lerp(0, 2150, eo(k)), icx = CX, icy = CENTER_Y;
     const ipath = () => { ctx.beginPath(); for (let i = 0; i <= 56; i++) { const a = i / 56 * TAU, rr = R * (1 + .06 * Math.sin(a * 6 + t * 7) + .03 * Math.sin(a * 11 - t * 5)); i ? ctx.lineTo(icx + Math.cos(a) * rr, icy + Math.sin(a) * rr) : ctx.moveTo(icx + Math.cos(a) * rr, icy + Math.sin(a) * rr); } ctx.closePath(); };
     if (k < 1) { ipath(); ctx.strokeStyle = C.purple; ctx.lineWidth = 100; ctx.stroke(); ipath(); ctx.strokeStyle = C.cyan; ctx.lineWidth = 52; ctx.stroke(); ipath(); ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 14; ctx.stroke(); }
     ctx.save(); ipath(); ctx.clip();
@@ -204,9 +204,9 @@
         A.glow(ctx, PLUS_X, by, 520, C.pink, .55 + .15 * Math.sin(t * 9)); A.glow(ctx, PLUS_X, by, 380, C.purple, .5);
         ctx.save(); ctx.translate(PLUS_X, by); ctx.rotate(rot); ctx.scale(sc, sc); plusShape(ctx, 400); ctx.restore(); } }
     if (t >= 6.43) {
-      CL.ring(ctx, PLUS_X, PLUS_Y, 900, P(t, 6.43, 6.95), '#fff', 30); CL.ring(ctx, PLUS_X, PLUS_Y, 700, P(t, 6.46, 6.9), C.pink, 44);
+      CL.ring(ctx, PLUS_X, PLUS_Y, 900, P(t, 6.43, 6.95), '#fff', 16); CL.ring(ctx, PLUS_X, PLUS_Y, 700, P(t, 6.46, 6.9), C.pink, 44);
       const [px, py] = logoPt(470, 190, px0), pk = P(t, 6.43, 6.85);
-      for (let i = 0; i < 9; i++) { const a = i / 9 * TAU + .3, d = eo(pk) * (150 + 90 * hash(i)); CL.spark(ctx, px + Math.cos(a) * d, py + Math.sin(a) * d, 34 * (1 - pk) * (.6 + hash(i + 2)), t * 4 + i, i % 2 ? '#fff' : C.yellow); }
+      for (let i = 0; i < 9; i++) { const a = i / 9 * TAU + .3, d = eo(pk) * (150 + 90 * hash(i)); CL.spark(ctx, px + Math.cos(a) * d, py + Math.sin(a) * d, 24 * (1 - pk) * (.6 + hash(i + 2)), t * 4 + i, i % 2 ? '#fff' : C.yellow); }
       for (let i = 0; i < 14; i++) { const a = i / 14 * TAU + hash(i) * .5, d = eo(pk) * (260 + 260 * hash(i + 5)); CL.spark(ctx, PLUS_X + Math.cos(a) * d, PLUS_Y + Math.sin(a) * d * .8, 38 * (1 - pk * .8) * (.5 + hash(i + 8)), t * 3 + i, ['#fff', C.cyan, C.yellow, C.pink][i % 4]); }
     }
     ctx.restore();
@@ -228,7 +228,7 @@
     world2(ctx, t);
     ctx.restore();
     // impact flashes
-    const fl = Math.max(t >= 4.34 ? .6 * (1 - P(t, 4.34, 4.5)) : 0, t >= 5.99 ? .5 * (1 - P(t, 5.99, 6.15)) : 0, t >= 6.43 ? .3 * (1 - P(t, 6.43, 6.55)) : 0, t >= 3.41 ? .25 * (1 - P(t, 3.41, 3.5)) : 0);
+    const fl = Math.max(t >= 4.34 ? .45 * (1 - P(t, 4.34, 4.5)) : 0, t >= 5.99 ? .4 * (1 - P(t, 5.99, 6.15)) : 0, t >= 6.43 ? .3 * (1 - P(t, 6.43, 6.55)) : 0, t >= 3.41 ? .25 * (1 - P(t, 3.41, 3.5)) : 0);
     if (fl > 0) { ctx.fillStyle = `rgba(255,255,255,${fl})`; ctx.fillRect(0, 0, W, H); }
   } });
 })();
