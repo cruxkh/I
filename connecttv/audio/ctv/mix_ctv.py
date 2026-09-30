@@ -128,9 +128,9 @@ def place(bus, x, t, gain_db=0.0, pan=0.0, seg=None, fin=0.0, fout=0.0):
 
 
 # ------------------------------------------------------------------ CUE SHEET
-# score key (score_ctv.py): E minor / E Hijaz / E major in the holds, G major in the chorus.  The day phrase is the score's own:
-# G A B C D E F# (F# = leading tone that resolves to G at the goal), one octave up here so the harp pops read over the speech band.
-KEY = dict(harp_root=79, week=[79, 81, 83, 84, 86, 88, 90], bolly=64, tur=40, cin=40)
+# score key (score_ctv.py v2 'premiere night'): D major / D Hijaz / D minor braaam in the holds, half-step lift to Eb major from the vortex drop (v 13.82).
+# The day phrase is the score's own DAYS_EB: Eb F G Ab Bb C D (D = leading tone that resolves to Eb at the goal), one octave up here so the harp pops read over speech.
+KEY = dict(harp_d=74, harp_eb=75, week=[75, 77, 79, 80, 82, 84, 86], cin=38)
 
 
 def cue_sheet():
@@ -142,7 +142,7 @@ def cue_sheet():
 
     def ct(t, nm, g=0.0, p=0.0, **kw):
         C.append(dict(t=t, nm=nm, g=g, p=p, v=None, **kw))
-    hr = KEY['harp_root']
+    hd, he_ = KEY['harp_d'], KEY['harp_eb']       # pentatonic roots: D major before the vortex drop, Eb major after
     # ---- S0 open (0 - 3.4)
     c(0.12, 'zap', -19, 0.0)                                                        # power-on line
     c(0.74, 'bolt_crack', -1, 0.0, m_all=5.5, m_hi=7.5)                             # BOLT cracks the screen on "המסך"
@@ -165,7 +165,7 @@ def cue_sheet():
     c(5.35 + 0.05, 'liquid_whoosh_b', -10, 0.0)                                     # flip to blue
     c(5.45, 'glitter', -18, 0.0)
     c(6.06, 'splash_slam', -2, 0.0, m_all=5.5, m_hi=7.5)                            # DISNEY+ logo burst
-    c(6.06, 'harp_sparkle', -9, 0.0, root=hr)
+    c(6.06, 'harp_sparkle', -9, 0.0, root=hd)
     c(6.06, 'shockwave', -8, 0.0)
     c(6.54, 'gloss_pop_c', -8, 0.0)                                                 # plus pop
     c(6.54, 'splash_small', -10, 0.0)
@@ -247,11 +247,11 @@ def cue_sheet():
     c(18.78, 'curtain_swoosh', -11, 0.0, after=True)                                # curtain slam
     c(19.21, 'lib:popcorn_burst', -14, 0.0, after=True)                             # popcorn bucket pop
     c(20.09, 'curtain_swoosh', -7, 0.0, after=True)                                 # curtains fly open
-    c(20.09, 'harp_sparkle', -12, 0.0, root=hr, after=True)
+    c(20.09, 'harp_sparkle', -12, 0.0, root=he_, after=True)
     c(20.42, 'splash_slam', -3, 0.0, after=True)                                    # chest slam
     c(20.97, 'gloss_pop_b', -10, 0.0, after=True)                                   # bow pop
     c(21.29, 'gloss_pop_c', -8, 0.0, after=True)                                    # box pops open (glossy pop, no paper confetti)
-    c(21.29, 'harp_sparkle', -6, 0.0, root=hr, after=True)
+    c(21.29, 'harp_sparkle', -6, 0.0, root=he_, after=True)
     c(21.29, 'splash_slam', -4, 0.0, after=True)
     c(21.35, 'glitter', -12, 0.0, after=True)
     # ---- S7 no search
@@ -282,7 +282,7 @@ def cue_sheet():
     c(26.30, 'splash_slam', -3, 0.0, after=True)                                    # tile bursts fullscreen
     c(26.30 + 0.10, 'liquid_whoosh_a', -9, 0.0, after=True)
     c(26.99, 'splash_slam', -3, 0.0, after=True)                                    # playback burst
-    c(26.99, 'harp_sparkle', -9, 0.0, root=hr, after=True)
+    c(26.99, 'harp_sparkle', -9, 0.0, root=he_, after=True)
     c(27.18, 'lib:stadium_goal_eruption', -6, 0.0, after=True, seg=(0.0, 2.3), fout=1.0)   # goal burst on the screen
     c(27.18, 'splash_small', -7, 0.0, after=True)
     c(27.60, 'logo_suck', -6, 0.0, after=True, var=1.6)                                    # iris suck into the logo (under the last word)
@@ -376,7 +376,7 @@ Timeline: T = v + sum(hold.d for holds with hold.v < v) (timeline.js: cin 8.85 +
 - Narrator = the ORIGINAL TTS (audio/vo_original_tts.wav), Kaiser polyphase 44.1k -> 48k (160/147, beta 14) + 2nd-order 70 Hz high-pass, nothing else
   (no EQ, no loudnorm, no compressor); split at the hold points on zero crossings with 5 ms fades; hold silences inserted.
   The mix contains it unchanged (checked against an independent resample + high-pass pipeline).
-- `cin` hold: the narrator's word "צ'רלטון" (v 8.32-8.85) is re-spoken from the same audio as a deep trailer voice (WORLD pitch -5.5 st, formant warp 0.94,
+- `cin` hold: the narrator's word "צ'רלטון" (words.js v 8.36-8.85) is re-spoken from the same audio as a deep trailer voice (WORLD pitch -5.5 st, formant warp 0.94,
   chest EQ, saturation, 3.6 s hall) starting at hold + 0.03 s (T 8.88), two darker echoes at +0.60 and +1.02 s, a small hall send under the original word.
   Whisper-he hears "...טון" for the processed word (the original word: "צ'לטון").  Level -3 dB vs. the first draft so it sits 3-5 dB over the bed.
 - `tur` hold (client request, revised twice): a young crying GIRL saying "Neden?!" and then a clearly audible child sob sequence, all inside the 1.0 s hold
@@ -392,8 +392,9 @@ Timeline: T = v + sum(hold.d for holds with hold.v < v) (timeline.js: cin 8.85 +
 - Whisper model: sherpa-onnx whisper-small int8 (GitHub release asr-models); Kokoro v1.0 from the kokoro-onnx GitHub release.
 
 ## Score handling
+- Score v2 'premiere night' (D major, half-step lift to Eb major at the vortex drop); cue times re-synced to the retimed words.js / scene CUE comments (up to +-120 ms).  Timeline is the 3-hold one (34.1 s); beat holds were cancelled.
 - Uses `score_ctv_nodays.wav` (the composer's stem split without its 7 day notes) and plays the day phrase from SFX (real VSCO harp + violin spiccato,
-  the composer's own notes G A B C D E F#, one octave up, on the scene CUEs 15.86 ... 16.75; F# = leading tone with a piano fifth + harp gliss).
+  the composer's own DAYS_EB notes Eb F G Ab Bb C D, one octave up, on the scene CUEs 15.98 ... 16.855; D = leading tone that resolves to Eb, with a piano fifth + harp gliss).
   `USE_SCORE_DAYS=1 python3 mix_ctv.py` uses the full score instead.
 - The score already plays its own dum-dum-DUM (tur), tabla + sitar groove (ind), braaam/gong/timpani roll (cin), so no SFX tur_dum / bolly_sting is cued
   (they would flam); the hold SFX are the THX swell + projector (cin), a tear drop (tur) and forward pickup whooshes into each hold end.

@@ -444,15 +444,15 @@ def _(r, root=72):
     return _room_small(x).T
 
 
-@reg('week_finale', 0.0, 'Last day of the week (F#, the leading tone that resolves to G at the goal): harp+violin note, upright-piano fifth '
-     'and a rising harp gliss sparkle. root = F#6 (90). 2.4 s.', True)
-def _(r, root=90):
+@reg('week_finale', 0.0, 'Last day of the week (D, the leading tone that resolves to Eb at the goal): harp+violin note, upright-piano fifth '
+     'and a rising harp gliss sparkle. root = D6 (86). 2.4 s.', True)
+def _(r, root=86):
     S = _samplers()
     Nn = int(2.4 * SR)
     x = 0.85 * S['harp'].render([(0.0, 0.55, root, 88, {}), (0.004, 0.5, root - 12, 64, {})], Nn)
     x += 0.4 * S['vln'].render([(0.002, 0.12, root, 76, {})], Nn)
     x += 0.5 * S['piano'].render([(0.0, 1.2, root - 24, 78, {}), (0.0, 1.2, root - 17, 70, {}), (0.0, 1.2, root - 12, 64, {})], Nn)
-    for i, m in enumerate([root + d for d in (-9, -7, -4, -2, 0)]):        # A B D E F# (the score's own gliss notes)
+    for i, m in enumerate([root + d for d in (-7, -4, 0, 1, 5)]):         # G Bb D Eb G (the score's own gliss notes)
         x += 0.8 * S['harp'].render([(0.05 + i * 0.03, 0.6, m, 62 - i * 3, {})], Nn)
     return _room_small(x).T
 
