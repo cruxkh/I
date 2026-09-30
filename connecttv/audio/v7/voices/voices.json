@@ -1,0 +1,41 @@
+{
+ "cuts_v": [
+  11.79015873015873,
+  13.065374149659863,
+  13.940045351473923,
+  14.527755102040816
+ ],
+ "placements": [
+  {
+   "name": "sob syllables (tur, Kokoro if_sara re-performed with WORLD)",
+   "t": 15.05,
+   "dur": 1.595
+  },
+  {
+   "name": "Neden?! (tur, Kokoro if_sara IPA)",
+   "t": 14.52,
+   "dur": 1.96
+  },
+  {
+   "name": "sob in-breath (designed)",
+   "t": 15.9,
+   "dur": 0.28
+  },
+  {
+   "name": "사랑해요! (kor, Kokoro jf_alpha)",
+   "t": 16.99,
+   "dur": 2.15
+  },
+  {
+   "name": "すごい…！ (ani, gotv4 anime_voice.wav)",
+   "t": 19.18,
+   "dur": 0.747
+  }
+ ],
+ "asr": {
+  "neden": "Neden?",
+  "saranghae": "사랑해요",
+  "sugoi": "すごい",
+  "cinema_word": "פות חמש ותשאלתון"
+ }
+}
