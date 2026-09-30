@@ -11,7 +11,7 @@
   const T_LIVE = 11.05, T_HEART = 11.78, T_ISR = 12.16, HOLD_V = 11.03;
   const BLUE = '#8fd0ff', ICE = '#eaf6ff';
   const WAVE_V = 8000;            // px/s speed of the entry wipe band (top to bottom)
-  const WALL_CY = 500, MAP_CY = 505;
+  const WALL_CY = 500, MAP_CY = 520;
 
   // ---------------------------------------------------------------- channel tiles
   // wall = [cx, cy, w, h] (11.15..12.16), fl = flank position (12.16+), lg = logo box fractions of the tile
@@ -30,7 +30,7 @@
 
   // ---------------------------------------------------------------- Israel outline (lon, lat), constellation nodes
   const OUT = [[35.10, 33.09], [35.30, 33.08], [35.45, 33.10], [35.58, 33.27], [35.80, 33.32], [35.84, 33.10], [35.85, 32.90], [35.78, 32.75], [35.62, 32.68], [35.56, 32.40], [35.55, 32.10], [35.55, 31.85], [35.47, 31.75], [35.42, 31.35], [35.38, 31.05], [35.20, 30.75], [35.15, 30.30], [35.00, 30.00], [34.93, 29.55], [34.89, 29.49], [34.78, 29.95], [34.62, 30.45], [34.45, 30.85], [34.27, 31.22], [34.37, 31.32], [34.49, 31.47], [34.56, 31.60], [34.64, 31.80], [34.75, 32.05], [34.80, 32.20], [34.87, 32.45], [34.93, 32.68], [34.98, 32.82], [35.07, 32.93]];
-  const MS = 164.5, P = (lon, lat) => [CX + (lon - 35.06) * .84 * MS, MAP_CY - (lat - 31.405) * MS];
+  const MS = 175, P = (lon, lat) => [CX + (lon - 35.06) * .84 * MS, MAP_CY - (lat - 31.405) * MS];
   const OPX = OUT.map(([a, b]) => P(a, b));
   const PL = OPX.reduce((s, p, i) => { const q = OPX[(i + 1) % OPX.length]; return s + Math.hypot(q[0] - p[0], q[1] - p[1]); }, 0);
   const CITY_LINKS = [[[35.53, 32.79], [34.99, 32.82]], [[34.99, 32.82], [34.78, 32.08]], [[34.78, 32.08], [35.21, 31.77]], [[35.21, 31.77], [34.79, 31.25]], [[35.21, 31.77], [35.42, 31.50]], [[34.79, 31.25], [34.85, 30.62]], [[34.85, 30.62], [35.02, 30.35]], [[35.53, 32.79], [35.72, 33.05]], [[35.42, 31.50], [35.02, 30.35]]];
@@ -45,7 +45,7 @@
     { t: 11.05, c: [CX, 430], R: 1200, dur: .6, col: '#FF6A7E', lw: 34, amp: 0 },
     { t: 11.78, c: [CX, WALL_CY], R: 1500, dur: .75, col: '#FF3B4E', lw: 64, amp: .085 },
     { t: 12.03, c: [CX, WALL_CY], R: 1200, dur: .65, col: '#FF2E93', lw: 44, amp: .05 },
-    { t: 12.16, c: [CX, MAP_CY], R: 1700, dur: .9, col: BLUE, lw: 66, amp: .05 },
+    { t: 12.16, c: [CX, MAP_CY], R: 1700, dur: .9, col: BLUE, lw: 52, amp: .05 },
     { t: 12.62, c: [CX, MAP_CY], R: 1000, dur: .8, col: '#bfe4ff', lw: 22, amp: 0 },
     { t: 13.0, c: [CX, MAP_CY], R: 1000, dur: .8, col: '#bfe4ff', lw: 22, amp: 0 },
   ];
@@ -54,7 +54,7 @@
 
   let OFFC = null;
   const getOff = () => { if (!OFFC) { OFFC = document.createElement('canvas'); OFFC.width = W; OFFC.height = H; } OFFC.width = W; return OFFC; };
-  const scan = () => CL.layer('s4_scan', 8, 8, g => { g.fillStyle = 'rgba(5,8,38,.10)'; g.fillRect(0, 0, 8, 2); });
+  const scan = () => CL.layer('s4_scan', 8, 8, g => { g.fillStyle = 'rgba(5,8,38,.05)'; g.fillRect(0, 0, 8, 2); });
 
   // ---------------------------------------------------------------- LIVE badge (origin = centre, 700 x 250 at scale 1)
   function liveBadge(g, tv, sc, dotK) {
@@ -130,11 +130,12 @@
   // ---------------------------------------------------------------- map
   const NODE_TW = (g, x, y, tv, i, s) => { const k = .55 + .45 * Math.sin(tv * 3 + i * 2.3); A.glow(g, x, y, 46 * s, '#7fd0ff', .5 * k); g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, 7 * s, 0, TAU); g.fill(); CL.spark(g, x, y, (20 + 12 * k) * s, tv * .5 + i, '#fff'); };
   function drawMap(g, tv, states) {
-    const pm = clamp((tv - T_ISR) / .55); if (pm <= 0) return;
+    const pm = clamp((tv - T_ISR) / .42); if (pm <= 0) return;
+    A.glow(g, CX, MAP_CY, 560, '#4aa8ff', .5 * ease.out(pm)); A.glow(g, CX, MAP_CY, 300, '#ffffff', .22 * ease.out(pm));
     const sc = .86 + .14 * CL.pop(tv, T_ISR - .03, .5);
     g.save(); g.translate(CX, MAP_CY); g.scale(sc, sc); g.translate(-CX, -MAP_CY);
     const path = () => { g.beginPath(); OPX.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath(); };
-    path(); g.save(); g.globalAlpha = ease.inOut(inv(.25, 1, pm)) * .5; g.fillStyle = A.linear(g, 0, 190, 0, 820, [[0, '#ffffff'], [.4, '#9fd4ff'], [1, '#2F6BFF']]); g.fill(); g.restore();
+    path(); g.save(); g.globalAlpha = ease.inOut(inv(.2, 1, pm)) * .8; g.fillStyle = A.linear(g, 0, 185, 0, 860, [[0, '#ffffff'], [.4, '#9fd4ff'], [1, '#2F6BFF']]); g.fill(); g.restore();
     g.save(); g.lineJoin = 'round'; g.lineCap = 'round'; g.setLineDash([PL * pm, PL * 2]);
     path(); g.globalCompositeOperation = 'lighter';
     g.strokeStyle = '#19C8FF'; g.globalAlpha = .13; g.lineWidth = 40; g.stroke(); g.globalAlpha = .22; g.lineWidth = 20; g.stroke();
@@ -207,15 +208,19 @@
     [[T_HEART, '#FF3B4E', .5], [12.03, '#FF2E93', .35], [T_ISR, '#8fd0ff', .55]].forEach(([t, col, a]) => { if (tv > t) A.glow(g, CX, WALL_CY, 1300, col, a * Math.exp(-(tv - t) * 6)); });
     g.save(); g.globalAlpha = .06; g.fillStyle = '#fff'; const ry = ((tv * .35) % 1.3 - .15) * H; g.fillRect(0, ry, W, 90); g.restore();
     liquid(g, tv);
-    // rising blue/white splash burst
-    const spu = (tv - 12.12) / .55; if (spu > 0 && spu < 1) { g.save(); g.globalAlpha = 1 - spu * spu; CL.splash(g, CX, 850, 520, ease.out(spu), 7, ['#ffffff', '#9fd4ff', '#19C8FF', '#2F6BFF']); g.restore(); }
+    // rising blue/white splash: glossy drops fly up from the rising liquid (parabolic arcs)
+    for (let i = 0; i < 22; i++) {
+      const t0 = 12.12 + hash(i * 1.7) * .16, u = tv - t0; if (u <= 0 || u > 1.05) continue;
+      const x0 = 180 + hash(i * 3.3 + 1) * 1560, vx = (hash(i + 7) - .5) * 160, vy = 620 + hash(i * 5.1) * 620, y = 880 - vy * u + 1500 * u * u, r = 16 + hash(i * 2.9) * 30 * (1 - u * .35);
+      if (y > H + 40) continue; g.save(); g.globalAlpha = Math.min(1, (1.05 - u) * 4); CL.drop(g, x0 + vx * u, y, r, ['#ffffff', '#8fd0ff', '#19C8FF', '#2F6BFF'][i % 4], tv, i); g.restore();
+    }
     // tile states, pop splashes
     const states = TILES.map((tl, i) => tileState(tl, i, tv));
     drawMap(g, tv, states);
     TILES.forEach((tl, i) => {
       const st = states[i]; if (st.wp <= .002) return;
       const u = (tv - tl.t0) / .5;
-      if (u > 0 && u < 1) { g.save(); g.globalAlpha = 1 - u * u; CL.splash(g, st.x, st.y, tl.wall[3] * .8 + 80, ease.out(u), i + 3, CL.CAND); g.restore(); }
+      if (u > 0 && u < 1) { g.save(); g.globalAlpha = (1 - u) * (1 - u); CL.splash(g, st.x, st.y, tl.wall[3] * .62 + 70, ease.out(u), i + 3, CL.CAND); g.restore(); }
     });
     TILES.forEach((tl, i) => { if (states[i].wp > .002) drawTile(g, tl, i, tv, states[i]); });
     TILES.forEach((tl, i) => { const u = (tv - tl.t0) / .45; if (u > 0 && u < 1) { const st = states[i]; CL.spark(g, st.x + st.w / 2 - 20, st.y - st.h / 2 + 10, 44 * Math.sin(u * Math.PI), tv * 3, '#fff'); CL.spark(g, st.x - st.w / 2 + 30, st.y + st.h / 2 - 14, 30 * Math.sin(u * Math.PI), -tv * 2, C.yellow); } });

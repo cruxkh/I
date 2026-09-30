@@ -194,7 +194,7 @@ def neden():
         jit = 2 ** (0.35 * np.convolve(r.standard_normal(len(t)), np.ones(3) / 3, 'same') / 12)
         catch = 1 + 0.07 * np.exp(-((tt - 0.62) / 0.03) ** 2)                    # voice break upward (a crack)
         return f0 * 1.55 * lift * trem * jit * catch
-    w = world(y, SR, f0f, 1.13, lambda ap, t: np.clip(ap + 0.22 + 0.15 * (t / t[-1]), 0, 1), stretch=1.0)
+    w = world(y, SR, f0f, 1.13, lambda ap, t: np.clip(ap + 0.22 + 0.15 * (t / t[-1])[:, None], 0, 1), stretch=1.0)
     w = w / (np.max(np.abs(w)) + 1e-9)
     n = len(w)
     t = np.arange(n) / SR
