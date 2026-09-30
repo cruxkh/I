@@ -3,7 +3,7 @@
 > **בעברית בקצרה:** זה המסמך המלא של הסרטון של GOTV (גרסה 7): הסגנון, הכלים, הסוכנים, סדר העבודה, הפקודות המדויקות, מה עבד ומה לא.
 > **לסשן חדש:** פותחים סשן, מדביקים את הפרומפט מסעיף 12 ומצרפים קובץ קריינות (WAV) וסרטון של עצמך.
 
-Reference result: GOTV ad v9 (smooth motion, flowing holds). Files: `gotv5/out/gotv_v9_mobile.mp4` (vertical) and `gotv5l/out/gotv_v9_landscape_tv.mp4` (landscape). Both are 44.6 s long and use one audio master, `gotv5/audio/v7/master_v7t.wav`, which is `master_v7.wav` after `tighten_v7.py`.
+Reference result: GOTV ad v15. Files: `gotv5/out/gotv_v15_mobile.mp4` (vertical) and `gotv5l/out/gotv_v15_landscape_tv.mp4` (landscape). Both are 48.3 s long and use one audio master, `gotv5/audio/v7/master_v7g.wav`. The master chain is `master_v7.wav`, then `tighten_v7.py` (gives `master_v7t`), then `finale_v7b.py` (gives `master_v7g`).
 Code: `/home/user/I/gotv5` (vertical 1080x1920) and `/home/user/I/gotv5l` (landscape 1920x1080). Git branch `claude/israeli-iptv-animation-8qu3xo` of `cruxkh/I`.
 
 ---
@@ -233,6 +233,36 @@ Brief template for a scene agent (worked well):
 - **Genre holds are short: about 1.0-1.2 s.** The zoom starts on the word, the genre line plays immediately, and the narrator continues. The tail after the genre line is dead air. `tighten_v7.py` splices the tails out of the finished master with 60 ms equal-power crossfades (XF-compensated so the length is exact), and `timeline.js` HOLDS d values must be changed to match (tur 1.0, kor 1.0, ani 1.2). Then re-render the video.
 - Next time, design the holds at about 1.0-1.2 s from the start, so no splicing is needed.
 
+### 8.3 End-card additions (v10 to v15): what the client asked for and how it was built
+Always write back your understanding and plan in Hebrew first, and wait for "כן". The client asks for this every time.
+- **Bear presenter on the end-card TV (`bear.js`, `CL.bear(g, t, R)`).**
+  - **The drawing:** a premium 2D mascot:
+    - fluffy tufted outline, cel shadow, rim light and fur strokes;
+    - glossy honey eyes with two highlights and real eyelids, soft brows;
+    - glossy nose, and a mouth with lips, teeth and tongue;
+    - blue jersey with a yellow collar.
+    - The first flat, simple version was rejected as "disgusting". Aim high from the start.
+  - **Lip sync:** it comes from the audio itself. Analyse the energy and zero-crossing envelope of the exact clip and set a viseme key table `K` of [t, open, width, teeth, fv, round]: G, O, o, u, pause, T, ii, V (lower lip under the teeth), ii, then a closed smile, placed at the clip start (`V0`).
+  - **While talking:** blink, breathing, a nod and tilt, and brows up.
+- **"GO TV!" tag:** Kokoro `am_onyx` with phonemes `ɡˈoʊ, tˈiː vˈiː!`, then the trailer chain (see 8.1). The bear lip-syncs it; the echoes do not move his mouth.
+- **Price line after the tag (client file: Cartesia, "וכל זה ב 350₪ תשלום חד פעמי, פעיל לשנה").**
+  - **Rejected first:** a sped-up "radio disclaimer" version, and a full-screen overlay (dim, ON AIR badge, x2 badge, spiky starburst, taped chips).
+  - **Final audio (`finale_v7b.py`):** the line at natural speed as an excited announcement:
+    - presence and chest EQ, compression and a big-hall reverb, with an extra hall send on the price words;
+    - a quiet deep boom under the price;
+    - the bed is the film's OWN score (chorus into the final cadence), placed so the cadence hit lands right after the last word. The bed ducks under the words and rises between them;
+    - only the new section is scaled for peak (the film before it stays bit-identical).
+  - **Final picture (`priceTV()` in `s8_end.js`, drawn INSIDE the TV screen):**
+    - the bear drops out and a blue circle wipe opens behind it;
+    - deep-blue radial glow, a light sweep, soft bokeh;
+    - "וכל זה ב" in white with a gold line drawing in;
+    - "350" as a rolling odometer counter (three motion-blurred drums rolling 000 to 350) that lands on the word "שקל", in gold numerals with a bevel and depth, then a shine sweep and an expanding light ring;
+    - two blue pill badges with gold borders and self-drawing gold check marks.
+  - **RTL order is mandatory:** the FIRST badge ("תשלום חד פעמי") appears on the RIGHT and the second ("פעיל לשנה") on the LEFT. Placing the first item on the left was called out as wrong ("זה לא אנגלית").
+- **Waving flag (`flagDraw()` in `s8_end.js`).** The GOTV logo panel (blue torn paper, the logo and its tape) is drawn into an offscreen canvas.
+  - **The wave:** it is redrawn in 4 px vertical strips, each displaced by two travelling sines (a 2.6 s main wave plus a smaller faster one). The amplitude is about 11 px and slightly larger at the edges. It ramps in 0.5 s after the logo slam. There is no pole.
+  - **The folds:** light and shadow bands follow the wave's slope, drawn with `source-atop` so they touch only the panel's pixels.
+
 ## 9. Known pitfalls and fixes
 
 - The canvas state leaked between frames. Fix: `cv.width = W` at the start of every frame.
@@ -240,6 +270,7 @@ Brief template for a scene agent (worked well):
 - Frame 0 is black because of the intentional 0.15 s fade-in.
 - A scene-agent's `CL.noCap` push gets overwritten by main.js. Register it lazily inside draw().
 - The Fredoka font is not preloaded in `gReady`: using it gives a serif fallback. Use Rubik or add it to the preload list.
+- Hebrew order on screen: when several items appear one after another in a row, the first appears on the RIGHT.
 - A white logo on a white card is invisible (yes, HOT): check each card on a rendered frame.
 - A symlinked `vo.wav` broke with the wrong relative path. Copy files instead of symlinking them into audio folders.
 - git refused files over 100 MB (`small.raw`). Keep `*.raw`, `*.npy`, `out/`, `previews/`, frames and samples out of git.
@@ -251,7 +282,7 @@ Brief template for a scene agent (worked well):
 
 ```
 T = output time, v = voice clock (words.js and // CUE comments are in v)
-HOLDS (v, d): cin 11.79 1.4 | tur 13.065 1.0 | kor 13.94 1.0 | ani 14.53 1.2   -> total 40.0 + 4.6 = 44.6 s  (v9)
+HOLDS (v, d): cin 11.79 1.4 | tur 13.065 1.0 | kor 13.94 1.0 | ani 14.53 1.2   -> 4.6 s of holds; VDUR 43.7 (end card extended for the price line) -> total 48.3 s  (v15)
 T = v + sum(d for holds with hold.v < v)      (VO ends v 36.9 -> T 41.5; big hit v 25.64 -> T 30.24)
 The score and mix were built on the v7 hold lengths (1.6 s each) and then tightened by splicing: see section 8.2.
 ```
