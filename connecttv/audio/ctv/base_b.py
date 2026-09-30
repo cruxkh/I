@@ -45,7 +45,7 @@ class TaikoEngine:
             y += 0.7 * lp(nz, 1400) * np.exp(-tt / 0.03)
             y += 0.18 * hpf(nz, 2500) * np.exp(-tt / 0.004)
             if self.sub:
-                fs = 45 * (1 + 0.6 * np.exp(-tt / 0.06))
+                fs = 0.99 * f0 * (1 + 0.6 * np.exp(-tt / 0.06))
                 y += self.sub * np.sin(2 * np.pi * np.cumsum(fs) / SR) * np.exp(-tt / (self.decay * 1.8))
             y = np.tanh(1.5 * y) / 1.1
             a = int(0.0015 * SR)
@@ -65,7 +65,7 @@ class BoomEngine:
         for i, (t, d, n, v, kw) in enumerate(notes):
             L = int(d * SR)
             tt = np.arange(L) / SR
-            f0, f1 = kw.get('f0', 90), max(40, kw.get('f1', 40))
+            f0, f1 = kw.get('f0', 90), max(28, kw.get('f1', 40))
             f = f1 + (f0 - f1) * np.exp(-tt / 0.1)
             y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt / (d * 0.33))
             nz = np.random.default_rng(40 + i).standard_normal(L) * np.exp(-tt / 0.012)
@@ -225,7 +225,7 @@ def darbuka_hit(kind, vel, seed):
     if kind == 'doum':
         n = int(0.55 * SR)
         t = np.arange(n) / SR
-        f = 92 * (1 + 0.35 * np.exp(-t / 0.018)) * rng.uniform(0.98, 1.02)
+        f = 82.4 * (1 + 0.35 * np.exp(-t / 0.018)) * rng.uniform(0.98, 1.02)
         ph = 2 * np.pi * np.cumsum(f) / SR
         y = np.sin(ph) * np.exp(-t / 0.22) + 0.35 * np.sin(ph * 1.59 + 0.3) * np.exp(-t / 0.07)
         y += 0.2 * np.sin(ph * 2.14) * np.exp(-t / 0.04)

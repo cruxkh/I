@@ -148,7 +148,7 @@ class TablaEngine:
             tt = np.arange(L) / SR
             y = np.zeros(L)
             if k in ('ge', 'dha', 'dhol'):
-                f0 = (88 if k != 'dhol' else 70) * 2 ** ((n - 60) / 12)
+                f0 = (82.4 if k != 'dhol' else 61.7) * 2 ** ((n - 60) / 12)
                 f = f0 * (1 + 0.45 * np.exp(-tt / 0.03) - 0.25 * np.exp(-tt / 0.012) * 0)
                 f = f0 * (0.8 + 0.2 * (1 - np.exp(-tt / 0.06))) * (1 + 0.5 * np.exp(-tt / 0.02))
                 ph = 2 * np.pi * np.cumsum(f) / SR
@@ -156,7 +156,7 @@ class TablaEngine:
                 y += 0.3 * np.sin(1.5 * ph + 0.4) * np.exp(-tt / 0.05)
                 y += 0.55 * lp(rng.standard_normal(L), 1100) * np.exp(-tt / 0.012)
             if k in ('na', 'tin', 'dha'):
-                fd = 420 * 2 ** ((n - 60) / 12) if k != 'tin' else 640 * 2 ** ((n - 60) / 12)
+                fd = 415.3 * 2 ** ((n - 60) / 12) if k != 'tin' else 659.3 * 2 ** ((n - 60) / 12)
                 for j, (r_, a_, dc) in enumerate(((1, 1.0, 0.16), (2.0, 0.55, 0.1), (3.0, 0.4, 0.07), (4.1, 0.25, 0.04))):
                     y += 0.55 * a_ * np.sin(2 * np.pi * fd * r_ * tt + j) * np.exp(-tt / (dc if k != 'na' else dc * 0.6))
                 y += 0.5 * hpf(rng.standard_normal(L) * np.exp(-tt / 0.004), 2000)

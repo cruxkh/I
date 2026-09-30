@@ -117,6 +117,27 @@ def near(pc, lo):
     return x
 
 
+def _fr_tr(ch):
+    r, _ = ct(ch)
+    return 36.7 * 2 ** (((r - 2) % 12) / 12)
+
+
+def tr_n(ch):
+    """'trailer' drum note number tuned to the chord root (drum body 36-68 Hz)"""
+    return 58 + 12 * np.log2(_fr_tr(ch) / 42.76)
+
+
+def tk_n(ch):
+    """taiko note number tuned to the chord root (55-103 Hz)"""
+    r, _ = ct(ch)
+    return 60 + 12 * np.log2(55 * 2 ** (((r - 9) % 12) / 12) / 62.0)
+
+
+def bm(ch):
+    f1 = _fr_tr(ch)
+    return dict(f0=2.1 * f1, f1=f1)
+
+
 def brass_line(g, line, vel, parts=('hn', 'tp'), hn_oct=-12, tp_oct=0, beats=(-99, 99), legato=1.0, oct_up=0):
     """hook on horns (octave below) + trumpets; long notes on sustain samples, short on staccato."""
     for b, d, n_ in line:
@@ -234,7 +255,7 @@ def kit16(t0, s, n, style, lvl=1.0, ph=0, mute=None):
             hh.n(t, 0.08, 60, [90, 50, 70, 50][p % 4] * lvl + rv(-5, 5))
 
 
-def taiko8(t0, b, beats, style='A', lvl=1.0, mute=None):
+def taiko8(t0, b, beats, style='A', lvl=1.0, mute=None, ch='Em'):
     pats = {'A': [(0, 124), (1.75, 96), (2, 112), (3.5, 100)],
             'C': [(0, 124), (0.75, 90), (1.5, 104), (2, 118), (2.75, 90), (3, 100), (3.5, 110)],
             '8': [(i / 2, 118 if i % 2 == 0 else 96) for i in range(8)]}[style]
@@ -242,7 +263,7 @@ def taiko8(t0, b, beats, style='A', lvl=1.0, mute=None):
         for off, v in pats:
             bt = bar * 4 + off
             if bt < beats - 1e-6 and not (mute and mute[0] <= t0 + bt * b <= mute[1]):
-                taiko.n(t0 + bt * b + hum(3), 0.5, 60 if off % 1 == 0 else 64, v * lvl + rv(-4, 4))
+                taiko.n(t0 + bt * b + hum(3), 0.5, tk_n(ch) + (0 if off % 1 == 0 else 7), v * lvl + rv(-4, 4))
 
 
 def stab(t, ch, vel=110, dur=0.18):
@@ -267,9 +288,9 @@ def tutti(t, ch, big=1.0, dur=0.45, crash_on=True, choir_on=True, top=None, lead
     vc_su.n(t - 0.04, dur + 0.04, near(r, m('C3')), v)
     cb_su.n(t - 0.03, dur + 0.03, near(r, m('C2')), v)
     timp.n(t, 1.0, near(r, m('D2')), v)
-    trailer.n(t, 1.5, 58, v)
+    trailer.n(t, 1.5, tr_n(ch), v)
     bd.n(t, 2.0, 60, v)
-    boom.n(t, 1.6, 60, int(100 * big), f0=85, f1=30)
+    boom.n(t, 1.6, 60, int(100 * big), **bm(ch))
     sub.n(t, dur + 0.6, near(r, m('E1')), int(100 * big))
     if choir_on:
         choir.n(tl - 0.03, dl + 0.03, [near(pcs[0], m('E4')), near(pcs[1], m('G4')), near(pcs[2], m('B4'))], int(min(127, 110 * big)))
@@ -329,8 +350,8 @@ def intro():
     zap.n(T_BOLT, 0.5, 60, 122)
     timp.n(T_BOLT, 1.2, 'E2', 127)
     bd.n(T_BOLT, 2.0, 60, 124)
-    trailer.n(T_BOLT, 1.5, 55, 120)
-    boom.n(T_BOLT, 1.6, 60, 118, f0=90, f1=30)
+    trailer.n(T_BOLT, 1.5, tr_n('Em'), 120)
+    boom.n(T_BOLT, 1.6, 60, 118, **bm('Em'))
     sub.n(T_BOLT, 1.6, 'E1', 110)
     stab(T_BOLT, 'Em', 122, 0.35)
     tb_su.n(T_BOLT, 0.5, ['E2', 'B2', 'E3'], 110)
@@ -359,7 +380,7 @@ def intro():
     cb_su.ex(T_BOLT + 0.3, T_OPEN, -22, -2, 1.4)
     # shard burst 1.26
     tp = T_SHARD
-    taiko.n(tp, 0.5, 60, 100)
+    taiko.n(tp, 0.5, tk_n('Em'), 100)
     tb_st.n(tp, 0.15, ['E2', 'B2'], 96)
     sparkle(tp, 4, notes=8, dur=0.35, scale=(0, 3, 7, 10, 12), base='E5', vel=76, dens=60)
     # timpani roll + snare roll into 2.33
@@ -413,7 +434,7 @@ def sectionA():
         sub.n(g(b0), g.b * d - 0.05, near(r, m('E1')), 84)
     kit16(g(0), s, 16, 'half', 1.0)
     kit16(g(4), s, 16, 'drive', 1.0, ph=0)
-    taiko8(g(0), g.b, 8, 'A', 0.9)
+    taiko8(g(0), g.b, 8, 'A', 0.9, ch='Em')
     # bar 3 build: toms + snare accel to the slam (matches the scene's drum-roll hits 8.03 ... 8.31)
     for i in range(4):
         (tomh if i % 2 == 0 else toml).n(g(8 + i / 4), 0.3, 60, 88 + 8 * i)
@@ -422,7 +443,7 @@ def sectionA():
     oroll.n(T_SLAM - 0.7, 0.72, 60, 100)
     oroll.ex(T_SLAM - 0.7, T_SLAM, -20, 0, 1.3, pre=False, post=False)
     for i in range(6):
-        taiko.n(g(8 + i * 0.4), 0.3, 60 if i % 2 == 0 else 64, 100 + 4 * i)
+        taiko.n(g(8 + i * 0.4), 0.3, tk_n('B') + (0 if i % 2 == 0 else 7), 100 + 4 * i)
     # hook (horns, then + trumpets), violins double from bar 2
     brass_line(g, HOOK_MIN, 100, beats=(0, 4), parts=('hn',))
     brass_line(g, HOOK_MIN, 106, beats=(4, 8), parts=('hn', 'tp'))
@@ -436,10 +457,10 @@ def sectionA():
     # NETFLIX accent (beat 2) : tutti stab on Em
     t = T_NFX
     stab(t, 'Em', 116, 0.25)
-    taiko.n(t, 0.5, 60, 122)
+    taiko.n(t, 0.5, tk_n('Em'), 122)
     crash.n(t, 1.6, 60, 108)
     kick.n(t, 0.3, 60, 120)
-    boom.n(t, 1.0, 60, 90, f0=80, f1=32)
+    boom.n(t, 1.0, 60, 90, **bm('Em'))
     tutti(t, 'Em', 0.85, dur=0.3, crash_on=False, choir_on=False)
     # DISNEY+ magical sparkle (C lydian) : harp glissando, glock, celesta, glint dust
     sparkle(T_DIS - 0.02, 0, notes=16, dur=0.55, scale=(0, 2, 4, 6, 7, 9, 11), base='E5', vel=84, dens=100)
@@ -451,7 +472,7 @@ def sectionA():
     # CHARLTON slam 8.32 : power chord E (open fifth) + trailer drum + gong; then a low stab on the way into the braaam
     t = T_SLAM
     tutti(t, 'Em', 1.2, dur=0.55)
-    trailer.n(t, 1.6, 52, 127)
+    trailer.n(t, 1.6, tr_n('Em'), 127)
     gong.n(t, 3.0, 60, 110)
     braaam.n(t, 0.5, 'E1', 100)
     riser.n(t + 0.0, 0.05, 60, 60, kind='cym', len='s')
@@ -468,8 +489,8 @@ def cin():
         pp.n(t0, 1.0, ns, v)
     braaam.n(t0, 1.0, 'E1', 118)
     braaam.n(t0, 1.0, 'B1', 90)
-    trailer.n(t0, 2.0, 52, 127)
-    boom.n(t0, 2.0, 60, 120, f0=95, f1=28)
+    trailer.n(t0, 2.0, tr_n('Em'), 127)
+    boom.n(t0, 2.0, 60, 120, **bm('Em'))
     gong.n(t0 + 0.01, 3.0, 60, 118)
     bd.n(t0, 2.0, 60, 124)
     ocym.n(t0, 2.0, 60, 110)
@@ -479,7 +500,7 @@ def cin():
     for pp, ns, v in [(tb_su, ['F2', 'C3', 'F3'], 118), (tu_su, ['F1', 'F2'], 118)]:
         pp.n(t2, 0.45, ns, v)
     braaam.n(t2, 0.5, 'F1', 104)
-    trailer.n(t2, 1.0, 53, 118)
+    trailer.n(t2, 1.0, tr_n('F'), 118)
     # timpani roll crescendo on E
     tt = t0 + 0.12
     while tt < tl - 0.01:
@@ -513,7 +534,7 @@ def cin():
         tt += 0.038
     riser.n(tl, 0.9, 60, 100, kind='cym', len='s')
     riser.n(tl - 0.7, 0.7, 60, 90, kind='noise', lo=250, hi=11000, n0=47, oct=3)
-    trailer.n(tl - 0.7, 1.0, 52, 110)
+    trailer.n(tl - 0.7, 1.0, tr_n('Em'), 110)
     # landing: full tutti Em + crash + brand cell on the horns
     tutti(tl, 'Em', 1.1, dur=0.45)
     brass_line(Grid(tl, 0.452), [(0, .5, 'B4'), (.5, .5, 'E5'), (1, .5, 'F#5'), (1.5, 1, 'G5')], 104, parts=('hn', 'tp'))
@@ -525,7 +546,7 @@ def series1():
     s = (T_TUR0 - t0) / 10
     ost16(t0, s, 10, 'Em', 1.0, ph=0)
     kit16(t0, s, 10, 'drive', 1.0)
-    taiko8(t0, s * 4, 2.5, 'C', 1.0)
+    taiko8(t0, s * 4, 2.5, 'C', 1.0, ch='Em')
     sub.n(t0, T_TUR0 - t0 - 0.03, 'E1', 96)
     for i in range(4):
         snare.n(T_TUR0 - 0.05 - (3 - i) * s / 2, 0.08, 60, 90 + 9 * i)
@@ -602,9 +623,9 @@ def series2():
         hho.n(tt + s * 2, s, 60, 80)
         for pp, nt in ((hn_st, 'E4'), (tp_st, 'B4')):
             pp.n(tt, s * 0.9, m(nt) if grp < 2 else m(nt) + (0 if nt == 'B4' else 3), 100 + 5 * grp)
-    taiko.n(t0, 0.3, 60, 118)
-    taiko.n(t0 + 3 * s, 0.3, 64, 100)
-    taiko.n(t0 + 6 * s, 0.3, 60, 110)
+    taiko.n(t0, 0.3, tk_n('Em'), 118)
+    taiko.n(t0 + 3 * s, 0.3, tk_n('Em') + 7, 100)
+    taiko.n(t0 + 6 * s, 0.3, tk_n('B'), 110)
     timp.n(t0 + 6 * s, 0.4, 'B1', 100)
     sub.n(t0, 9 * s - 0.03, 'E1', 96)
     for i in range(3):
@@ -689,7 +710,7 @@ def live():
     sub.n(g(5), g.b - 0.05, 'D1', 96)
     kit16(g(0), s, 16, 'drive', 1.0, mute=mute)
     kit16(g(4), s, 8, 'build', 1.0)
-    taiko8(g(0), g.b, 4, 'C', 1.0, mute=mute)
+    taiko8(g(0), g.b, 4, 'C', 1.0, mute=mute, ch='Em')
     brass_line(g, HOOK_MIN, 100, beats=(0, 4), parts=('hn', 'tp'))
     strings_line(g, HOOK_MIN, 92, octv=12, beats=(0, 4))
     LIVE2 = [(4, .75, 'E5'), (4.75, .25, 'E5'), (5, .5, 'F#5'), (5.5, .5, 'A5')]
@@ -697,7 +718,7 @@ def live():
     # israel hit 15.66: the groove comes back with a stab
     stab(ISR, 'Em', 112, 0.2)
     timp.n(ISR, 0.8, 'E2', 112)
-    taiko.n(ISR, 0.5, 60, 118)
+    taiko.n(ISR, 0.5, tk_n('Em'), 118)
     crash.n(ISR, 1.4, 60, 100)
     sparkle(ISR, 11, notes=8, dur=0.25, scale=(0, 2, 4, 5, 7, 9, 11), base='B5', vel=74, dens=40)
     # pause build (16.16 - 17.32): rising strings scale, timpani, snare, riser, cymbal swell; all-burst 16.58; orbit riser 16.90
@@ -736,7 +757,7 @@ def chorus():
         pads(g(b0) + 0.01, g(b0 + d) - 0.02, ch, lvl=88, choir_on=True)
         r, _ = ct(ch)
         sub.n(g(b0), g(b0 + d) - g(b0) - 0.04, near(r, m('E1')), 100)
-    taiko8(g(0), (g(4) - g(0)) / 4, 4, 'C', 1.0)
+    taiko8(g(0), (g(4) - g(0)) / 4, 4, 'C', 1.0, ch='G')
     crash.n(T_VORTEX, 2.0, 60, 118)
     # brand hook, brass + trumpets + violins
     brass_line(g, CHO_A, 112, parts=('hn', 'tp'), hn_oct=-12)
@@ -780,7 +801,7 @@ def chorus():
     TB, TG = TofV(17.80), TofV(18.34)
     tutti(T_GOAL, 'G', 1.3, dur=0.8)
     gong.n(T_GOAL, 3.0, 60, 108)
-    trailer.n(T_GOAL, 1.5, 55, 124)
+    trailer.n(T_GOAL, 1.5, tr_n('G'), 124)
     crash.n(T_GOAL, 2.0, 60, 118)
     for a_, b_, ch, ph in [(T_GOAL, TG, 'G', 0), (TG, T_WAIT, 'C', 8)]:
         n = max(1, int(round((b_ - a_) / 0.1165)))
@@ -790,7 +811,7 @@ def chorus():
         pads(a_ + 0.01, b_ - 0.02, ch, lvl=92, choir_on=True)
         r, _ = ct(ch)
         sub.n(a_, b_ - a_ - 0.04, near(r, m('E1')), 100)
-    taiko8(T_GOAL, 0.46, 3, 'C', 1.0)
+    taiko8(T_GOAL, 0.46, 3, 'C', 1.0, ch='G')
     # hook phrase 2 by time: D6 (goal), B5, then C6 lands on the GOAL burst
     for pp in (tp_su, hn_su):
         o = 0 if pp is tp_su else -12
@@ -826,7 +847,7 @@ def wait():
     timp.n(E3_, 1.0, 'E2', 118)
     kick.n(E3_, 0.3, 60, 116)
     crash.n(E3_, 1.6, 60, 100)
-    trailer.n(E3_, 1.2, 52, 100)
+    trailer.n(E3_, 1.2, tr_n('Em'), 100)
     for tt, nt, v in ((E2_, 'A1', 108), (E1_, 'B1', 116)):
         timp.n(tt, 0.7, nt, v)
         kick.n(tt, 0.3, 60, int(v))
@@ -921,7 +942,7 @@ def accents():
     harp.n(1.70, 0.5, 'B5', 58)
     # s1: clapper slam 3.41, episode fan 3.92, flip-to-blue 5.35, plus-pop 6.43
     snare.n(3.41, 0.2, 60, 108)
-    taiko.n(3.41, 0.4, 60, 104)
+    taiko.n(3.41, 0.4, tk_n('Em'), 104)
     for k, nt in enumerate(['B5', 'E6', 'G6']):
         glock.n(3.92 + k * 0.06, 0.4, nt, 70)
     riser.n(5.08, 0.27, 60, 60, kind='noise', lo=600, hi=9000, n0=59, oct=2)
@@ -933,7 +954,7 @@ def accents():
     t = TofV(7.47)
     stab(t, 'B', 108, 0.2)
     timp.n(t, 0.8, 'B1', 112)
-    taiko.n(t, 0.5, 60, 112)
+    taiko.n(t, 0.5, tk_n('B'), 112)
     crash.n(t, 1.2, 60, 96)
     # s3: turkish splash 10.67 (a Phrygian F stab), bollywood burst 12.79
     t = TofV(9.27)
@@ -964,8 +985,8 @@ def nos():
         tb_su.n(t, 0.5, ['E2', 'B2', 'E3'], 118 * big if big < 1.05 else 124)
         timp.n(t, 1.2, 'E2', 127)
         bd.n(t, 2.0, 60, 124)
-        trailer.n(t, 1.6, 52, 124)
-        boom.n(t, 1.6, 60, 118, f0=88, f1=29)
+        trailer.n(t, 1.6, tr_n('Em'), 124)
+        boom.n(t, 1.6, 60, 118, **bm('Em'))
         sub.n(t, 1.4, 'E1', 118)
         crash.n(t, 1.6, 60, 108)
         cb_su.n(t, 0.6, 'E2', 110)
@@ -1008,7 +1029,7 @@ def nos():
     # 27.93 bolts cross out: accent hit
     stab(T_XOUT, 'Em', 120, 0.25)
     timp.n(T_XOUT, 0.8, 'E2', 122)
-    trailer.n(T_XOUT, 1.2, 52, 116)
+    trailer.n(T_XOUT, 1.2, tr_n('Em'), 116)
     crash.n(T_XOUT, 1.8, 60, 112)
     zap.n(T_XOUT, 0.4, 60, 96)
     # wave sweep 27.93 -> relief 28.30 : reverse cymbal and rising dust
@@ -1043,7 +1064,7 @@ def relief():
         rr, _ = ct(ch)
         sub.n(a, b - a - 0.04, near(rr, m('E1')), 84 + int(16 * lvl))
         kit16(a, s, n, 'lite' if a < T_TAP else 'four', 0.9 if a < T_TAP else 1.05)
-    taiko8(T_TAP, 0.46, 5.5, 'C', 1.0)
+    taiko8(T_TAP, 0.46, 5.5, 'C', 1.0, ch='C')
     # pick: light harp/pizz arpeggio motif (G A B D) as tiles glide in
     for k, nn in enumerate(['D5', 'G5', 'A5', 'B5']):
         vlnpz.n(T_PICK + k * 0.23, 0.1, nn, 70 + 4 * k)
@@ -1054,7 +1075,7 @@ def relief():
         stab(t, ch, 108 + int(10 * big), 0.2)
         timp.n(t, 0.8, near(ct(ch)[0], m('D2')), 100 + int(20 * big))
         crash.n(t, 1.6, 60, 96 + int(14 * big))
-        taiko.n(t, 0.5, 60, 118)
+        taiko.n(t, 0.5, tk_n(ch), 118)
         tutti(t, ch, big * 0.85, dur=0.28, crash_on=False, choir_on=False)
     sparkle(T_TAP, 0, notes=8, dur=0.25, scale=(0, 2, 4, 7, 9), base='E5', vel=78, dens=40)
     sparkle(T_BURST, 0, notes=10, dur=0.3, scale=(0, 2, 4, 7, 9), base='E5', vel=84, dens=60)
@@ -1086,7 +1107,7 @@ def relief():
     t = T_LOGO
     tutti(t, 'G', 1.35, dur=2.4)
     gong.n(t, 4.0, 60, 124)
-    trailer.n(t + 0.002, 2.4, 50, 127)
+    trailer.n(t + 0.002, 2.4, tr_n('G'), 127)
     braaam.n(t, 1.4, 'G1', 118)
     tp_su.n(t, 2.4, ['B5', 'D6'], 120)
     hn_su.n(t, 2.4, ['B4', 'D5', 'G4'], 116)
