@@ -145,12 +145,12 @@
         const seed = r * 40 + i, x = i * 92 + (r % 2) * 46 - 20 + A.noise1(t * .8 + seed) * 4, delay = hash(seed * 1.7) * .1;
         const k = clamp((t - 18.34 - delay) / .12) * (1 - 0 * goalK), cheer = t >= 18.34 + delay ? 1 : 0;
         const jump = cheer * Math.abs(Math.sin((t - 18.34 - delay) * 8 + hash(seed) * 2)) * 34 * sc * clamp((t - 18.34 - delay) / .1);
-        const y = fy - jump + Math.sin(t * 2 + seed) * 2, col = mix(SHIRTS[seed % SHIRTS.length], '#0b1250', .42), armUp = k;
+        const y = fy - jump + Math.sin(t * 2 + seed) * 2, col = mix(SHIRTS[seed % SHIRTS.length], '#0b1250', .66), armUp = k;
         ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
         ctx.strokeStyle = col; ctx.lineWidth = 15; ctx.lineCap = 'round';
         [-1, 1].forEach(sd => { const a = lerp(2.5 * 0 + .5, 2.75, armUp) + Math.sin(t * 13 + seed * 2 + sd) * .3 * armUp; ctx.beginPath(); ctx.moveTo(sd * 20, -46); ctx.lineTo(sd * (20 + Math.sin(a) * 42), -46 - Math.cos(a) * 42 * (armUp > .5 ? 1 : -.6)); ctx.stroke(); });
         ctx.fillStyle = col; ctx.beginPath(); ctx.roundRect(-26, -62, 52, 72, 18); ctx.fill();
-        ctx.fillStyle = mix('#f0b591', '#0b1250', .4); ctx.beginPath(); ctx.arc(0, -84, 20, 0, TAU); ctx.fill();
+        ctx.fillStyle = mix('#f0b591', '#0b1250', .68); ctx.beginPath(); ctx.arc(0, -84, 20, 0, TAU); ctx.fill();
         ctx.restore();
       }
     }
@@ -207,12 +207,12 @@
   }
   function scoreboard(ctx, t, sc) {
     if (sc <= 0) return; const goal = t >= 18.34, bump = goal ? 1 + .55 * Math.exp(-(t - 18.34) * 7) * Math.cos((t - 18.34) * 22) : 1, glowK = goal ? Math.exp(-(t - 18.34) * 3) : 0;
-    ctx.save(); ctx.translate(960, 104); ctx.scale(sc, sc);
-    CL.gel(ctx, 0, 0, 940, 150, { fill: '#17207f', dark: '#070b3a', rim: goal && glowK > .1 ? '#ffe36a' : 'rgba(255,255,255,.7)', shadow: 14, r: 44, gloss: true });
+    ctx.save(); ctx.translate(1000, 104); ctx.scale(sc, sc);
+    CL.gel(ctx, 0, 0, 880, 150, { fill: '#17207f', dark: '#070b3a', rim: goal && glowK > .1 ? '#ffe36a' : 'rgba(255,255,255,.7)', shadow: 14, r: 44, gloss: true });
     // teams
     [[-1, C.blue, 'האריות'], [1, C.orange, 'הנמרים']].forEach(([s, col, nm]) => {
-      ctx.save(); ctx.translate(s * 372, 0); ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 0, 44, 0, TAU); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.beginPath(); ctx.ellipse(-12, -16, 18, 9, -.6, 0, TAU); ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 44, 0, TAU); ctx.stroke(); ctx.restore();
-      A.text(ctx, nm, s * 232, 4, { font: '900 52px Rubik', fill: '#fff', dir: 'rtl' });
+      ctx.save(); ctx.translate(s * 346, 0); ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 0, 44, 0, TAU); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.beginPath(); ctx.ellipse(-12, -16, 18, 9, -.6, 0, TAU); ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, 44, 0, TAU); ctx.stroke(); ctx.restore();
+      A.text(ctx, nm, s * 206, 4, { font: '900 52px Rubik', fill: '#fff', dir: 'rtl' });
     });
     ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.font = '900 96px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr';
     ctx.save(); ctx.translate(-92, 6); ctx.scale(bump, bump); ctx.fillStyle = goal ? '#ffe36a' : '#fff'; ctx.fillText(goal ? '1' : '0', 0, 0); ctx.restore();
@@ -231,7 +231,7 @@
   }
   function clockChip(ctx, t, sc) {
     if (sc <= 0) return; const secs = 78 * 60 + 12 + (t - 17.8) * 1, m = Math.floor(secs / 60), s = Math.floor(secs % 60), fr = secs % 1;
-    ctx.save(); ctx.translate(1630, 104); ctx.scale(sc, sc); CL.gel(ctx, 0, 0, 250, 104, { fill: '#0e1a6b', dark: '#050826', shadow: 10, r: 40, rim: 'rgba(255,255,255,.6)' });
+    ctx.save(); ctx.translate(1700, 104); ctx.scale(sc, sc); CL.gel(ctx, 0, 0, 250, 104, { fill: '#0e1a6b', dark: '#050826', shadow: 10, r: 40, rim: 'rgba(255,255,255,.6)' });
     A.text(ctx, m + ':' + String(s).padStart(2, '0'), 0, 4, { font: '900 66px Rubik', fill: '#7CFF3A', dir: 'ltr' }); ctx.globalAlpha = .55 + .45 * Math.sin(t * 6); ctx.fillStyle = '#7CFF3A'; ctx.beginPath(); ctx.arc(-98, -30, 6, 0, TAU); ctx.fill(); ctx.restore();
   }
   function world1(ctx, t) {
@@ -259,17 +259,17 @@
     if (t >= 17.36) CL.ring(ctx, L1[0], L1[1] + 56, 260, P(t, 17.40, 17.9), '#fff', 14);
     if (t >= 17.80) CL.ring(ctx, L2[0], L2[1] + 56, 200, P(t, 17.80, 18.2), C.yellow, 12);
     // broadcast graphics
-    { const q = P(t, 17.58, 17.80); if (q > 0) { const sc = t < 17.80 ? lerp(3.2, 1, ease.in(q)) : 1 + .16 * wobble(t, 17.80, 28, 10); ctx.save(); ctx.globalAlpha = clamp(q * 5); liveBadge(ctx, 290, 110, sc, t); ctx.restore(); } }
+    { const q = P(t, 17.58, 17.80); if (q > 0) { const sc = t < 17.80 ? lerp(3.2, 1, ease.in(q)) : 1 + .16 * wobble(t, 17.80, 28, 10); ctx.save(); ctx.globalAlpha = clamp(q * 5); liveBadge(ctx, 250, 110, sc, t); ctx.restore(); } }
     scoreboard(ctx, t, sb); clockChip(ctx, t, land(t, 17.86, .3)); liveBar(ctx, t, P(t, 17.84, 18.0));
     // GOAL!
     if (t >= 18.34) {
-      const u = t - 18.34; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-u * 9) * .8; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
+      const u = t - 18.34; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-u * 16) * .5; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
       ray(ctx, IMP[0], IMP[1], t, 14, 900, C.yellow, .5 * Math.exp(-u * 3));
       splashAt(ctx, IMP[0], IMP[1], 520, t, 18.34, 21, null, .9);
       [0, .07].forEach((d, i) => CL.ring(ctx, IMP[0], IMP[1], 620 - i * 160, P(t, 18.34 + d, 18.34 + d + .5), i ? C.yellow : '#fff', 26));
       sparkBurst(ctx, t, 18.34, IMP[0], IMP[1], 560, 26, 3, .8);
       const s = CL.spring(t, 18.30, .55) * (1 - ease.in(P(t, 18.56, 18.7)));
-      if (s > 0) CL.title(ctx, 'GOAL!', 700, 400, { size: 330, dir: 'ltr', fill: ['#fff7a0', '#ff8a1f'], rot: -.07, scale: s, alpha: 1 });
+      if (s > 0) CL.title(ctx, 'GOAL!', 620, 430, { size: 250, dir: 'ltr', fill: ['#fff7a0', '#ff8a1f'], rot: -.07, scale: s, alpha: 1 });
     }
   }
 
@@ -304,7 +304,7 @@
     CL.title(ctx, 'בכורה', 0, 4, { size: 92, fill: ['#fff7c0', '#ffb300'] }); ctx.restore();
   }
   function countdown(ctx, t) {
-    const T3 = 18.78, T2 = 19.21, T1 = 19.52, TE = 20.09; if (t < T3 - .3 || t > TE + .3) return;
+    const T3 = 18.78, T2 = 19.21, T1 = 19.52, TE = 20.09; if (t < T3 - .14 || t > TE + .3) return;
     const cx = 960, cy = 560; let ringK = land(t, T3, .34); const ex = P(t, TE, TE + .18); ringK *= 1 + .5 * eo(ex); const ga = 1 - ex; if (ga <= 0) return;
     ctx.save(); ctx.globalAlpha = ga; ctx.translate(cx, cy); ctx.scale(ringK, ringK);
     const beat = t > T1 ? 1 + .045 * Math.sin((t - T1) * 22) * P(t, T1, T1 + .1) + .015 * P(t, T1, TE) : 1;
@@ -318,8 +318,8 @@
     ctx.lineWidth = 18; ctx.strokeStyle = A.linear(ctx, 0, -258, 0, 258, [[0, '#fff3a0'], [1, '#ff9a1f']]); ctx.beginPath(); ctx.arc(0, 0, 258, 0, TAU); ctx.stroke(); ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.arc(0, 0, 240, Math.PI * 1.1, Math.PI * 1.55); ctx.stroke();
     // digits: each pops on its word, previous one flies off
     [[3, T3], [2, T2], [1, T1]].forEach(([n, tn], i) => {
-      const nxt = i < 2 ? [T2, T1][i] : TE, u = t - tn; if (u < -.2 || t > nxt + .16) return; const pp = land(t, tn, .32), out = P(t, nxt - .02, nxt + .14), shk = t > T1 && n === 1 ? Math.sin(t * 70) * 3 * P(t, T1, TE) : 0;
-      ctx.save(); ctx.translate(shk, 8); ctx.scale(pp * (1 + .9 * eo(out)), pp * (1 + .9 * eo(out))); ctx.globalAlpha = 1 - out; CL.title(ctx, String(n), 0, 0, { size: 400, dir: 'ltr', fill: ['#fff7c0', '#ffb300'] }); ctx.restore();
+      const nxt = i < 2 ? [T2, T1][i] : TE, u = t - tn; if (u < -.2 || t > nxt + .08) return; const pp = land(t, tn, .32), out = P(t, nxt, nxt + .07), shk = t > T1 && n === 1 ? Math.sin(t * 70) * 3 * P(t, T1, TE) : 0;
+      ctx.save(); ctx.translate(shk, 8); ctx.scale(pp * (1 + .25 * eo(out)), pp * (1 + .25 * eo(out))); ctx.globalAlpha = 1 - out; CL.title(ctx, String(n), 0, 0, { size: 400, dir: 'ltr', fill: ['#fff7c0', '#ffb300'] }); ctx.restore();
     });
     ctx.restore();
     // impact rings on each count: CUE 18.78 countdown-3 + curtain-slam, CUE 19.21 countdown-2, CUE 19.52 countdown-1
@@ -350,7 +350,7 @@
     // popping kernels
     const rate = .075, j0 = Math.floor((t - 19.21) / rate);
     for (let j = 0; j < 12; j++) { const b = j0 - j; if (b < 0) continue; const tb = 19.21 + b * rate, u = t - tb; if (u < 0 || u > .95) continue; const hs = hash(b * 1.7 + 3);
-      const vx = (hs - .5) * 520, vy = -900 - hash(b * 5.1) * 500, x = bx + vx * u * .55 + (hs - .5) * 20, y = by - 330 + vy * u + 1900 * u * u * .5; ctx.save(); ctx.globalAlpha = clamp((.95 - u) / .25); popcornPuff(ctx, x, y, 34 + hash(b) * 14, u * (hs * 20 - 10)); ctx.restore(); }
+      const vx = (hs - .5) * 900, vy = -520 - hash(b * 5.1) * 520, x = bx + vx * u + (hs - .5) * 20, y = by - 330 + vy * u + 1900 * u * u * .5; ctx.save(); ctx.globalAlpha = clamp((.95 - u) / .25); popcornPuff(ctx, x, y, 34 + hash(b) * 14, u * (hs * 20 - 10)); ctx.restore(); }
   }
   function wallClock(ctx, t, sc) {
     if (sc <= 0) return; const cx = 1560, cy = 640, R = 150; ctx.save(); ctx.translate(cx, cy); ctx.scale(sc, sc);
@@ -423,13 +423,13 @@
     if (t >= 18.78 && t < 18.95) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-(t - 18.78) * 18) * .55; ctx.fillStyle = '#ffe9a0'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
     if (t < 20.09) spotlights(ctx, t, land(t, 18.78, .3));
     // valance + marquee slide out when the curtains open
-    const up = ease.in(P(t, 20.12, 20.4)) * 300; ctx.save(); ctx.translate(0, -up); ctx.drawImage(valanceTex(), 0, 0); ctx.restore();
+    const up = ease.in(P(t, 20.12, 20.4)) * 300; ctx.save(); ctx.translate(0, -up - 260 * (1 - eo(P(t, 18.50, 18.78)))); ctx.drawImage(valanceTex(), 0, 0); ctx.restore();
     marquee(ctx, t, land(t, 18.78, .34) * (1 - ease.in(P(t, 20.09, 20.3))));
     countdown(ctx, t);
     bucket(ctx, t, land(t, 19.21, .34) * (1 - ease.in(P(t, 20.09, 20.26))));    // CUE 19.21 popcorn-bucket-pop
     wallClock(ctx, t, land(t, 19.52, .34) * (1 - ease.in(P(t, 20.09, 20.26))));   // CUE 19.52 clock-tick-start
     if (t >= 20.09) {   // CUE 20.09 curtains-fly-open + poster-wall-burst
-      const u = t - 20.09; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-u * 10) * .9; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
+      const u = t - 20.09; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-u * 20) * .6; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
       confetti(ctx, t, 20.09, 960, 480, 90, 51, { spread: Math.PI, ang: -Math.PI / 2, speed: 1.15, life: 1.4 });
       sparkBurst(ctx, t, 20.09, 960, 480, 800, 34, 8, .9); CL.ring(ctx, 960, 480, 1000, P(t, 20.09, 20.6), '#fff', 30);
     }
@@ -468,7 +468,7 @@
     ctx.fillStyle = A.linear(ctx, -50, 0, 50, 0, [[0, '#0fa0d8'], [.4, '#4be0ff'], [1, '#0a80c0']]); ctx.fillRect(-50, -300, 100, 300); ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(-28, -300, 12, 300);
     ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(-50, -300); ctx.lineTo(-50, 0); ctx.moveTo(50, -300); ctx.lineTo(50, 0); ctx.stroke();
     // inside (visible when lid is off)
-    if (lidOff) { ctx.fillStyle = A.linear(ctx, 0, -308, 0, -270, [[0, '#fffbe0'], [1, '#ffb300']]); ctx.beginPath(); ctx.roundRect(-215, -312, 430, 44, 16); ctx.fill(); A.glow(ctx, 0, -300, 320, '#fff2a0', .9 * glow); }
+    if (lidOff) { ctx.fillStyle = A.linear(ctx, 0, -308, 0, -270, [[0, '#fffbe0'], [1, '#ffb300']]); ctx.beginPath(); ctx.roundRect(-215, -312, 430, 44, 16); ctx.fill(); A.glow(ctx, 0, -300, 200, '#fff2a0', .6 * glow); }
     // lid
     const L = lidOff || { x: 0, y: 0, r: 0 }; ctx.save(); ctx.translate(L.x, L.y); ctx.rotate(L.r);
     CL.gel(ctx, 0, -338, 500, 108, { fill: '#ff67b8', dark: '#c21a72', r: 30, shadow: 0, rim: 'rgba(255,255,255,.85)' });
@@ -529,8 +529,8 @@
     if (t >= 20.92) { CL.ring(ctx, BOX.x, BOX.base - 400, 300, P(t, 20.92, 21.3), C.cyan, 18); sparkBurst(ctx, t, 20.92, BOX.x, BOX.base - 420, 280, 14, 42, .7); }
     // CUE 21.29 box-pop-open (confetti, sparkles, splashes, light)
     if (t >= 21.29) {
-      const u = t - 21.29; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-u * 8) * .85; ctx.fillStyle = '#fff6c0'; ctx.fillRect(0, 0, W, H); ctx.restore();
-      ray(ctx, BOX.x, BOX.base - 320, t * 1.5, 20, 1300, '#fff2a0', .55 * Math.exp(-u * 2.2), .5);
+      const u = t - 21.29; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-u * 20) * .35; ctx.fillStyle = '#fff6c0'; ctx.fillRect(0, 0, W, H); ctx.restore();
+      ray(ctx, BOX.x, BOX.base - 320, t * 1.5, 20, 1300, '#fff2a0', .3 * Math.exp(-u * 2.2), .5);
       splashAt(ctx, BOX.x, BOX.base - 320, 620, t, 21.29, 44, null, .9); CL.ring(ctx, BOX.x, BOX.base - 320, 900, P(t, 21.29, 21.8), '#fff', 30); CL.ring(ctx, BOX.x, BOX.base - 320, 700, P(t, 21.34, 21.8), C.pink, 20);
       confetti(ctx, t, 21.29, BOX.x, BOX.base - 320, 150, 61, { spread: 1.1, speed: 1.35, life: 2.0, scale: 1.2 }); confetti(ctx, t, 21.31, BOX.x, BOX.base - 320, 70, 62, { spread: .5, ang: -Math.PI * .8, speed: 1.2, life: 1.8 }); confetti(ctx, t, 21.31, BOX.x, BOX.base - 320, 70, 63, { spread: .5, ang: -Math.PI * .2, speed: 1.2, life: 1.8 });
       sparkBurst(ctx, t, 21.29, BOX.x, BOX.base - 320, 700, 40, 43, .9);
@@ -556,7 +556,7 @@
       // goal confetti keeps falling in front of the curtain
       confetti(ctx, t, 18.34, IMP[0], IMP[1], 130, 5, { spread: 1.7, speed: 1.1, life: 1.9, scale: 1.1 });
       // WORLD 3 (entry: candy iris flood from the box landing, CUE 20.42)
-      if (t >= 20.40) { transition(ctx, P(t, 20.40, 20.88), [C.pink, C.orange, C.yellow], shapeIris, () => world3bg(ctx, t)); }
+      if (t >= 20.40) { transition(ctx, P(t, 20.40, 20.78), [C.pink, C.orange, C.yellow], shapeIris, () => world3bg(ctx, t)); }
       if (t >= 20.15) world3fg(ctx, t);
       ctx.restore();
     },

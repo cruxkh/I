@@ -291,27 +291,51 @@ def _(r):
     return y
 
 
-@reg('vortex_suck', 1.15, 'Spiral vortex sucks everything into the TV: rising, rotating whoosh + bubble swirl, "gulp" pop + boom at 1.15 s. 2.8 s.')
-def _(r):
-    dur = 2.8
+def _vortex(r, rise, dur):
     n = N(dur)
     t = tax(n)
-    u = np.clip(t / 1.15, 0, 1)
+    u = np.clip(t / rise, 0, 1)
     nz = pink(n, r) * 0.7 + white(n, r) * 0.3
-    sw = stft_shape(nz, bandsweep(lambda tt: 260 * 16 ** np.clip(tt / 1.15, 0, 1) ** 1.2, 0.8), nper=2048)
-    sw = sw * env(n, [(0, 0), (0.5, 0.25), (1.1, 1.0), (1.16, 0.05), (dur, 0)]) * 0.9
+    sw = stft_shape(nz, bandsweep(lambda tt: 260 * 16 ** np.clip(tt / rise, 0, 1) ** 1.2, 0.8), nper=2048)
+    sw = sw * env(n, [(0, 0), (rise * 0.45, 0.25), (rise - 0.05, 1.0), (rise + 0.01, 0.05), (dur, 0)]) * 0.9
     rot = np.sin(phase_of(1.5 + 12 * u ** 2)) * 0.9
-    y = pan_dyn(sw, rot * (t < 1.16))
-    # swirling glassy droplets (pitch rising)
-    dens = np.clip(t / 1.15, 0, 1) ** 2 * (t < 1.15) * 240
+    y = pan_dyn(sw, rot * (t < rise + 0.01))
+    dens = np.clip(t / rise, 0, 1) ** 2 * (t < rise) * 240
     y += bubble_cloud(dur, r, dens, (600, 3200), 0.3)
-    # tonal-free "suck" body: sine 90 -> 420 Hz, quiet
-    body = np.sin(phase_of(90 * 4.7 ** u ** 1.6)) * env(n, [(0, 0), (1.1, 0.25), (1.16, 0), (dur, 0)])
+    body = np.sin(phase_of(90 * 4.7 ** u ** 1.6)) * env(n, [(0, 0), (rise - 0.05, 0.25), (rise + 0.01, 0), (dur, 0)])
     y += st(body) * 0.7
-    g = gloss(r, 250, 1.6, 0.6)
-    add_at(y, g * 1.1, 1.15)
-    add_at(y, _boom(r, 0.35), 1.15, 0.6)
+    add_at(y, gloss(r, 250, 1.6, 0.6) * 1.1, rise)
+    add_at(y, _boom(r, 0.35), rise, 0.6)
     return reverb(y, IR_BIG(), 0.2, tail=False)
+
+
+@reg('vortex_suck', 1.15, 'Spiral vortex sucks everything into the TV: rising, rotating whoosh + bubble swirl, "gulp" pop + boom at 1.15 s. 2.8 s.')
+def _(r):
+    return _vortex(r, 1.15, 2.8)
+
+
+@reg('vortex_suck_s', 0.5, 'Short vortex suck (0.5 s rise), gulp + boom at 0.5 s. 2.0 s.')
+def _(r):
+    return _vortex(r, 0.5, 2.0)
+
+
+@reg('snare_hit', 0.0, 'Tight snare / trailer-drum tick for the build-up roll: tone 190 Hz + noise crack + room. 0.35 s.')
+def _(r):
+    n = N(0.35)
+    t = tax(n)
+    tone = np.sin(phase_of(190 + 90 * np.exp(-t / 0.012))) * np.exp(-t / 0.05) * 0.7
+    nz = bp(white(n, r), 1200, 9000) * expdec(n, 0.07) * 1.2 + hp(white(n, r), 3500) * expdec(n, 0.02) * 0.5
+    y = (tone + nz) * attack(n, 0.0004)
+    return _finish_room(pan(sat(y, 1.3), 0.0), 0.2)
+
+
+@reg('heart_lub', 0.0, 'Heartbeat "lub": soft round sub thump with a little body, 0.5 s.')
+def _(r):
+    n = N(0.5)
+    t = tax(n)
+    y = np.sin(phase_of(70 * np.exp(-t / 0.06) + 42)) * np.exp(-t / 0.13) * attack(n, 0.003)
+    y += 0.25 * lp(white(n, r), 400) * expdec(n, 0.02)
+    return _finish_room(st(sat(y * 1.4, 1.4)), 0.12)
 
 
 @reg('glitter', 0.0, 'Glitter / sparkle dust: sparse airy micro-pops and shimmering noise (no pitched bells), 2.0 s.')
@@ -419,8 +443,8 @@ def _(r, root=86):
     x = 0.85 * S['harp'].render([(0.0, 0.55, root, 88, {}), (0.004, 0.5, root - 12, 64, {})], Nn)
     x += 0.4 * S['vln'].render([(0.002, 0.12, root, 76, {})], Nn)
     x += 0.5 * S['piano'].render([(0.0, 1.2, root, 78, {}), (0.0, 1.2, root - 12, 70, {}), (0.0, 1.2, root - 5, 64, {})], Nn)
-    for i, m in enumerate([root + d for d in (2, 4, 7, 9, 12, 14, 16, 19)]):
-        x += 0.8 * S['harp'].render([(0.12 + i * 0.035, 0.6, m, 62 - i * 2, {})], Nn)
+    for i, m in enumerate([root + d for d in (3, 5, 7, 10)]):     # E minor pentatonic above E (root must be an E)
+        x += 0.8 * S['harp'].render([(0.12 + i * 0.05, 0.6, m, 66 - i * 2, {})], Nn)
     return _room_small(x).T
 
 

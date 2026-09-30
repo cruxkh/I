@@ -85,10 +85,11 @@
   const ACC = mk(W, H), acx = ACC.getContext('2d'), ACC2 = mk(W, H);
   const MB = mk(W, H), mbx = MB.getContext('2d');
   async function scenePass(ff) {   // one temporal sample of the picture (scenes + mascot + camera), into ACC
-    const T = ff / FPS, t = TLF.vOf(T), hd = TLF.holdAt(T), hc = holdCam(hd, t);
+    const T = ff / FPS, t = TLF.vOf(T), hd = TLF.holdAt(T);
     cv.width = W;   // reset all canvas state
     if (window.HOST) await HOST.prepare(t);
     A.renderFrame(ff);
+    const hc = holdCam(hd, t);   // after the scenes ran: they register CL.HOLDFOC lazily inside draw()
     if (window.HOST) HOST.overlay(ctx, t);
     let z = 1; chunks.forEach(k => { const u = t - k.t0; if (u >= 0 && u < .4) z += .02 * Math.pow(1 - u / .4, 2); });   // soft punch-in at each phrase
     ACC.width = W; acx.save(); acx.translate(W / 2, H / 2); acx.scale(z, z); acx.translate(-W / 2, -H / 2); acx.drawImage(cv, 0, 0); acx.restore();

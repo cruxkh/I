@@ -45,9 +45,9 @@
  },
  "placements": [
   {
-   "name": "Neden?! (tur, Kokoro if_sara + Turkish IPA + WORLD)",
+   "name": "Neden?! + sob tail (tur: crying girl, Kokoro if_sara + Turkish IPA + WORLD child/tremble/breaks)",
    "T": 11.41,
-   "dur": 0.9,
+   "dur": 1.0,
    "until": 12.38
   },
   {
@@ -59,7 +59,7 @@
  ],
  "asr": {
   "neden_tr": "Neden?",
-  "neden_it": "Ne d'end'",
+  "neden_it": "NEDEN",
   "vaah_hi": "ाहे",
   "cinema_word_he": "...טון.",
   "original_word_he": "צ'לטון"

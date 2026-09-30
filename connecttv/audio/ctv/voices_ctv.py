@@ -201,7 +201,7 @@ def neden():
     # amplitude breaks at the syllable joints (glottal catches) + sob tremble
     gate = np.ones(n)
     for c, wd in ((0.30 * n / SR, 0.045), (0.55 * n / SR, 0.035)):
-        gate *= 1 - 0.85 * np.exp(-0.5 * ((t - c) / (wd / 2.5)) ** 2)
+        gate *= 1 - 0.5 * np.exp(-0.5 * ((t - c) / (wd / 2.5)) ** 2)
     gate *= 1 - 0.28 * (0.5 + 0.5 * np.sin(2 * np.pi * 9.0 * t)) * np.clip(t / (n / SR) * 1.6, 0, 1)
     w = w * gate
     out = np.zeros(int(1.0 * SR))
