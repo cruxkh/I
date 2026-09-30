@@ -3,7 +3,7 @@
 // Deterministic: every frame is a pure function of time t (seconds). No Date, no Math.random.
 // ============================================================================
 const A = (window.A = {});
-A.W = 1080; A.H = 1920; A.FPS = 30; A.DUR = 40.0;
+A.W = 1920; A.H = 1080; A.FPS = 30; A.DUR = 40.0;
 // Time shift: a scene file loaded while A.SHIFT = d is authored in its own time base and plays d seconds later.
 // Inside its draw(), s.t / s.lt are in the scene's own time base, and A.mouth/A.speaking compensate automatically.
 A.SHIFT = 0; A._shift = 0;
@@ -112,9 +112,9 @@ A.layer = (key, w, h, draw) => {
 
 // ---------- camera ----------
 // A.camera(ctx, {x, y, zoom, rot, shake, t}) — (x,y) = world point shown at screen centre. Call inside save/restore.
-A.camera = (ctx, { x = 540, y = 960, zoom = 1, rot = 0, shake = 0, t = 0 } = {}) => {
+A.camera = (ctx, { x = A.W / 2, y = A.H / 2, zoom = 1, rot = 0, shake = 0, t = 0 } = {}) => {
   const sx = shake * (A.noise1(t * 23) * 14), sy = shake * (A.noise1(t * 23 + 50) * 14);
-  ctx.translate(540 + sx, 960 + sy); ctx.rotate(rot + shake * A.noise1(t * 17 + 9) * 0.012); ctx.scale(zoom, zoom); ctx.translate(-x, -y);
+  ctx.translate(A.W / 2 + sx, A.H / 2 + sy); ctx.rotate(rot + shake * A.noise1(t * 17 + 9) * 0.012); ctx.scale(zoom, zoom); ctx.translate(-x, -y);
 };
 
 // ---------- scenes ----------

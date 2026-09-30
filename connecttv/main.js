@@ -1,6 +1,6 @@
 // ConnectTV compositor: scenes -> mascot overlay -> gel-chip captions -> hold overlays. Smooth 30 fps with 3-sample temporal motion blur.
 (() => {
-  const W = 1080, H = 1920, FPS = 30, DURV = TLF.TOTAL;
+  const W = 1920, H = 1080, FPS = 30, DURV = TLF.TOTAL;
   const cv = document.getElementById('c'), ctx = cv.getContext('2d');
   const { clamp, lerp, inv, ease, hash, rng } = A, C = CL.C;
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
@@ -13,15 +13,15 @@
     flush(); out.forEach(c => { c.t0 = c[0].t0; c.t1 = c[c.length - 1].t1; }); return out;
   })();
   CL.noCap = [[27.6, 99]];      // [t0,t1] windows (voice clock) with no captions (scenes may push more, lazily inside draw())
-  CL.capY = 1450;               // caption baseline; a scene may set CL.capYAt = t => y
+  CL.capY = 905;                // caption baseline; a scene may set CL.capYAt = t => y
   function captions(c, t) {
     if (CL.noCap.some(([a, b]) => t >= a && t < b)) return;
     const ci = chunks.findIndex(k => t >= k.t0 - 0.02 && t < k.t1 + 0.14); if (ci < 0) return;
     const ch = chunks[ci], size = 96, YB = CL.capYAt ? CL.capYAt(t) : CL.capY;
     c.save(); c.direction = 'rtl'; c.font = `900 ${size}px Rubik`;
     const words = ch.map(w => w.w), gap = 16, pad = size * .32, widths = words.map(s => c.measureText(s).width + pad * 2);
-    const total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1), fit = Math.min(1, 1000 / total); let x = total / 2;   // RTL: first word at the right
-    c.translate(540, YB); c.scale(fit, fit);
+    const total = widths.reduce((a, b) => a + b, 0) + gap * (words.length - 1), fit = Math.min(1, 1500 / total); let x = total / 2;   // RTL: first word at the right
+    c.translate(W / 2, YB); c.scale(fit, fit);
     words.forEach((s, i) => {
       const w = ch[i], wp = widths[i], cx = x - wp / 2, sc = CL.pop(t, w.t0 - .04, .26); x -= wp + gap; if (sc <= 0) return;
       const active = t >= w.t0 - .03 && t < w.t1 + .02, em = EMPH[s] || EMPH[s.replace(/^ו/, '')], sd = ci * 3 + i, jt = CL.j(t, sd, 3);
@@ -30,15 +30,15 @@
     c.restore();
     const L = A.LINES.find(l => t >= l.t - 0.05 && t <= l.end + 0.3);
     if (L) {
-      c.save(); c.direction = 'ltr'; c.font = '700 34px Rubik'; const tw = L.words.reduce((s, w) => s + c.measureText(w.w + ' ').width, 0), y = YB + size * .92 + 30, gs = Math.min(1, 1000 / (tw + 70));
-      c.translate(540, y); c.scale(gs, gs); c.fillStyle = 'rgba(5,8,38,.78)'; c.beginPath(); c.roundRect(-tw / 2 - 26, -30, tw + 52, 60, 30); c.fill();
+      c.save(); c.direction = 'ltr'; c.font = '700 34px Rubik'; const tw = L.words.reduce((s, w) => s + c.measureText(w.w + ' ').width, 0), y = YB + size * .92 + 30, gs = Math.min(1, 1500 / (tw + 70));
+      c.translate(W / 2, y); c.scale(gs, gs); c.fillStyle = 'rgba(5,8,38,.78)'; c.beginPath(); c.roundRect(-tw / 2 - 26, -30, tw + 52, 60, 30); c.fill();
       let xx = -tw / 2; for (const w of L.words) { A.text(c, w.w, xx, 2, { font: '700 34px Rubik', align: 'left', fill: t >= w.t ? C.yellow : 'rgba(255,255,255,.75)' }); xx += c.measureText(w.w + ' ').width; }
       c.restore();
     }
   }
 
   // ---- HOLD overlays: the voice pauses on a genre moment; camera pushes in and the moment "performs" its own sound
-  CL.HOLDFOC = { cin: [540, 900, 1.3], tur: [540, 900, 1.3], ind: [540, 900, 1.3] };   // scenes may overwrite lazily inside draw(): [focusX, focusY, zoom]
+  CL.HOLDFOC = { cin: [960, 500, 1.3], tur: [960, 500, 1.3], ind: [960, 500, 1.3] };   // scenes may overwrite lazily inside draw(): [focusX, focusY, zoom]
   const PRE = { cin: 8.32, tur: 9.27, ind: 10.39 };   // zoom starts ON the spoken word, complete when the hold begins
   function holdCam(hd, t) {
     let k = 0, key = null;

@@ -38,11 +38,8 @@ gotv5l/previews/
 gotv5/audio/v7/samples/
 VSCO-2-CE/
 connecttv/node_modules
-connecttv_l/node_modules
 connecttv/out/
 connecttv/previews/
-connecttv_l/out/
-connecttv_l/previews/
 connecttv/audio/v7/samples/
 connecttv/audio/**/*.wav
 connecttv/audio/**/*.npy

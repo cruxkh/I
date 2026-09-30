@@ -3,7 +3,7 @@
 // highlight, lightning bolts, sparkles. All motion smooth at 30 fps (springs, overshoot, flowing drift). Matches the logo.
 (() => {
   const { clamp, lerp, inv, ease, hash, rng } = A;
-  const W = 1080, H = 1920;
+  const W = 1920, H = 1080;
   const CL = (window.CL = {});
   CL.W = W; CL.H = H;
   CL.C = { ink: '#050826', navy0: '#070B2E', navy: '#0B1250', indigo: '#1A1F7A', pink: '#FF2E93', orange: '#FF8A1F', yellow: '#FFD23F', lime: '#7CFF3A', green: '#19D68B', cyan: '#19C8FF', blue: '#2F6BFF', purple: '#8B3DFF', white: '#FFFFFF', cream: '#FFF6E6', red: '#FF3B4E' };
@@ -18,7 +18,7 @@
   CL.smoothPop = (t, t0, dur = .35) => ease.outBack(clamp((t - t0) / dur));
   CL.shake = (t, t0, dur = .5, amp = 14) => { const u = t - t0; if (u < 0 || u > dur) return [0, 0]; const k = Math.exp(-u * 6 / dur) * amp; return [Math.sin(u * 91) * k, Math.cos(u * 77) * k]; };
   CL.layer = (key, w, h, draw) => A.layer(key, w, h, draw);
-  CL.noCap = [[999, 999]]; CL.capY = 1450;
+  CL.noCap = [[999, 999]]; CL.capY = 905;
 
   // ---------- logos (real brand logos as transparent PNGs) + ConnectTV brand assets
   const FILES = { netflix: 'netflix.png', disney: 'disney-plus.png', appletv: 'apple-tv-plus.png', prime: 'amazon-prime-video.png', hbo: 'hbo-max.png', hulu: 'hulu.png', paramount: 'paramount-plus.png',
@@ -47,10 +47,10 @@
     const st = CL.layer('bg_' + base, W, H, (g) => { const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.navy0); gr.addColorStop(.5, base); gr.addColorStop(1, C.navy0); g.fillStyle = gr; g.fillRect(0, 0, W, H); g.fillStyle = 'rgba(255,255,255,.05)'; for (let y = 20; y < H; y += 44) for (let x = 20 + ((y / 44) % 2) * 22; x < W; x += 44) { g.beginPath(); g.arc(x, y, 2.2, 0, A.TAU); g.fill(); } });
     ctx.drawImage(st, 0, 0);
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    tint.forEach((col, i) => { const x = W * (.5 + .42 * Math.sin(t * sp * (.7 + i * .23) + i * 2.1)), y = H * (.5 + .38 * Math.cos(t * sp * (.6 + i * .19) + i * 1.3)), r = 620 + 120 * Math.sin(t * .5 + i); ctx.fillStyle = A.radial(ctx, x, y, 0, r, [[0, A.hex(col, .30)], [1, A.hex(col, 0)]]); ctx.fillRect(x - r, y - r, r * 2, r * 2); });
+    tint.forEach((col, i) => { const x = W * (.5 + .42 * Math.sin(t * sp * (.7 + i * .23) + i * 2.1)), y = H * (.5 + .38 * Math.cos(t * sp * (.6 + i * .19) + i * 1.3)), r = 760 + 120 * Math.sin(t * .5 + i); ctx.fillStyle = A.radial(ctx, x, y, 0, r, [[0, A.hex(col, .30)], [1, A.hex(col, 0)]]); ctx.fillRect(x - r, y - r, r * 2, r * 2); });
     ctx.restore();
   };
-  CL.vignette = (ctx, a = .55) => { const v = CL.layer('vig' + a, W, H, g => { const gr = g.createRadialGradient(W / 2, H / 2, H * .3, W / 2, H / 2, H * .75); gr.addColorStop(0, 'rgba(3,5,24,0)'); gr.addColorStop(1, `rgba(3,5,24,${a})`); g.fillStyle = gr; g.fillRect(0, 0, W, H); }); ctx.drawImage(v, 0, 0); };
+  CL.vignette = (ctx, a = .55) => { const v = CL.layer('vig' + a, W, H, g => { const gr = g.createRadialGradient(W / 2, H / 2, H * .45, W / 2, H / 2, W * .62); gr.addColorStop(0, 'rgba(3,5,24,0)'); gr.addColorStop(1, `rgba(3,5,24,${a})`); g.fillStyle = gr; g.fillRect(0, 0, W, H); }); ctx.drawImage(v, 0, 0); };
 
   // ---------- liquid: splash burst. p 0..1 expansion (use CL.spring for a bouncy burst). cols default candy. Returns nothing.
   CL.splash = (ctx, cx, cy, R, p, seed = 1, cols) => {
