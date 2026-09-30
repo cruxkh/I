@@ -1,7 +1,7 @@
 // s2_sports: "כל ערוצי הספורט כולל צ'רלטון"  (v 6.5 to 9.3, HOLD `cin` at v=8.85)   LANDSCAPE 1920x1080
-// 6.50 liquid wipe covers s1 | 6.78 כל: stadium light rig ignites | 6.95 ערוצי: Sport 1..4 cards fly in as a 2x2 strip, 7.47 Sport 5 hero slams
-// 7.58 הספורט: ball/trophy splash burst + crowd | 8.03 כולל: build-up (sweeping spotlights, drumroll, implosion)
-// 8.32 צ'רלטון: CHARLTON wordmark SLAMS (shockwave + lightning), camera pushes in (main.js), hold = cinema trailer moment
+// 6.70 liquid wipe covers s1 | 6.78 כל: stadium light rig ignites | 7.02 ערוצי: Sport 1..4 cards fly in as a 2x2 strip, 7.47 Sport 5 hero slams
+// 7.58 הספורט: ball/trophy splash burst + crowd | 8.045 כולל: build-up (sweeping spotlights, drumroll, implosion)
+// 8.36 צ'רלטון: CHARLTON wordmark SLAMS (shockwave + lightning), camera pushes in (main.js), hold = cinema trailer moment
 (() => {
   const { clamp, lerp, inv, ease, hash, rng } = A, C = CL.C, W = 1920, H = 1080, TAU = A.TAU;
   const land = (t, t0, d = .36) => CL.pop(t, t0 - .37 * d, d);   // overshoot pop that CROSSES 1.0 exactly at t0 (impact on the word)
@@ -10,7 +10,7 @@
 
   // ---------------------------------------------------------------- entry wipe (candy liquid sweeping left to right on a diagonal)
   const WIPE_COLS = [C.lime, C.cyan, C.blue];
-  const WT0 = 6.50, WDUR = .27;
+  const WT0 = 6.70, WDUR = .25;
   function front(p, i) { const pp = clamp((p - i * .15) / .55), e = ease.inOut(pp); return { e, base: lerp(-700, W + 700, e), ph: i * 2 + p * 7 }; }
   function frontPath(ctx, f) {   // region to the LEFT of a wobbly diagonal edge sweeping right
     const amp = 90 * Math.sin(Math.PI * clamp(f.e)); ctx.beginPath(); ctx.moveTo(-60, -40);
@@ -21,7 +21,7 @@
   // ---------------------------------------------------------------- stadium light rig
   const LAMPS = [120, 360, 600, 840, 1080, 1320, 1560, 1800], BCOL = ['#e6f7ff', C.pink, '#fff1c2', C.cyan, '#e6f7ff', C.pink, '#fff1c2', C.cyan];
   const LON = i => 6.78 + i * .024;   // CUE 6.78 lights-on flash (lamps ignite left to right, 6.78 .. 6.95)
-  function sweepPh(t) { const b = clamp((t - 8.03) / .29); return t * 1.1 + 9 * Math.pow(b, 2.2); }
+  function sweepPh(t) { const b = clamp((t - 8.045) / .29); return t * 1.1 + 9 * Math.pow(b, 2.2); }
   function beams(ctx, t, aim, pow) {
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     LAMPS.forEach((lx, i) => {
@@ -53,7 +53,7 @@
     const rows = [{ y: 905, n: 19, s: .8, col: '#0b1150', dl: 0 }, { y: 990, n: 14, s: 1.05, col: '#050826', dl: .05 }];
     rows.forEach((r, ri) => {
       for (let i = 0; i < r.n; i++) {
-        const seed = ri * 20 + i, x = (i + .5) * W / r.n + (hash(seed) - .5) * 50, rise = 1 - CL.pop(t, 7.58 + r.dl + hash(seed + 3) * .1 - .05, .45); if (rise >= 1) continue;
+        const seed = ri * 20 + i, x = (i + .5) * W / r.n + (hash(seed) - .5) * 50, rise = 1 - CL.pop(t, 7.58 + r.dl + hash(seed + 3) * .12 - .05, .65); if (rise >= 1) continue;
         const bob = Math.sin(T * (3 + hash(seed) * 2) + seed) * 6 * (1 - rise), y = r.y + rise * 300 + bob + drop, s = r.s * (.92 + hash(seed + 1) * .2), arms = hash(seed + 5) > .35, wv = Math.sin(T * 5 + seed * 1.7);
         ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
         ctx.fillStyle = r.col; ctx.strokeStyle = r.col; ctx.lineCap = 'round';
@@ -138,10 +138,10 @@
 
   // ---------------------------------------------------------------- the scene
   const TILES = [   // 2x2 strip (grid) that springs to two side columns when Sport 5 slams
-    { k: 'sport1', gx: 550, gy: 250, sx: 300, sy: 290, t0: 6.95, col: '#00f786', from: [-700, 250], r0: -.6 },   // CUE 6.95 sport1-pop
-    { k: 'sport2', gx: 1370, gy: 250, sx: 1620, sy: 290, t0: 7.08, col: '#ff2a52', from: [2620, 250], r0: .6 },   // CUE 7.08 sport2-pop
-    { k: 'sport3', gx: 550, gy: 490, sx: 300, sy: 570, t0: 7.21, col: '#ffe600', from: [-700, 490], r0: .6 },   // CUE 7.21 sport3-pop
-    { k: 'sport4', gx: 1370, gy: 490, sx: 1620, sy: 570, t0: 7.34, col: '#00fff4', from: [2620, 490], r0: -.6 }, // CUE 7.34 sport4-pop
+    { k: 'sport1', gx: 550, gy: 250, sx: 300, sy: 290, t0: 7.02, col: '#00f786', from: [-700, 250], r0: -.6 },   // CUE 7.02 sport1-pop
+    { k: 'sport2', gx: 1370, gy: 250, sx: 1620, sy: 290, t0: 7.13, col: '#ff2a52', from: [2620, 250], r0: .6 },   // CUE 7.13 sport2-pop
+    { k: 'sport3', gx: 550, gy: 490, sx: 300, sy: 570, t0: 7.24, col: '#ffe600', from: [-700, 490], r0: .6 },   // CUE 7.24 sport3-pop
+    { k: 'sport4', gx: 1370, gy: 490, sx: 1620, sy: 570, t0: 7.35, col: '#00fff4', from: [2620, 490], r0: -.6 }, // CUE 7.35 sport4-pop
   ];
   const ICONS = [   // CUE 7.58 ball-trophy-burst
     { kind: 'soccer', x: 700, y: 705, r: 84, sp: 5, ph: 0 }, { kind: 'trophy', x: 1250, y: 690, r: 150, sp: 0, ph: 1.3 },
@@ -156,87 +156,87 @@
     ctx.restore();
   }
 
-  A.scene({ name: 's2_sports', start: 6.5, end: 9.3, draw(ctx, s) {
+  A.scene({ name: 's2_sports', start: 6.7, end: 9.3, draw(ctx, s) {
     const t = s.t, T = A.T; if (!WM) buildWM(); CL.HOLDFOC.cin = [FX, FY, 1.3];
     const wp = (t - WT0) / WDUR, wiping = wp < 1; if (wp <= 0) return;
     if (wiping) {   // entry wipe: candy bands ahead of the reveal edge
       WIPE_COLS.forEach((col, i) => { const f = front(wp, i); frontPath(ctx, f); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 8; ctx.stroke(); });
       frontPath(ctx, front(wp, 3)); ctx.save(); ctx.clip();
     }
-    const ie = ease.in(clamp((t - 8.14) / .16)), lit = sm(6.78, 6.9, t);   // ie = implosion 0..1 (8.14 -> 8.30)
+    const ie = 0, lit = sm(6.78, 6.9, t);   // ie = implosion 0..1 (8.18 -> 8.34)
     CL.bg(ctx, T, { tint: [C.blue, C.purple, C.cyan] });
     ctx.fillStyle = `rgba(3,5,24,${.82 * (1 - lit)})`; ctx.fillRect(0, 0, W, H);
     CL.twinkle(ctx, T, 0, 100, W, 700, 16, 5, ['#fff', C.cyan, C.yellow]);
 
     // ---- light rig + beams
-    const aim = Math.max(ie * .9, sm(8.32, 8.55, t)); beams(ctx, t, aim, 1); rig(ctx, t, 1);
-    if (t >= 6.78 && t < 7.05) { ctx.fillStyle = `rgba(255,255,255,${.85 * Math.exp(-(t - 6.78) * 18)})`; ctx.fillRect(0, 0, W, H); }   // the flash (CUE 6.78 light-flash)
+    const aim = Math.max(ie * .9, sm(8.36, 8.59, t)); beams(ctx, t, aim, 1); rig(ctx, t, 1);
+    if (t >= 6.78 && t < 6.846) { ctx.fillStyle = `rgba(255,255,255,${.6 * (1 - (t - 6.78) / .066)})`; ctx.fillRect(0, 0, W, H); }   // the flash (CUE 6.78 light-flash)
 
-    if (ie < 1) {
+    if (t < 8.36) {
       // ---- ball/trophy burst (behind logos)
       if (t >= 7.5) {
-        const p = CL.spring(t, 7.58 - .08, .75);   // CUE 7.58 ball-burst (splash + rings)
+        const p = CL.spring(t, 7.58 - .1, 1.0);   // CUE 7.58 ball-burst (splash + rings)
         ctx.save(); ctx.translate(lerp(960, FX, ie), lerp(440, FY, ie)); ctx.scale(1 - ie * .95, 1 - ie * .95); ctx.globalAlpha = .95; CL.splash(ctx, 0, 0, 760, p, 6, [C.pink, C.orange, C.yellow, C.lime, C.cyan, C.purple]); ctx.restore();
       }
       // ---- tiles: 2x2 (big, readable) then they spring to the side columns when Sport 5 slams
-      const m = clamp((t - 7.47) / .34), me = ease.outBack(m), sh = CL.shake(t, 7.47, .4, 12);
+      const m = clamp((t - 7.47) / .5), me = ease.outBack(m), sh = CL.shake(t, 7.47, .4, 12);
       TILES.forEach((d, i) => {
-        const pf = land(t, d.t0, .34); if (pf <= 0.002) return;
+        const pf = land(t, d.t0, .5); if (pf <= 0.002) return;
         const cxp = lerp(d.gx, d.sx, me), cyp = lerp(d.gy, d.sy, me), w = lerp(780, 500, me), h = lerp(205, 150, me);
         const px = lerp(d.from[0], cxp, pf), py = lerp(d.from[1], cyp, pf), idle = Math.sin(T * 2 + i * 1.7) * 5, rot = (1 - pf) * d.r0 + lerp(0, (i % 2 ? .03 : -.03), me) + Math.sin(T * 1.6 + i) * .008;
-        const vib = ie <= 0 && t > 8.03 ? Math.min(1, (t - 8.03) / .11) * 9 : 0, vx = vib * Math.sin(T * 90 + i * 2), vy = vib * Math.cos(T * 83 + i);
+        const vib = ie <= 0 && t > 8.045 ? Math.min(1, (t - 8.045) / .11) * 9 : 0, vx = vib * Math.sin(T * 90 + i * 2), vy = vib * Math.cos(T * 83 + i);
         ctx.save(); ctx.translate(lerp(px + sh[0] * (m > 0 ? 1 : 0) + vx, FX, ie), lerp(py + idle + vy, FY, ie)); ctx.rotate(rot + ie * (i % 2 ? 1.6 : -1.6)); const sc = (1 + (1 - pf) * .35) * (1 - ie * .96); ctx.scale(sc, sc);
         tileDraw(ctx, d.k, w, h, d.col, clamp(pf * 5)); ctx.restore();
-        const u = (t - d.t0) / .5; if (u > 0 && u < 1) { CL.ring(ctx, d.gx, d.gy, 300, u, d.col, 20); for (let q = 0; q < 3; q++) CL.spark(ctx, d.gx + (hash(i * 7 + q) - .5) * 700 * ease.out(u), d.gy + (hash(i * 3 + q) - .5) * 240 * ease.out(u), 34 * (1 - u), t * 3 + q, '#fff'); }
+        const u = (t - d.t0) / .75; if (u > 0 && u < 1) { CL.ring(ctx, d.gx, d.gy, 300, u, d.col, 20); for (let q = 0; q < 3; q++) CL.spark(ctx, d.gx + (hash(i * 7 + q) - .5) * 700 * ease.out(u), d.gy + (hash(i * 3 + q) - .5) * 240 * ease.out(u), 34 * (1 - u), t * 3 + q, '#fff'); }
       });
       // ---- Sport 5 hero
-      { const pf = land(t, 7.47, .36);   // CUE 7.47 sport5-hero-slam
+      { const pf = land(t, 7.47, .42);   // CUE 7.47 sport5-hero-slam
         if (pf > .002) {
-          const idle = Math.sin(T * 2.2) * 7, vib = t > 8.03 ? Math.min(1, (t - 8.03) / .11) * 10 : 0, im = CL.logoImg('sport5');
-          ctx.save(); ctx.translate(lerp(960 + vib * Math.sin(T * 95), FX, ie), lerp(440 + idle + vib * Math.cos(T * 88), FY, ie)); ctx.rotate((1 - pf) * -.4 + Math.sin(T * 1.5) * .012 + ie * 2); const sc = lerp(3.4, 1, pf) * (1 - ie * .96); ctx.scale(sc, sc); ctx.globalAlpha *= clamp(pf * 5);
+          const idle = Math.sin(T * 2.2) * 7, vib = t > 8.045 ? Math.min(1, (t - 8.045) / .11) * 10 : 0, im = CL.logoImg('sport5');
+          ctx.save(); ctx.translate(lerp(960 + vib * Math.sin(T * 95), FX, ie), lerp(440 + idle + vib * Math.cos(T * 88), FY, ie)); ctx.rotate((1 - pf) * -.4 + Math.sin(T * 1.5) * .012 + ie * 2); const sc = lerp(2.0, 1, pf) * (1 - ie * .96); ctx.scale(sc, sc); ctx.globalAlpha *= clamp(pf * 5);
           ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, 0, 0, 0, 560, [[0, 'rgba(90,150,255,.55)'], [1, 'rgba(90,150,255,0)']]); ctx.fillRect(-580, -580, 1160, 1160); ctx.globalCompositeOperation = 'source-over';
           CL.gel(ctx, 0, 0, 500, 610, { fill: '#2F6BFF', dark: '#1a1f7a', rim: '#ffffff', rimW: 8, shadow: 20, r: 100 });
           if (im) { const s2 = Math.min(500 * .76 / im.width, 610 * .78 / im.height), dw = im.width * s2, dh = im.height * s2; ctx.drawImage(im, -dw / 2, -dh / 2 + 6, dw, dh); }
           ctx.restore();
-          const u = (t - 7.47) / .55; CL.ring(ctx, 960, 440, 800, u, '#ffffff', 36); CL.ring(ctx, 960, 440, 800, u - .12, C.cyan, 24);
+          const u = (t - 7.47) / .85; CL.ring(ctx, 960, 440, 800, u, '#ffffff', 30);
         } }
       // ---- icons
       ICONS.forEach((d, i) => {
-        const p0 = clamp((t - 7.58) / .6), pp = ease.outBack(p0), sc = CL.pop(t, 7.58, .4) * (1 - ie * .96); if (sc <= .002) return;
+        const p0 = clamp((t - 7.58) / .9), pp = ease.outBack(p0), sc = CL.pop(t, 7.58, .55) * (1 - ie * .96); if (sc <= .002) return;
         const x = lerp(960, d.x, pp), y = lerp(440, d.y, pp) + Math.sin(T * 2.3 + d.ph) * 9 - Math.sin(p0 * Math.PI) * 50;
         ctx.save(); ctx.translate(lerp(x, FX, ie), lerp(y, FY, ie)); ctx.rotate((1 - p0) * d.sp * 1.4 + Math.sin(T * 1.7 + d.ph) * .08 + ie * 3); ctx.scale(sc, sc);
         if (d.kind === 'soccer') soccer(ctx, d.r); else if (d.kind === 'basket') basket(ctx, d.r); else trophy(ctx, d.r); ctx.restore();
       });
-      const u2 = (t - 7.58) / .5; CL.ring(ctx, 960, 440, 1100, u2, C.pink, 30);
+      const u2 = (t - 7.58) / .8; CL.ring(ctx, 960, 440, 1100, u2, C.pink, 30);
       // ---- crowd
       crowd(ctx, t, T, ie * 300);
     }
 
-    // ---- build-up: drumroll strobes + charging rings (CUE 8.03 buildup-start ... rolls into the slam)
-    if (t >= 8.03 && t < 8.32) {
-      const HITS = [8.03, 8.09, 8.15, 8.20, 8.24, 8.27, 8.29, 8.31];   // CUE 8.03 drumroll (snare hits accelerate)
-      HITS.forEach((h, i) => { const u = t - h; if (u >= 0 && u < .09) { ctx.fillStyle = `rgba(255,255,255,${(.16 + i * .02) * (1 - u / .09)})`; ctx.fillRect(0, 0, W, H); } });
-      [8.05, 8.13, 8.2].forEach((h, i) => { const u = (t - h) / .16; if (u > 0 && u < 1) { ctx.save(); ctx.strokeStyle = ['#ffd23f', C.pink, C.cyan][i]; ctx.globalAlpha = u; ctx.lineWidth = 16 * u + 4; ctx.beginPath(); ctx.arc(FX, FY, 1100 * (1 - ease.out(u)) + 30, 0, TAU); ctx.stroke(); ctx.restore(); } });
-      const dk = sm(8.16, 8.31, t) * .93; ctx.fillStyle = `rgba(2,3,18,${dk})`; ctx.fillRect(0, 0, W, H);
-      const g = sm(8.18, 8.32, t); if (g > 0) { A.glow(ctx, FX, FY, 60 + 300 * g, '#ffffff', g); A.glow(ctx, FX, FY, 600 * g, '#ffb21e', .6 * g); }
+    // ---- build-up: drumroll (edge pulses, never a white wash over the logos) + two charging rings
+    if (t >= 8.045 && t < 8.36) {
+      const HITS = [8.045, 8.14, 8.22, 8.30];   // CUE 8.045 drumroll (snare hits accelerate)
+      HITS.forEach((h, i) => { const u = t - h; if (u >= 0 && u < .066) { const k = 1 - u / .066; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, FX, 540, 380, 1150, [[0, 'rgba(255,190,90,0)'], [1, A.hex(i % 2 ? C.pink : C.cyan, .5 * k)]]); ctx.fillRect(0, 0, W, H); ctx.restore(); } });
+      [8.12, 8.24].forEach((h, i) => { const u = (t - h) / .24; if (u > 0 && u < 1) { ctx.save(); ctx.strokeStyle = ['#ffd23f', C.pink][i]; ctx.globalAlpha = u; ctx.lineWidth = 14 * u + 4; ctx.beginPath(); ctx.arc(FX, FY, 1100 * (1 - ease.out(u)) + 30, 0, TAU); ctx.stroke(); ctx.restore(); } });
+      const dk = sm(8.12, 8.36, t) * .4; ctx.fillStyle = `rgba(2,3,18,${dk})`; ctx.fillRect(0, 0, W, H);
+      const g = sm(8.24, 8.36, t); if (g > 0) A.glow(ctx, FX, FY, 700 * g, '#ffb21e', .35 * g);
     }
 
     // ---- CHARLTON
-    if (t >= 8.23) {   // CUE 8.32 charlton-slam (impact + shockwave + lightning; the narrator turns trailer-voice, hold starts 8.85)
-      const u = Math.max(0, t - 8.32), on = clamp((t - 8.24) / .03);
+    if (t >= 8.25) {   // CUE 8.36 charlton-slam (impact + shockwave + lightning; the narrator turns trailer-voice, hold starts 8.85)
+      const u = Math.max(0, t - 8.36), on = clamp((t - 8.26) / .03);
       // backdrop: warm glow, rotating god rays (idle life on the output clock), candy splash
       ctx.save(); ctx.globalAlpha = on; A.glow(ctx, FX, FY, 980, '#ff8a1f', .5); A.glow(ctx, FX, FY, 760, C.pink, .32);
       ctx.translate(FX, FY); ctx.rotate(T * .1); ctx.globalCompositeOperation = 'lighter'; const RN = 18;
       for (let i = 0; i < RN; i++) { ctx.save(); ctx.rotate(i / RN * TAU); ctx.fillStyle = A.linear(ctx, 0, 0, 0, -1500, [[0, 'rgba(255,225,150,.30)'], [1, 'rgba(255,225,150,0)']]); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-60, -1500); ctx.lineTo(60, -1500); ctx.fill(); ctx.restore(); }
       ctx.restore();
-      const sp = CL.spring(t, 8.32 - .05, .65); ctx.save(); ctx.globalAlpha = .95; CL.splash(ctx, FX, FY, 560 * (1 + .015 * Math.sin(T * 2.4)), sp, 3, [C.pink, C.orange, C.yellow, C.purple, C.cyan, C.lime]); ctx.restore();
+      const sp = CL.spring(t, 8.36 - .05, .95); ctx.save(); ctx.globalAlpha = .95; CL.splash(ctx, FX, FY, 560 * (1 + .015 * Math.sin(T * 2.4)), sp, 3, [C.pink, C.orange, C.yellow, C.purple, C.cyan, C.lime]); ctx.restore();
       ctx.save(); ctx.translate(FX, FY); ctx.scale(1.7, 1); ctx.fillStyle = A.radial(ctx, 0, 0, 0, 420, [[0, 'rgba(3,5,24,.78)'], [.6, 'rgba(3,5,24,.5)'], [1, 'rgba(3,5,24,0)']]); ctx.globalAlpha = on; ctx.fillRect(-430, -430, 860, 860); ctx.restore();
       // the wordmark
-      const pop = land(t, 8.32, .22), sc = lerp(3.0, 1, pop) * (1 + .012 * Math.sin(T * 2.6)), shk = CL.shake(t, 8.32, .55, 18);
+      const pop = land(t, 8.36, .3), sc = lerp(2.4, 1, pop) * (1 + .012 * Math.sin(T * 2.6)), shk = CL.shake(t, 8.36, .8, 18);
       ctx.save(); ctx.translate(FX + shk[0], FY + shk[1]); ctx.rotate((1 - pop) * .05 + .004 * Math.sin(T * 1.7)); ctx.scale(sc * WK, sc * WK); ctx.globalAlpha = on;
       ctx.drawImage(WM, -CX, -CY);
       const cyc = (T % 2.3) / .9;
-      if (cyc < 1 && t > 8.4) {   // gold shine sweep across both lines (idle life)
+      if (cyc < 1 && t > 8.44) {   // gold shine sweep across both lines (idle life)
         const sx = SC.getContext('2d'); sx.setTransform(1, 0, 0, 1, 0, 0); sx.globalCompositeOperation = 'source-over'; sx.clearRect(0, 0, WMW, WMH);
         const bx = lerp(-160, WMW + 160, ease.inOut(cyc)); sx.save(); sx.translate(bx, CY); sx.rotate(.35); sx.fillStyle = A.linear(sx, -90, 0, 90, 0, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,255,255,.95)'], [1, 'rgba(255,255,255,0)']]); sx.fillRect(-90, -700, 180, 1400); sx.restore();
         sx.globalCompositeOperation = 'destination-in'; sx.drawImage(MASK, 0, 0); sx.globalCompositeOperation = 'source-over';
@@ -245,14 +245,14 @@
       GLINTS.forEach(([gx, gy], i) => { const k = Math.pow(Math.max(0, Math.sin(T * 2.8 + i * 1.9)), 6); if (k > .02) CL.spark(ctx, gx - CX, gy - CY, 12 + 46 * k, T + i, '#fff'); });
       ctx.restore();
       // anamorphic flare streak (full width)
-      ctx.save(); ctx.globalCompositeOperation = 'lighter'; const fk = (1 - ease.out(clamp(u / .5))) * .6 + .38 + .1 * Math.sin(T * 3); ctx.globalAlpha = fk * on; const fy = FY + 70;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; const fk = (1 - ease.out(clamp(u / .8))) * .6 + .38 + .1 * Math.sin(T * 3); ctx.globalAlpha = fk * on; const fy = FY + 70;
       ctx.fillStyle = A.radial(ctx, FX, fy, 0, 900, [[0, 'rgba(255,240,200,.85)'], [.3, 'rgba(255,190,90,.35)'], [1, 'rgba(255,190,90,0)']]); ctx.save(); ctx.translate(FX, fy); ctx.scale(1, .02); ctx.translate(-FX, -fy); ctx.fillRect(FX - 950, fy - 950, 1900, 1900); ctx.restore(); ctx.restore();
       // shockwave rings + impact flash
-      [0, .07, .15].forEach((d, i) => CL.ring(ctx, FX, FY, 1500, (u - d) / .6, ['#ffffff', C.yellow, C.pink][i], 46 - i * 10));
-      if (t >= 8.32 && u < .3) { ctx.fillStyle = `rgba(255,250,235,${.92 * Math.exp(-u * 14)})`; ctx.fillRect(0, 0, W, H); }
+      [0, .07, .15].forEach((d, i) => CL.ring(ctx, FX, FY, 1500, (u - d) / .9, ['#ffffff', C.yellow, C.pink][i], 46 - i * 10));
+      if (t >= 8.36 && u < .066) { ctx.fillStyle = `rgba(255,250,235,${.55 * (1 - u / .066)})`; ctx.fillRect(0, 0, W, H); }
       // lightning: slam bolts, then idle crackle (output clock) around the letters
-      if (t >= 8.32 && u < .4) { const p = ease.out(clamp(u / .07)), a = 1 - u / .4; [[240, 180, 520, 400, 3], [1690, 190, 1420, 410, 4], [960, 160, 900, 330, 5], [200, 720, 500, 560, 6], [1730, 700, 1430, 570, 7]].forEach(([x0, y0, x1, y1, sd]) => CL.bolt(ctx, x0, y0, x1, y1, p, sd, { col: sd % 2 ? C.cyan : C.pink, lw: 15, alpha: a })); }
-      const bq = Math.floor(T / .8), bph = T - bq * .8; if (bph < .13 && t > 8.5) { const a = 1 - bph / .13, sd = bq % 5, sx0 = 400 + hash(bq) * 1120; CL.bolt(ctx, sx0, 170, 420 + hash(bq + 3) * 1080, 330 + hash(bq + 5) * 250, 1, 20 + sd, { col: bq % 2 ? C.cyan : '#ffd98a', lw: 10, alpha: a }); }
+      if (t >= 8.36 && u < .6) { const p = ease.out(clamp(u / .1)), a = 1 - u / .6; [[240, 180, 520, 400, 3], [1690, 190, 1420, 410, 4], [960, 160, 900, 330, 5], [200, 720, 500, 560, 6], [1730, 700, 1430, 570, 7]].forEach(([x0, y0, x1, y1, sd]) => CL.bolt(ctx, x0, y0, x1, y1, p, sd, { col: sd % 2 ? C.cyan : C.pink, lw: 15, alpha: a })); }
+      const bq = Math.floor(T / .8), bph = T - bq * .8; if (bph < .13 && t > 8.54) { const a = 1 - bph / .13, sd = bq % 5, sx0 = 400 + hash(bq) * 1120; CL.bolt(ctx, sx0, 170, 420 + hash(bq + 3) * 1080, 330 + hash(bq + 5) * 250, 1, 20 + sd, { col: bq % 2 ? C.cyan : '#ffd98a', lw: 10, alpha: a }); }
       // drifting embers / sparkles (output clock)
       for (let i = 0; i < 26; i++) { const sp2 = 40 + hash(i) * 70, x = (hash(i * 3.3) * 1.2 - .1) * W + Math.sin(T * .9 + i) * 30, y = 1000 - ((T * sp2 + hash(i * 7) * 900) % 900), k = .5 + .5 * Math.sin(T * 4 + i * 2); CL.spark(ctx, x, y, (5 + hash(i + 2) * 12) * (0.4 + k), T * 2 + i, i % 3 ? '#ffd98a' : '#ffffff'); }
     }

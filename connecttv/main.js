@@ -1,6 +1,6 @@
 // ConnectTV compositor: scenes -> mascot overlay -> gel-chip captions -> hold overlays. Smooth 30 fps with 3-sample temporal motion blur.
 (() => {
-  const W = 1920, H = 1080, FPS = 30, DURV = TLF.TOTAL;
+  const W = 1920, H = 1080, DURV = TLF.TOTAL; let FPS = 30;
   const cv = document.getElementById('c'), ctx = cv.getContext('2d');
   const { clamp, lerp, inv, ease, hash, rng } = A, C = CL.C;
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
@@ -48,16 +48,16 @@
     const sp = ch.map((w, i) => sprite(w.w, wcolor(w.w, gi0 + i))), gap = -SIZE * .1, widths = sp.map(q => q.w - SIZE * .55), total = widths.reduce((a, b) => a + b, 0) + gap * (sp.length - 1), fit = Math.min(1, 1640 / total);
     c.save(); c.translate(W / 2, YB + outK * 40); c.scale(fit, fit); c.globalAlpha = 1 - outK; let x = total / 2;   // RTL: first word at the right
     ch.forEach((w, i) => {
-      const q = sp[i], wp = widths[i], cx = x - wp / 2, u = (t - (w.t0 - .04)) / .34; x -= wp + gap; if (u <= 0) return;
+      const q = sp[i], wp = widths[i], cx = x - wp / 2, u = (t - (w.t0 - .10)) / .28; x -= wp + gap; if (u <= 0) return;
       const col = wcolor(w.w, gi0 + i), e = ease.outBack(clamp(u)), k = clamp(u), sq = 1 + .28 * Math.sin(clamp(u * 1.6) * Math.PI) * (1 - k * .3), sc = (.05 + .95 * e) * (w.w.length <= 3 ? 1 : 1);
-      const active = t >= w.t0 - .03 && t < w.t1 + .02, jt = CL.j(t, ci * 3 + i, 4), bob = active ? Math.sin((t - w.t0) * 9) * 3 : 0, drop = -110 * (1 - clamp(u * 1.5)) * (1 - clamp(u * 1.5)), rot = (hash((gi0 + i) * 1.7) - .5) * .09 * (1 - k * .5) + jt[2];
+      const active = t >= w.t0 - .06 && t < w.t1 + .02, jt = CL.j(t, ci * 3 + i, 4), bob = active ? Math.sin((t - w.t0) * 9) * 3 : 0, drop = -110 * (1 - clamp(u * 1.5)) * (1 - clamp(u * 1.5)), rot = (hash((gi0 + i) * 1.7) - .5) * .09 * (1 - k * .5) + jt[2];
       // liquid splash + ring + droplets on the word start
-      const su = (t - w.t0 + .04); if (su > 0 && su < .7) { c.save(); c.translate(cx, 8); c.globalAlpha *= 1 - ease.in(clamp(su / .7)); CL.splash(c, 0, 0, Math.max(140, wp * .5), ease.outBack(clamp(su / .28)) * .9, gi0 + i + 3, [col, '#ffffff', A.mixc(col, '#ffffff', .5)]); c.restore(); CL.ring(c, cx, 4, wp * .55 + 60, clamp(su / .5), col, 10);
+      const su = (t - w.t0 + .10); if (su > 0 && su < .7) { c.save(); c.translate(cx, 8); c.globalAlpha *= 1 - ease.in(clamp(su / .7)); CL.splash(c, 0, 0, Math.max(140, wp * .5), ease.outBack(clamp(su / .28)) * .9, gi0 + i + 3, [col, '#ffffff', A.mixc(col, '#ffffff', .5)]); c.restore(); CL.ring(c, cx, 4, wp * .55 + 60, clamp(su / .5), col, 10);
         for (let d = 0; d < 7; d++) { const a = -Math.PI / 2 + (hash(d * 3.1 + gi0 + i) - .5) * 2.2, v = 380 + hash(d * 5.7 + i) * 380, px = cx + Math.cos(a) * v * su, py = -40 + Math.sin(a) * v * su + 1500 * su * su; c.fillStyle = d % 2 ? '#fff' : col; c.beginPath(); c.arc(px, py, 9 * (1 - su / .7) + 2, 0, A.TAU); c.fill(); } }
       c.save(); c.translate(cx + jt[0] * .3, drop + jt[1] * .4 + bob); c.rotate(rot); c.scale(sc * sq * (active ? 1.06 : 1), sc / sq * (active ? 1.06 : 1));
       if (active) { c.save(); c.globalCompositeOperation = 'lighter'; c.globalAlpha = .35; c.fillStyle = A.radial(c, 0, 0, 0, wp * .75, [[0, A.hex(col, .9)], [1, A.hex(col, 0)]]); c.fillRect(-wp, -SIZE, wp * 2, SIZE * 2); c.restore(); }
       c.drawImage(q.cv, -q.w / 2, -q.h / 2 + SIZE * .04);
-      const fl = clamp(1 - (t - w.t0) / .22); if (fl > 0) { c.globalCompositeOperation = 'lighter'; c.globalAlpha = .55 * fl; c.drawImage(q.cv, -q.w / 2, -q.h / 2 + SIZE * .04); }
+      const fl = clamp(1 - (t - w.t0 + .06) / .22); if (fl > 0) { c.globalCompositeOperation = 'lighter'; c.globalAlpha = .55 * fl; c.drawImage(q.cv, -q.w / 2, -q.h / 2 + SIZE * .04); }
       c.restore();
     });
     c.restore();
@@ -74,12 +74,13 @@
   }
 
   // ---- HOLD overlays: the voice pauses on a genre moment; camera pushes in and the moment "performs" its own sound
-  CL.HOLDFOC = { cin: [960, 500, 1.3], tur: [960, 500, 1.3], ind: [960, 500, 1.3] };   // scenes may overwrite lazily inside draw(): [focusX, focusY, zoom]
-  const PRE = { cin: 8.32, tur: 9.27, ind: 10.39 };   // zoom starts ON the spoken word, complete when the hold begins
+  CL.HOLDFOC = { cin: [960, 500, 1.3], tur: [960, 500, 1.3], ind: [960, 500, 1.3], nfx: [960, 400, 1.1], dis: [960, 400, 1.1], one: [960, 470, 1.1], wk: [960, 520, 1.1], goal: [1150, 480, 1.1], fun: [960, 480, 1.1], no: [960, 450, 1.1] };   // beat holds use a gentle 1.1x push   // scenes may overwrite lazily inside draw(): [focusX, focusY, zoom]
+  const PRE = { cin: 8.36, tur: 9.215, ind: 10.345 };   // beat holds (nfx, dis, one, wk, goal, fun, no) default to v - 0.3
+  const BEAT = { nfx: 1, dis: 1, one: 1, wk: 1, goal: 1, fun: 1, no: 1 };   // zoom starts ON the spoken word, complete when the hold begins
   function holdCam(hd, t) {
     let k = 0, key = null;
     if (hd) { key = hd.k; k = ease.inOut(clamp((hd.d - hd.age) / .3)); }
-    else for (const h of TLF.HOLDS) { const p = PRE[h.k]; if (t >= p && t < h.v) { key = h.k; k = ease.inOut(clamp((t - p) / Math.max(.2, h.v - p))); } }
+    else for (const h of TLF.HOLDS) { const p = PRE[h.k] ?? (h.v - .3); if (t >= p && t < h.v) { key = h.k; k = ease.inOut(clamp((t - p) / Math.max(.2, h.v - p))); } }
     if (!key || k <= 0) return null; const [fx, fy, zm] = CL.HOLDFOC[key]; return { fx, fy, z: lerp(1, zm, k), k };
   }
   function bubble(c, s, x, y, o = {}) {
@@ -104,6 +105,7 @@
     c.restore();
   }
   function holdOverlay(c, hd, T) {
+    if (hd && BEAT[hd.k]) { const a = hd.age, k = clamp(a / .15) * clamp((hd.d - a) / .15); c.save(); c.globalAlpha = k; for (let i = 0; i < 16; i++) { const px = (hash(i * 3.7 + hd.v) * 1.1 - .05) * W, py = (hash(i * 5.3 + hd.v) * .9 + .02) * H * .8, s = 10 + hash(i * 2.1) * 20; CL.spark(c, px, py + Math.sin(T * 2 + i) * 14, s * (.5 + .5 * Math.sin(T * 4 + i * 2)), T + i, i % 2 ? '#fff' : C.yellow); } const sw = ((T * .9) % 1.6 - .3) * W; c.globalCompositeOperation = 'lighter'; c.fillStyle = 'rgba(255,255,255,.07)'; c.beginPath(); c.moveTo(sw, 0); c.lineTo(sw + 220, 0); c.lineTo(sw + 40, H); c.lineTo(sw - 180, H); c.fill(); c.restore(); return; }
     if (!hd || hd.k === 'cin') return; const a = hd.age, inA = clamp(a / .08) * clamp((hd.d - a) / .2);
     c.save(); c.globalAlpha = inA;
     if (hd.k === 'tur') {   // Turkish drama: red vignette, falling tears, "Neden?!"
@@ -120,6 +122,7 @@
   }
   const ACC = mk(W, H), acx = ACC.getContext('2d'), ACC2 = mk(W, H);
   const MB = mk(W, H), mbx = MB.getContext('2d');
+  window.HOLDCAM = T => { const t = TLF.vOf(T); return holdCam(TLF.holdAt(T), t); };   // {fx,fy,z,k} or null: the hold push-in currently applied (host undoes it to stay camera-locked)
   async function scenePass(ff) {   // one temporal sample of the picture (scenes + mascot + camera), into ACC
     const T = ff / FPS, t = TLF.vOf(T), hd = TLF.holdAt(T);
     cv.width = W;   // reset all canvas state
@@ -132,14 +135,15 @@
     if (hc) { const tmp = ACC2; tmp.width = W; const tx = tmp.getContext('2d'); tx.drawImage(ACC, 0, 0); ACC.width = W; acx.save(); acx.translate(W / 2, H / 2); acx.scale(hc.z, hc.z); acx.translate(-lerp(W / 2, hc.fx, hc.k), -lerp(H / 2, hc.fy, hc.k)); acx.drawImage(tmp, 0, 0); acx.restore(); }
   }
   async function draw(f, opt = {}) {
+    FPS = opt.fps || 30; A.FPS = FPS;   // 30 for previews; 60 for the final smooth render (frame index f is at that rate)
     const T = f / FPS, t = TLF.vOf(T), hd = TLF.holdAt(T);
-    const N = opt.fast ? 1 : (opt.n || 3), shutter = .5;   // temporal supersampling = natural motion blur
+    const N = opt.fast ? 1 : (opt.n || 3), shutter = opt.shutter ?? .5;   // temporal supersampling = natural motion blur
     MB.width = W;
     for (let k = 0; k < N; k++) { const ff = f + (N === 1 ? 0 : ((k + .5) / N - .5) * shutter); await scenePass(ff); mbx.globalAlpha = 1 / (k + 1); mbx.drawImage(ACC, 0, 0); }
     mbx.globalAlpha = 1;
     cv.width = W; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.drawImage(MB, 0, 0);
     cinema(ctx, t, T, hd);
-    if (!hd) captions(ctx, t); else holdOverlay(ctx, hd, T);
+    if (!hd || BEAT[hd.k]) captions(ctx, t); if (hd) holdOverlay(ctx, hd, T);
     if (window.G_OVERLAY) window.G_OVERLAY(ctx, t);
     const fb = Math.max(1 - inv(0, 0.15, T), inv(DURV - .3, DURV, T)); if (fb > 0) { ctx.fillStyle = `rgba(7,11,46,${fb})`; ctx.fillRect(0, 0, W, H); }
   }

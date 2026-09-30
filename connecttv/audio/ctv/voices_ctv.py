@@ -5,7 +5,7 @@ ConnectTV voices.   python3 voices_ctv.py     -> audio/ctv/voices/
   narrator_48k.wav   ORIGINAL TTS (audio/vo_original_tts.wav): Kaiser polyphase 44.1k -> 48k (160/147, beta 14) and a
                      2nd-order 70 Hz high-pass, NOTHING else; split at the hold points (nearest zero crossing, 5 ms fades)
                      with the hold silences inserted.  mono, T timeline (34.1 s).
-  cinema_fx.wav      stereo: the narrator word "צ'רלטון" (v 8.32-8.85) re-spoken as the CINEMA-TRAILER voice inside the `cin`
+  cinema_fx.wav      stereo: the narrator word "צ'רלטון" (words.js) re-spoken as the CINEMA-TRAILER voice inside the `cin`
                      hold, starting hold+0.03 s (WORLD pitch -5.5 st, formant warp 0.94, chest EQ, saturation, 3.6 s hall
                      reverb) + two darker echoes "צ'רלטון... צ'רלטון..." + a small hall send under the original word.
   genre_voices.wav   stereo: `tur` "Neden?!" (Kokoro if_sara driven by Turkish IPA, WORLD emotional lift/tremble) and
@@ -49,6 +49,15 @@ GENRE_DELAY = 0.03
 
 def T(v, start=False):
     return v + sum(h['d'] for h in HOLDS if (h['v'] <= v + 1e-9 if start else h['v'] < v))
+
+
+def read_words():
+    s = open(os.path.join(os.path.dirname(ROOT), 'words.js')).read()
+    return json.loads(s[s.index('['):s.rindex(']') + 1])
+
+
+_W = read_words()
+CIN_W = next(w for w in _W if w['w'] == "צ'רלטון")       # the narrator word that is re-spoken in the cin hold (words.js is the truth)
 
 
 def fade_io(x, n):
@@ -291,7 +300,7 @@ def main():
     he = h0 + hc['d']
 
     # ---- cinema voice: the narrator word re-spoken inside the hold
-    a, b = int(round((T(8.32, True) - 0.02) * SR)), int(round((T(8.85) + 0.01) * SR))
+    a, b = int(round((T(CIN_W['t0'], True) - 0.02) * SR)), int(round((T(CIN_W['t1']) + 0.01) * SR))
     word = nar[a:b].copy()
     deep = world(word, SR, lambda f0, t: f0 * 2 ** (-5.5 / 12), warp=0.94, stretch=1.12)
     deep = peq(deep, 110, 0.8, 6.0)
@@ -307,9 +316,9 @@ def main():
     wet = conv(deep, hall) * 0.5
     add(FX, wet, t_word)
     # small hall send that blooms under the ORIGINAL word (T 8.32-8.85) to prepare the hold
-    a2, b2 = int(round(T(8.15, True) * SR)), int(round(T(8.85) * SR))
+    a2, b2 = int(round(T(CIN_W['t0'] - 0.17, True) * SR)), int(round(T(CIN_W['t1']) * SR))
     send = np.zeros(len(nar))
-    r0 = int(round(T(8.32, True) * SR))
+    r0 = int(round(T(CIN_W['t0'], True) * SR))
     send[a2:r0] = np.linspace(0, 0.10, r0 - a2)
     send[r0:b2] = 0.14
     add(FX, conv(nar[:b2] * send[:b2], hall) * 1.0, 0.0)

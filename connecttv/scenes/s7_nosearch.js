@@ -1,7 +1,7 @@
 // s7_nosearch: "לא צריך לחפש" / "לא צריך לעבור בין שירותים"   (voice clock v, window 21.95 to 25.35)
-// Beats: hot wipe in -> NO slam (22.36) -> search wall + hunting magnifier (22.66) -> red X + shatter (23.18) ->
-// relief -> pink NO slam (23.55) -> logo tiles ping-pong between phone and TV (23.92, dizzy 24.22) ->
-// bolt X (24.43) -> liquid wave sweeps everything away -> one calm glowing TV (24.8).
+// Beats: hot wipe in -> NO slam (22.36) -> search wall + hunting magnifier (22.70) -> red X + shatter (23.29) ->
+// relief -> pink NO slam (23.55) -> logo tiles ping-pong between phone and TV (23.88, dizzy 24.22) ->
+// bolt X (24.41) -> liquid wave sweeps everything away -> one calm glowing TV (24.8).
 (() => {
   const { clamp, lerp, inv, ease, hash, TAU } = A;
   const C = CL.C, W = CL.W, H = CL.H, CX = 960, CY = 410, CAND = CL.CAND;
@@ -25,7 +25,7 @@
   const tintAt = t => { let i = 0; while (i < TINTS.length - 1 && t >= TINTS[i + 1][0]) i++; if (i >= TINTS.length - 1) return TINTS[TINTS.length - 1][1]; const [t0, a] = TINTS[i], [t1, b] = TINTS[i + 1], k = sm(t0, t1, t); return a.map((c, j) => hexMix(c, b[j], k)); };
 
   // ---------------------------------------------------------------- impacts (cue times) for shake / glow / flash
-  const IMPACTS = [[22.36, 20, C.red], [23.12, 8, C.red], [23.18, 16, C.red], [23.30, 14, C.cyan], [23.55, 18, C.pink], [24.38, 8, C.red], [24.43, 18, C.red]];
+  const IMPACTS = [[22.36, 20, C.red], [23.23, 8, C.red], [23.29, 16, C.red], [23.36, 14, C.cyan], [23.55, 18, C.pink], [24.36, 8, C.red], [24.41, 18, C.red]];
   const shakeAt = t => { let x = 0, y = 0; for (const [t0, a] of IMPACTS) { const s = CL.shake(t, t0, .42, a); x += s[0]; y += s[1]; } return [x, y]; };
 
   // ---------------------------------------------------------------- the candy NO sign (circle + slash)
@@ -70,8 +70,8 @@
   const QCOL = [C.pink, C.cyan, C.yellow, C.lime, C.orange, C.purple, C.blue, C.green];
   const qSprite = ci => CL.layer('s7q' + ci, 320, 360, g => { CL.title(g, '?', 160, 190, { size: 270, dir: 'ltr', fill: [hexMix(QCOL[ci], '#ffffff', .62), QCOL[ci]] }); });
   const QI = [], TI = [];
-  for (let i = 0; i < 18; i++) { const c = i % 6, r = Math.floor(i / 6); QI.push({ x: cl((c + .5) * 320 + (r % 2 ? 90 : -60) + (hash(i * 3.1) - .5) * 100, 110, 1810), y: 165 + r * 240 + (hash(i * 5.3) - .5) * 70, k: .78 + hash(i * 7.9) * .6, ci: i % 8, ph: hash(i * 1.7) * TAU, tin: 22.60 + hash(i * 1.37) * .34, tout: 23.28 + hash(i * 2.31 + 5) * .15 }); }
-  for (let i = 0; i < 16; i++) { const c = i % 8, r = Math.floor(i / 8); TI.push({ x: cl((c + .5) * 240 + (hash(i * 4.4) - .5) * 90, 120, 1800), y: 260 + r * 300 + (c % 2) * 90 - 40 + (hash(i * 9.1) - .5) * 80, k: .85 + hash(i * 3.3) * .5, a: CAND[i % 8], b: CAND[(i + 3) % 8], ph: hash(i * 2.9) * TAU, tin: 22.62 + hash(i * .77 + 2) * .32, tout: 23.30 + hash(i * 1.93 + 8) * .14 });
+  for (let i = 0; i < 18; i++) { const c = i % 6, r = Math.floor(i / 6); QI.push({ x: cl((c + .5) * 320 + (r % 2 ? 90 : -60) + (hash(i * 3.1) - .5) * 100, 110, 1810), y: 165 + r * 240 + (hash(i * 5.3) - .5) * 70, k: .78 + hash(i * 7.9) * .6, ci: i % 8, ph: hash(i * 1.7) * TAU, tin: 22.64 + hash(i * 1.37) * .34, tout: 23.37 + hash(i * 2.31 + 5) * .15 }); }
+  for (let i = 0; i < 16; i++) { const c = i % 8, r = Math.floor(i / 8); TI.push({ x: cl((c + .5) * 240 + (hash(i * 4.4) - .5) * 90, 120, 1800), y: 260 + r * 300 + (c % 2) * 90 - 40 + (hash(i * 9.1) - .5) * 80, k: .85 + hash(i * 3.3) * .5, a: CAND[i % 8], b: CAND[(i + 3) % 8], ph: hash(i * 2.9) * TAU, tin: 22.66 + hash(i * .77 + 2) * .32, tout: 23.39 + hash(i * 1.93 + 8) * .14 });
   }
   function outScale(t, tout) { const u = (t - tout) / .17; if (u <= 0) return 1; if (u >= 1) return 0; return Math.max(0, 1 - ease.inBack(u)); }
   function thumb(ctx, x, y, k, rot, a, b) {
@@ -135,15 +135,15 @@
     ctx.restore();
   }
   function xOverLens(ctx, t) {
-    if (t < 23.02 || t >= 23.40) return; const cx = CX, cy = CY, v = inv(23.30, 23.39, t), sc = 1 + .3 * v, al = 1 - v;
-    [[Math.PI / 4, 23.12, -1], [-Math.PI / 4, 23.18, 1]].forEach(([ang, t0, d]) => {
+    if (t < 23.13 || t >= 23.46) return; const cx = CX, cy = CY, v = inv(23.36, 23.45, t), sc = 1 + .3 * v, al = 1 - v;
+    [[Math.PI / 4, 23.23, -1], [-Math.PI / 4, 23.29, 1]].forEach(([ang, t0, d]) => {
       const u = cl((t - (t0 - .09)) / .09), off = (1 - u * u) * 1700 * d, dt = Math.max(0, t - t0), b = 1 + .1 * Math.exp(-dt * 10) * Math.cos(dt * 40);
       candyBar(ctx, cx, cy, ang, 900, 104, off, sc * b, al * cl(u * 6));
     });
   }
   // shards of glass + drops when the lens shatters
   function shatter(ctx, t, cx, cy, R) {
-    const t0 = 23.26, dt = t - t0; if (dt < 0 || dt > .9) return;
+    const t0 = 23.36, dt = t - t0; if (dt < 0 || dt > .9) return;
     const p = ease.out(cl(dt / .32)), fade = 1 - sm(.24, .5, dt);
     if (fade > 0) { ctx.save(); ctx.globalAlpha *= fade; CL.splash(ctx, cx, cy, R * 1.35, p, 4, [C.cyan, C.blue, '#ffffff', C.cyan, C.purple]); ctx.restore(); }
     CL.ring(ctx, cx, cy, R * 1.6, dt / .5, C.cyan, 22); CL.ring(ctx, cx, cy, R * 2.1, (dt - .06) / .55, '#ffffff', 14);
@@ -156,18 +156,18 @@
   }
   // red X bursts into drops after the shatter
   function xPop(ctx, t) {
-    const t0 = 23.30; if (t < t0 || t > 23.9) return;
+    const t0 = 23.36; if (t < t0 || t > 23.95) return;
     for (let s = 0; s < 2; s++) for (let k = -3; k <= 3; k++) { const a = s ? -Math.PI / 4 : Math.PI / 4, d = k * 115; burst(ctx, t, t0 + .02 + Math.abs(k) * .01, CX + Math.cos(a) * d, CY + Math.sin(a) * d, 3, [C.red, C.pink, C.orange], 900, s * 10 + k + 40, .4, 24, 1200); }
   }
 
   // ---------------------------------------------------------------- devices, tiles, arrows
   const PH = [430, 470], TVP = [1490, 440], PA = [430, 450], PB = [1490, 430], TSC = 1.25;
   const TILES = [
-    { k: 'netflix', ts: 23.92, off: 0 }, { k: 'disney', ts: 23.97, off: Math.PI }, { k: 'prime', ts: 24.02, off: 0 }, { k: 'hbo', ts: 24.07, off: Math.PI }, { k: 'appletv', ts: 24.12, off: 0 },
+    { k: 'netflix', ts: 23.88, off: 0 }, { k: 'disney', ts: 23.93, off: Math.PI }, { k: 'prime', ts: 23.98, off: 0 }, { k: 'hbo', ts: 24.03, off: Math.PI }, { k: 'appletv', ts: 24.08, off: 0 },
     { k: 'hulu', ts: 24.22, off: Math.PI }, { k: 'paramount', ts: 24.27, off: 0 }, { k: 'netflix', ts: 24.32, off: Math.PI },
   ];
   function Th(t) {
-    const a = 23.92, b = 24.22, c = 24.43, w0 = TAU / .70, w1 = TAU / .38;
+    const a = 23.88, b = 24.22, c = 24.41, w0 = TAU / .70, w1 = TAU / .38;
     let th = w0 * (Math.max(a, Math.min(t, b)) - a);
     if (t > b) th += w1 * (Math.min(t, c) - b);
     if (t > c) { const tau = .05; th += w1 * tau * (1 - Math.exp(-(t - c) / tau)); }
@@ -236,7 +236,7 @@
     return out;
   }
   function boltX(ctx, t, alpha) {
-    const pieces = [[[380, 30, 1540, 800], 24.36, 5], [[1540, 30, 380, 800], 24.43, 9]];   // second stroke lands on the word
+    const pieces = [[[380, 30, 1540, 800], 24.34, 5], [[1540, 30, 380, 800], 24.41, 9]];   // second stroke lands on the word
     pieces.forEach(([[x0, y0, x1, y1], t0, seed]) => {
       const f = cl((t - (t0 - .1)) / .08); if (f <= 0) return; const pts = partial(boltPts(x0, y0, x1, y1, seed, seed > 6 ? .62 : .3), f), dt = t - t0, hot = dt < .08 ? 1 - Math.max(0, dt) / .08 : 0, fl = .85 + .15 * hash(CL.qs(t, 24) * 3 + seed);
       const stroke = (lw, col, a, comp) => { ctx.save(); ctx.globalAlpha *= a * alpha; if (comp) ctx.globalCompositeOperation = 'lighter'; ctx.lineJoin = 'miter'; ctx.miterLimit = 6; ctx.lineCap = 'round'; ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.stroke(); ctx.restore(); };
@@ -271,7 +271,7 @@
     const tint = tintAt(t); CL.bg(ctx, t, { tint, speed: .35 });
     // impact glows (unshaken, additive)
     IMPACTS.forEach(([t0, , col]) => { const dt = t - t0; if (dt >= 0 && dt < .5) A.glow(ctx, CX, CY, 1300, col, .55 * Math.exp(-dt * 8)); });
-    const rel = sm(23.30, 23.38, t) * (1 - sm(23.52, 23.62, t));
+    const rel = sm(23.36, 23.44, t) * (1 - sm(23.52, 23.62, t));
     if (rel > 0) { A.glow(ctx, CX, CY, 1200, C.cyan, .45 * rel); A.glow(ctx, CX, CY, 700, C.lime, .25 * rel); }
     const sh = shakeAt(t), dz = sm(24.22, 24.4, t);
     ctx.save(); ctx.translate(sh[0], sh[1]);
@@ -281,24 +281,24 @@
     // ---- NO #1 : slam + recede as ghost behind the search wall
     // CUE 22.36 no-slam-1 (giant red NO drops in, shockwave)
     const s1 = stampSlam(t, 22.36, .22, 2.4);
-    if (t >= 22.34 && t < 23.3) impactFx(ctx, t, 22.36, CX, CY, 330, [C.red, C.pink, C.orange, C.yellow], 3);
-    if (s1) { const r = sm(22.64, 22.9, t), o = sm(23.18, 23.28, t); noSign(ctx, CX, CY, 335, { scale: s1.sc * (1 + .12 * r + .3 * o), alpha: s1.al * lerp(1, .22, r) * (1 - o), rot: s1.rot - .04 * r }); }
+    if (t >= 22.34 && t < 23.4) impactFx(ctx, t, 22.36, CX, CY, 330, [C.red, C.pink, C.orange, C.yellow], 3);
+    if (s1) { const r = sm(22.68, 22.94, t), o = sm(23.27, 23.37, t); noSign(ctx, CX, CY, 335, { scale: s1.sc * (1 + .12 * r + .3 * o), alpha: s1.al * lerp(1, .22, r) * (1 - o), rot: s1.rot - .04 * r }); }
 
     // ---- search wall + magnifier
-    // CUE 22.66 search-wall-magnifier-pop (chaotic wall of question marks + hunting magnifier)
+    // CUE 22.70 search-wall-magnifier-pop (chaotic wall of question marks + hunting magnifier)
     if (t > 22.5 && t < 23.7) {
       world(ctx, t);
-      const u = t - 22.66, hunt = [CX + 560 * Math.sin(u * 10 + .6) + 90 * Math.sin(u * 23), CY - 10 + 130 * Math.sin(u * 14.5) + 30 * Math.sin(u * 31)], k = ease.inOut(inv(22.98, 23.12, t)), e = ease.out(inv(22.54, 22.80, t));
+      const u = t - 22.70, hunt = [CX + 560 * Math.sin(u * 10 + .6) + 90 * Math.sin(u * 23), CY - 10 + 130 * Math.sin(u * 14.5) + 30 * Math.sin(u * 31)], k = ease.inOut(inv(23.09, 23.23, t)), e = ease.out(inv(22.58, 22.84, t));
       let mx = lerp(CX, hunt[0], e), my = lerp(CY, hunt[1], e); mx = lerp(mx, CX, k); my = lerp(my, CY, k);
-      const rot = .38 * Math.sin(u * 11) * (1 - k) * e, wb = 1 + .05 * Math.sin(u * 19) * (1 - k), pop = CL.pop(t, 22.52, .2);
-      const gasp = 1 - .05 * Math.exp(-Math.max(0, t - 23.18) * 12) * 1 + .1 * Math.sin(inv(23.05, 23.12, t) * Math.PI) * 0;
-      if (t < 23.26 && pop > 0) magnifier(ctx, mx, my, 235 * pop * wb * gasp, rot, () => world(ctx, t), cl((t - 23.18) / .07) > 0 && t >= 23.18 ? cl((t - 23.18) / .07) : 0, t);
+      const rot = .38 * Math.sin(u * 11) * (1 - k) * e, wb = 1 + .05 * Math.sin(u * 19) * (1 - k), pop = CL.pop(t, 22.56, .2);
+      const gasp = 1 - .05 * Math.exp(-Math.max(0, t - 23.29) * 12) * 1 + .1 * Math.sin(inv(23.16, 23.23, t) * Math.PI) * 0;
+      if (t < 23.36 && pop > 0) magnifier(ctx, mx, my, 235 * pop * wb * gasp, rot, () => world(ctx, t), t >= 23.29 ? cl((t - 23.29) / .07) : 0, t);
       worldPops(ctx, t);
     }
-    // CUE 23.18 x-slam-on-magnifier (giant red X crosses the magnifier, cracks the glass)
-    if (t >= 23.02 && t < 23.6) impactFx(ctx, t, 23.18, CX, CY, 260, [C.red, C.orange, C.pink], 6);
+    // CUE 23.29 x-slam-on-magnifier (giant red X crosses the magnifier, cracks the glass)
+    if (t >= 23.13 && t < 23.7) impactFx(ctx, t, 23.29, CX, CY, 260, [C.red, C.orange, C.pink], 6);
     xOverLens(ctx, t);
-    // CUE 23.30 magnifier-shatter (lens bursts into liquid drops + glass shards, question marks pop and vanish 23.34 to 23.56)
+    // CUE 23.36 magnifier-shatter (lens bursts into liquid drops + glass shards, question marks pop and vanish 23.37 to 23.55)
     shatter(ctx, t, CX, CY, 235); xPop(ctx, t);
     // relief beat 23.40 to 23.55: calm sparkles
     if (rel > 0) { ctx.save(); ctx.globalAlpha *= rel; CL.twinkle(ctx, t * 1.2, 100, 40, 1720, 780, 30, 7, ['#ffffff', C.cyan, C.lime, C.yellow]); ctx.restore(); }
@@ -307,25 +307,25 @@
     // CUE 23.55 no-slam-2 (pink NO stamp, top, tilted)
     const s2 = stampSlam(t, 23.55, .09, 1.5, 420, -260);
     if (t >= 23.5 && t < 25) impactFx(ctx, t, 23.55, CX, CY - 10, 290, [C.pink, C.purple, C.orange], 8);
-    // CUE 23.69 devices-pop (phone + TV appear)
-    const dv1 = CL.pop(t, 23.50, .26), dv2 = CL.pop(t, 23.58, .26), ts = t > 23.5 ? tileStates(t) : { tiles: [], bl: 0, br: 0 };
+    // CUE 23.67 devices-pop (phone + TV appear)
+    const dv1 = CL.pop(t, 23.48, .26), dv2 = CL.pop(t, 23.56, .26), ts = t > 23.5 ? tileStates(t) : { tiles: [], bl: 0, br: 0 };
     if (t > 23.5) {
-      const arA = CL.pop(t, 23.7, .25), fast = sm(24.22, 24.3, t), off = t * 90 + Th(t) * 30;
+      const arA = CL.pop(t, 23.68, .25), fast = sm(24.22, 24.3, t), off = t * 90 + Th(t) * 30;
       swoosh(ctx, [580, 330], [960, 20], [1290, 260], C.cyan, off, arA);
       swoosh(ctx, [1330, 640], [960, 900], [590, 620], C.pink, -off, arA);
       if (fast > 0) { swoosh(ctx, [600, 430], [960, 300], [1290, 400], C.yellow, off * 1.3, fast, 26); swoosh(ctx, [1330, 500], [960, 610], [610, 510], C.lime, -off * 1.3, fast, 26); }
       const jit = dz * 8 * Math.sin(t * 40);
       phone(ctx, t, dv1, ts.bl, jit); tvDev(ctx, t, dv2, ts.br, -jit);
-      // CUE 23.92 tiles-start (Netflix, Disney+, Prime, HBO, Apple TV ping-pong between phone and TV) ; CUE 24.22 tiles-faster-dizzy (more tiles, spin)
+      // CUE 23.88 tiles-start (Netflix, Disney+, Prime, HBO, Apple TV ping-pong between phone and TV) ; CUE 24.22 tiles-faster-dizzy (more tiles, spin)
       ts.tiles.forEach(tl => tile(ctx, tl));
       if (dz > 0 && push < .5) { for (let i = 0; i < 8; i++) { const a = t * 7 + i / 8 * TAU, r = 760 + 30 * Math.sin(t * 9 + i); CL.spark(ctx, CX + Math.cos(a) * r, 430 + Math.sin(a) * r * .5, 28 * dz, t * 3 + i, i % 2 ? C.yellow : '#fff'); } }
     }
     if (s2) { const br = 1 + .02 * Math.sin(t * 8); noSign(ctx, CX + s2.dx, CY - 10 + s2.dy, 290, { scale: s2.sc * br, alpha: s2.al * lerp(1, .3, sm(23.72, 23.95, t)), rot: .14 + s2.rot, col: C.pink, hi: '#FFA6D4', lo: '#A00E62' }); }
-    // CUE 24.43 x-cross-out (two red lightning bolts cross out everything)
-    if (t >= 24.26) { impactFx(ctx, t, 24.43, CX, 420, 420, [C.red, C.orange, C.pink], 12); boltX(ctx, t, 1); }
+    // CUE 24.41 x-cross-out (two red lightning bolts cross out everything)
+    if (t >= 24.24) { impactFx(ctx, t, 24.41, CX, 420, 420, [C.red, C.orange, C.pink], 12); boltX(ctx, t, 1); }
     ctx.restore();
     // white impact flashes
-    for (const [t0] of [[22.36], [23.18], [23.55], [24.43]]) { const dt = t - t0; if (dt >= 0 && dt < .09) { ctx.fillStyle = `rgba(255,255,255,${.5 * (1 - dt / .09)})`; ctx.fillRect(0, 0, W, H); } }
+    for (const [t0] of [[22.36], [23.29], [23.55], [24.41]]) { const dt = t - t0; if (dt >= 0 && dt < .09) { ctx.fillStyle = `rgba(255,255,255,${.5 * (1 - dt / .09)})`; ctx.fillRect(0, 0, W, H); } }
   }
 
   // ---------------------------------------------------------------- liquid wipe helpers (edge sweeps across the frame)

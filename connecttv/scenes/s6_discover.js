@@ -1,7 +1,7 @@
 // s6_discover: v 17.10 to 22.6 (LANDSCAPE 1920x1080). Three mini-worlds joined by liquid transitions.
-//  (1) football match  (lime/green/cyan)  17.40 משחקים / 17.80 בשידור / 18.34 חי
-//  (2) cinema premiere (velvet red/gold)  18.78 הסדרות / 19.21 שאתם / 19.52 מחכים / 20.09 להן
-//  (3) gift box discovery (yellow/pink)   20.42 והתוכן / 20.92 שתמיד / 21.29 כיף / 21.55 לגלות
+//  (1) football match  (lime/green/cyan)  17.40 משחקים / 17.845 בשידור / 18.295 חי
+//  (2) cinema premiere (velvet red/gold)  18.78 הסדרות / 19.21 שאתם / 19.58 מחכים / 20.09 להן
+//  (3) gift box discovery (yellow/pink)   20.42 והתוכן / 20.97 שתמיד / 21.29 כיף / 21.58 לגלות
 // No holds inside this window: T = v + 3.5. Everything is a pure function of s.t (voice clock).
 (() => {
   const { clamp, lerp, inv, ease, hash, rng } = A, C = CL.C, TAU = A.TAU, W = 1920, H = 1080;
@@ -10,7 +10,7 @@
   const land = (t, t0, dur = .3) => CL.pop(t, t0 - dur * .4, dur);       // pop that reaches 1.0 right on t0
   const mix = (a, b, k) => A.mixc(a, b, k);
   const KAL = ['#FF2E93', '#FFD23F', '#19C8FF', '#7CFF3A', '#FF8A1F', '#8B3DFF', '#ffffff'];
-  const wobble = (t, t0, f = 26, d = 9) => { const u = t - t0; return u < 0 ? 0 : Math.exp(-u * d) * Math.cos(u * f); };
+  const wobble = (t, t0, f = 26, d = 9) => { const u = t - t0; return u < 0 ? 0 : Math.exp(-u * d / 1.5) * Math.cos(u * f); };
 
   // ------------------------------------------------------------------ shared FX
   function ray(ctx, cx, cy, t, n, len, col, alpha, spd = .35, wid = .5) {
@@ -36,11 +36,11 @@
     }
     ctx.restore();
   }
-  function sparkBurst(ctx, t, t0, cx, cy, R, n, seed, life = .7) {
+  function sparkBurst(ctx, t, t0, cx, cy, R, n, seed, life = 1.0) {
     const u = t - t0; if (u < 0 || u > life) return; const rg = rng(seed * 17 + 3), k = u / life;
     for (let i = 0; i < n; i++) { const a = rg() * TAU, r = R * (.35 + rg() * .65) * eo(k), s = (14 + rg() * 26) * (1 - k) * (.6 + .4 * Math.sin(u * 30 + i)); CL.spark(ctx, cx + Math.cos(a) * r, cy + Math.sin(a) * r, s, u * 3 + i, KAL[i % KAL.length]); }
   }
-  function splashAt(ctx, x, y, R, t, t0, seed, cols, life = .7, flat = 1) {
+  function splashAt(ctx, x, y, R, t, t0, seed, cols, life = 1.05, flat = 1) {
     const u = t - t0; if (u < 0 || u > life) return; const p = eo(clamp(u / (life * .5))), al = 1 - ease.in(clamp((u - life * .35) / (life * .65)));
     ctx.save(); ctx.translate(x, y); ctx.scale(1, flat); ctx.globalAlpha = al; CL.splash(ctx, 0, 0, R, p, seed, cols); ctx.restore();
   }
@@ -71,10 +71,10 @@
   const ballAt = t => {   // -> {x,y,s,gy,rot} screen position of the ball centre
     let x, y, s = 1, gy = 800;
     if (t < 17.40) { const p = clamp(inv(17.06, 17.40, t)); x = lerp(-180, L1[0], p); y = lerp(-140, L1[1], p * p); s = lerp(1.35, 1, p); gy = y + 60; }
-    else if (t < 17.80) { const p = (t - 17.40) / .40; x = lerp(L1[0], L2[0], p); gy = lerp(L1[1], L2[1], p) + 56; y = gy - 56 - 4 * 330 * p * (1 - p); }
-    else if (t < 18.03) { const p = (t - 17.80) / .23; x = lerp(L2[0], L3[0], p); gy = lerp(L2[1], L3[1], p) + 56; y = gy - 56 - 4 * 46 * p * (1 - p); }
-    else if (t < 18.34) { const p = (t - 18.03) / .31; x = lerp(L3[0], IMP[0], p); y = lerp(L3[1], IMP[1], p) - 4 * 70 * p * (1 - p); s = lerp(1, .74, eo(p)); gy = lerp(L3[1] + 56, 690, p); }
-    else { const u = t - 18.34; x = IMP[0] - 10 * (1 - Math.exp(-u * 4)) + Math.sin(u * 9) * 6 * Math.exp(-u * 3); y = IMP[1] + 100 * (1 - Math.exp(-u * 3.2)) + wobble(t, 18.34, 20, 5) * 14; s = .74; gy = 690; }
+    else if (t < 17.845) { const p = (t - 17.40) / .445; x = lerp(L1[0], L2[0], p); gy = lerp(L1[1], L2[1], p) + 56; y = gy - 56 - 4 * 330 * p * (1 - p); }
+    else if (t < 18.03) { const p = (t - 17.845) / .185; x = lerp(L2[0], L3[0], p); gy = lerp(L2[1], L3[1], p) + 56; y = gy - 56 - 4 * 46 * p * (1 - p); }
+    else if (t < 18.295) { const p = (t - 18.03) / .265; x = lerp(L3[0], IMP[0], p); y = lerp(L3[1], IMP[1], p) - 4 * 70 * p * (1 - p); s = lerp(1, .74, eo(p)); gy = lerp(L3[1] + 56, 690, p); }
+    else { const u = t - 18.295; x = IMP[0] - 10 * (1 - Math.exp(-u * 4)) + Math.sin(u * 9) * 6 * Math.exp(-u * 3); y = IMP[1] + 100 * (1 - Math.exp(-u * 3.2)) + wobble(t, 18.295, 20, 5) * 14; s = .74; gy = 690; }
     return { x, y, s, gy };
   };
   function pentagon(ctx, x, y, r, rot) { ctx.beginPath(); for (let i = 0; i < 5; i++) { const a = rot + i / 5 * TAU - Math.PI / 2; i ? ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r) : ctx.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); } ctx.closePath(); }
@@ -138,13 +138,13 @@
   }
   const SHIRTS = [C.blue, C.pink, C.orange, C.cyan, C.purple, C.lime, C.yellow];
   function crowd(ctx, t) {
-    const goalK = P(t, 18.34, 18.62);
+    const goalK = P(t, 18.295, 18.62);
     for (let r = 0; r < 5; r++) {
       const fy = 300 + r * 82, sc = .78 + r * .09, n = 22;
       for (let i = 0; i < n; i++) {
         const seed = r * 40 + i, x = i * 92 + (r % 2) * 46 - 20 + A.noise1(t * .8 + seed) * 4, delay = hash(seed * 1.7) * .1;
-        const k = clamp((t - 18.34 - delay) / .12) * (1 - 0 * goalK), cheer = t >= 18.34 + delay ? 1 : 0;
-        const jump = cheer * Math.abs(Math.sin((t - 18.34 - delay) * 8 + hash(seed) * 2)) * 34 * sc * clamp((t - 18.34 - delay) / .1);
+        const k = clamp((t - 18.295 - delay) / .12) * (1 - 0 * goalK), cheer = t >= 18.295 + delay ? 1 : 0;
+        const jump = cheer * Math.abs(Math.sin((t - 18.295 - delay) * 8 + hash(seed) * 2)) * 34 * sc * clamp((t - 18.295 - delay) / .1);
         const y = fy - jump + Math.sin(t * 2 + seed) * 2, col = mix(SHIRTS[seed % SHIRTS.length], '#0b1250', .66), armUp = k;
         ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
         ctx.strokeStyle = col; ctx.lineWidth = 15; ctx.lineCap = 'round';
@@ -156,7 +156,7 @@
     }
   }
   function goalNet(ctx, t) {
-    const m = t < 18.34 ? 0 : clamp((t - 18.34) / .05) * (.45 * Math.exp(-(t - 18.34) * 3.2) * (1 + .6 * Math.cos((t - 18.34) * 26))) + 0;
+    const m = t < 18.295 ? 0 : clamp((t - 18.295) / .05) * (.5 * Math.exp(-(t - 18.295) * 1.6) * (1 + .5 * Math.cos((t - 18.295) * 18))) + 0;
     const bx0 = 1305, bx1 = 1595, by0 = 372, by1 = 650;
     const D = (x, y) => { const dx = IMP[0] - x, dy = IMP[1] - y, r2 = dx * dx + dy * dy, k = m * Math.exp(-r2 / 26000); return [x + dx * k, y + dy * k]; };
     ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.62)'; ctx.lineWidth = 2.5; ctx.fillStyle = 'rgba(10,16,70,.45)'; ctx.fillRect(GOAL.x0, GOAL.top, GOAL.x1 - GOAL.x0, GOAL.gy - GOAL.top);
@@ -167,7 +167,7 @@
   }
   function goalFrame(ctx, t) {
     ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    const flash = P(t, 18.34, 18.5); const col = flash > 0 && flash < 1 ? '#fff6a0' : '#ffffff';
+    const flash = P(t, 18.295, 18.5); const col = flash > 0 && flash < 1 ? '#fff6a0' : '#ffffff';
     [[9, 'rgba(25,200,255,.35)', 26], [1, col, 15]].forEach(([_, c, w]) => { ctx.strokeStyle = c; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(GOAL.x0, GOAL.gy); ctx.lineTo(GOAL.x0, GOAL.top); ctx.lineTo(GOAL.x1, GOAL.top); ctx.lineTo(GOAL.x1, GOAL.gy); ctx.stroke(); });
     ctx.restore();
   }
@@ -178,7 +178,7 @@
     const hip = [hx, hipY + Math.abs(Math.sin(ph)) * 8 * (1 - plant)];
     // legs
     const runFoot = (s) => [hx + Math.sin(ph + s) * 78, baseY - Math.max(0, Math.cos(ph + s)) * 58];
-    const kick = (() => { const k = [[17.92, 752, 790], [17.985, 712, 720], [18.03, 862, 764], [18.10, 960, 616], [18.20, 900, 700], [18.34, 806, 786]]; if (t <= k[0][0]) return null; for (let i = 1; i < k.length; i++) if (t <= k[i][0]) { const u = eio(inv(k[i - 1][0], k[i][0], t)); return [lerp(k[i - 1][1], k[i][1], u), lerp(k[i - 1][2], k[i][2], u)]; } return [k[k.length - 1][1], k[k.length - 1][2]]; })();
+    const kick = (() => { const k = [[17.92, 752, 790], [17.985, 712, 720], [18.03, 862, 764], [18.10, 960, 616], [18.20, 900, 700], [18.295, 806, 786]]; if (t <= k[0][0]) return null; for (let i = 1; i < k.length; i++) if (t <= k[i][0]) { const u = eio(inv(k[i - 1][0], k[i][0], t)); return [lerp(k[i - 1][1], k[i][1], u), lerp(k[i - 1][2], k[i][2], u)]; } return [k[k.length - 1][1], k[k.length - 1][2]]; })();
     const fA = (() => { const r = runFoot(0), s = [hx + 4, baseY]; return [lerp(r[0], s[0], plant), lerp(r[1], s[1], plant)]; })();
     const rb = runFoot(Math.PI); const fB = kick ? [lerp(rb[0], kick[0], clamp((t - 17.92) / .05)), lerp(rb[1], kick[1], clamp((t - 17.92) / .05))] : rb;
     const knee = (h, f, l1, l2, sg) => { const dx = f[0] - h[0], dy = f[1] - h[1]; let d = Math.hypot(dx, dy); const dd = Math.min(d, l1 + l2 - .5), a = Math.acos(clamp((l1 * l1 + dd * dd - l2 * l2) / (2 * l1 * dd), -1, 1)), b = Math.atan2(dy, dx) - sg * a; return [h[0] + Math.cos(b) * l1, h[1] + Math.sin(b) * l1]; };
@@ -206,7 +206,7 @@
     ctx.restore();
   }
   function scoreboard(ctx, t, sc) {
-    if (sc <= 0) return; const goal = t >= 18.34, bump = goal ? 1 + .55 * Math.exp(-(t - 18.34) * 7) * Math.cos((t - 18.34) * 22) : 1, glowK = goal ? Math.exp(-(t - 18.34) * 3) : 0;
+    if (sc <= 0) return; const goal = t >= 18.295, bump = goal ? 1 + .55 * Math.exp(-(t - 18.295) * 7) * Math.cos((t - 18.295) * 22) : 1, glowK = goal ? Math.exp(-(t - 18.295) * 3) : 0;
     ctx.save(); ctx.translate(1000, 104); ctx.scale(sc, sc);
     CL.gel(ctx, 0, 0, 880, 150, { fill: '#17207f', dark: '#070b3a', rim: goal && glowK > .1 ? '#ffe36a' : 'rgba(255,255,255,.7)', shadow: 14, r: 44, gloss: true });
     // teams
@@ -239,37 +239,37 @@
     ctx.drawImage(standsLayer(), 0, 0); floodlights(ctx, t); crowd(ctx, t);
     ctx.drawImage(pitchLayer(), 0, 0); pitchLines(ctx, t);
     // LIVE screen elements
-    const sb = land(t, 17.80, .34), lv = P(t, 17.60, 17.80); // CUE 17.80 live-badge-slam + scoreboard
+    const sb = land(t, 17.845, .34), lv = P(t, 17.60, 17.845); // CUE 17.845 live-badge-slam + scoreboard
     goalNet(ctx, t);
     // ball trail + ball
     const st = 17.06, b = ballAt(t);
     if (t >= st && t < 18.6) {
-      for (let k = 14; k >= 1; k--) { const tt = t - k * .017; if (tt < st) continue; const q = ballAt(tt), fade = 1 - k / 15; if (tt > 18.34) continue; const sp = Math.hypot(q.x - b.x, q.y - b.y); if (sp < 8) continue; ctx.globalAlpha = .9 * fade; CL.drop(ctx, q.x, q.y + 8, 40 * q.s * fade + 6, CL.CAND[(k + 3) % 8], t, k); } ctx.globalAlpha = 1;
+      for (let k = 14; k >= 1; k--) { const tt = t - k * .017; if (tt < st) continue; const q = ballAt(tt), fade = 1 - k / 15; if (tt > 18.295) continue; const sp = Math.hypot(q.x - b.x, q.y - b.y); if (sp < 8) continue; ctx.globalAlpha = .9 * fade; CL.drop(ctx, q.x, q.y + 8, 40 * q.s * fade + 6, CL.CAND[(k + 3) % 8], t, k); } ctx.globalAlpha = 1;
       // ground shadow
       const hgt = clamp((b.gy - b.y - 56) / 300); ctx.fillStyle = 'rgba(0,30,20,' + (.4 - .2 * hgt) + ')'; ctx.beginPath(); ctx.ellipse(b.x, b.gy + 6, 60 * b.s * (1 - .3 * hgt), 14 * b.s, 0, 0, TAU); ctx.fill();
-      let sqx = 1, sqy = 1; [17.40, 17.80].forEach(t0 => { const w = wobble(t, t0, 34, 13) * .34; if (t >= t0 && t < t0 + .3) { sqy = 1 - w; sqx = 1 + w * .8; } });
+      let sqx = 1, sqy = 1; [17.40, 17.845].forEach(t0 => { const w = wobble(t, t0, 34, 13) * .34; if (t >= t0 && t < t0 + .3) { sqy = 1 - w; sqx = 1 + w * .8; } });
       const vel = Math.hypot(ballAt(t + .01).x - b.x, ballAt(t + .01).y - b.y) / .01; const stretch = clamp(vel / 5000, 0, .22);
       drawBall(ctx, b.x, b.y, 58 * b.s, t * 14, sqx * (1 + stretch), sqy * (1 - stretch * .6));
     }
     goalFrame(ctx, t);
     player(ctx, t);
-    // impacts: CUE 17.40 ball-landing splash on the pitch, CUE 17.80 second bounce, CUE 18.34 GOAL burst
+    // impacts: CUE 17.40 ball-landing splash on the pitch, CUE 17.845 second bounce, CUE 18.295 GOAL burst
     splashAt(ctx, L1[0], L1[1] + 60, 330, t, 17.40, 4, [C.lime, C.cyan, C.yellow, C.green, C.pink], .75, .5);
-    splashAt(ctx, L2[0], L2[1] + 60, 240, t, 17.80, 9, [C.pink, C.orange, C.yellow, C.cyan], .6, .5);
+    splashAt(ctx, L2[0], L2[1] + 60, 240, t, 17.845, 9, [C.pink, C.orange, C.yellow, C.cyan], .6, .5);
     if (t >= 17.36) CL.ring(ctx, L1[0], L1[1] + 56, 260, P(t, 17.40, 17.9), '#fff', 14);
-    if (t >= 17.80) CL.ring(ctx, L2[0], L2[1] + 56, 200, P(t, 17.80, 18.2), C.yellow, 12);
+    if (t >= 17.845) CL.ring(ctx, L2[0], L2[1] + 56, 200, P(t, 17.845, 18.2), C.yellow, 12);
     // broadcast graphics
-    { const q = P(t, 17.58, 17.80); if (q > 0) { const sc = t < 17.80 ? lerp(3.2, 1, ease.in(q)) : 1 + .16 * wobble(t, 17.80, 28, 10); ctx.save(); ctx.globalAlpha = clamp(q * 5); liveBadge(ctx, 250, 110, sc, t); ctx.restore(); } }
-    scoreboard(ctx, t, sb); clockChip(ctx, t, land(t, 17.86, .3)); liveBar(ctx, t, P(t, 17.84, 18.0));
+    { const q = P(t, 17.625, 17.845); if (q > 0) { const sc = t < 17.845 ? lerp(3.2, 1, ease.in(q)) : 1 + .16 * wobble(t, 17.845, 28, 10); ctx.save(); ctx.globalAlpha = clamp(q * 5); liveBadge(ctx, 250, 110, sc, t); ctx.restore(); } }
+    scoreboard(ctx, t, sb); clockChip(ctx, t, land(t, 17.905, .3)); liveBar(ctx, t, P(t, 17.885, 18.05));
     // GOAL!
-    if (t >= 18.34) {
-      const u = t - 18.34; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-u * 16) * .5; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
-      ray(ctx, IMP[0], IMP[1], t, 14, 900, C.yellow, .5 * Math.exp(-u * 3));
-      splashAt(ctx, IMP[0], IMP[1], 520, t, 18.34, 21, null, .9);
-      [0, .07].forEach((d, i) => CL.ring(ctx, IMP[0], IMP[1], 620 - i * 160, P(t, 18.34 + d, 18.34 + d + .5), i ? C.yellow : '#fff', 26));
-      sparkBurst(ctx, t, 18.34, IMP[0], IMP[1], 560, 26, 3, .8);
-      const s = CL.spring(t, 18.30, .55) * (1 - ease.in(P(t, 18.56, 18.7)));
-      if (s > 0) CL.title(ctx, 'GOAL!', 620, 430, { size: 250, dir: 'ltr', fill: ['#fff7a0', '#ff8a1f'], rot: -.07, scale: s, alpha: 1 });
+    if (t >= 18.295) {
+      const u = t - 18.295; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .45 * clamp(1 - u / .066); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
+      ray(ctx, IMP[0], IMP[1], t, 14, 900, C.yellow, .4 * Math.exp(-u * 1.8));
+      splashAt(ctx, IMP[0], IMP[1], 520, t, 18.295, 21, null, 1.4);
+      CL.ring(ctx, IMP[0], IMP[1], 620, P(t, 18.295, 18.295 + .75), '#fff', 26);
+      sparkBurst(ctx, t, 18.295, IMP[0], IMP[1], 560, 16, 3, 1.2);
+      const s = CL.spring(t, 18.255, .55) * (1 - ease.in(P(t, 18.70, 18.78)));
+      if (s > 0) CL.title(ctx, 'GOAL!', 620, 430, { size: 250, dir: 'ltr', fill: ['#fff7a0', '#ff8a1f'], rot: -.07, scale: s * (1 + (A.H && A.H.k === 'goal' ? .025 * Math.sin(A.H.age * 7) : 0)), alpha: 1 });
     }
   }
 
@@ -304,7 +304,7 @@
     CL.title(ctx, 'בכורה', 0, 4, { size: 92, fill: ['#fff7c0', '#ffb300'] }); ctx.restore();
   }
   function countdown(ctx, t) {
-    const T3 = 18.78, T2 = 19.21, T1 = 19.52, TE = 20.09; if (t < T3 - .14 || t > TE + .3) return;
+    const T3 = 18.78, T2 = 19.21, T1 = 19.58, TE = 20.09; if (t < T3 - .14 || t > TE + .3) return;
     const cx = 960, cy = 560; let ringK = land(t, T3, .34); const ex = P(t, TE, TE + .18); ringK *= 1 + .5 * eo(ex); const ga = 1 - ex; if (ga <= 0) return;
     ctx.save(); ctx.globalAlpha = ga; ctx.translate(cx, cy); ctx.scale(ringK, ringK);
     const beat = t > T1 ? 1 + .045 * Math.sin((t - T1) * 22) * P(t, T1, T1 + .1) + .015 * P(t, T1, TE) : 1;
@@ -322,11 +322,11 @@
       ctx.save(); ctx.translate(shk, 8); ctx.scale(pp * (1 + .25 * eo(out)), pp * (1 + .25 * eo(out))); ctx.globalAlpha = 1 - out; CL.title(ctx, String(n), 0, 0, { size: 400, dir: 'ltr', fill: ['#fff7c0', '#ffb300'] }); ctx.restore();
     });
     ctx.restore();
-    // impact rings on each count: CUE 18.78 countdown-3 + curtain-slam, CUE 19.21 countdown-2, CUE 19.52 countdown-1
+    // impact rings on each count: CUE 18.78 countdown-3 + curtain-slam, CUE 19.21 countdown-2, CUE 19.58 countdown-1
     [T3, T2, T1].forEach((tn, i) => { CL.ring(ctx, cx, cy, 520, P(t, tn, tn + .5), i === 2 ? C.pink : C.yellow, 20); sparkBurst(ctx, t, tn, cx, cy, 380, 12, i + 30, .6); });
   }
   function spotlights(ctx, t, k) {
-    if (k <= 0) return; const fast = P(t, 19.52, 20.09), sw = Math.sin(t * (2.2 + fast * 7)) * (.09 + fast * .08), fl = t > 19.52 ? .8 + .2 * Math.sin(t * 47) : 1;
+    if (k <= 0) return; const fast = P(t, 19.58, 20.09), sw = Math.sin(t * (2.2 + fast * 7)) * (.09 + fast * .08), fl = t > 19.58 ? .8 + .2 * Math.sin(t * 47) : 1;
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = k * fl;
     [[240, 1], [1680, -1]].forEach(([x, s]) => { const ang = Math.atan2(560 + 0, 960 - x) + sw * s; const len = 1300; ctx.save(); ctx.translate(x, -30); ctx.rotate(ang - Math.PI / 2 + Math.PI / 2 * 0); ctx.rotate(Math.PI / 2 - Math.PI / 2 + 0); ctx.rotate(-Math.PI / 2 + Math.PI / 2);
       ctx.restore();
@@ -338,7 +338,7 @@
     ctx.fillStyle = '#ffd35a'; ctx.beginPath(); ctx.arc(r * .1, r * .1, r * .22, 0, TAU); ctx.fill(); ctx.restore();
   }
   function bucket(ctx, t, sc) {
-    if (sc <= 0) return; const bx = 330, by = 830, kick = wobble(t, 19.52, 30, 6) * .04; ctx.save(); ctx.translate(bx, by); ctx.rotate(-.05 + kick); ctx.scale(sc, sc);
+    if (sc <= 0) return; const bx = 330, by = 830, kick = wobble(t, 19.58, 30, 6) * .04; ctx.save(); ctx.translate(bx, by); ctx.rotate(-.05 + kick); ctx.scale(sc, sc);
     // popcorn pile
     for (let i = 0; i < 16; i++) { const a = hash(i * 2.1) * TAU, rr = hash(i * 3.3) * 88; popcornPuff(ctx, Math.cos(a) * rr * .9, -300 + Math.sin(a) * 30 - Math.abs(Math.cos(a)) * 18 - hash(i) * 20 + Math.sin(t * 4 + i) * 2, 46, i); }
     ctx.beginPath(); ctx.moveTo(-135, -290); ctx.lineTo(135, -290); ctx.lineTo(102, 0); ctx.lineTo(-102, 0); ctx.closePath(); ctx.save(); ctx.clip();
@@ -354,10 +354,10 @@
   }
   function wallClock(ctx, t, sc) {
     if (sc <= 0) return; const cx = 1560, cy = 640, R = 150; ctx.save(); ctx.translate(cx, cy); ctx.scale(sc, sc);
-    const sh = t > 19.52 ? wobble(t, 19.52, 28, 5) * .06 : 0; ctx.rotate(sh);
+    const sh = t > 19.58 ? wobble(t, 19.58, 28, 5) * .06 : 0; ctx.rotate(sh);
     CL.gel(ctx, 0, 0, R * 2, R * 2, { fill: '#ffffff', dark: '#cdd3ff', r: R, rim: '#ffd23f', rimW: 12, shadow: 14 });
     ctx.fillStyle = C.ink; for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; ctx.save(); ctx.rotate(a); ctx.fillRect(-4, -R + 20, 8, i % 3 ? 16 : 30); ctx.restore(); }
-    const step = TAU / 12, k = Math.max(0, (t - 19.52) / .12), kk = Math.floor(k), fr = k - kk, ang = (kk + (t < 19.52 ? 0 : ease.outBack(clamp(fr * 2.2)))) * step;
+    const step = TAU / 12, k = Math.max(0, (t - 19.58) / .12), kk = Math.floor(k), fr = k - kk, ang = (kk + (t < 19.58 ? 0 : ease.outBack(clamp(fr * 2.2)))) * step;
     ctx.save(); ctx.rotate(ang); ctx.strokeStyle = C.red; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(0, 20); ctx.lineTo(0, -R + 34); ctx.stroke(); ctx.restore();
     ctx.save(); ctx.rotate(-1.1 + ang * .08); ctx.strokeStyle = C.ink; ctx.lineWidth = 14; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -R * .5); ctx.stroke(); ctx.restore();
     ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(0, 0, 14, 0, TAU); ctx.fill();
@@ -365,9 +365,9 @@
   }
   function openCurtains(ctx, t) {
     // edge positions (x reached by each half)
-    const closing = P(t, 18.50, 18.78); let edge = 975 * ease.in(closing) ** 1;
+    const closing = P(t, 18.665, 18.78); let edge = 975 * ease.in(closing) ** 1;
     if (t >= 18.78) edge = 975 - 26 * Math.exp(-(t - 18.78) * 9) * Math.cos((t - 18.78) * 26) + 0;
-    const pinch = P(t, 20.00, 20.09), opening = P(t, 20.09, 20.40);
+    const pinch = P(t, 20.00, 20.09), opening = P(t, 20.09, 20.50);
     if (t >= 20.0) edge = t < 20.09 ? 975 - 34 * eio(pinch) : lerp(941, -40, eo(opening));
     return edge;
   }
@@ -404,8 +404,8 @@
   function posterWall(ctx, t) {
     const t0 = 20.09; if (t < t0 - .02) return; const cols = 6, pw = 270, ph = 360, gx = 30, gy = 22;
     for (let i = 0; i < 12; i++) {
-      const c = i % cols, r = Math.floor(i / cols), x = 960 + (c - 2.5) * (pw + gx), y = 240 + r * (ph + gy) + (r ? 4 : 0) - 0, d = Math.hypot(c - 2.5, (r - .5) * 1.4), st = t0 + d * .028;
-      const s = CL.pop(t, st - .02, .34); if (s <= 0) continue; const px = lerp(960, x, Math.min(1.08, s)), py = lerp(480, y, Math.min(1.08, s)), rot = (hash(i * 3.1) - .5) * .12 * (1 - Math.min(1, s)) + Math.sin(t * 1.5 + i) * .012 + (hash(i * 7.7) - .5) * .05;
+      const c = i % cols, r = Math.floor(i / cols), x = 960 + (c - 2.5) * (pw + gx), y = 240 + r * (ph + gy) + (r ? 4 : 0) - 0, d = Math.hypot(c - 2.5, (r - .5) * 1.4), st = t0 + d * .02;
+      const s = CL.pop(t, st - .02, .45); if (s <= 0) continue; const px = lerp(960, x, Math.min(1.08, s)), py = lerp(480, y, Math.min(1.08, s)), rot = (hash(i * 3.1) - .5) * .12 * (1 - Math.min(1, s)) + Math.sin(t * 1.5 + i) * .012 + (hash(i * 7.7) - .5) * .05;
       const bob = Math.sin(t * 2 + i * 1.3) * 5 * clamp(s); ctx.save(); ctx.translate(px, py + bob); ctx.rotate(rot); ctx.scale(s, s);
       ctx.fillStyle = 'rgba(2,4,30,.45)'; ctx.beginPath(); ctx.roundRect(-pw / 2 + 8, -ph / 2 + 16, pw, ph, 26); ctx.fill(); ctx.drawImage(posterImg(i), -pw / 2, -ph / 2, pw, ph); ctx.restore();
     }
@@ -414,27 +414,27 @@
     const open = t >= 20.09 - .02; const edge = openCurtains(ctx, t);
     if (open) { stageBg(ctx, t); posterWall(ctx, t); }
     // curtains
-    const ph = t * 3, amp = t < 18.78 ? 30 * (1 - closingK(t)) + 12 : 8, trem = t > 19.52 && t < 20.09 ? Math.sin(t * 73) * (2 + 12 * Math.pow(P(t, 19.52, 20.09), 2)) : 0;
-    const sway = t >= 18.78 && t < 19.52 ? Math.sin((t - 18.78) * 20) * 5 * Math.exp(-(t - 18.78) * 3) : 0;
+    const ph = t * 3, amp = t < 18.78 ? 30 * (1 - closingK(t)) + 12 : 8, trem = t > 19.58 && t < 20.09 ? Math.sin(t * 73) * (2 + 12 * Math.pow(P(t, 19.58, 20.09), 2)) : 0;
+    const sway = t >= 18.78 && t < 19.58 ? Math.sin((t - 18.78) * 20) * 5 * Math.exp(-(t - 18.78) * 3) : 0;
     curtainHalf(ctx, -1, edge, t, amp, ph, trem + sway); curtainHalf(ctx, 1, edge, t, amp, ph + 2, -trem - sway);
     // seam light when closed
-    if (t >= 18.6 && t < 20.09) { const k = P(t, 18.6, 18.8); ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.linear(ctx, 940, 0, 980, 0, [[0, 'rgba(255,220,150,0)'], [.5, 'rgba(255,220,150,' + .35 * k + ')'], [1, 'rgba(255,220,150,0)']]); ctx.fillRect(940, 0, 40, H); ctx.restore(); }
+    if (t >= 18.665 && t < 20.09) { const k = P(t, 18.665, 18.8); ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.linear(ctx, 940, 0, 980, 0, [[0, 'rgba(255,220,150,0)'], [.5, 'rgba(255,220,150,' + .35 * k + ')'], [1, 'rgba(255,220,150,0)']]); ctx.fillRect(940, 0, 40, H); ctx.restore(); }
     // curtain slam flash: CUE 18.78 curtain-slam + countdown 3
-    if (t >= 18.78 && t < 18.95) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-(t - 18.78) * 18) * .55; ctx.fillStyle = '#ffe9a0'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+    if (t >= 18.78 && t < 18.85) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .4 * clamp(1 - (t - 18.78) / .066); ctx.fillStyle = '#ffe9a0'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
     if (t < 20.09) spotlights(ctx, t, land(t, 18.78, .3));
     // valance + marquee slide out when the curtains open
-    const up = ease.in(P(t, 20.12, 20.4)) * 300; ctx.save(); ctx.translate(0, -up - 260 * (1 - eo(P(t, 18.50, 18.78)))); ctx.drawImage(valanceTex(), 0, 0); ctx.restore();
+    const up = ease.in(P(t, 20.12, 20.5)) * 300; ctx.save(); ctx.translate(0, -up - 260 * (1 - eo(P(t, 18.665, 18.78)))); ctx.drawImage(valanceTex(), 0, 0); ctx.restore();
     marquee(ctx, t, land(t, 18.78, .34) * (1 - ease.in(P(t, 20.09, 20.3))));
     countdown(ctx, t);
     bucket(ctx, t, land(t, 19.21, .34) * (1 - ease.in(P(t, 20.09, 20.26))));    // CUE 19.21 popcorn-bucket-pop
-    wallClock(ctx, t, land(t, 19.52, .34) * (1 - ease.in(P(t, 20.09, 20.26))));   // CUE 19.52 clock-tick-start
+    wallClock(ctx, t, land(t, 19.58, .34) * (1 - ease.in(P(t, 20.09, 20.26))));   // CUE 19.58 clock-tick-start
     if (t >= 20.09) {   // CUE 20.09 curtains-fly-open + poster-wall-burst
-      const u = t - 20.09; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-u * 20) * .6; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
-      confetti(ctx, t, 20.09, 960, 480, 90, 51, { spread: Math.PI, ang: -Math.PI / 2, speed: 1.15, life: 1.4 });
-      sparkBurst(ctx, t, 20.09, 960, 480, 800, 34, 8, .9); CL.ring(ctx, 960, 480, 1000, P(t, 20.09, 20.6), '#fff', 30);
+      const u = t - 20.09; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .45 * clamp(1 - u / .066); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
+      confetti(ctx, t, 20.09, 960, 480, 60, 51, { spread: Math.PI, ang: -Math.PI / 2, speed: 1.0, life: 1.6 });
+      sparkBurst(ctx, t, 20.09, 960, 480, 800, 18, 8, 1.2);
     }
   }
-  function closingK(t) { return P(t, 18.50, 18.78); }
+  function closingK(t) { return P(t, 18.665, 18.78); }
 
   // ------------------------------------------------------------------ WORLD 3: gift box + discovery tiles
   const BOX = { x: 960, base: 760 };
@@ -485,14 +485,14 @@
   }
   function catmull(p0, p1, p2, p3, u) { const u2 = u * u, u3 = u2 * u; return [0, 1].map(k => .5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * u + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * u2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * u3)); }
   function spotPos(t) {
-    const R0 = 21.55, dt = .1, pts = [[960, 440]].concat(Array.from({ length: 6 }, (_, i) => tileC(i)), [[960, 520]]);   // pts[i+1] = tile i
+    const R0 = 21.58, dt = .06, pts = [[960, 440]].concat(Array.from({ length: 6 }, (_, i) => tileC(i)), [[960, 520]]);   // pts[i+1] = tile i
     const u = (t - (R0 - dt)) / dt, i = Math.floor(clamp(u, 0, 6.999)), f = clamp(u, 0, 6.999) - i;
     return catmull(pts[Math.max(0, i - 1)], pts[i], pts[Math.min(7, i + 1)], pts[Math.min(7, i + 2)], f);
   }
   function tiles(ctx, t) {
-    const R0 = 21.55, dt = .1; if (t < 21.28) return;
-    const spot = spotPos(t), spotR = 300 + 260 * P(t, R0 + 5 * dt, R0 + 6 * dt), dimA = .66 * (1 - P(t, R0 + 5.3 * dt, R0 + 6.6 * dt));
-    const state = i => { const rt = R0 + i * dt, fs = rt - .17; const tt = i * .02 + 21.30, pp = CL.pop(t, tt, .3); let flip = 0; if (t >= fs) flip = (t - fs) / .17; return { pp, flip, rt }; };
+    const R0 = 21.58, dt = .06; if (t < 21.28) return;
+    const spot = spotPos(t), spotR = 300 + 260 * P(t, R0 + 3 * dt, R0 + 5.3 * dt), dimA = .66 * (1 - P(t, R0 + 2.5 * dt, R0 + 5.3 * dt));
+    const state = i => { const rt = R0 + i * dt, fs = rt - .14; const tt = i * .02 + 21.30, pp = CL.pop(t, tt, .3); let flip = 0; if (t >= fs) flip = (t - fs) / .14; return { pp, flip, rt }; };
     const drawTile = (i, revealedPass) => {
       const [cx, cy] = tileC(i), s = state(i); if (s.pp <= 0) return; const rev = s.flip > .42, isRevPass = rev; if (isRevPass !== revealedPass) return;
       const px = lerp(BOX.x, cx, Math.min(s.pp, 1.05)), py = lerp(BOX.base - 330, cy, Math.min(s.pp, 1.05)), scl = s.pp; const fl = s.flip; let fx = 1, faceUp = false;
@@ -508,55 +508,56 @@
     if (dimA > 0) { ctx.save(); ctx.fillStyle = A.radial(ctx, spot[0], spot[1], spotR * .55, spotR * 1.3, [[0, 'rgba(6,4,40,0)'], [1, A.hex('#06042a', dimA)]]); ctx.fillRect(0, 0, W, H); ctx.restore(); }
     for (let i = 0; i < 6; i++) drawTile(i, true);
     // spotlight cone + glow
-    const sa = clamp(P(t, 21.34, 21.5) * (1 - P(t, R0 + 5.3 * dt, R0 + 7 * dt)));
+    const sa = clamp(P(t, 21.34, 21.5) * (1 - P(t, R0 + 3 * dt, R0 + 5.3 * dt)));
     if (sa > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.linear(ctx, spot[0], -40, spot[0], spot[1], [[0, 'rgba(255,245,200,.35)'], [1, 'rgba(255,245,200,.08)']]); ctx.globalAlpha = sa; ctx.beginPath(); ctx.moveTo(spot[0] - 40, -40); ctx.lineTo(spot[0] + 40, -40); ctx.lineTo(spot[0] + 300, spot[1] + 140); ctx.lineTo(spot[0] - 300, spot[1] + 140); ctx.closePath(); ctx.fill(); A.glow(ctx, spot[0], spot[1], spotR, '#fff6c0', .32 * sa); ctx.restore(); }
     // reveal bursts (CUE per tile below)
-    for (let i = 0; i < 6; i++) { const rt = R0 + i * dt; sparkBurst(ctx, t, rt, tileC(i)[0], tileC(i)[1], 240, 10, 60 + i, .55); if (t >= rt && t < rt + .3) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-(t - rt) * 14) * .5; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(tileC(i)[0] - TILE.w / 2, tileC(i)[1] - TILE.h / 2, TILE.w, TILE.h, 40); ctx.fill(); ctx.restore(); } }
+    for (let i = 0; i < 6; i++) { const rt = R0 + i * dt; sparkBurst(ctx, t, rt, tileC(i)[0], tileC(i)[1], 240, 8, 60 + i, .9); if (t >= rt && t < rt + .3) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (.35 * clamp(1 - (t - rt) / .066)); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(tileC(i)[0] - TILE.w / 2, tileC(i)[1] - TILE.h / 2, TILE.w, TILE.h, 40); ctx.fill(); ctx.restore(); } }
   }
   function world3fg(ctx, t) {
-    // the box: falls in, lands on 20.42, jumps on 20.92, shakes, pops open on 21.29
+    // the box: falls in, lands on 20.42, jumps on 20.97, shakes, pops open on 21.29
     const fall = P(t, 20.20, 20.42), boxY = t < 20.42 ? BOX.base - 1100 * (1 - fall * fall) : BOX.base;
     let sx = 1, sy = 1, rot = 0, off = 0, lidOff = null, glow = 0, bowSpin = 0, bowS = 1;
     if (t >= 20.42) { const w = wobble(t, 20.42, 22, 8); sy = 1 - .26 * w; sx = 1 + .2 * w; }
-    if (t >= 20.92) { const u = t - 20.92; const hop = Math.max(0, Math.sin(clamp(u / .34) * Math.PI)) * 70; off = -hop; const lw = wobble(t, 21.26, 22, 8); if (u > .34) { sy *= 1 - .12 * wobble(t, 20.92 + .34, 22, 9); } bowSpin = eo(clamp(u / .45)) * TAU; bowS = 1 + .3 * Math.sin(clamp(u / .4) * Math.PI); }
+    if (t >= 20.97) { const u = t - 20.97; const hop = Math.max(0, Math.sin(clamp(u / .34) * Math.PI)) * 70; off = -hop; const lw = wobble(t, 21.26, 22, 8); if (u > .34) { sy *= 1 - .12 * wobble(t, 20.97 + .34, 22, 9); } bowSpin = eo(clamp(u / .45)) * TAU; bowS = 1 + .3 * Math.sin(clamp(u / .4) * Math.PI); }
     const shakeK = P(t, 21.05, 21.29), sh = Math.sin(t * 64) * 16 * shakeK * shakeK; rot += Math.sin(t * 55) * .05 * shakeK * shakeK; if (t < 21.29) glow = shakeK * .5;
     if (t >= 21.29) { const u = t - 21.29; lidOff = { x: 40 * u * 9, y: -1500 * u + 3300 * u * u, r: u * 9 }; glow = Math.exp(-u * 1.3) * 1; sy *= 1 + .22 * wobble(t, 21.29, 26, 8) * -1; sx *= 1 - .12 * wobble(t, 21.29, 26, 8) * -1; }
     const boxA = t < 21.29 ? 1 : 1 - ease.in(P(t, 21.5, 21.75)), boxOff = t < 21.29 ? 0 : 120 * ease.in(P(t, 21.45, 21.8));
     if (t >= 20.2 && boxA > 0) { ctx.save(); ctx.globalAlpha = boxA; giftBox(ctx, BOX.x + sh, boxY + off + boxOff, { sx, sy, rot, lidOff, glow, bowSpin, bowS }); ctx.restore(); }
     // CUE 20.42 chest-slam (box lands) / iris flood
-    if (t >= 20.42) { splashAt(ctx, BOX.x, BOX.base + 16, 520, t, 20.42, 40, [C.pink, C.yellow, C.orange, C.cyan, C.purple], .8, .35); CL.ring(ctx, BOX.x, BOX.base, 700, P(t, 20.42, 20.9), '#fff', 26); sparkBurst(ctx, t, 20.42, BOX.x, BOX.base - 200, 500, 20, 41, .8); }
-    // CUE 20.92 bow-pop + hop
-    if (t >= 20.92) { CL.ring(ctx, BOX.x, BOX.base - 400, 300, P(t, 20.92, 21.3), C.cyan, 18); sparkBurst(ctx, t, 20.92, BOX.x, BOX.base - 420, 280, 14, 42, .7); }
+    if (t >= 20.42) { splashAt(ctx, BOX.x, BOX.base + 16, 520, t, 20.42, 40, [C.pink, C.yellow, C.orange, C.cyan, C.purple], 1.2, .35); CL.ring(ctx, BOX.x, BOX.base, 700, P(t, 20.42, 21.1), '#fff', 26); }
+    // CUE 20.97 bow-pop + hop
+    if (t >= 20.97) { CL.ring(ctx, BOX.x, BOX.base - 400, 300, P(t, 20.97, 21.4), C.cyan, 18); sparkBurst(ctx, t, 20.97, BOX.x, BOX.base - 420, 280, 8, 42, 1.0); }
     // CUE 21.29 box-pop-open (confetti, sparkles, splashes, light)
     if (t >= 21.29) {
-      const u = t - 21.29; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.exp(-u * 20) * .35; ctx.fillStyle = '#fff6c0'; ctx.fillRect(0, 0, W, H); ctx.restore();
-      ray(ctx, BOX.x, BOX.base - 320, t * 1.5, 20, 1300, '#fff2a0', .3 * Math.exp(-u * 2.2), .5);
-      splashAt(ctx, BOX.x, BOX.base - 320, 620, t, 21.29, 44, null, .9); CL.ring(ctx, BOX.x, BOX.base - 320, 900, P(t, 21.29, 21.8), '#fff', 30); CL.ring(ctx, BOX.x, BOX.base - 320, 700, P(t, 21.34, 21.8), C.pink, 20);
-      confetti(ctx, t, 21.29, BOX.x, BOX.base - 320, 150, 61, { spread: 1.1, speed: 1.35, life: 2.0, scale: 1.2 }); confetti(ctx, t, 21.31, BOX.x, BOX.base - 320, 70, 62, { spread: .5, ang: -Math.PI * .8, speed: 1.2, life: 1.8 }); confetti(ctx, t, 21.31, BOX.x, BOX.base - 320, 70, 63, { spread: .5, ang: -Math.PI * .2, speed: 1.2, life: 1.8 });
-      sparkBurst(ctx, t, 21.29, BOX.x, BOX.base - 320, 700, 40, 43, .9);
+      const u = t - 21.29; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .35 * clamp(1 - u / .066); ctx.fillStyle = '#fff6c0'; ctx.fillRect(0, 0, W, H); ctx.restore();
+      ray(ctx, BOX.x, BOX.base - 320, t * 1.5, 20, 1300, '#fff2a0', .3 * Math.exp(-u * 1.5), .5);
+      splashAt(ctx, BOX.x, BOX.base - 320, 620, t, 21.29, 44, null, 1.3); CL.ring(ctx, BOX.x, BOX.base - 320, 900, P(t, 21.29, 22.0), '#fff', 30);
+      confetti(ctx, t, 21.29, BOX.x, BOX.base - 320, 110, 61, { spread: 1.2, speed: 1.2, life: 2.4, scale: 1.2 });
+      sparkBurst(ctx, t, 21.29, BOX.x, BOX.base - 320, 700, 24, 43, 1.3);
     }
     tiles(ctx, t);
-    // CUE 21.55 first tile reveal (spotlight lands), then reveals every 0.1 s: 21.65 21.75 21.85 21.95 22.05
-    if (t > 21.9) confetti(ctx, t, 22.05, 960, 470, 60, 71, { spread: 1.4, speed: 1.0, life: 1.3 });
+    // CUE 21.58 first tile reveal (spotlight lands), then every 0.06 s: 21.64 21.70 21.76 21.82 21.88 (all six lit before the fun hold at 21.95)
+    if (t > 21.85) confetti(ctx, t, 21.88, 960, 470, 50, 71, { spread: 1.4, speed: 1.0, life: 1.6 });
   }
 
   // ------------------------------------------------------------------ scene
   A.scene({
-    name: 's6_discover', start: 17.10, end: 22.6,
+    name: 's6_discover', start: 17.02, end: 22.6,
     draw(ctx, s) {
       const t = s.t;
-      // camera shake on the big hits: 17.40 ball, 17.80 badge, 18.34 goal, 18.78 curtain, 20.09 open, 20.42 chest, 21.29 pop
-      const hits = [[17.40, 8], [17.80, 12], [18.34, 22], [18.78, 16], [20.09, 14], [20.42, 24], [21.29, 26]];
-      let sx = 0, sy = 0; hits.forEach(([t0, a]) => { const q = CL.shake(t, t0, .45, a); sx += q[0]; sy += q[1]; });
+      CL.HOLDFOC.goal = [1400, 470, 1.1]; CL.HOLDFOC.fun = [960, 470, 1.1];
+      // camera shake on the big hits: 17.40 ball, 17.845 badge, 18.295 goal, 18.78 curtain, 20.09 open, 20.42 chest, 21.29 pop
+      const hits = [[17.40, 8], [17.845, 12], [18.295, 22], [18.78, 16], [20.09, 14], [20.42, 24], [21.29, 26]];
+      let sx = 0, sy = 0; hits.forEach(([t0, a]) => { const q = CL.shake(t, t0, .7, a); sx += q[0]; sy += q[1]; });
       const mag = Math.hypot(sx, sy); ctx.save(); ctx.translate(960 + sx, 540 + sy); const zs = 1 + Math.min(.06, mag * .0035); ctx.scale(zs, zs); ctx.translate(-960, -540);
       // WORLD 1 (entry: lime/green/cyan liquid wave, CUE 17.10 wave-in)
-      if (t < 18.9) transition(ctx, P(t, 17.10, 17.48), [C.cyan, C.lime, C.green], shapeUp, () => world1(ctx, t));
+      if (t < 18.9) transition(ctx, P(t, 17.02, 17.50), [C.cyan, C.lime, C.green], shapeUp, () => world1(ctx, t));
       // WORLD 2 (entry: velvet curtains slam shut on 18.78)
-      if (t >= 18.48 && t < 20.95) world2(ctx, t);
+      if (t >= 18.66 && t < 20.95) world2(ctx, t);
       // goal confetti keeps falling in front of the curtain
-      confetti(ctx, t, 18.34, IMP[0], IMP[1], 130, 5, { spread: 1.7, speed: 1.1, life: 1.9, scale: 1.1 });
+      confetti(ctx, t, 18.295, IMP[0], IMP[1], 100, 5, { spread: 1.7, speed: 1.0, life: 1.6, scale: 1.1 });
       // WORLD 3 (entry: candy iris flood from the box landing, CUE 20.42)
-      if (t >= 20.40) { transition(ctx, P(t, 20.40, 20.78), [C.pink, C.orange, C.yellow], shapeIris, () => world3bg(ctx, t)); }
+      if (t >= 20.42) { transition(ctx, P(t, 20.42, 20.98), [C.pink, C.orange, C.yellow], shapeIris, () => world3bg(ctx, t)); }
       if (t >= 20.15) world3fg(ctx, t);
       ctx.restore();
     },

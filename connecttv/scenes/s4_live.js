@@ -10,7 +10,7 @@
   const mixHex = (a, b, k) => { const p = parseInt(a.slice(1), 16), q = parseInt(b.slice(1), 16), c = sh => Math.round(lerp((p >> sh) & 255, (q >> sh) & 255, k)); return '#' + ((1 << 24) | (c(16) << 16) | (c(8) << 8) | c(0)).toString(16).slice(1); };
   const T_LIVE = 11.05, T_HEART = 11.78, T_ISR = 12.16, HOLD_V = 11.03;
   const BLUE = '#8fd0ff', ICE = '#eaf6ff';
-  const WAVE_V = 8000;            // px/s speed of the entry wipe band (top to bottom)
+  const WAVE_V = 3600;            // px/s speed of the entry wipe band (top to bottom)
   const WALL_CY = 500, MAP_CY = 520;
 
   // ---------------------------------------------------------------- channel tiles
@@ -18,8 +18,8 @@
   const FW = 330, FH = 240;
   // wall = 4 columns x 2 rows; the columns pop from right to left, one per syllable (RTL reading order)
   const TILES = [
-    { k: 'ch14', fill: '#ffffff', dark: '#d5dcff', wall: [1650, 350, 420, 280], fl: [1695, 370], lg: [.8, .8], t0: 11.15, city: [35.53, 32.79], spin: .10 },
-    { k: 'kan11', fill: '#2F6BFF', dark: '#1a2fb0', wall: [1650, 660, 420, 280], fl: [1695, 630], lg: [.78, .8], t0: 11.18, city: [35.02, 30.35], spin: -.10, sh: 1 },
+    { k: 'ch14', fill: '#ffffff', dark: '#d5dcff', wall: [1650, 350, 420, 280], fl: [1695, 370], lg: [.8, .8], t0: 11.185, city: [35.53, 32.79], spin: .10 },
+    { k: 'kan11', fill: '#2F6BFF', dark: '#1a2fb0', wall: [1650, 660, 420, 280], fl: [1695, 630], lg: [.78, .8], t0: 11.215, city: [35.02, 30.35], spin: -.10, sh: 1 },
     { k: 'ch9', fill: '#ffffff', dark: '#d5dcff', wall: [1190, 350, 420, 280], fl: [1345, 370], lg: [.8, .8], t0: 11.30, city: [35.21, 31.77], spin: -.09 },
     { k: 'reshet13', fill: '#ffffff', dark: '#d5dcff', wall: [1190, 660, 420, 280], fl: [1345, 630], lg: [.8, .76], t0: 11.33, city: [35.42, 31.50], spin: .09, rc: 1 },
     { k: 'keshet12', fill: '#ffffff', dark: '#d5dcff', wall: [730, 350, 420, 280], fl: [575, 370], lg: [.8, .78], t0: 11.45, city: [34.78, 32.08], spin: .08 },
@@ -38,16 +38,13 @@
   const TEL_AVIV = [34.78, 32.08];
 
   // ---------------------------------------------------------------- beats (ECG + rings)
-  const BEATS = [{ t: 11.28, a: .4 }, { t: 11.53, a: .45 }, { t: 11.78, a: 1.7 }, { t: 12.03, a: 1.3 }, { t: 12.20, a: .8 }, { t: 12.56, a: .55 }, { t: 12.94, a: .55 }, { t: 13.3, a: .5 }];
+  const BEATS = [{ t: 11.28, a: .4 }, { t: 11.53, a: .45 }, { t: 11.78, a: 1.7 }, { t: 12.03, a: 1.0 }, { t: 12.56, a: .55 }, { t: 12.94, a: .55 }, { t: 13.3, a: .5 }];
   const PULSES = [11.05, 11.28, 11.53, 11.78, 12.03, 12.16, 12.56, 12.94, 13.3];
-  const pulse = tv => { let k = 0; for (const b of PULSES) if (tv >= b) k = Math.max(k, Math.exp(-(tv - b) * 9)); return k; };
+  const pulse = tv => { let k = 0; for (const b of PULSES) if (tv >= b) k = Math.max(k, Math.exp(-(tv - b) * 6)); return k; };
   const RINGS = [
-    { t: 11.05, c: [CX, 430], R: 1200, dur: .6, col: '#FF6A7E', lw: 34, amp: 0 },
-    { t: 11.78, c: [CX, WALL_CY], R: 1500, dur: .75, col: '#FF3B4E', lw: 64, amp: .085 },
-    { t: 12.03, c: [CX, WALL_CY], R: 1200, dur: .65, col: '#FF2E93', lw: 44, amp: .05 },
-    { t: 12.16, c: [CX, MAP_CY], R: 1700, dur: .9, col: BLUE, lw: 52, amp: .05 },
-    { t: 12.62, c: [CX, MAP_CY], R: 1000, dur: .8, col: '#bfe4ff', lw: 22, amp: 0 },
-    { t: 13.0, c: [CX, MAP_CY], R: 1000, dur: .8, col: '#bfe4ff', lw: 22, amp: 0 },
+    { t: 11.05, c: [CX, 430], R: 1200, dur: 1.3, col: '#FF6A7E', lw: 34, amp: 0 },
+    { t: 11.78, c: [CX, WALL_CY], R: 1500, dur: 1.6, col: '#FF3B4E', lw: 64, amp: .05 },
+    { t: 12.62, c: [CX, MAP_CY], R: 1000, dur: 1.1, col: '#bfe4ff', lw: 22, amp: 0 },
   ];
   const ecgShape = d => .12 * G(d, -.06, .03) - .12 * G(d, 0, .012) + G(d, .04, .014) - .3 * G(d, .08, .016) + .28 * G(d, .2, .05);
   const ecg = tt => { let v = 0; for (const b of BEATS) { const d = tt - b.t; if (d > -.15 && d < .5) v += b.a * ecgShape(d); } return v; };
@@ -93,10 +90,11 @@
 
   // ---------------------------------------------------------------- tiles
   function tileState(tl, i, tv) {
-    const wp = CL.pop(tv, tl.t0 - .09, .32);
-    const q = clamp((tv - (12.12 + i * .028)) / .46), e = ease.outBack(q), eb = ease.inOut(q);
+    const wp = CL.pop(tv, tl.t0 - .185, .5);
+    const q = clamp((tv - (12.12 + i * .025)) / .75), e = 1 + (ease.outBack(q) - 1) * .6, eb = ease.inOut(q);
     const [wx, wy, ww, wh] = tl.wall, [fx, fy] = tl.fl;
-    let x = lerp(wx, fx, e), y = lerp(wy, fy, e) - Math.sin(q * Math.PI) * 60, w = lerp(ww, FW, eb), h = lerp(wh, FH, eb);
+    const gl = 1 - ease.out(clamp((tv - (tl.t0 - .35)) / .7));   // slow glide-in from the right/below
+    let x = lerp(wx, fx, e) + gl * 110, y = lerp(wy, fy, e) + gl * 70 - Math.sin(q * Math.PI) * 60, w = lerp(ww, FW, eb), h = lerp(wh, FH, eb);
     const arr = ease.out(inv(12.55, 12.8, tv)); y += Math.sin(tv * 2.3 + i * 1.3) * 6 * arr; x += Math.sin(tv * 1.7 + i * 2.1) * 3 * arr;
     let bump = 0; const d = Math.hypot(x - CX, y - WALL_CY);
     for (const r of RINGS) { if (!r.amp) continue; const u = (tv - r.t) / r.dur; if (u > 0 && u < 1) bump += r.amp * G(d, r.R * ease.out(u), 130) * (1 - u); }
@@ -130,8 +128,8 @@
   // ---------------------------------------------------------------- map
   const NODE_TW = (g, x, y, tv, i, s) => { const k = .55 + .45 * Math.sin(tv * 3 + i * 2.3); A.glow(g, x, y, 46 * s, '#7fd0ff', .5 * k); g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, 7 * s, 0, TAU); g.fill(); CL.spark(g, x, y, (20 + 12 * k) * s, tv * .5 + i, '#fff'); };
   function drawMap(g, tv, states) {
-    const pm = clamp((tv - T_ISR) / .42); if (pm <= 0) return;
-    A.glow(g, CX, MAP_CY, 560, '#4aa8ff', .5 * ease.out(pm)); A.glow(g, CX, MAP_CY, 300, '#ffffff', .22 * ease.out(pm));
+    const pm = clamp((tv - T_ISR) / .8); if (pm <= 0) return;
+    A.glow(g, CX, MAP_CY, 560, '#4aa8ff', .5 * ease.out(Math.max(pm, .3 * inv(11.95, T_ISR, tv)))); A.glow(g, CX, MAP_CY, 300, '#ffffff', .22 * ease.out(pm));
     const sc = .86 + .14 * CL.pop(tv, T_ISR - .03, .5);
     g.save(); g.translate(CX, MAP_CY); g.scale(sc, sc); g.translate(-CX, -MAP_CY);
     const path = () => { g.beginPath(); OPX.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath(); };
@@ -158,7 +156,7 @@
     g.restore();
     g.restore();
     // feed lines from tiles to their city
-    const la = ease.out(inv(12.42, 12.75, tv));
+    const la = ease.out(inv(12.4, 12.85, tv));
     if (la > 0) states.forEach((st, i) => {
       const tl = TILES[i], right = tl.fl[0] > CX, x0 = tl.fl[0] + (right ? -FW / 2 : FW / 2) * ease.inOut(st.q), y0 = st.y, c = P(tl.city[0], tl.city[1]);
       const cx = (x0 + c[0]) / 2, cy = (y0 + c[1]) / 2 + (i % 2 ? 34 : -34);
@@ -171,7 +169,7 @@
 
   // ---------------------------------------------------------------- liquid rise (blue/white splash)
   function liquid(g, tv) {
-    const k = ease.out(inv(12.06, 12.62, tv)); if (k <= 0) return;
+    const k = ease.out(inv(12.06, 12.85, tv)); if (k <= 0) return;
     const y0 = lerp(H + 60, 855, k) + Math.sin(tv * 2.4) * 6 * k;
     [['#2F6BFF', .6, 46, 0], ['#19C8FF', .55, 22, 1.7], [ICE, 1, 0, 3.1]].forEach(([col, al, off, ph], li) => {
       g.beginPath(); g.moveTo(0, H); for (let x = 0; x <= W + 12; x += 12) g.lineTo(x, y0 + off + Math.sin(x * .008 + tv * 2.1 + ph) * 24 * (.6 + .4 * k) + Math.sin(x * .021 - tv * 3.3 + ph * 2) * 9); g.lineTo(W, H); g.closePath();
@@ -205,13 +203,13 @@
     CL.bg(g, tv, { tint: [mixHex(C.red, C.cyan, bl), mixHex(C.purple, C.blue, bl), mixHex(C.pink, '#9fd4ff', bl * .8)] });
     CL.vignette(g, .5);
     // heartbeat glow pulses on the whole stage
-    [[T_HEART, '#FF3B4E', .5], [12.03, '#FF2E93', .35], [T_ISR, '#8fd0ff', .55]].forEach(([t, col, a]) => { if (tv > t) A.glow(g, CX, WALL_CY, 1300, col, a * Math.exp(-(tv - t) * 6)); });
+    [[T_HEART, '#FF3B4E', .5], [T_ISR, '#8fd0ff', .5]].forEach(([t, col, a]) => { if (tv > t) A.glow(g, CX, WALL_CY, 1300, col, a * Math.exp(-(tv - t) * 3)); });
     g.save(); g.globalAlpha = .06; g.fillStyle = '#fff'; const ry = ((tv * .35) % 1.3 - .15) * H; g.fillRect(0, ry, W, 90); g.restore();
     liquid(g, tv);
     // rising blue/white splash: glossy drops fly up from the rising liquid (parabolic arcs)
     for (let i = 0; i < 22; i++) {
-      const t0 = 12.12 + hash(i * 1.7) * .16, u = tv - t0; if (u <= 0 || u > 1.05) continue;
-      const x0 = 180 + hash(i * 3.3 + 1) * 1560, vx = (hash(i + 7) - .5) * 160, vy = 620 + hash(i * 5.1) * 620, y = 880 - vy * u + 1500 * u * u, r = 16 + hash(i * 2.9) * 30 * (1 - u * .35);
+      const t0 = 12.2 + hash(i * 1.7) * .3, u = (tv - t0) / 1.4; if (u <= 0 || u > 1.05) continue;
+      const x0 = 180 + hash(i * 3.3 + 1) * 1560, vx = (hash(i + 7) - .5) * 160, vy = 620 + hash(i * 5.1) * 620, y = 880 - vy * u * .8 + 720 * u * u, r = 16 + hash(i * 2.9) * 30 * (1 - u * .35);
       if (y > H + 40) continue; g.save(); g.globalAlpha = Math.min(1, (1.05 - u) * 4); CL.drop(g, x0 + vx * u, y, r, ['#ffffff', '#8fd0ff', '#19C8FF', '#2F6BFF'][i % 4], tv, i); g.restore();
     }
     // tile states, pop splashes
@@ -219,11 +217,11 @@
     drawMap(g, tv, states);
     TILES.forEach((tl, i) => {
       const st = states[i]; if (st.wp <= .002) return;
-      const u = (tv - tl.t0) / .5;
+      const u = (tv - tl.t0) / .75;
       if (u > 0 && u < 1) { g.save(); g.globalAlpha = (1 - u) * (1 - u); CL.splash(g, st.x, st.y, tl.wall[3] * .62 + 70, ease.out(u), i + 3, CL.CAND); g.restore(); }
     });
     TILES.forEach((tl, i) => { if (states[i].wp > .002) drawTile(g, tl, i, tv, states[i]); });
-    TILES.forEach((tl, i) => { const u = (tv - tl.t0) / .45; if (u > 0 && u < 1) { const st = states[i]; CL.spark(g, st.x + st.w / 2 - 20, st.y - st.h / 2 + 10, 44 * Math.sin(u * Math.PI), tv * 3, '#fff'); CL.spark(g, st.x - st.w / 2 + 30, st.y + st.h / 2 - 14, 30 * Math.sin(u * Math.PI), -tv * 2, C.yellow); } });
+    TILES.forEach((tl, i) => { const u = (tv - tl.t0) / .7; if (u > 0 && u < 1) { const st = states[i]; CL.spark(g, st.x + st.w / 2 - 20, st.y - st.h / 2 + 10, 44 * Math.sin(u * Math.PI), tv * 3, '#fff'); CL.spark(g, st.x - st.w / 2 + 30, st.y + st.h / 2 - 14, 30 * Math.sin(u * Math.PI), -tv * 2, C.yellow); } });
     // idle twinkles (voice pause)
     const twk = ease.inOut(inv(12.4, 12.9, tv)); if (twk > 0) { g.save(); g.globalAlpha = twk; CL.twinkle(g, tv, 60, 200, 1800, 620, 40, 5, ['#ffffff', '#9fd4ff', C.cyan, '#ffffff', C.yellow]); g.restore(); }
     // rings (giant live beat ring etc.)
@@ -234,34 +232,34 @@
     });
     // header: ECG monitor + LIVE badge (big slam, then it shrinks to the header)
     ecgStrip(g, tv);
-    const hb = ease.outBack(clamp((tv - 11.17) / .42)), bx = lerp(CX, 250, hb), by = lerp(430, 112, hb), bs = lerp(1.5, .5, hb);
-    const k = clamp((tv - 10.93) / .12), u0 = Math.max(0, tv - T_LIVE), squash = 1 - .14 * Math.exp(-u0 * 14) * Math.cos(u0 * 36) * (tv > T_LIVE ? 1 : 0);
-    const slam = lerp(2.0, 1, ease.out(k)) * squash;
+    const hb = ease.out(clamp((tv - 11.15) / .95)), bx = lerp(CX, 250, hb), by = lerp(430, 112, hb), bs = lerp(1.5, .5, hb);
+    const k = ease.inOut(inv(10.8, T_LIVE, tv)), u0 = Math.max(0, tv - T_LIVE), squash = 1 - .14 * Math.exp(-u0 * 6) * Math.cos(u0 * 20) * (tv > T_LIVE ? 1 : 0);
+    const slam = lerp(.45, 1, k) * squash;
     g.save(); g.translate(bx, by); liveBadge(g, tv, bs * slam * (1 + .06 * pulse(tv)), 0); g.restore();
     // entry bolts + glow
-    const bp = clamp((tv - 11.0) / .05), ba = tv < 11.08 ? 1 : 1 - inv(11.08, 11.17, tv);
+    const bp = clamp((tv - 10.97) / .1), ba = tv < 11.08 ? 1 : 1 - inv(11.08, 11.4, tv);
     if (bp > 0 && ba > 0) { CL.bolt(g, 330, -40, 700, 300, bp, 4, { col: '#FF5A6E', lw: 16, alpha: ba }); CL.bolt(g, 1590, -40, 1220, 300, bp, 9, { col: '#FF5A6E', lw: 16, alpha: ba }); }
     // held beat: sparkle burst + sheen (voice pause 12.7 to 13.08)
-    const bu = (tv - 12.72) / .8;
+    const bu = (tv - 12.72) / 1.1;
     if (bu > 0 && bu < 1) for (let j = 0; j < 18; j++) { const an = j / 18 * TAU + hash(j) * .3, rr = lerp(80, 300 + hash(j + 4) * 260, ease.out(bu)); CL.spark(g, CX + Math.cos(an) * rr * 1.9, MAP_CY + Math.sin(an) * rr * .95, (16 + hash(j * 2) * 24) * Math.sin(Math.min(1, bu * 1.15) * Math.PI), tv * 2 + j, j % 3 ? '#fff' : '#9fe0ff'); }
-    const sh = (tv - 12.66) / .42;
+    const sh = (tv - 12.66) / .7;
     if (sh > 0 && sh < 1) { const sx = lerp(-400, W + 300, ease.inOut(sh)); g.save(); g.globalCompositeOperation = 'lighter'; g.globalAlpha = .33 * Math.sin(sh * Math.PI); g.fillStyle = A.linear(g, sx - 120, 0, sx + 120, 0, [[0, 'rgba(255,255,255,0)'], [.5, '#cfe9ff'], [1, 'rgba(255,255,255,0)']]); g.translate(CX, 540); g.rotate(.35); g.translate(-CX, -540); g.fillRect(sx - 120, -700, 240, H + 1400); g.restore(); }
     // blue-white flash on "מישראל"
-    if (tv > T_ISR && tv < T_ISR + .16) { g.save(); g.globalAlpha = .45 * Math.pow(1 - (tv - T_ISR) / .16, 2); g.fillStyle = ICE; g.fillRect(0, 0, W, H); g.restore(); }
+    if (tv > T_ISR && tv < T_ISR + .066) { g.save(); g.globalAlpha = .4 * (1 - (tv - T_ISR) / .066); g.fillStyle = ICE; g.fillRect(0, 0, W, H); g.restore(); }
     g.restore();
   }
 
   // ---------------------------------------------------------------- entry wipe: candy liquid band pours down (top to bottom), glitch + white flash on the word
   function entry(ctx, tv) {
     const off = getOff(), og = off.getContext('2d'); content(og, tv);
-    const yT = 620 + (tv - T_LIVE) * WAVE_V, OFFS = [0, 26, 120, 210, 290, 380];
+    const yT = 810 + (tv - T_LIVE) * WAVE_V, OFFS = [0, 26, 120, 210, 290, 380];
     const drip = (x, f) => f * (120 * Math.pow(Math.max(0, Math.sin(x * .014 + 1.1)), 8) + 70 * Math.pow(Math.max(0, Math.sin(x * .025 + 4)), 10));
     const edge = (j, x) => yT + OFFS[j] + Math.sin(x * .008 + tv * 20 + j * 1.9) * (10 + 5 * j) + Math.sin(x * .021 - tv * 27 + j) * 7 + (j === 5 ? drip(x, 1) : j === 4 ? drip(x, .5) : 0);
     ctx.save();
     ctx.beginPath(); ctx.moveTo(0, -10); for (let x = 0; x <= W + 12; x += 12) ctx.lineTo(x, edge(0, x)); ctx.lineTo(W, -10); ctx.closePath(); ctx.clip();
     ctx.drawImage(off, 0, 0);
     // glitch slices (a few frames around the word start)
-    const ga = tv < 11.0 ? 0 : 1 - inv(11.03, 11.17, tv);
+    const ga = tv < 11.0 ? 0 : 1 - inv(11.03, 11.25, tv);
     if (ga > 0) {
       const q = Math.floor(tv * 30 + 1e-6);
       for (let i = 0; i < 9; i++) { const sy = hash(q * 7 + i * 3.3) * H, shh = 10 + hash(q * 3 + i * 1.7) * 44, dx = (hash(q * 5 + i * 2.1) - .5) * 220 * ga; ctx.drawImage(off, 0, sy, W, shh, dx, sy, W, shh); }
@@ -278,7 +276,7 @@
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .35; ctx.strokeStyle = '#fff'; ctx.lineWidth = 8; ctx.beginPath(); for (let x = 0; x <= W + 12; x += 12) x ? ctx.lineTo(x, edge(2, x) + 12) : ctx.moveTo(x, edge(2, x) + 12); ctx.stroke(); ctx.restore();
     for (let i = 0; i < 10; i++) { const x = hash(i * 3.1 + 1) * W, y = edge(5, x) + 20 + hash(i) * 110; if (y < H + 40) CL.drop(ctx, x, y, 14 + hash(i + 5) * 26, CL.CAND[i % 8], tv, i); }
     // white flash on "וכל"
-    const fa = tv < T_LIVE ? .75 * inv(10.99, T_LIVE, tv) : .75 * Math.pow(1 - inv(T_LIVE, 11.2, tv), 2);
+    const fa = tv < T_LIVE ? .75 * inv(T_LIVE - .033, T_LIVE, tv) : .75 * (1 - inv(T_LIVE, T_LIVE + .066, tv));
     if (fa > 0) { ctx.save(); ctx.globalAlpha = fa; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
   }
 
@@ -288,16 +286,16 @@
       const hd = TLF.holdAt(A.T), inHold = hd && hd.k === 'ind';
       if (!inHold && s.t < HOLD_V) return;                                   // the s3 Bollywood poster owns the screen until the hold ends
       const tv = inHold ? HOLD_V + hd.age - hd.d : s.t;                        // virtual voice clock (runs into the last 0.11 s of the hold)
-      if (tv < 10.9) return;
+      if (tv < 10.7) return;
       // CUE 11.03 wipe-whoosh (band starts 0.13 s before the hold releases; output T = 14.40)
       // CUE 11.05 live-slam (white flash + glitch + bolts + LIVE badge impact on "וכל")
-      if (620 + (tv - T_LIVE) * WAVE_V > H + 90) content(ctx, tv); else entry(ctx, tv);
-      // CUE 11.15 tile-pop-1 (Channel 14 + Kan 11 on "ה" of השידורים)
+      if (810 + (tv - T_LIVE) * WAVE_V > H + 90) content(ctx, tv); else entry(ctx, tv);
+      // CUE 11.185 tile-pop-1 (Channel 14 + Kan 11 on "ה" of השידורים)
       // CUE 11.30 tile-pop-2 (Channel 9 + Reshet 13)
       // CUE 11.45 tile-pop-3 (Keshet 12 + i24)
       // CUE 11.60 tile-pop-4 (yes + HOT)
       // CUE 11.78 heartbeat-lub (giant red beat ring + ECG spike on "החיים")
-      // CUE 12.03 heartbeat-dub (second beat ring)
+      // CUE 12.03 heartbeat-dub (second ECG beat, no ring)
       // CUE 12.16 israel-blue-white-riser-hit (flash + rising splash + constellation draws on "מישראל")
       // CUE 12.72 sparkle-ding (held idle beat: sparkle burst + sheen sweep in the voice pause)
     },

@@ -1,12 +1,12 @@
 // s0_open: "פותחים את המסך, והעולם של הבידור נפתח בפניכם"  (voice clock v = 0 .. 3.65)
 // A black TV screen powers on, a neon bolt CRACKS it on "המסך" (0.74), the glass shatters and a liquid candy iris floods in
-// on "והעולם" (1.26), entertainment icons pop on "הבידור" (1.85), mega splash on "נפתח" (2.33), the ConnectTV splash + TV
+// on "והעולם" (1.26), entertainment icons pop on "הבידור" (1.90), mega splash on "נפתח" (2.36), the ConnectTV splash + TV
 // silhouette settles on "בפניכם" (2.57).  No brand wordmark here (saved for the end card).
 (() => {
   const { clamp, lerp, inv, ease, hash, rng } = A, C = CL.C, W = CL.W, H = CL.H, TAU = A.TAU;   // 1920 x 1080 landscape
   const IX = W / 2, IY = 420;                     // impact / focus point (kept above the caption band y>820)
   const sm = (a, b, x) => A.smooth(a, b, x);
-  const T_POW = 0.12, T_CRACK = 0.74, T_BURST = 1.26, T_ICON = 1.85, T_MEGA = 2.33, T_SETTLE = 2.57;
+  const T_POW = 0.12, T_CRACK = 0.74, T_BURST = 1.26, T_ICON = 1.90, T_MEGA = 2.36, T_SETTLE = 2.57;
 
   // ---------------------------------------------------------------- glass shards (web of rays x rings around the impact)
   let SH = null;
@@ -46,8 +46,8 @@
         g.fillStyle = A.linear(g, 0, IY - 80, 0, IY + 80, [[0, 'rgba(25,200,255,0)'], [.5, `rgba(25,200,255,${.30 + charge * .3})`], [1, 'rgba(25,200,255,0)']]); g.fillRect(IX - lw / 2, IY - 80, lw, 160);
         g.fillStyle = '#fff'; g.fillRect(IX - lw / 2, IY - th / 2, lw, th); g.restore();
       }
-      if (t > .45 && t < T_CRACK + .3) {   // charge orb + tiny arcs building up ("את")
-        const k = sm(.45, .74, t), r = 8 + 40 * k * (1 + .15 * Math.sin(t * 70));
+      if (t > .3 && t < T_CRACK + .3) {   // charge orb + tiny arcs building up ("את")
+        const k = sm(.3, .74, t), r = 8 + 40 * k * (1 + .15 * Math.sin(t * 70));
         g.save(); g.globalCompositeOperation = 'lighter';
         g.fillStyle = A.radial(g, IX, IY, 0, 120 + 420 * k, [[0, 'rgba(255,255,255,.9)'], [.15, 'rgba(25,200,255,.55)'], [.5, 'rgba(139,61,255,.28)'], [1, 'rgba(0,0,0,0)']]); g.fillRect(IX - 700, IY - 700, 1400, 1400);
         g.fillStyle = '#fff'; g.beginPath(); g.arc(IX, IY, r, 0, TAU); g.fill(); g.restore();
@@ -62,7 +62,7 @@
 
   // ---------------------------------------------------------------- shards draw
   function drawShards(ctx, t, tex) {
-    const u = t - T_BURST, crackR = 1900 * ease.out(clamp((t - T_CRACK) / .34)), sepK = sm(.86, T_BURST, t);
+    const u = t - T_BURST, crackR = 1900 * ease.out(clamp((t - T_CRACK) / .55)), sepK = sm(.86, T_BURST, t);
     const rum = 1 + 2.5 * sepK;
     for (const s of SH.shards) {
       let ox = 0, oy = 0, rot = 0, sc = 1, al = 1;
@@ -71,9 +71,9 @@
         ox = Math.cos(s.a) * e + jj; oy = Math.sin(s.a) * e + Math.cos(t * 47 + s.h2 * 30) * rum * sepK * cr; rot = (s.h3 - .5) * .012 * sepK * cr;
       } else {
         // CUE 1.26 shard-burst (glass explodes toward camera, liquid iris floods in)
-        const sp = (2100 - Math.min(s.d, 1400) * .55) * (.55 + .9 * s.h1), disp = sp * (1 - Math.exp(-3.4 * u)) / 3.4, fall = 1500 * u * u * (.35 + s.h2);
+        const sp = (1500 - Math.min(s.d, 1400) * .4) * (.55 + .9 * s.h1), disp = sp * (1 - Math.exp(-2.1 * u)) / 2.1, fall = 900 * u * u * (.35 + s.h2);
         const cr = s.d < crackR ? 1 : .35;
-        ox = Math.cos(s.a) * (12 + disp) * cr; oy = Math.sin(s.a) * (12 + disp) * cr + fall; rot = (s.h3 - .5) * 6 * u * cr; sc = 1 + (.9 + s.h2) * u * cr; al = 1 - sm(.15, .5 + s.h3 * .25, u);
+        ox = Math.cos(s.a) * (12 + disp) * cr; oy = Math.sin(s.a) * (12 + disp) * cr + fall; rot = (s.h3 - .5) * 3.5 * u * cr; sc = 1 + (.6 + s.h2 * .6) * u * cr; al = 1 - sm(.35, .95 + s.h3 * .4, u);
         if (al <= .01) continue;
       }
       ctx.save(); ctx.globalAlpha = al; ctx.translate(s.c[0] + ox, s.c[1] + oy); ctx.rotate(rot); ctx.scale(sc, sc); ctx.translate(-s.c[0], -s.c[1]);
@@ -86,7 +86,7 @@
   }
   // glowing crack web (pre burst)
   function drawCracks(ctx, t) {
-    const R = 1900 * ease.out(clamp((t - T_CRACK) / .34)); if (R <= 1 || t >= T_BURST) return;
+    const R = 1900 * ease.out(clamp((t - T_CRACK) / .55)); if (R <= 1 || t >= T_BURST) return;
     const fl = .75 + .25 * hash(CL.qs(t, 30) * 3.3);
     ctx.save(); ctx.beginPath(); ctx.arc(IX, IY, R, 0, TAU); ctx.clip(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     const path = () => { ctx.beginPath(); SH.segs.forEach(([a, b]) => { ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); }); };
@@ -99,10 +99,10 @@
   }
 
   // ---------------------------------------------------------------- liquid iris (candy bands around a blob hole that shows the world)
-  const Rf = u => 2000 * ease.out(clamp(u / .8));
+  const Rf = u => 2000 * ease.out(clamp(u / 1.25));
   function blobPts(R, seed, u) { const pts = []; for (let i = 0; i < 44; i++) { const a = i / 44 * TAU, r = R * (1 + .07 * A.noise2(Math.cos(a) * 1.4 + seed, Math.sin(a) * 1.4 + u * 2.4 + seed)); pts.push([IX + Math.cos(a) * r, IY + Math.sin(a) * r]); } return pts; }
-  const BANDS = [[C.pink, 0], [C.orange, .045], [C.yellow, .09], [C.lime, .135], [C.cyan, .18], [C.purple, .225]];
-  const HOLE_LAG = .29;
+  const BANDS = [[C.pink, 0], [C.orange, .07], [C.yellow, .14], [C.lime, .21], [C.cyan, .28], [C.purple, .35]];
+  const HOLE_LAG = .45;
 
   // ---------------------------------------------------------------- the candy world
   function rays(ctx, t, k) {
@@ -138,13 +138,13 @@
     }
   }
   function burstSparks(ctx, t, t0, N, seed, R) {
-    const u = t - t0; if (u < 0 || u > 1.1) return; const rg = rng(seed);
-    for (let i = 0; i < N; i++) { const a = rg() * TAU, sp = 300 + rg() * R, d = sp * (1 - Math.exp(-3 * u)) / 3, s = (18 + rg() * 40) * (1 - u / 1.1) * (.6 + .4 * Math.sin(t * 30 + i)); CL.spark(ctx, IX + Math.cos(a) * d, IY + Math.sin(a) * d - 40 * u, s, rg() * 3 + u * 2, [ '#fff', C.yellow, C.cyan, C.pink ][i % 4]); }
+    const u = t - t0; if (u < 0 || u > 1.7) return; const rg = rng(seed);
+    for (let i = 0; i < N; i++) { const a = rg() * TAU, sp = 300 + rg() * R, d = sp * (1 - Math.exp(-2 * u)) / 2, s = (18 + rg() * 40) * (1 - u / 1.7) * (.6 + .4 * Math.sin(t * 30 + i)); CL.spark(ctx, IX + Math.cos(a) * d, IY + Math.sin(a) * d - 40 * u, s, rg() * 3 + u * 2, [ '#fff', C.yellow, C.cyan, C.pink ][i % 4]); }
   }
 
   // charging core: a jelly orb that swells at the centre until it detonates as the mega splash on "נפתח"
   function core(ctx, t) {
-    if (t < 1.5 || t >= T_MEGA - .02) return; const k = ease.inOut(inv(1.5, T_MEGA - .03, t)), r = 40 + 190 * k, pl = 1 + .06 * Math.sin(t * 16) * k;
+    if (t < 1.35 || t >= T_MEGA - .02) return; const k = ease.inOut(inv(1.35, T_MEGA - .03, t)), r = 40 + 190 * k, pl = 1 + .06 * Math.sin(t * 16) * k;
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, IX, IY, 0, r * 3, [[0, A.hex(C.pink, .5 * k)], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(IX - r * 3, IY - r * 3, r * 6, r * 6); ctx.restore();
     CL.drop(ctx, IX, IY, r * pl, C.pink, t * 2, 3); CL.drop(ctx, IX - r * .08, IY - r * .06, r * .62 * pl, C.orange, t * 2.5, 5); CL.drop(ctx, IX - r * .1, IY - r * .1, r * .3 * pl, C.yellow, t * 3, 8);
   }
@@ -175,10 +175,10 @@
   }
   const ICONS = [iconPlay, iconStar, iconClap, iconReel];
   function icons(ctx, t) {
-    const u = t - T_MEGA; if (u > .6) return;
+    const u = t - T_MEGA; if (u > .95) return;
     ICONS.forEach((fn, i) => {
-      const t0 = T_ICON - .07 + i * .022, pp = CL.pop(t, t0, .38); if (pp <= 0) return;
-      const a = i * TAU / 4 + .7 + (t - T_ICON) * .9 + (u > 0 ? u * 2 : 0), R0 = pp + (u > 0 ? 2.8 * ease.out(clamp(u / .5)) : 0), sc = (1 + (u > 0 ? u * 1.6 : 0)) * Math.min(1, pp), al = u > 0 ? 1 - sm(0, .55, u) : 1;
+      const t0 = T_ICON - .09 + i * .022, pp = CL.pop(t, t0, .5); if (pp <= 0) return;
+      const a = i * TAU / 4 + .7 + (t - T_ICON) * .9 + (u > 0 ? u * 2 : 0), R0 = pp + (u > 0 ? 2.8 * ease.out(clamp(u / .85)) : 0), sc = (1 + (u > 0 ? u * .9 : 0)) * Math.min(1, pp), al = u > 0 ? 1 - sm(.1, .9, u) : 1;
       const x = IX + Math.cos(a) * R0 * 640, y = IY + Math.sin(a) * R0 * 270 + Math.sin(t * 3 + i) * 10;
       ctx.save(); ctx.translate(x, y); ctx.rotate(Math.sin(t * 2.2 + i * 2) * .18); ctx.scale(sc, sc); ctx.globalAlpha *= al; fn(ctx, 118); ctx.restore();
     });
@@ -186,7 +186,7 @@
 
   // ---------------------------------------------------------------- bezel of the TV we are inside
   function bezel(ctx, t) {
-    const u = t - T_BURST, s = u < 0 ? 1 : 1 + 6 * ease.out(clamp(u / .6)), al = u < 0 ? 1 : 1 - sm(.18, .55, u); if (al <= .01) return;
+    const u = t - T_BURST, s = u < 0 ? 1 : 1 + 6 * ease.out(clamp(u / .9)), al = u < 0 ? 1 : 1 - sm(.3, .8, u); if (al <= .01) return;
     ctx.save(); ctx.globalAlpha = al; ctx.translate(IX, IY); ctx.scale(s, s); ctx.translate(-IX, -IY);
     ctx.beginPath(); ctx.rect(-400, -400, W + 800, H + 800); ctx.roundRect(38, 38, W - 76, H - 38 - 84, 70);
     ctx.fillStyle = A.linear(ctx, 0, 0, W, H, [[0, '#4aa8ff'], [.5, C.blue], [1, '#4a1fb8']]); ctx.fill('evenodd');
@@ -199,8 +199,8 @@
 
   // ---------------------------------------------------------------- ConnectTV splash + TV silhouette hint (settles on "בפניכם")
   function hint(ctx, t) {
-    const pp = CL.pop(t, T_SETTLE - .07, .42); if (pp <= 0) return; const on = CL.spring(t, T_SETTLE - .02, .6), bob = Math.sin(t * 2.2) * 8;
-    ctx.save(); ctx.translate(IX, IY + 30 + bob); ctx.scale(pp, pp); ctx.rotate((1 - Math.min(1, pp)) * -.2 + Math.sin(t * 1.3) * .015);
+    const pp = CL.pop(t, T_SETTLE - .17, .55), fa = sm(T_SETTLE - .1, T_SETTLE + .03, t); if (pp <= 0 || fa <= 0) return; const on = CL.spring(t, T_SETTLE - .05, .95), bob = Math.sin(t * 2.2) * 8;
+    ctx.save(); ctx.globalAlpha *= fa; ctx.translate(IX, IY + 30 + bob); ctx.scale(pp, pp); ctx.rotate((1 - Math.min(1, pp)) * -.2 + Math.sin(t * 1.3) * .015);
     ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, 0, 0, 0, 620, [[0, A.hex(C.cyan, .5)], [.55, A.hex(C.purple, .22)], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(-640, -640, 1280, 1280); ctx.globalCompositeOperation = 'source-over';
     CL.tv(ctx, 0, 0, 560, 400, (g, sw, sh) => {   // the TV of the logo, screen lit by the liquid world
       g.fillStyle = A.linear(g, 0, -sh / 2, 0, sh / 2, [[0, '#7fe8ff'], [.5, C.blue], [1, C.purple]]); g.fillRect(-sw / 2, -sh / 2, sw, sh);
@@ -216,15 +216,15 @@
   A.scene({ name: 's0_open', start: 0, end: 3.65, draw(ctx, s) {
     const t = s.t;
     // camera: shakes on each impact + punches
-    let [sx, sy] = CL.shake(t, T_CRACK, .6, 26), [sx2, sy2] = CL.shake(t, T_BURST, .55, 30), [sx3, sy3] = CL.shake(t, T_MEGA, .6, 26);
+    let [sx, sy] = CL.shake(t, T_CRACK, .9, 22), [sx2, sy2] = CL.shake(t, T_BURST, .8, 20), [sx3, sy3] = CL.shake(t, T_MEGA, .9, 16);
     const rumble = sm(.86, T_BURST, t) * (t < T_BURST ? 1 : 0) * 7;
     sx += sx2 + sx3 + Math.sin(t * 61) * rumble; sy += sy2 + sy3 + Math.cos(t * 53) * rumble;
-    const z = 1 + .04 * sm(0, T_CRACK, t) + (t > T_CRACK ? .05 * Math.exp(-(t - T_CRACK) * 8) : 0) + (t > T_BURST ? .10 * Math.exp(-(t - T_BURST) * 4.5) : 0) + (t > T_MEGA ? .09 * Math.exp(-(t - T_MEGA) * 5) : 0) + .11 * ease.in(inv(3.0, 3.65, t));
+    const z = 1 + .04 * sm(0, T_CRACK, t) + (t > T_CRACK ? .05 * Math.exp(-(t - T_CRACK) * 5) : 0) + (t > T_BURST ? .10 * Math.exp(-(t - T_BURST) * 3) : 0) + (t > T_MEGA ? .09 * Math.exp(-(t - T_MEGA) * 3.2) : 0) + .11 * ease.in(inv(3.0, 3.65, t));
     if (!SH) buildShards();
     ctx.save(); ctx.translate(W / 2 + sx, H / 2 + sy); ctx.scale(z, z); ctx.translate(-W / 2, -H / 2);
     ctx.fillStyle = '#02030b'; ctx.fillRect(-300, -300, W + 600, H + 600);
     // light leaking through the cracks
-    const leak = sm(.78, T_BURST, t) * (t < T_BURST + .1 ? 1 : 0);
+    const leak = sm(.78, T_BURST, t) * (1 - sm(T_BURST, T_BURST + .6, t));
     if (leak > 0) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = A.radial(ctx, IX, IY, 0, 1300, [[0, A.hex(C.pink, .95 * leak)], [.3, A.hex(C.cyan, .8 * leak)], [.6, A.hex(C.purple, .5 * leak)], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(-300, -300, W + 600, H + 600); ctx.restore(); }
     // liquid iris + world
     const u = t - T_BURST + .02;
@@ -236,37 +236,37 @@
       } else world(ctx, t);
     }
     // glass
-    if (t < T_BURST + 1.3) drawShards(ctx, t, screenTex(t));
+    if (t < T_BURST + 1.9) drawShards(ctx, t, screenTex(t));
     drawCracks(ctx, t);
     // CUE 1.26 splash (colour burst through the glass) and drops
-    if (t >= T_BURST - .03) { const p = CL.spring(t, T_BURST - .04, .6), fade = 1 - sm(1.55, 2.0, t); if (fade > 0) { ctx.save(); ctx.globalAlpha = fade; CL.splash(ctx, IX, IY, 620, p, 2, [C.pink, C.orange, C.yellow, C.cyan, C.purple, C.lime]); ctx.restore(); } }
-    drops(ctx, t, T_BURST, 26, 11, { r: 34, min: 600, rng: 1200, life: 2.6, up: 90, g: 420 });
+    if (t >= T_BURST - .03) { const p = CL.spring(t, T_BURST - .04, .95), fade = 1 - sm(1.7, 2.2, t); if (fade > 0) { ctx.save(); ctx.globalAlpha = fade; CL.splash(ctx, IX, IY, 620, p, 2, [C.pink, C.orange, C.yellow, C.cyan, C.purple, C.lime]); ctx.restore(); } }
+    drops(ctx, t, T_BURST, 16, 11, { r: 34, min: 600, rng: 1200, life: 2.6, up: 90, g: 420 });
     bubbles(ctx, t);
-    // CUE 1.70 sparkle ping (של)
-    if (t > 1.68 && t < 2.2) { const k = (t - 1.7) / .5; CL.ring(ctx, IX, IY, 760, clamp(k), '#fff', 10); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU + .3, d = 200 + 640 * ease.out(clamp(k)); CL.spark(ctx, IX + Math.cos(a) * d * 1.5, IY + Math.sin(a) * d * .7, 34 * (1 - clamp(k)), t * 3, i % 2 ? C.yellow : '#fff'); } }
-    // CUE 1.85 icons-pop (הבידור)
+    // CUE 1.76 sparkle ping (של)
+    if (t > 1.74 && t < 2.38) { const k = (t - 1.76) / .62; CL.ring(ctx, IX, IY, 760, clamp(k), '#fff', 10); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU + .3, d = 200 + 640 * ease.out(clamp(k)); CL.spark(ctx, IX + Math.cos(a) * d * 1.5, IY + Math.sin(a) * d * .7, 34 * (1 - clamp(k)), t * 3, i % 2 ? C.yellow : '#fff'); } }
+    // CUE 1.90 icons-pop (הבידור)
     core(ctx, t);
     icons(ctx, t);
-    // CUE 2.33 mega-splash (נפתח): huge candy splash, ring shockwaves, drops, sparks, flash
+    // CUE 2.36 mega-splash (נפתח): huge candy splash, ring shockwaves, drops, sparks, flash
     if (t >= T_MEGA - .04) {
-      const p1 = CL.spring(t, T_MEGA - .05, .75), p2 = CL.spring(t, T_MEGA - .02, .65), br = 1 + .018 * Math.sin(t * 3.1);
+      const p1 = CL.spring(t, T_MEGA - .05, 1.1), p2 = CL.spring(t, T_MEGA - .02, .95), br = 1 + .018 * Math.sin(t * 3.1);
       CL.splash(ctx, IX, IY, 1000 * br, p1, 5, [C.pink, C.orange, C.yellow, C.lime, C.cyan, C.blue, C.purple, C.green]);
       CL.splash(ctx, IX, IY, 660 * br, p2, 12, [C.cyan, C.yellow, C.pink, C.purple, C.orange, C.lime]);
-      CL.ring(ctx, IX, IY, 1700, (t - T_MEGA) / .7, '#fff', 34); CL.ring(ctx, IX, IY, 1300, (t - T_MEGA - .07) / .7, C.pink, 24); CL.ring(ctx, IX, IY, 950, (t - T_MEGA - .13) / .7, C.cyan, 18);
-      drops(ctx, t, T_MEGA - .02, 36, 23, { r: 44, min: 800, rng: 1500, life: 3.2, up: 120, g: 300 });
-      burstSparks(ctx, t, T_MEGA, 36, 7, 1500);
+      CL.ring(ctx, IX, IY, 1700, (t - T_MEGA) / 1.0, '#fff', 22); CL.ring(ctx, IX, IY, 1300, (t - T_MEGA - .1) / 1.0, C.pink, 16);
+      drops(ctx, t, T_MEGA - .02, 22, 23, { r: 46, min: 700, rng: 1300, life: 3.2, up: 120, g: 300 });
+      burstSparks(ctx, t, T_MEGA, 20, 7, 1300);
     }
     // hint of the brand: TV silhouette inside the settled splash (בפניכם)
     hint(ctx, t);
-    burstSparks(ctx, t, T_SETTLE, 14, 31, 800);
+    burstSparks(ctx, t, T_SETTLE, 8, 31, 700);
     if (t > T_SETTLE + .3) CL.twinkle(ctx, A.T * .9 + 3, 160, 60, W - 320, 700, 14, 17, ['#fff', C.cyan, C.yellow, C.pink]);
     // CUE 0.74 bolt-crack (המסך): bolt from above lands ON the word; flash, shockwave rings
-    { const p = ease.in(clamp((t - .58) / .155)), fl = t < T_CRACK ? 1 : Math.max(0, 1 - sm(.78, 1.08, t)) * (.6 + .4 * hash(CL.qs(t, 30) * 1.9));
+    { const p = ease.in(clamp((t - .58) / .155)), fl = t < T_CRACK ? 1 : Math.max(0, 1 - sm(.85, 1.25, t)) * (.6 + .4 * hash(CL.qs(t, 30) * 1.9));
       if (p > 0 && fl > 0) { const sd = 3 + (t > T_CRACK ? Math.floor(t * 12) % 3 : 0); CL.bolt(ctx, 1230, -90, IX, IY, p, sd, { lw: 28, col: C.cyan, alpha: fl }); CL.bolt(ctx, 1230, -90, IX, IY, p, sd, { lw: 11, col: C.pink, alpha: fl * .6 }); }
-      [[1990, 120, .77, C.pink, 4], [-60, 760, .80, C.purple, 5], [1960, 900, .83, C.cyan, 6], [40, -40, .86, C.yellow, 7]].forEach(([x, y, t0, col, sd]) => { const q = ease.out(clamp((t - t0) / .13)), f2 = Math.max(0, 1 - sm(t0 + .1, t0 + .38, t)); if (q > 0 && f2 > 0) CL.bolt(ctx, IX, IY, x, y, q, sd, { lw: 14, col, alpha: f2 }); });
-      CL.ring(ctx, IX, IY, 1500, (t - T_CRACK) / .55, '#fff', 16); CL.ring(ctx, IX, IY, 1000, (t - T_CRACK - .06) / .55, C.cyan, 12);
-      if (t > T_CRACK - .005 && t < T_CRACK + .3) { CL.spark(ctx, IX, IY, 300 * Math.exp(-(t - T_CRACK) * 11), .3, '#fff'); CL.spark(ctx, IX, IY, 190 * Math.exp(-(t - T_CRACK) * 11), .3 + Math.PI / 4, C.cyan); }
-      const wf = t >= T_CRACK - .005 ? Math.exp(-(t - T_CRACK) * 16) * .8 : 0, wb = t >= T_BURST - .01 ? Math.exp(-(t - T_BURST) * 14) * .4 : 0, wm = t >= T_MEGA - .01 ? Math.exp(-(t - T_MEGA) * 12) * .6 : 0;
+      [[1990, 120, .77, C.pink, 4], [-60, 760, .80, C.purple, 5], [1960, 900, .83, C.cyan, 6], [40, -40, .86, C.yellow, 7]].forEach(([x, y, t0, col, sd]) => { const q = ease.out(clamp((t - t0) / .2)), f2 = Math.max(0, 1 - sm(t0 + .25, t0 + .6, t)); if (q > 0 && f2 > 0) CL.bolt(ctx, IX, IY, x, y, q, sd, { lw: 14, col, alpha: f2 }); });
+      CL.ring(ctx, IX, IY, 1500, (t - T_CRACK) / .9, '#fff', 14); CL.ring(ctx, IX, IY, 1000, (t - T_CRACK - .1) / .9, C.cyan, 10);
+      if (t > T_CRACK - .005 && t < T_CRACK + .45) { CL.spark(ctx, IX, IY, 300 * Math.exp(-(t - T_CRACK) * 7), .3, '#fff'); CL.spark(ctx, IX, IY, 190 * Math.exp(-(t - T_CRACK) * 7), .3 + Math.PI / 4, C.cyan); }
+      const wf = t >= T_CRACK - .005 ? Math.max(0, 1 - (t - T_CRACK) / .066) * .75 : 0, wb = t >= T_BURST - .01 ? Math.max(0, 1 - (t - T_BURST) / .066) * .35 : 0, wm = t >= T_MEGA - .01 ? Math.max(0, 1 - (t - T_MEGA) / .066) * .5 : 0;
       const fa = Math.max(wf, wb, wm); if (fa > .01) { ctx.fillStyle = `rgba(255,255,255,${fa})`; ctx.fillRect(-300, -300, W + 600, H + 600); } }
     bezel(ctx, t);
     ctx.restore();

@@ -4,7 +4,7 @@
   const HOLDS = [
     { v: 8.85, d: 1.4, k: 'cin' },     // after "צ'רלטון": the narrator turns into a cinema trailer voice, letterbox + projector, echo
     { v: 9.98, d: 1.0, k: 'tur' },     // after "טורקיות": Turkish drama sting + sob
-    { v: 11.03, d: 1.1, k: 'ind' },    // after "הודיות": Bollywood sting, sitar + tabla + a spoken Hindi line
+    { v: 11.03, d: 1.1, k: 'ind' },    // after "הודיות": Bollywood music sting
   ];
   const VDUR = 30.6, TOTAL = VDUR + HOLDS.reduce((s, h) => s + h.d, 0);
   const vOf = T => { let acc = 0; for (const h of HOLDS) { const hs = h.v + acc; if (T < hs) return T - acc; if (T < hs + h.d) return h.v; acc += h.d; } return T - acc; };

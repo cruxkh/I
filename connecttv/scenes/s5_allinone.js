@@ -1,23 +1,23 @@
 // s5_allinone: "הכול במקום אחד / הכול נגיש / והכול מתעדכן לאורך השבוע"  (voice clock v = 12.85 .. 17.55; T = v + 3.5 here, no holds inside)
-// 1) liquid wipe covers s4 -> 13.08 burst of a chaotic logo+poster swarm -> 13.40 orbit -> 13.82 vortex sucks all into ONE glossy TV (splash, shockwave, jelly)
-// 2) 14.43 button pops, thumb comes in, 14.87 TAP: the candy screen splits open into a menu of big tiles
-// 3) 15.36 TV shrinks into a rainbow arc of 7 day bubbles, one lights per beat 15.86..16.75, the last one throws a rainbow splash
+// 1) liquid wipe covers s4 -> 13.08 burst of a chaotic logo+poster swarm -> 13.435 orbit -> 13.82 vortex sucks all into ONE glossy TV (splash, shockwave, jelly)
+// 2) 14.43 button pops, thumb comes in, 14.89 TAP: the candy screen splits open into a menu of big tiles
+// 3) 15.36 TV shrinks into a rainbow arc of 7 day bubbles, one lights per beat 15.98..16.855, the last one throws a rainbow splash
 (() => {
   const { clamp, lerp, inv, ease, hash, rng } = A, C = CL.C, TAU = A.TAU, PI = Math.PI, W = 1920, H = 1080;   // LANDSCAPE 16:9; captions occupy y > ~830
 
   // ---------------------------------------------------------------- timings (voice clock)
-  const T_WIPE = 12.85, T_BURST = 13.08, T_ORBIT = 13.40, T_IMPACT = 13.82;
-  const T_BTN = 14.43, T_TAP = 14.87;
-  const T_CAL = 15.36, T_DAY0 = 15.86, T_SAT = 16.75;
-  const DAY_T = Array.from({ length: 7 }, (_, i) => T_DAY0 + i * (T_SAT - T_DAY0) / 6);   // 15.86 ... 16.75 evenly spaced
-  // day pops land exactly on these beats (evenly spaced, 0.1483 s apart); bubble i pops (bump peaks) at DAY_T[i]:
-  // CUE 15.86 day1
-  // CUE 16.01 day2
-  // CUE 16.16 day3
-  // CUE 16.31 day4
-  // CUE 16.45 day5
-  // CUE 16.60 day6
-  // CUE 16.75 day7 (Saturday, rainbow splash)
+  const T_WIPE = 12.85, T_BURST = 13.08, T_ORBIT = 13.435, T_IMPACT = 13.82;
+  const T_BTN = 14.43, T_TAP = 14.89;
+  const T_CAL = 15.36, T_DAY0 = 15.98, T_SAT = 16.855;
+  const DAY_T = Array.from({ length: 7 }, (_, i) => T_DAY0 + i * (T_SAT - T_DAY0) / 6);   // 15.98 ... 16.855 evenly spaced
+  // day pops land exactly on these beats (evenly spaced, 0.1458 s apart, מתעדכן 15.98 to השבוע 16.855); bubble i pops (bump peaks) at DAY_T[i]:
+  // CUE 15.98 day1
+  // CUE 16.126 day2
+  // CUE 16.271 day3
+  // CUE 16.417 day4
+  // CUE 16.563 day5
+  // CUE 16.709 day6
+  // CUE 16.855 day7 (Saturday, rainbow splash)
   const DAYS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
   const DCOL = [C.pink, C.orange, C.yellow, C.lime, C.cyan, C.blue, C.purple];
   const RAIN = [C.red, C.orange, C.yellow, C.lime, C.cyan, C.blue, C.purple];
@@ -268,7 +268,7 @@
     if (t < T_BURST + .06) { const k = ease.in(inv(12.9, T_BURST, t)); if (k > 0) CL.drop(ctx, OC.x, OC.y, 30 + 150 * k, C.pink, t * 3, 2); }
     // CUE 13.08 all-burst (everything pops out of a splash)
     const sp0 = CL.spring(t, T_BURST - .02, .5); if (sp0 > 0 && t < T_ORBIT) { ctx.save(); ctx.globalAlpha = 1 - ease.in(inv(13.14, 13.36, t)); CL.splash(ctx, OC.x, OC.y, 520, sp0, 4); ctx.restore(); for (let k = 0; k < 3; k++) CL.ring(ctx, OC.x, OC.y, 900 + k * 150, (t - T_BURST - k * .05) / .5, [C.white, C.yellow, C.pink][k], 22); }
-    // CUE 13.40 orbit-start (swirl riser)
+    // CUE 13.435 orbit-start (swirl riser)
     const vk = t < T_IMPACT ? ease.out(clamp((t - T_ORBIT) / .3)) : 1 - ease.in(clamp((t - T_IMPACT) / .16));
     if (vk > .01) { ctx.save(); ctx.globalAlpha = .95; vortex(ctx, TV.x, TV.y, 900, 5 + (t - T_ORBIT) * (9 + 15 * ease.in(inv(T_ORBIT, T_IMPACT, t))), vk, 6); ctx.restore(); }
     // CUE 13.82 vortex-impact (big splash + shockwave + TV jelly)
@@ -286,7 +286,7 @@
     // ---- 2. accessible: button (right of the TV), thumb, tap
     const bIn = CL.pop(t, T_BTN - .06, .34), bOut = 1 - ease.in(clamp((t - 15.15) / .2)), bs = bIn * bOut, BX = BTN.x, BY = BTN.y;
     if (bs > .01) {
-      const press = clamp((t - (T_TAP - .025)) / .03) * (1 - clamp((t - 14.99) / .16));   // CUE 14.87 tap-click
+      const press = clamp((t - (T_TAP - .025)) / .03) * (1 - clamp((t - (T_TAP + .12)) / .16));   // CUE 14.89 tap-click
       // CUE 14.43 button-pop (thumb enters)
       if (t >= T_TAP - .1 && t < T_TAP + .3) { const ub = clamp((t - T_TAP) / .25); CL.bolt(ctx, BX - 150, BY - 6, TV.x + 0 + (pose.x - TV.x) + 250, pose.y, clamp((t - T_TAP + .02) / .05), 3, { col: C.cyan, lw: 22, alpha: 1 - ub }); }
       button(ctx, BX, BY, bs * BTN.s, press, t);
@@ -305,7 +305,7 @@
       rainbow(ctx, t);
       // CUE 15.36 calendar-in (bubbles pop in right to left)
       let n = 0; DAY_T.forEach(d => { if (t >= d - .03) n++; });
-      // CUE 16.75 day7 rainbow-splash (Saturday): splash behind the bubbles, sparks in front
+      // CUE 16.855 day7 rainbow-splash (Saturday): splash behind the bubbles, sparks in front
       const [sx, sy] = dayPos(6);
       if (t >= T_SAT) { const spr = CL.spring(t, T_SAT - .02, .7); ctx.save(); ctx.globalAlpha = 1 - ease.in(inv(17.1, 17.5, t)); CL.splash(ctx, sx, sy, 470, spr, 11, RAIN); ctx.restore(); for (let k = 0; k < 7; k++) CL.ring(ctx, sx, sy, 700 + k * 110, (t - T_SAT - k * .045) / .6, RAIN[k], 22); candyDrops(ctx, t, sx, sy, T_SAT, 24, 41, 900, 1.3); }
       for (let i = 0; i < 7; i++) dayBubble(ctx, i, t);

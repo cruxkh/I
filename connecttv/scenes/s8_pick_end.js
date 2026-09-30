@@ -1,13 +1,13 @@
 // s8_pick_end (LANDSCAPE 1920x1080): "פשוט בוחרים מה לראות" / "ומתחילים לצפות" + END CARD
-// v 24.95 .. 30.6.  Words: 25.08 פשוט / 25.43 בוחרים / 25.91 מה / 26.05 לראות / 26.30 ומתחילים / 26.94 לצפות (ends 27.43)
-// Beats: wipe-in (24.95) -> candy tile row glides in (25.08) -> finger hovers, tiles bounce (25.43) -> TAP (26.05)
-//        -> tile bursts to full screen + play pulses (26.30) -> full-screen playback bursts open (26.94)
+// v 24.95 .. 30.6.  Words: 25.08 פשוט / 25.365 בוחרים / 25.91 מה / 26.05 לראות / 26.30 ומתחילים / 26.99 לצפות (ends 27.43)
+// Beats: wipe-in (24.95) -> candy tile row glides in (25.08) -> finger hovers, tiles bounce (25.365) -> TAP (26.05)
+//        -> tile bursts to full screen + play pulses (26.30) -> full-screen playback bursts open (26.99)
 //        -> iris close onto navy -> LOGO SLAM (27.60) -> calm resolved hold until 30.6.
 (() => {
   const { clamp, lerp, inv, ease, hash } = A; const C = CL.C, TAU = A.TAU;
   const W = 1920, H = 1080, CX = 960;
   const S0 = 24.95, SE = 30.7;
-  const T_WIPE1 = 25.34, T_TAP = 26.05, T_BURST = 26.30, T_PLAY = 26.94, T_IRIS = 27.42, SLAM = 27.60, T_TAG = 28.10;
+  const T_WIPE1 = 25.52, T_TAP = 26.055, T_BURST = 26.30, T_PLAY = 26.99, T_IRIS = 27.40, SLAM = 27.60, T_TAG = 28.10, GT = 27.18;
   const sm = (a, b, x) => A.smooth(a, b, x);
   const kick = (t, t0, amp = 1, f = 20, d = 7) => (t < t0 ? 0 : amp * Math.sin((t - t0) * f) * Math.exp(-(t - t0) * d));
   const pulse = (t, a, b) => (t < a || t > b ? 0 : Math.sin((t - a) / (b - a) * Math.PI));
@@ -50,9 +50,9 @@
   // ---------------------------------------------------------------- tiles (a row of 4 big candy tiles)
   const TW = 410, TH = 600, TY = 440;
   const TILES = [
-    { id: 'movie', label: 'סרטים', x: 1575, c: ['#FF6DB6', '#C2137A'], t0: 25.00, hv: 25.55 },
-    { id: 'series', label: 'סדרות', x: 1165, c: ['#FFC93F', '#F0620F'], t0: 25.05, hv: 25.79 },
-    { id: 'sport', label: 'כדורגל', x: 755, c: ['#9BFF55', '#12B571'], t0: 25.10, hv: 25.97 },
+    { id: 'movie', label: 'סרטים', x: 1575, c: ['#FF6DB6', '#C2137A'], t0: 25.00, hv: 25.45 },
+    { id: 'series', label: 'סדרות', x: 1165, c: ['#FFC93F', '#F0620F'], t0: 25.05, hv: 25.72 },
+    { id: 'sport', label: 'כדורגל', x: 755, c: ['#9BFF55', '#12B571'], t0: 25.10, hv: 25.93 },
     { id: 'live', label: 'שידור חי', x: 345, c: ['#3DD8FF', '#3A4CF0'], t0: 25.15, hv: 99 },
   ];
   const CHOSEN = 2;
@@ -100,7 +100,7 @@
     ctx.restore();
   }
   // ---------------------------------------------------------------- the finger
-  const fk = [[25.20, [2050, 1400]], [25.56, [1600, 560], 'out'], [25.64, [1585, 540]], [25.80, [1170, 560]], [25.88, [1160, 545]], [25.98, [772, 526]], [26.05, [756, 462], 'in'], [26.13, [756, 494], 'out'], [26.60, [1050, 1500], 'in']];
+  const fk = [[25.02, [2050, 1400]], [25.45, [1600, 560], 'out'], [25.56, [1585, 540]], [25.72, [1170, 560]], [25.80, [1160, 545]], [25.93, [772, 526]], [26.055, [756, 462], 'in'], [26.22, [756, 494], 'out'], [26.95, [1050, 1500], 'in']];
   const fingerAt = t => A.key(t, fk, 'inOut');
   function finger(ctx, x, y, press, alpha) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(-.42); const sc = 1 - .07 * press; ctx.scale(sc, sc); ctx.globalAlpha *= alpha; ctx.lineJoin = 'round';
@@ -127,38 +127,38 @@
 
   // ---------------------------------------------------------------- PHASE 1: tile row, finger, tap
   function tilesLayer(ctx, t) {
-    const tip = fingerAt(t), pressK = sm(25.94, 26.05, t) * (1 - sm(26.05, 26.2, t));
+    const tip = fingerAt(t), pressK = sm(25.93, 26.055, t) * (1 - sm(26.055, 26.3, t));
     const cxr = TILES[CHOSEN].x;
     // draw non-chosen first, chosen last
     [0, 1, 3, CHOSEN].forEach(i => {
-      const T = TILES[i], u = clamp((t - T.t0) / .62), eb = ease.outBack(u);
+      const T = TILES[i], u = clamp((t - T.t0) / .95), eb = ease.outBack(u);
       let x = T.x + (1 - eb) * 1300, y = TY + Math.sin(t * 1.6 + i * 1.9) * 8 * Math.min(1, u * 2), rot = (1 - eb) * (-.42 + .16 * i) + .014 * Math.sin(t * 1.3 + i), sc = 1, alpha = 1, glow = 0;
-      const bounce = kick(t, 25.43 + i * .05, .08) + kick(t, T.hv, .07, 22, 6);
-      const hv = t > 25.4 && t < 26.05 ? 1 - sm(120, 340, Math.hypot(tip[0] - x, (tip[1] - y) * .7)) : 0;
+      const bounce = kick(t, 25.365 + i * .06, .08, 15, 4.2) + kick(t, T.hv, .07, 16, 4.2);
+      const hv = t > 25.3 && t < 26.055 ? 1 - sm(120, 340, Math.hypot(tip[0] - x, (tip[1] - y) * .7)) : 0;
       sc += bounce + .05 * hv; glow = hv * .8; rot += .02 * hv * Math.sin(t * 12);
       if (t >= 26.05 - .001) {
         if (i === CHOSEN) {
           const p = ease.inOut(inv(26.09, T_BURST, t)); x = lerp(x, CX, p); y = lerp(y, 460, p);
           sc = 1 + .32 * p + .12 * Math.sin(Math.min(1, (t - 26.05) / .26) * Math.PI) - .1 * pulse(t, 26.05, 26.12) ; rot *= 1 - p; glow = 1;
-          if (t > T_BURST + .08) alpha = 1 - sm(T_BURST + .08, T_BURST + .2, t);
+          if (t > T_BURST + .1) alpha = 1 - sm(T_BURST + .1, T_BURST + .3, t);
         } else {
-          const u2 = clamp((t - 26.08) / .34), dir = Math.sign(T.x - cxr);
+          const u2 = clamp((t - 26.08) / .55), dir = Math.sign(T.x - cxr);
           x += dir * 1500 * ease.in(u2); y -= 120 * u2; rot += dir * .7 * u2; sc *= 1 - .45 * u2; alpha = 1 - u2; if (u2 >= 1) return;
         }
       }
       tileDraw(ctx, i, { x, y, rot, sc, alpha, glow }, t);
     });
     // finger
-    if (t > 25.2 && t < 26.6) {
+    if (t > 25.0 && t < 26.95) {
       // tap FX under the finger
       finger(ctx, tip[0], tip[1], pressK, 1);
     }
     // tap FX: impact flash, ripple rings, tiny splash
     if (t >= T_TAP) {
       const u = t - T_TAP, tx = 756, ty = 452;
-      A.glow(ctx, tx, ty, 420, '#ffffff', (1 - clamp(u / .16)) * .9);
-      CL.ring(ctx, tx, ty, 360, clamp(u / .5), '#ffffff', 22); CL.ring(ctx, tx, ty, 520, clamp((u - .06) / .5), C.yellow, 18); CL.ring(ctx, tx, ty, 700, clamp((u - .12) / .5), C.cyan, 14);
-      if (u < .4) { ctx.save(); ctx.globalAlpha = 1 - sm(.1, .4, u); CL.splash(ctx, tx, ty, 150, CL.spring(t, T_TAP, .4), 7, [C.yellow, '#fff', C.cyan, C.pink]); ctx.restore(); }
+      A.glow(ctx, tx, ty, 420, '#ffffff', (1 - clamp(u / .066)) * .9);
+      CL.ring(ctx, tx, ty, 360, clamp(u / .8), '#ffffff', 22); CL.ring(ctx, tx, ty, 520, clamp((u - .1) / .8), C.yellow, 18); CL.ring(ctx, tx, ty, 700, clamp((u - .2) / .8), C.cyan, 14);
+      if (u < .7) { ctx.save(); ctx.globalAlpha = 1 - sm(.25, .7, u); CL.splash(ctx, tx, ty, 170, CL.spring(t, T_TAP, .6), 7, [C.yellow, '#fff', C.cyan, C.pink]); ctx.restore(); }
     }
   }
 
@@ -170,11 +170,11 @@
     ctx.save(); ctx.globalAlpha = .16; ctx.translate(1620, 300); ctx.rotate(-t * .25); ball(ctx, 300, 0); ctx.restore();
     CL.twinkle(ctx, t, 0, 0, W, H, 24, 11, ['#fff', C.yellow, '#fff', C.cyan]);
     // pulsing play button (beats on "ומתחילים")
-    const k = 1 + kick(t, 26.34, .18, 18, 6) + kick(t, 26.56, .12, 18, 6) + kick(t, 26.76, .12, 18, 6) + .03 * Math.sin(t * 5);
+    const k = 1 + kick(t, 26.34, .18, 13, 4) + kick(t, 26.56, .12, 13, 4) + kick(t, 26.76, .12, 13, 4) + .03 * Math.sin(t * 5);
     const born = CL.pop(t, T_BURST + .06, .3), burst = t > T_PLAY - .02 ? 1 + 1.6 * ease.in(inv(T_PLAY - .02, T_PLAY + .1, t)) : 1;
     if (born > 0) {
       ctx.save(); ctx.translate(CX, 460); ctx.scale(k * born * burst, k * born * burst); ctx.globalAlpha *= 1 - sm(T_PLAY, T_PLAY + .12, t);
-      [[26.34, 0], [26.56, 1], [26.76, 2]].forEach(([tt]) => { const p = clamp((t - tt) / .55); if (p > 0 && p < 1) { ctx.save(); ctx.globalAlpha = (1 - p) * .9; ctx.strokeStyle = '#fff'; ctx.lineWidth = 14 * (1 - p * .6); ctx.beginPath(); ctx.arc(0, 0, 200 + 260 * ease.out(p), 0, TAU); ctx.stroke(); ctx.restore(); } });
+      [[26.34, 0], [26.56, 1], [26.76, 2]].forEach(([tt]) => { const p = clamp((t - tt) / .85); if (p > 0 && p < 1) { ctx.save(); ctx.globalAlpha = (1 - p) * .9; ctx.strokeStyle = '#fff'; ctx.lineWidth = 14 * (1 - p * .6); ctx.beginPath(); ctx.arc(0, 0, 200 + 260 * ease.out(p), 0, TAU); ctx.stroke(); ctx.restore(); } });
       ctx.fillStyle = 'rgba(2,40,30,.35)'; ctx.beginPath(); ctx.arc(10, 22, 210, 0, TAU); ctx.fill();
       ctx.beginPath(); ctx.arc(0, 0, 210, 0, TAU); ctx.fillStyle = A.linear(ctx, 0, -210, 0, 210, [[0, '#ffffff'], [.6, '#ffffff'], [1, '#c6d0ff']]); ctx.fill(); ctx.lineWidth = 12; ctx.strokeStyle = C.ink; ctx.stroke();
       ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.beginPath(); ctx.ellipse(-50, -130, 110, 40, -.35, 0, TAU); ctx.fill();
@@ -196,7 +196,7 @@
     g.restore();
   }
   function match(ctx, t) {
-    const tt = t - T_PLAY, hz = 330, GT = 27.20;
+    const tt = t - T_PLAY, hz = 330;
     // sky + stands
     ctx.fillStyle = A.linear(ctx, 0, 0, 0, hz, [[0, '#050826'], [1, '#3A1B9A']]); ctx.fillRect(0, 0, W, hz + 4);
     ctx.fillStyle = '#12185E'; ctx.beginPath(); ctx.moveTo(0, 150); ctx.lineTo(W, 120); ctx.lineTo(W, hz + 4); ctx.lineTo(0, hz + 4); ctx.fill();
@@ -211,14 +211,14 @@
     ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(520, hz); ctx.lineTo(-1300, H); ctx.moveTo(W - 520, hz); ctx.lineTo(W + 1300, H); ctx.moveTo(520, hz); ctx.lineTo(W - 520, hz); ctx.stroke();
     ctx.beginPath(); ctx.ellipse(CX, hz + 130, 300, 46, 0, 0, TAU); ctx.stroke();
     // goal + net
-    const gx = CX, gy = hz + 18, gw = 300, gh = 120, bulge = kick(t, GT, 22, 24, 6);
+    const gx = CX, gy = hz + 18, gw = 300, gh = 120, bulge = kick(t, GT, 22, 18, 4);
     ctx.save(); ctx.fillStyle = 'rgba(2,10,40,.55)'; ctx.fillRect(gx - gw / 2, gy - gh, gw, gh); ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 2; for (let i = 1; i < 12; i++) { ctx.beginPath(); ctx.moveTo(gx - gw / 2 + i * gw / 12 + bulge, gy - gh); ctx.lineTo(gx - gw / 2 + i * gw / 12 - bulge, gy); ctx.stroke(); } for (let i = 1; i < 6; i++) { ctx.beginPath(); ctx.moveTo(gx - gw / 2, gy - gh + i * gh / 6 + bulge); ctx.lineTo(gx + gw / 2, gy - gh + i * gh / 6 - bulge); ctx.stroke(); }
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 12; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(gx - gw / 2, gy); ctx.lineTo(gx - gw / 2, gy - gh); ctx.lineTo(gx + gw / 2, gy - gh); ctx.lineTo(gx + gw / 2, gy); ctx.stroke(); ctx.restore();
     // players
     person(ctx, gx + 40 + Math.sin(t * 6) * 20, gy + 8, .55, C.orange, t * 12, -1);
     person(ctx, 640 + tt * 120, 640, .95, C.pink, t * 15, 1); person(ctx, 1500 - tt * 140, 720, 1.1, C.cyan, t * 14 + 1, -1); person(ctx, 1240, 560, .75, C.pink, t * 13 + 2, -1); person(ctx, 420, 520, .7, C.cyan, t * 13 + 4, 1);
     // ball: shot from the foreground into the top corner of the goal
-    const b0 = .06, b1 = GT - T_PLAY;
+    const b0 = .05, b1 = GT - T_PLAY;
     if (tt > b0 && tt < b1 + .02) {
       const u = clamp((tt - b0) / (b1 - b0)), e = ease.inOut(u) * .35 + u * .65;
       for (let k = 6; k >= 0; k--) { const uu = clamp(u - k * .05), ee = ease.inOut(uu) * .35 + uu * .65, x = lerp(1250, gx + 40, ee), y = lerp(900, gy - 60, ee) - 210 * Math.sin(uu * Math.PI), r = lerp(58, 15, ee); ctx.save(); ctx.globalAlpha = .12 * (1 - k / 7) * 2; ctx.translate(x, y); ball(ctx, r, 0); ctx.restore(); }
@@ -226,37 +226,37 @@
     }
     // GOAL burst
     if (t >= GT) {
-      const u = t - GT; ctx.save(); ctx.globalAlpha = .7 * (1 - sm(.03, .2, u)); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
-      ctx.save(); ctx.globalAlpha = 1 - sm(.1, .32, u); CL.splash(ctx, gx, gy - 60, 640, CL.spring(t, GT, .45), 3, [C.yellow, C.pink, C.cyan, C.lime, C.orange]); ctx.restore();
-      const gs = CL.pop(t, GT + .02, .22); if (gs > 0) CL.title(ctx, 'גול!', CX, 560, { size: 330, scale: gs, rot: -.05, fill: ['#ffffff', '#FFD23F'], dir: 'rtl' });
+      const u = t - GT; ctx.save(); ctx.globalAlpha = .7 * (1 - clamp(u / .066)); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore();
+      ctx.save(); ctx.globalAlpha = 1 - sm(.15, .5, u); CL.splash(ctx, gx, gy - 60, 640, CL.spring(t, GT, .7), 3, [C.yellow, C.pink, C.cyan, C.lime, C.orange]); ctx.restore();
+      const gs = CL.pop(t, GT + .02, .32); if (gs > 0) CL.title(ctx, 'גול!', CX, 560, { size: 330, scale: gs, rot: -.05, fill: ['#ffffff', '#FFD23F'], dir: 'rtl' });
     }
     // HUD: LIVE badge + score
-    const lb = CL.pop(t, T_PLAY + .1, .25); if (lb > 0) { ctx.save(); ctx.translate(150, 96); ctx.scale(lb, lb); ctx.fillStyle = C.red; ctx.strokeStyle = '#fff'; ctx.lineWidth = 7; ctx.beginPath(); ctx.roundRect(-96, -34, 192, 68, 34); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-54, 0, 12 + 3 * Math.sin(t * 9), 0, TAU); ctx.fill(); ctx.font = '900 40px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.fillText('LIVE', 18, 3); ctx.restore(); }
-    const sc = CL.pop(t, T_PLAY + .15, .25); if (sc > 0) CL.chip(ctx, t >= GT ? '1 : 0' : '0 : 0', CX + 620, 96, { size: 56, dir: 'ltr', fill: t >= GT ? C.yellow : '#fff', scale: sc * (1 + kick(t, GT, .25, 20, 7)) });
+    const lb = CL.pop(t, T_PLAY + .1, .35); if (lb > 0) { ctx.save(); ctx.translate(150, 96); ctx.scale(lb, lb); ctx.fillStyle = C.red; ctx.strokeStyle = '#fff'; ctx.lineWidth = 7; ctx.beginPath(); ctx.roundRect(-96, -34, 192, 68, 34); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-54, 0, 12 + 3 * Math.sin(t * 9), 0, TAU); ctx.fill(); ctx.font = '900 40px Rubik'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.fillText('LIVE', 18, 3); ctx.restore(); }
+    const sc = CL.pop(t, T_PLAY + .15, .35); if (sc > 0) CL.chip(ctx, t >= GT ? '1 : 0' : '0 : 0', CX + 620, 96, { size: 56, dir: 'ltr', fill: t >= GT ? C.yellow : '#fff', scale: sc * (1 + kick(t, GT, .25, 14, 5)) });
   }
-  const goalK = t => Math.max(0, 1 - (t - 27.20) / .4) * (t >= 27.2 ? 1 : 0);
+  const goalK = t => Math.max(0, 1 - (t - GT) / .6) * (t >= GT ? 1 : 0);
 
   // ---------------------------------------------------------------- PHASE 1..3 composer
   function pickPhase(ctx, t) {
     CL.bg(ctx, t, { tint: [C.blue, C.purple, C.pink], speed: .3 });
     bgLife(ctx, t);
     ctx.save();
-    const sh1 = CL.shake(t, T_TAP, .3, 9), sh2 = CL.shake(t, T_PLAY, .5, 20), sh3 = CL.shake(t, 27.2, .35, 12);
+    const sh1 = CL.shake(t, T_TAP, .3, 9), sh2 = CL.shake(t, T_PLAY, .5, 20), sh3 = CL.shake(t, GT, .5, 12);
     ctx.translate(sh1[0] + sh2[0] + sh3[0], sh1[1] + sh2[1] + sh3[1]);
     if (t >= T_PLAY) { ctx.translate(CX, H / 2); ctx.scale(1.05 + .05 * inv(T_PLAY, T_IRIS, t), 1.05 + .05 * inv(T_PLAY, T_IRIS, t)); ctx.translate(-CX, -H / 2); }
     if (t < 26.75) tilesLayer(ctx, t);
     if (t >= T_BURST) {
-      if (t < 27.3) reveal(ctx, t, CX, 460, T_BURST, .46, 300, 1450, 4, ['#FFD23F', '#FF8A1F', '#FF2E93'], () => expanded(ctx, t));
+      if (t < 27.3) reveal(ctx, t, CX, 460, T_BURST, .7, 300, 1450, 4, ['#FFD23F', '#FF8A1F', '#FF2E93'], () => expanded(ctx, t));
       if (t >= T_PLAY) {
-        reveal(ctx, t, CX, 470, T_PLAY, .38, 0, 1500, 9, [C.cyan, C.purple, C.pink], () => match(ctx, t));
+        reveal(ctx, t, CX, 470, T_PLAY, .65, 0, 1500, 9, [C.cyan, C.purple, C.pink], () => match(ctx, t));
         const u = t - T_PLAY;   // burst: splash, shockwaves, bolts, sparkles, flash
-        // CUE 26.94 playback-burst
-        ctx.save(); ctx.beginPath(); ctx.rect(-200, -200, W + 400, H + 400); ctx.arc(CX, 470, 300, 0, TAU, true); ctx.clip('evenodd'); ctx.globalAlpha = 1 - sm(.04, .3, u); CL.splash(ctx, CX, 470, 700, CL.spring(t, T_PLAY, .5), 5); ctx.restore();
-        CL.ring(ctx, CX, 470, 1100, clamp(u / .55), '#fff', 26); CL.ring(ctx, CX, 470, 800, clamp((u - .08) / .55), C.yellow, 18);
-        CL.bolt(ctx, 1500, -60, CX + 40, 460, inv(0, .07, u), 11, { col: C.cyan, lw: 16, alpha: 1 - sm(.12, .4, u) });
-        CL.bolt(ctx, 300, 1120, CX - 40, 500, inv(.03, .1, u), 12, { col: C.pink, lw: 14, alpha: 1 - sm(.15, .42, u) });
-        for (let i = 0; i < 18; i++) { const a = hash(i * 3.3) * TAU, d = 220 + (650 + 500 * hash(i)) * ease.out(clamp(u / .7)); if (u > 0 && u < .8) CL.spark(ctx, CX + Math.cos(a) * d, 470 + Math.sin(a) * d * .8, (20 + 36 * hash(i + 2)) * (1 - u / .8), u * 6 + i, ['#fff', C.yellow, C.cyan, C.pink][i % 4]); }
-        ctx.save(); ctx.globalAlpha = .75 * (1 - clamp(u / .14)); ctx.fillStyle = '#fff'; ctx.fillRect(-40, -40, W + 80, H + 80); ctx.restore();
+        // CUE 26.99 playback-burst
+        ctx.save(); ctx.beginPath(); ctx.rect(-200, -200, W + 400, H + 400); ctx.arc(CX, 470, 300, 0, TAU, true); ctx.clip('evenodd'); ctx.globalAlpha = 1 - sm(.15, .7, u); CL.splash(ctx, CX, 470, 700, CL.spring(t, T_PLAY, .8), 5); ctx.restore();
+        CL.ring(ctx, CX, 470, 1100, clamp(u / .9), '#fff', 26); CL.ring(ctx, CX, 470, 800, clamp((u - .12) / .9), C.yellow, 18);
+        CL.bolt(ctx, 1500, -60, CX + 40, 460, inv(0, .12, u), 11, { col: C.cyan, lw: 16, alpha: 1 - sm(.25, .7, u) });
+        CL.bolt(ctx, 300, 1120, CX - 40, 500, inv(.06, .18, u), 12, { col: C.pink, lw: 14, alpha: 1 - sm(.28, .75, u) });
+        for (let i = 0; i < 18; i++) { const a = hash(i * 3.3) * TAU, d = 220 + (650 + 500 * hash(i)) * ease.out(clamp(u / 1.1)); if (u > 0 && u < 1.2) CL.spark(ctx, CX + Math.cos(a) * d, 470 + Math.sin(a) * d * .8, (20 + 36 * hash(i + 2)) * (1 - u / 1.2), u * 6 + i, ['#fff', C.yellow, C.cyan, C.pink][i % 4]); }
+        ctx.save(); ctx.globalAlpha = .75 * (1 - clamp(u / .06)); ctx.fillStyle = '#fff'; ctx.fillRect(-40, -40, W + 80, H + 80); ctx.restore();
       }
     }
     ctx.restore();
@@ -276,7 +276,7 @@
   function endCard(ctx, t) {
     const u = t - SLAM, cy0 = BCY;
     CL.bg(ctx, t, { tint: [C.purple, C.pink, C.cyan], speed: .32 });
-    const k = ease.out(inv(0, .5, u));
+    const k = ease.out(inv(0, .9, u));
     // god rays + glow
     if (u > -.05) {
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = k; ctx.translate(CX, 470); ctx.rotate(t * .07 + u * .3 * Math.exp(-u * 2));
@@ -284,61 +284,65 @@
       const gl = .5 + .12 * Math.sin(t * 1.6); [[C.pink, -230, 40], [C.cyan, 250, 20], [C.purple, 0, -60]].forEach(([c, dx, dy], i) => A.glow(ctx, CX + dx * (1 + .05 * Math.sin(t + i)), 470 + dy, 760, c, gl * k * (i ? .8 : 1)));
     }
     // liquid waves at the bottom
-    if (u > .1) { const wk = ease.out(inv(.1, 1.0, u)); [['rgba(139,61,255,.6)', 1000, 0], ['rgba(255,46,147,.55)', 1030, 1.7], ['rgba(25,200,255,.6)', 1058, 3.1]].forEach(([col, by, ph]) => { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, H + 10); for (let x = 0; x <= W + 30; x += 30) ctx.lineTo(x, by + (1 - wk) * 160 + Math.sin(x * .006 + t * .9 + ph) * 22 + Math.sin(x * .013 - t * 1.3 + ph) * 9); ctx.lineTo(W, H + 10); ctx.fill(); }); }
+    if (u > .1) { const wk = ease.out(inv(.2, 1.8, u)); [['rgba(139,61,255,.6)', 1000, 0], ['rgba(255,46,147,.55)', 1030, 1.7], ['rgba(25,200,255,.6)', 1058, 3.1]].forEach(([col, by, ph]) => { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(0, H + 10); for (let x = 0; x <= W + 30; x += 30) ctx.lineTo(x, by + (1 - wk) * 160 + Math.sin(x * .006 + t * .9 + ph) * 22 + Math.sin(x * .013 - t * 1.3 + ph) * 9); ctx.lineTo(W, H + 10); ctx.fill(); }); }
     // floating drops (calm life)
-    { const dk = sm(SLAM + .3, SLAM + 1.5, t); if (dk > 0) for (let i = 0; i < 18; i++) { const sp = 18 + hash(i * 1.7) * 30, x = hash(i * 9.1) * W + Math.sin(t * .7 + i) * 26, y = ((hash(i * 3.3) * H * 1.2 - t * sp) % (H + 120) + H + 120) % (H + 120) - 60, r = 9 + hash(i * 5.5) * 30; ctx.save(); ctx.globalAlpha = .7 * dk; CL.drop(ctx, x, y, r, CL.CAND[i % 8], t, i); ctx.restore(); } }
+    { const dk = sm(SLAM + .5, SLAM + 2.2, t); if (dk > 0) for (let i = 0; i < 18; i++) { const sp = 18 + hash(i * 1.7) * 30, x = hash(i * 9.1) * W + Math.sin(t * .7 + i) * 26, y = ((hash(i * 3.3) * H * 1.2 - t * sp) % (H + 120) + H + 120) % (H + 120) - 60, r = 9 + hash(i * 5.5) * 30; ctx.save(); ctx.globalAlpha = .7 * dk; CL.drop(ctx, x, y, r, CL.CAND[i % 8], t, i); ctx.restore(); } }
     // iris close of the playback onto the navy end world
     if (t < SLAM) {
-      const p = inv(T_IRIS, SLAM, t), R = 1300 * (1 - ease.out(p)); const z = 1.10 + .30 * ease.out(p);
+      const p = inv(T_IRIS, SLAM, t), R = 1300 * (1 - ease.inOut(p)); const z = 1.10 + .30 * ease.inOut(p);
       if (R > 2) { ctx.save(); ctx.beginPath(); ctx.arc(CX, H / 2, R, 0, TAU); ctx.clip(); ctx.translate(CX, H / 2); ctx.scale(z, z); ctx.translate(-CX, -H / 2); match(ctx, t); ctx.restore();
         ctx.save(); ctx.lineWidth = 22; ctx.strokeStyle = 'rgba(255,255,255,.95)'; ctx.beginPath(); ctx.arc(CX, H / 2, R, 0, TAU); ctx.stroke(); ctx.lineWidth = 60; ctx.globalAlpha = .35; ctx.strokeStyle = C.cyan; ctx.stroke(); ctx.restore(); }
       // CUE 27.42 iris-suck
-      A.glow(ctx, CX, 470, 100 + 900 * ease.in(p), '#ffffff', ease.in(p) * .9);
+      A.glow(ctx, CX, 470, 100 + 900 * ease.in(p), '#ffffff', ease.in(p) * .6);
+      // slow build to the slam: converging shock rings + rising glow (CUE 27.30 slam-build)
+      const bp = inv(SLAM - .42, SLAM, t);
+      for (let k = 0; k < 3; k++) { const q = clamp(bp * 1.3 - k * .2); if (q > 0 && q < 1) { ctx.save(); ctx.globalAlpha = .25 + .6 * q; ctx.strokeStyle = [C.cyan, C.pink, '#fff'][k]; ctx.lineWidth = 8 + 14 * q; ctx.beginPath(); ctx.arc(CX, 460, 1150 * (1 - ease.in(q)) + 30, 0, TAU); ctx.stroke(); ctx.restore(); } }
+      A.glow(ctx, CX, 460, 300 + 700 * bp, C.pink, .5 * bp); A.glow(ctx, CX, 460, 200 + 500 * bp, C.cyan, .5 * bp);
     }
     // ---- the big splash behind the logo + shockwaves  (CUE 27.60 logo-slam)
     if (u >= 0) {
-      const sa = lerp(1, .14, sm(.05, 1.5, u));
-      ctx.save(); ctx.globalAlpha = sa; CL.splash(ctx, CX, 450, 860, CL.spring(u, 0, .62), 2); ctx.restore();
-      ctx.save(); ctx.globalAlpha = sa * .9; CL.splash(ctx, CX, 460, 560, CL.spring(u, .07, .55), 6, [C.cyan, C.yellow, C.pink, C.lime, C.purple]); ctx.restore();
-      CL.ring(ctx, CX, 460, 1300, clamp(u / .7), '#fff', 34); CL.ring(ctx, CX, 460, 1000, clamp((u - .08) / .7), C.pink, 26); CL.ring(ctx, CX, 460, 780, clamp((u - .18) / .7), C.cyan, 20);
+      const sa = lerp(1, .14, sm(.3, 2.4, u));
+      ctx.save(); ctx.globalAlpha = sa; CL.splash(ctx, CX, 450, 860, CL.spring(u, 0, .95), 2); ctx.restore();
+      ctx.save(); ctx.globalAlpha = sa * .9; CL.splash(ctx, CX, 460, 560, CL.spring(u, .12, .85), 6, [C.cyan, C.yellow, C.pink, C.lime, C.purple]); ctx.restore();
+      CL.ring(ctx, CX, 460, 1300, clamp(u / 1.1), '#fff', 34); CL.ring(ctx, CX, 460, 1000, clamp((u - .15) / 1.1), C.pink, 26); CL.ring(ctx, CX, 460, 780, clamp((u - .3) / 1.1), C.cyan, 20);
     }
     // ---- slam flash (under the logo so the impact frame stays crisp)
-    if (u >= 0 && u < .2) { ctx.save(); ctx.globalAlpha = .3 * (1 - u / .2); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore(); A.glow(ctx, CX, 460, 1100, '#ffffff', .8 * (1 - u / .2)); }
+    if (u >= 0 && u < .066) { ctx.save(); ctx.globalAlpha = .3 * (1 - u / .066); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore(); A.glow(ctx, CX, 460, 1100, '#ffffff', .8 * (1 - u / .066)); }
     // ---- LOGO: slams down from big to 1.0 landing exactly on SLAM, squash rebound, then float + breathe
     {
-      const pre = inv(SLAM - .10, SLAM, t); let sx, sy, al = 1;
-      if (t < SLAM) { al = clamp((t - (SLAM - .10)) / .04); sx = sy = lerp(2.4, 1, ease.in(pre)); }
-      else { const kk = kick(t, SLAM, .13, 22, 5.5); sx = 1 + kk; sy = 1 - kk * 1.15; }
-      if (t >= SLAM - .10) {
-        const fu = Math.max(0, u), fl = sm(0, .6, fu), dy = Math.sin(fu * 1.7) * 14 * fl, rot = Math.sin(fu * 1.15) * .014 * fl, br = 1 + .012 * Math.sin(fu * 2.1) * fl;
+      const pre = inv(SLAM - .22, SLAM, t); let sx, sy, al = 1;
+      if (t < SLAM) { al = clamp(pre * 1.6); sx = sy = lerp(2.8, 1, ease.in(pre)); }
+      else { const kk = kick(t, SLAM, .13, 16, 3.6); sx = 1 + kk; sy = 1 - kk * 1.15; }
+      if (t >= SLAM - .22) {
+        const fu = Math.max(0, u), fl = sm(0, .9, fu), dy = Math.sin(fu * 1.7) * 14 * fl, rot = Math.sin(fu * 1.15) * .014 * fl, br = 1 + .012 * Math.sin(fu * 2.1) * fl;
         const per = 2.6, sp = ((fu - .45) % per + per) % per / per; // gentle sheen sweep, first one right after the slam
         ctx.save(); ctx.globalAlpha = al; ctx.translate(CX, cy0 + dy); ctx.rotate(rot); ctx.scale(sx * br, sy * br); brandSheen(ctx, 0, 0, fu > .3 ? sp / .3 : 9); ctx.restore();
       }
     }
     // ---- tagline (pops ~0.5 s later)  CUE 28.10 tagline-pop
     if (t >= T_TAG - .02) {
-      const p = CL.pop(t, T_TAG - .02, .36), fu = t - T_TAG, dy = Math.sin(fu * 1.9 + 1) * 6;
+      const p = CL.pop(t, T_TAG - .02, .5), fu = t - T_TAG, dy = Math.sin(fu * 1.9 + 1) * 6;
       ctx.save(); ctx.translate(CX, 935 + dy); ctx.scale(p, p);
       const cw = { size: 64, fill: '#ffffff', dark: '#bfc9ff', ink: C.ink, dir: 'rtl' };
       const r = CL.chip(ctx, 'העולם של הבידור נפתח בפניכם', 0, 0, cw);
       // sheen across the pill
       const sp = ((fu - .3) % 3.2 + 3.2) % 3.2 / 3.2; if (sp < .35) { const q = sp / .35; ctx.save(); ctx.beginPath(); ctx.roundRect(-r.w / 2, -r.h / 2, r.w, r.h, r.h / 2); ctx.clip(); const x = lerp(-r.w * .7, r.w * .7, ease.inOut(q)); ctx.fillStyle = A.linear(ctx, x - 60, -r.h, x + 60, r.h, [[0, 'rgba(255,255,255,0)'], [.5, 'rgba(255,214,120,.8)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(-r.w / 2, -r.h / 2, r.w, r.h); ctx.restore(); }
       ctx.restore();
-      ctx.save(); ctx.globalAlpha = clamp(1 - fu / .5) * .9; CL.ring(ctx, CX, 935, 520, clamp(fu / .5), C.yellow, 12); ctx.restore();
-      for (let i = 0; i < 8; i++) if (fu > 0 && fu < .8) { const a = i / 8 * TAU + .3, d = 60 + 380 * ease.out(clamp(fu / .8)); CL.spark(ctx, CX + Math.cos(a) * d * 1.5, 935 + Math.sin(a) * d * .35, 20 * (1 - fu / .8), fu * 5, [C.yellow, '#fff', C.pink, C.cyan][i % 4]); }
+      ctx.save(); ctx.globalAlpha = clamp(1 - fu / .8) * .9; CL.ring(ctx, CX, 935, 520, clamp(fu / .8), C.yellow, 12); ctx.restore();
+      for (let i = 0; i < 8; i++) if (fu > 0 && fu < 1.2) { const a = i / 8 * TAU + .3, d = 60 + 380 * ease.out(clamp(fu / 1.2)); CL.spark(ctx, CX + Math.cos(a) * d * 1.5, 935 + Math.sin(a) * d * .35, 20 * (1 - fu / 1.2), fu * 5, [C.yellow, '#fff', C.pink, C.cyan][i % 4]); }
     }
     // ---- bolt strike (converging on the TV, in step with the logo's own neon bolt)
-    if (t > SLAM - .1 && u < .5) {
-      const p = inv(SLAM - .1, SLAM - .02, t), al = t < SLAM ? 1 : (1 - sm(.05, .5, u)) * (.75 + .25 * hash(Math.floor(u * 40)));
-      const sd = t < SLAM ? 21 : 21 + (Math.floor(u * 24) % 3);
+    if (t > SLAM - .2 && u < .9) {
+      const p = inv(SLAM - .2, SLAM - .02, t), al = t < SLAM ? 1 : (1 - sm(.15, .9, u)) * (.75 + .25 * hash(Math.floor(u * 40)));
+      const sd = t < SLAM ? 21 : 21 + (Math.floor(u * 16) % 3);
       CL.bolt(ctx, 1500, -80, 900, 470, p, sd, { col: C.cyan, lw: 22, alpha: al });
-      CL.bolt(ctx, 1050, -60, 920, 480, inv(SLAM - .08, SLAM - .01, t), 33, { col: C.pink, lw: 14, alpha: al });
-      CL.bolt(ctx, 300, -60, 870, 500, inv(SLAM - .07, SLAM, t), 45, { col: C.yellow, lw: 12, alpha: al * .9 });
+      CL.bolt(ctx, 1050, -60, 920, 480, inv(SLAM - .17, SLAM - .01, t), 33, { col: C.pink, lw: 14, alpha: al });
+      CL.bolt(ctx, 300, -60, 870, 500, inv(SLAM - .15, SLAM, t), 45, { col: C.yellow, lw: 12, alpha: al * .9 });
     }
     // ---- sparkle rain + calm drifting sparkles
     if (u > 0) {
-      for (let i = 0; i < 60; i++) { const t0 = SLAM + hash(i * 3.1) * .8, du = t - t0; if (du < 0) continue; const x = hash(i * 7.7) * W + du * (hash(i) - .5) * 80, y = -60 + du * (520 + hash(i * 2) * 620); if (y > H + 60) continue; CL.spark(ctx, x, y, 10 + hash(i * 5) * 24, du * 3 + i, ['#fff', C.yellow, C.cyan, C.pink][i % 4]); }
-      const ik = sm(.5, 1.5, u);
+      for (let i = 0; i < 60; i++) { const t0 = SLAM + hash(i * 3.1) * 1.2, du = t - t0; if (du < 0) continue; const x = hash(i * 7.7) * W + du * (hash(i) - .5) * 80, y = -60 + du * (330 + hash(i * 2) * 400); if (y > H + 60) continue; CL.spark(ctx, x, y, 10 + hash(i * 5) * 24, du * 3 + i, ['#fff', C.yellow, C.cyan, C.pink][i % 4]); }
+      const ik = sm(.8, 2.4, u);
       for (let i = 0; i < 34; i++) { const sp = 16 + hash(i * 1.3) * 40, x = hash(i * 8.3) * W + Math.sin(t * .6 + i * 2) * 40, y = ((hash(i * 2.9) * H * 1.3 + t * sp * .6) % (H + 80) + H + 80) % (H + 80) - 40, tw = .5 + .5 * Math.sin(t * (1.4 + hash(i) * 2.4) + i * 3); ctx.save(); ctx.globalAlpha = ik * (.35 + .65 * tw); CL.spark(ctx, x, y, 8 + hash(i * 6) * 24 * tw, t * .5 + i, ['#fff', C.yellow, C.cyan, C.pink, '#fff'][i % 5]); ctx.restore(); }
     }
     CL.vignette(ctx, .4);
@@ -350,10 +354,10 @@
       const t = s.t;
       // CUE 24.95 wipe-whoosh (liquid wipe covers s7, right to left)
       // CUE 25.08 tiles-glide-in (row of candy tiles: movie, series, football, live)
-      // CUE 25.43 tiles-bounce (finger enters, hover pops)
-      // CUE 26.05 tap-impact (ripple on the football tile)
+      // CUE 25.365 tiles-bounce (finger enters, hover pops)
+      // CUE 26.055 tap-impact (ripple on the football tile)
       // CUE 26.30 tile-burst-fullscreen (liquid burst, play button pulses)
-      // CUE 27.20 goal-burst
+      // CUE 27.18 goal-burst
       // CUE 27.60 logo-slam
       // CUE 28.10 tagline-pop
       if (t < T_IRIS) wipeIn(ctx, t, () => pickPhase(ctx, t)); else endCard(ctx, t);

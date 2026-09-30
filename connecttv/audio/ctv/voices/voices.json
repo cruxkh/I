@@ -29,10 +29,10 @@
  ],
  "cinema": {
   "word_T": [
-   8.3,
+   8.34,
    8.86
   ],
-  "deep_dur": 0.635,
+  "deep_dur": 0.59,
   "t": 8.879999999999999,
   "echoes": [
    [
@@ -58,6 +58,6 @@
   "neden_it": "NEDENS!",
   "vaah_hi": "ाहे",
   "cinema_word_he": "...טון.",
-  "original_word_he": "צ'לטון"
+  "original_word_he": "סלטון"
  }
 }

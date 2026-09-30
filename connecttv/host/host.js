@@ -15,21 +15,21 @@
   // mode 'side' slides in from the screen edge, 'rise' comes up from the bottom edge. hops [[t,dur,h]], pops [t] = jelly pulses.
   const APPS = [
     { id: 'peek', t0: .12, mode: 'side', side: 'L', x: 110, size: 600, f0: 1, lo: 1, hi: 45, inDur: .35, stay: 1.5, out: .3, pops: [.62], hops: [[.6, .34, 50]] },                      // CUE 0.12 peek-in ; CUE 0.74 gasp
-    { id: 'wow', t0: 2.33, mode: 'side', side: 'R', x: 1790, size: 680, f0: 19, lo: 19, hi: 60, inDur: .3, stay: .95, out: .28, hops: [[.18, .3, 50]] },                            // CUE 2.33 wow
-    { id: 'netflix', t0: 4.34, mode: 'side', side: 'L', x: 190, size: 700, f0: 46, lo: 46, hi: 90, inDur: .34, stay: 1.05, out: .28, hops: [[.12, .38, 60], [.5, .38, 60]] },       // CUE 4.34 cheer
-    { id: 'disney', t0: 5.99, mode: 'side', side: 'R', x: 1740, size: 660, f0: 91, lo: 91, hi: 135, inDur: .3, stay: .85, out: .26, pops: [.05] },                                  // CUE 5.99 point
-    { id: 'charlton', t0: 8.32, mode: 'rise', side: 'L', x: 130, size: 470, f0: 136, lo: 136, hi: 207, inDur: .3, stay: 1.75, out: .28, pops: [.05] },                              // CUE 8.32 small corner peek (cin hold)
-    { id: 'turk', t0: 9.27, mode: 'rise', side: 'R', x: 1745, size: 720, f0: 140, lo: 136, hi: 207, inDur: .3, stay: 1.6, out: .2, pops: [.05] },                                    // CUE 9.27 crying (tur hold)
-    { id: 'bolly', t0: 10.39, mode: 'side', side: 'L', x: 130, size: 600, f0: 19, lo: 19, hi: 90, inDur: .3, stay: 1.72, out: .22, pops: [.05] },                                    // CUE 10.39 surprised in the corner (ind hold)
-    { id: 'israel', t0: 12.16, mode: 'side', side: 'R', x: 1770, size: 640, f0: 100, lo: 100, hi: 140, inDur: .3, stay: .95, out: .26, pops: [.05] },                                // CUE 12.16 live
-    { id: 'vortex', t0: 13.82, mode: 'side', side: 'L', x: 230, size: 620, f0: 28, lo: 28, hi: 70, pre: .42, inDur: .3, stay: .12, out: .55, spiral: true },                           // CUE 13.82 sucked into the vortex TV
-    { id: 'thumb', t0: 14.87, mode: 'side', side: 'L', x: 170, size: 700, f0: 46, lo: 46, hi: 90, inDur: .3, stay: .42, out: .26, pops: [.05] },                                     // CUE 14.87 thumbs up beat
-    { id: 'update', t0: 15.86, mode: 'side', side: 'L', x: 180, size: 620, f0: 100, lo: 100, hi: 135, inDur: .3, stay: 1.15, out: .26, hops: [[0, .3, 60], [.47, .28, 40], [.89, .28, 40]] }, // CUE 15.86 ; bounces on 16.33 16.75
-    { id: 'goal', t0: 18.34, mode: 'side', side: 'R', x: 1750, size: 720, f0: 172, lo: 172, hi: 207, inDur: .3, stay: .8, out: .22, hops: [[.08, .36, 80], [.44, .36, 80]] },  // CUE 18.34 goal
-    { id: 'waiting', t0: 19.52, mode: 'side', side: 'L', x: 110, size: 600, f0: 136, lo: 136, hi: 170, inDur: .25, stay: .95, out: .26 },                                              // CUE 19.52 waiting
-    { id: 'discover', t0: 21.55, mode: 'side', side: 'R', x: 1770, size: 650, f0: 55, lo: 55, hi: 90, inDur: .3, stay: 1.1, out: .26, hops: [[.1, .3, 50], [.4, .3, 50]] },        // CUE 21.55 discover
-    { id: 'nosearch', t0: 23.18, mode: 'side', side: 'L', x: 180, size: 680, f0: 154, lo: 136, hi: 207, inDur: .3, stay: 1.15, out: .26, pops: [.05] },                              // CUE 23.18 no
-    { id: 'remote', t0: 26.05, mode: 'side', side: 'R', x: 1760, size: 680, f0: 19, lo: 19, hi: 60, inDur: .32, stay: 1.05, out: .26, pops: [.0] },                                   // CUE 26.05 remote press
+    { id: 'wow', t0: 2.36, mode: 'side', side: 'R', x: 1790, size: 680, f0: 19, lo: 19, hi: 60, inDur: .3, stay: .95, out: .28, hops: [[.18, .3, 50]] },                            // CUE 2.36 wow
+    { id: 'netflix', t0: 4.36, mode: 'side', side: 'L', x: 190, size: 700, f0: 46, lo: 46, hi: 90, inDur: .34, stay: 1.05, out: .28, hops: [[.12, .38, 60], [.5, .38, 60]] },       // CUE 4.36 cheer
+    { id: 'disney', t0: 6.06, mode: 'side', side: 'R', x: 1740, size: 660, f0: 91, lo: 91, hi: 135, inDur: .3, stay: .85, out: .26, pops: [.05] },                                  // CUE 6.06 point
+    { id: 'charlton', t0: 8.36, mode: 'rise', side: 'L', x: 130, size: 470, f0: 136, lo: 136, hi: 207, inDur: .3, stay: 1.75, out: .28, pops: [.05] },                              // CUE 8.36 small corner peek (cin hold)
+    { id: 'turk', t0: 9.215, mode: 'rise', side: 'R', x: 1745, size: 720, f0: 140, lo: 136, hi: 207, inDur: .3, stay: 1.6, out: .2, pops: [.05] },                                    // CUE 9.215 crying (tur hold)
+    { id: 'bolly', t0: 10.345, mode: 'side', side: 'L', x: 130, size: 600, f0: 19, lo: 19, hi: 90, inDur: .3, stay: 1.72, out: .22, pops: [.05] },                                    // CUE 10.345 surprised in the corner (ind hold)
+    { id: 'israel', t0: 12.17, mode: 'side', side: 'R', x: 1770, size: 640, f0: 100, lo: 100, hi: 140, inDur: .3, stay: .95, out: .26, pops: [.05] },                                // CUE 12.17 live
+    { id: 'vortex', t0: 13.815, mode: 'side', side: 'L', x: 230, size: 620, f0: 28, lo: 28, hi: 70, pre: .42, inDur: .3, stay: .12, out: .55, spiral: true },                           // CUE 13.815 sucked into the vortex TV
+    { id: 'thumb', t0: 14.89, mode: 'side', side: 'L', x: 170, size: 700, f0: 46, lo: 46, hi: 90, inDur: .3, stay: .42, out: .26, pops: [.05] },                                     // CUE 14.89 thumbs up beat
+    { id: 'update', t0: 15.98, mode: 'side', side: 'L', x: 180, size: 620, f0: 100, lo: 100, hi: 135, inDur: .3, stay: 1.15, out: .26, hops: [[0, .3, 60], [.35, .28, 40], [.875, .28, 40]] }, // CUE 15.98 ; bounces on 16.33 16.855
+    { id: 'goal', t0: 18.295, mode: 'side', side: 'R', x: 1750, size: 720, f0: 172, lo: 172, hi: 207, inDur: .3, stay: .8, out: .22, hops: [[.08, .36, 80], [.44, .36, 80]] },  // CUE 18.295 goal
+    { id: 'waiting', t0: 19.58, mode: 'side', side: 'L', x: 110, size: 600, f0: 136, lo: 136, hi: 170, inDur: .25, stay: .95, out: .26 },                                              // CUE 19.58 waiting
+    { id: 'discover', t0: 21.58, mode: 'side', side: 'R', x: 1770, size: 650, f0: 55, lo: 55, hi: 90, inDur: .3, stay: 1.1, out: .26, hops: [[.1, .3, 50], [.4, .3, 50]] },        // CUE 21.58 discover
+    { id: 'nosearch', t0: 23.29, mode: 'side', side: 'L', x: 180, size: 680, f0: 154, lo: 136, hi: 207, inDur: .3, stay: 1.15, out: .26, pops: [.05] },                              // CUE 23.29 no
+    { id: 'remote', t0: 26.055, mode: 'side', side: 'R', x: 1760, size: 680, f0: 19, lo: 19, hi: 60, inDur: .32, stay: 1.05, out: .26, pops: [.0] },                                   // CUE 26.055 remote press
     { id: 'finale', t0: 27.6, mode: 'rise', side: 'L', x: 140, size: 520, f0: 100, lo: 100, hi: 135, inDur: .3, stay: 99, out: .3, pops: [.0] },                                     // CUE 27.6 finale (end card, bottom-left corner)
   ];
   APPS.forEach(a => { a.T0 = TLF.TofV(a.t0); a.pre = a.pre || a.inDur; a.ts = a.T0 - a.pre; a.te = a.T0 + a.stay + a.out; });
@@ -43,14 +43,8 @@
     if (a.spiral && eo > 0) { const r = 1 - ex, an = ex * 5; x = lerp(a.x, 960, ex) + sin(an) * 110 * r; y = lerp(BASE, 620, ex) - (1 - cos(an)) * 60 * r; lean = ex * 7; }
     return [x, y, ei, eo, lean];
   }
-  // the compositor pushes the camera in during the genre holds (zoom about a focus point); she is camera-locked: undo that zoom so she keeps her screen position and size
-  const PRE = { cin: 8.32, tur: 9.27, ind: 10.39 };
-  function cam(T, t) {
-    const hd = TLF.holdAt(T); let k = 0, key = null;
-    if (hd) { key = hd.k; k = ease.inOut(clamp((hd.d - hd.age) / .3)); }
-    else for (const h of TLF.HOLDS) { const p = PRE[h.k]; if (t >= p && t < h.v) { key = h.k; k = ease.inOut(clamp((t - p) / Math.max(.2, h.v - p))); } }
-    if (!key || k <= 0 || !CL.HOLDFOC[key]) return null; const [fx, fy, zm] = CL.HOLDFOC[key]; return { z: lerp(1, zm, k), fx: lerp(W / 2, fx, k), fy: lerp(H / 2, fy, k) };
-  }
+  // the compositor pushes the camera in during ALL holds (genre + beat holds); window.HOLDCAM(T) = {fx,fy,z,k} of the applied push-in. She is camera-locked: undo that zoom.
+  function cam(T) { const c = window.HOLDCAM && window.HOLDCAM(T); if (!c || c.k <= 0) return null; return { z: c.z, fx: lerp(W / 2, c.fx, c.k), fy: lerp(H / 2, c.fy, c.k) }; }
   // possible output times for a voice time t (in a hold t is frozen and T runs)
   function tRange(t) { let acc = 0, lo = t, hi = t; for (const h of TLF.HOLDS) { if (h.v < t - 1e-6) acc += h.d; else if (Math.abs(h.v - t) < 1e-6) { lo = t + acc; hi = t + acc + h.d; return [lo - .08, hi + .08]; } } return [t + acc - .08, t + acc + .08]; }
 
@@ -63,7 +57,7 @@
       if (cache.size > 120) [...cache.entries()].sort((x, y) => x[1].use - y[1].use).slice(0, cache.size - 100).forEach(([k]) => cache.delete(k));
     },
     overlay(ctx, t) {
-      const T = (typeof A.T === 'number') ? A.T : t, cm = cam(T, t);
+      const T = (typeof A.T === 'number') ? A.T : t, cm = cam(T);
       for (const a of APPS) {
         if (T < a.ts || T > a.te) continue;
         const tt = T - a.T0, [x, y, ei, eo, lean] = track(a, T), [xp, yp] = track(a, T - .04), vx = (x - xp) / .04;

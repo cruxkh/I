@@ -63,7 +63,7 @@
     ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot); ctx.scale(sc, sc); ctx.drawImage(clapImg(), -330, -260);
     ctx.translate(-280, -100); ctx.rotate(-arm); ctx.translate(0, -84); stripes(ctx, 560, 78, 0); ctx.restore();
   }
-  const armAngle = t => t < 3.41 ? .62 * (1 - ease.in(P(t, 3.33, 3.41))) : .13 * Math.exp(-(t - 3.41) * 16) * Math.abs(Math.sin((t - 3.41) * 36));
+  const armAngle = t => t < 3.41 ? .62 * (1 - ease.in(P(t, 3.29, 3.41))) : .13 * Math.exp(-(t - 3.41) * 11) * Math.abs(Math.sin((t - 3.41) * 36));
 
   // ---------------------------------------------------------------- popcorn
   function puff(ctx, x, y, r) { ctx.fillStyle = A.radial(ctx, x - r * .3, y - r * .35, r * .1, r * 1.15, [[0, '#ffffff'], [.35, '#FFF1C4'], [1, '#FFB93B']]); ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
@@ -87,20 +87,20 @@
     g.fillStyle = '#fff'; g.beginPath(); g.roundRect(28, 150, 102, 50, 25); g.fill(); g.fillStyle = A.mixc(col, '#0b1250', .5); g.font = '900 34px Rubik'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.direction = 'ltr'; g.fillText('E' + (i + 1), 79, 177);
   });
   function fan(ctx, t) {
-    const n = 6, order = [0, 5, 1, 4, 2, 3], blast = eo(P(t, 4.34, 4.95));
+    const n = 6, order = [0, 5, 1, 4, 2, 3], blast = eo(P(t, 4.36, 5.1));
     order.forEach(i => {
-      const t0 = 3.87 + i * .012, sp = CL.spring(t, t0, .62), pp = CL.pop(t, t0 - .02, .18); if (pp <= 0) return; const tgt = (i - (n - 1) / 2) * .27;
+      const t0 = 3.90 + i * .012, sp = CL.spring(t, t0, .8), pp = CL.pop(t, t0 - .02, .18); if (pp <= 0) return; const tgt = (i - (n - 1) / 2) * .27;
       const ang = tgt * sp + tgt * 1.6 * blast + A.noise1(t * .8 + i) * .012, dist = (60 + 440 * sp) * (1 + 2.6 * blast * blast);
       ctx.save(); ctx.globalAlpha *= 1 - blast; ctx.translate(CX, 1000); ctx.rotate(ang); ctx.translate(0, -dist); ctx.rotate(blast * (i - 2.5) * .6); ctx.scale(pp * 1.05, pp * 1.05); ctx.drawImage(cardImg(i), -190, -260); ctx.restore();
     });
   }
 
   // ---------------------------------------------------------------- world 1 (Netflix side)
-  function plate1(ctx, t) {   // NETFLIX plate: real logo on white gel, slams on 4.34
-    const pre = P(t, 4.16, 4.34), post = t - 4.34, flip = P(t, 5.10, 5.34);
-    if (t < 4.16) return; let sc = lerp(3.3, 1, ease.in(pre)); const wob = post > 0 ? .13 * kick(t, 4.34, 9, 32) : 0;
-    let sx = sc * (1 + wob), sy = sc * (1 - wob), rot = post > 0 ? .05 * Math.exp(-post * 9) * Math.sin(post * 30) : -.2 * (1 - ease.in(pre));
-    let x = CX, y = CENTER_Y + (post > 0 ? 8 * Math.sin(t * 2.2) : 0); const al = clamp((t - 4.16) / .05);
+  function plate1(ctx, t) {   // NETFLIX plate: real logo on white gel, slams on 4.36
+    const pre = P(t, 4.14, 4.36), post = t - 4.36, flip = P(t, 5.35, 5.55);
+    if (t < 4.14) return; let sc = lerp(3.3, 1, ease.in(pre)); const wob = post > 0 ? .13 * kick(t, 4.36, 6, 32) : 0;
+    let sx = sc * (1 + wob), sy = sc * (1 - wob), rot = post > 0 ? .05 * Math.exp(-post * 6) * Math.sin(post * 26) : -.2 * (1 - ease.in(pre));
+    let x = CX, y = CENTER_Y + (post > 0 ? 8 * Math.sin(A.T * 2.2) : 0); const al = clamp((t - 4.14) / .05);
     if (flip > 0) { const f = eio(flip); sx *= Math.max(.001, Math.cos(f * 1.5)); sy *= 1 - .25 * f; x -= 300 * f; rot -= .5 * f; }
     ctx.save(); ctx.globalAlpha *= al; ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sx, sy);
     A.glow(ctx, 0, 0, 900, RED, .55 * clamp(post / .1));
@@ -109,27 +109,27 @@
   }
   function world1(ctx, t) {
     CL.bg(ctx, t, { tint: [C.pink, C.purple, C.orange] });
-    const rk = t >= 4.34 ? (.35 + .65 * Math.exp(-(t - 4.34) * 5)) * (1 - P(t, 5.1, 5.35)) : 0; if (rk > 0) A.glow(ctx, CX, CENTER_Y, 1300, RED, .6 * rk);
+    const rk = t >= 4.36 ? (.35 + .65 * Math.exp(-(t - 4.36) * 3.5)) * (1 - P(t, 5.4, 5.7)) : 0; if (rk > 0) A.glow(ctx, CX, CENTER_Y, 1300, RED, .6 * rk);
     drops(ctx, t, [C.pink, C.orange, C.yellow, C.cyan], 1);
     // CUE 3.41 clapper-slam + popcorn-burst (film strips whoosh in)
-    const stA = 1 - .68 * P(t, 4.34, 4.8);
+    const stA = 1 - .68 * P(t, 4.36, 5.1);
     strip(ctx, t, CX, 800, 2500, -.13, 380, 2300 * (1 - eo(P(t, 3.34, 3.7))), .95 * stA, 0);
     strip(ctx, t, CX, 130, 2500, .10, -300, -2300 * (1 - eo(P(t, 3.38, 3.74))), .95 * stA, 1);
-    // CUE 3.92 episode-cards-fan
+    // CUE 3.95 episode-cards-fan
     fan(ctx, t);
-    // CUE 4.34 netflix-slam (red splash, shockwave, shake, flash, bolts)
-    if (t >= 4.34) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 4.9, 5.2); CL.splash(ctx, CX, CENTER_Y, 800, CL.spring(t, 4.34, .6), 7, [RED, '#FF7A1F', C.pink, REDH, '#B3001B']); ctx.restore(); }
+    // CUE 4.36 netflix-slam (red splash, shockwave, shake, flash, bolts)
+    if (t >= 4.36) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 5.4, 5.7); CL.splash(ctx, CX, CENTER_Y, 800, CL.spring(t, 4.36, .9), 7, [RED, '#FF7A1F', C.pink, REDH, '#B3001B']); ctx.restore(); }
     if (t >= 3.41) CL.splash(ctx, CX, 330, 560, CL.spring(t, 3.41, .5) * (1 - P(t, 3.62, 3.9)), 5, [C.yellow, C.orange, C.pink, '#FFF6E6', C.cyan]);   // candy splash behind the clapper
     // clapper: slams shut on 3.41, then parks top-left, blasted away by the Netflix slam
-    { const pop = CL.pop(t, 3.20, .2), park = eio(P(t, 3.82, 4.02)), bl = eo(P(t, 4.34, 4.8));
-      const x = lerp(CX, 230, park) - 1100 * bl, y = lerp(400, 185, park) - 300 * bl, sc = lerp(1.2, .42, park) * pop * (1 + .05 * kick(t, 3.41, 12, 40)), rot = lerp(-.07, -.22, park) - 3 * bl;
+    { const pop = CL.pop(t, 3.20, .2), park = eio(P(t, 3.85, 4.12)), bl = eo(P(t, 4.36, 5.0));
+      const x = lerp(CX, 230, park) - 1100 * bl, y = lerp(400, 185, park) - 300 * bl, sc = lerp(1.2, .42, park) * pop * (1 + .05 * kick(t, 3.41, 8, 40)), rot = lerp(-.07, -.22, park) - 3 * bl;
       if (pop > 0 && bl < 1) clapper(ctx, x, y, sc, rot, armAngle(t)); }
     // popcorn splash on the clap
     if (t >= 3.41) { CL.ring(ctx, CX, 300, 700, P(t, 3.41, 3.85), '#fff', 22); popBurst(ctx, t, CX, 300, 3.41); }
     plate1(ctx, t);
-    if (t >= 4.34) { CL.ring(ctx, CX, CENTER_Y, 1200, P(t, 4.34, 4.9), '#fff', 34); CL.ring(ctx, CX, CENTER_Y, 1500, P(t, 4.38, 5.05), REDH, 48);
-      const fb = 1 - P(t, 4.42, 4.75); [[80, 60, 380, 260, 3], [1840, 80, 1540, 260, 5], [80, 760, 400, 560, 9], [1840, 740, 1520, 560, 12]].forEach(([a, b, c2, d, sd]) => CL.bolt(ctx, a, b, c2, d, P(t, 4.32, 4.4), sd, { col: REDH, lw: 12, alpha: fb }));
-      ctx.save(); ctx.globalAlpha *= P(t, 4.5, 4.7) * (1 - P(t, 5.2, 5.35)); CL.twinkle(ctx, t, 60, 60, 1800, 760, 22, 3, ['#fff', REDH, C.yellow, C.pink]); ctx.restore(); }
+    if (t >= 4.36) { CL.ring(ctx, CX, CENTER_Y, 1200, P(t, 4.36, 5.2), '#fff', 34); CL.ring(ctx, CX, CENTER_Y, 1500, P(t, 4.40, 5.3), REDH, 48);
+      const fb = (t < 4.8 ? 1 : .55 + .25 * Math.sin(A.T * 26)) * (1 - P(t, 5.4, 5.6));   // bolts stay lit (flicker on the global clock) through the hold [[80, 60, 380, 260, 3], [1840, 80, 1540, 260, 5], [80, 760, 400, 560, 9], [1840, 740, 1520, 560, 12]].forEach(([a, b, c2, d, sd]) => CL.bolt(ctx, a, b, c2, d, P(t, 4.34, 4.46), sd, { col: REDH, lw: 12, alpha: fb }));
+      ctx.save(); ctx.globalAlpha *= P(t, 4.52, 4.8) * (1 - P(t, 5.4, 5.6)); CL.twinkle(ctx, t, 60, 60, 1800, 760, 22, 3, ['#fff', REDH, C.yellow, C.pink]); ctx.restore(); }
     if (t < 3.6) CL.twinkle(ctx, t, 100, 100, 1700, 700, 12, 5, ['#fff', C.yellow, C.pink]);
   }
 
@@ -141,9 +141,9 @@
     if (em === 0 || em === 4) { star(g, 0, -42, 56, 24); g.fill(); } else if (em === 1) { heart(g, 0, -42, 40); g.fill(); } else if (em === 2) { tri(g, 6, -42, 38); g.fill(); } else { CL.spark(g, 0, -42, 62, 0, '#fff'); }
     g.fillStyle = 'rgba(5,8,38,.5)'; g.beginPath(); g.roundRect(-78, 56, 130, 18, 9); g.fill(); g.fillStyle = 'rgba(5,8,38,.28)'; g.beginPath(); g.roundRect(-78, 88, 90, 14, 7); g.fill();
   });
-  // Disney plate glides from centre (960) to the left (700) on 6.2..6.4 to make room for the big plus on the right
+  // Disney plate glides from centre (960) to the left (700) on 6.3..6.5 to make room for the big plus on the right
   const LOGO_W = 840, PLATE_Y = 400, PLUS_X = 1560, PLUS_Y = 400, PLATE_W = 1040, PLATE_H = 560;
-  const plx = t => lerp(960, 700, eio(P(t, 6.18, 6.4)));
+  const plx = t => lerp(960, 700, eio(P(t, 6.28, 6.5)));
   const logoPt = (ix, iy, x) => { const s = LOGO_W / 512; return [x + (ix - 256) * s, PLATE_Y + (iy - 139) * s]; };
   const arcPt = (u, x) => logoPt(110 + 360 * u, lerp(78, 132, u) - 100 * Math.sin(Math.PI * u), x);
 
@@ -156,8 +156,8 @@
   }
 
   function plate2(ctx, t) {
-    const sc0 = CL.pop(t, 5.90, .16); if (sc0 <= 0) return; const im = CL.logoImg('disney'); const bump = 1 + .05 * kick(t, 6.43, 11, 36) + .03 * kick(t, 5.99, 12, 38);
-    ctx.save(); ctx.translate(plx(t), PLATE_Y + 8 * Math.sin(t * 2.3)); ctx.rotate(.012 * Math.sin(t * 1.6) + (t > 5.99 ? .03 * Math.exp(-(t - 5.99) * 8) * Math.sin((t - 5.99) * 30) : 0)); ctx.scale(sc0 * bump, sc0 * bump);
+    const sc0 = CL.pop(t, 5.97, .16); if (sc0 <= 0) return; const im = CL.logoImg('disney'); const bump = 1 + .05 * kick(t, 6.54, 11, 36) + .03 * kick(t, 6.06, 12, 38);
+    ctx.save(); ctx.translate(plx(t), PLATE_Y + 8 * Math.sin(t * 2.3)); ctx.rotate(.012 * Math.sin(t * 1.6) + (t > 6.06 ? .03 * Math.exp(-(t - 6.06) * 8) * Math.sin((t - 6.06) * 30) : 0)); ctx.scale(sc0 * bump, sc0 * bump);
     const hw = PLATE_W / 2, hh = PLATE_H / 2;
     A.glow(ctx, 0, 0, 800, '#4FA8FF', .6);
     CL.gel(ctx, 0, 0, PLATE_W, PLATE_H, { fill: '#2447D8', dark: '#0A0B55', r: 100, shadow: 22, gloss: false, rim: 'rgba(200,238,255,.95)', rimW: 8 });
@@ -167,7 +167,7 @@
   }
 
   function world2(ctx, t) {
-    const k = P(t, 5.30, 5.72); if (k <= 0) return; const R = lerp(0, 2150, eo(k)), icx = CX, icy = CENTER_Y;
+    const k = P(t, 5.36, 5.80); if (k <= 0) return; const R = lerp(0, 2150, eo(k)), icx = CX, icy = CENTER_Y;
     const ipath = () => { ctx.beginPath(); for (let i = 0; i <= 56; i++) { const a = i / 56 * TAU, rr = R * (1 + .06 * Math.sin(a * 6 + t * 7) + .03 * Math.sin(a * 11 - t * 5)); i ? ctx.lineTo(icx + Math.cos(a) * rr, icy + Math.sin(a) * rr) : ctx.moveTo(icx + Math.cos(a) * rr, icy + Math.sin(a) * rr); } ctx.closePath(); };
     if (k < 1) { ipath(); ctx.strokeStyle = C.purple; ctx.lineWidth = 100; ctx.stroke(); ipath(); ctx.strokeStyle = C.cyan; ctx.lineWidth = 52; ctx.stroke(); ipath(); ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 14; ctx.stroke(); }
     ctx.save(); ipath(); ctx.clip();
@@ -175,37 +175,37 @@
     CL.twinkle(ctx, t, 40, 40, 1840, 800, 30, 8, ['#fff', C.cyan, '#B9A8FF', C.yellow]);
     drops(ctx, t, [C.blue, C.cyan, C.purple, '#7A6BFF'], 6);
     // CUE 5.35 flip-to-blue "תכנים": mini content posters burst out and spiral into a magic portal
-    const q = P(t, 5.62, 5.99), qe = ease.in(q);
-    if (t < 5.99) {
-      const pg = .25 + .75 * P(t, 5.3, 5.99); A.glow(ctx, icx, icy, 220 + 560 * qe + 80 * pg, '#8FC3FF', .35 + .6 * qe);
+    const q = P(t, 5.62, 6.06), qe = ease.in(q);
+    if (t < 6.06) {
+      const pg = .25 + .75 * P(t, 5.3, 6.06); A.glow(ctx, icx, icy, 220 + 560 * qe + 80 * pg, '#8FC3FF', .35 + .6 * qe);
       ctx.save(); ctx.translate(icx, icy); ctx.rotate(t * 1.4); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 12; i++) { ctx.rotate(TAU / 12); ctx.fillStyle = `rgba(160,210,255,${.22 * qe})`; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-30, -1200); ctx.lineTo(30, -1200); ctx.fill(); } ctx.restore();
       for (let i = 0; i < 7; i++) {
-        const t0 = 5.35 + i * .03, sp = CL.spring(t, t0, .55), pp = CL.pop(t, t0 - .02, .2); if (pp <= 0) continue;
+        const t0 = 5.40 + i * .03, sp = CL.spring(t, t0, .75), pp = CL.pop(t, t0 - .02, .2); if (pp <= 0) continue;
         const a = i / 7 * TAU + t * 1.3 + qe * 5, r = (i % 2 ? 640 : 500) * sp * (1 - qe) + 10, s2 = pp * (1 - .85 * qe) * 1.15;
         ctx.save(); ctx.translate(icx + Math.cos(a) * r, icy + Math.sin(a) * r * .55); ctx.rotate(Math.sin(t * 3 + i) * .18 + qe * 4); ctx.scale(s2, s2); ctx.drawImage(posterImg(i % 5), -125, -170); ctx.restore();
       }
-      CL.ring(ctx, icx, icy, 1000, P(t, 5.35, 5.8), C.cyan, 20);
+      CL.ring(ctx, icx, icy, 1000, P(t, 5.40, 6.0), C.cyan, 20);
     }
-    // CUE 5.99 disney-logo-burst (blue splash, sparkle arc, shockwave, flash)
+    // CUE 6.06 disney-logo-burst (blue splash, sparkle arc, shockwave, flash)
     const px0 = plx(t);
-    if (t >= 5.99) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 6.3, 6.6); CL.splash(ctx, CX, PLATE_Y, 820, CL.spring(t, 5.99, .6), 11, [C.blue, C.cyan, C.purple, '#A8C8FF', '#7A6BFF']); ctx.restore(); }
-    // CUE 6.43 plus-splash (behind)
-    if (t >= 6.43) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 6.8, 7.0) * .5; CL.splash(ctx, PLUS_X, PLUS_Y, 520, CL.spring(t, 6.43, .5), 12, [C.pink, C.purple, C.cyan, '#FFB0E0', C.blue]); ctx.restore(); }
+    if (t >= 6.06) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 6.37, 6.67); CL.splash(ctx, CX, PLATE_Y, 820, CL.spring(t, 6.06, .6), 11, [C.blue, C.cyan, C.purple, '#A8C8FF', '#7A6BFF']); ctx.restore(); }
+    // CUE 6.54 plus-splash (behind)
+    if (t >= 6.54) { ctx.save(); ctx.globalAlpha *= 1 - P(t, 6.8, 7.0) * .5; CL.splash(ctx, PLUS_X, PLUS_Y, 520, CL.spring(t, 6.54, .5), 12, [C.pink, C.purple, C.cyan, '#FFB0E0', C.blue]); ctx.restore(); }
     plate2(ctx, t);
-    if (t >= 5.97) {   // sparkle arc following the logo's own arc
-      const uh = eo(P(t, 5.97, 6.42)), fade = 1 - P(t, 6.42, 6.7);
+    if (t >= 6.04) {   // sparkle arc following the logo's own arc
+      const uh = eo(P(t, 6.04, 6.50)), fade = 1 - P(t, 6.50, 6.78);
       for (let i = 0; i < 18; i++) { const u = uh - i * .026; if (u < 0 || u > 1.001) continue; const [x, y] = arcPt(u, px0), s0 = (50 - i * 2.4) * (.6 + .4 * Math.sin(t * 20 + i)); CL.spark(ctx, x, y - 6, Math.max(6, s0) * fade, t * 3 + i, i % 3 ? '#fff' : (i % 2 ? '#9FE8FF' : '#C8B6FF')); }
       if (uh > 0) { const [x, y] = arcPt(Math.min(1, uh), px0); A.glow(ctx, x, y, 140, '#9FE8FF', .9 * fade); }
-      CL.ring(ctx, CX, PLATE_Y, 1250, P(t, 5.99, 6.5), '#9FE8FF', 34); CL.ring(ctx, CX, PLATE_Y, 900, P(t, 6.02, 6.4), '#fff', 22);
+      CL.ring(ctx, CX, PLATE_Y, 1250, P(t, 6.06, 6.57), '#9FE8FF', 34); CL.ring(ctx, CX, PLATE_Y, 900, P(t, 6.09, 6.47), '#fff', 22);
     }
-    // CUE 6.43 plus-pop: giant glowing candy "+" lands on "פלוס"
-    { const pp = CL.pop(t, 6.33, .16);
-      if (pp > 0) { const rot = .05 - .6 * (1 - CL.spring(t, 6.33, .5)), sc = pp * (1 + .06 * kick(t, 6.43, 10, 40)), by = PLUS_Y + 6 * Math.sin(t * 3);
+    // CUE 6.54 plus-pop: giant glowing candy "+" lands on "פלוס"
+    { const pp = CL.pop(t, 6.44, .16);
+      if (pp > 0) { const rot = .05 - .6 * (1 - CL.spring(t, 6.44, .5)), sc = pp * (1 + .06 * kick(t, 6.54, 10, 40)), by = PLUS_Y + 6 * Math.sin(t * 3);
         A.glow(ctx, PLUS_X, by, 520, C.pink, .55 + .15 * Math.sin(t * 9)); A.glow(ctx, PLUS_X, by, 380, C.purple, .5);
         ctx.save(); ctx.translate(PLUS_X, by); ctx.rotate(rot); ctx.scale(sc, sc); plusShape(ctx, 400); ctx.restore(); } }
-    if (t >= 6.43) {
-      CL.ring(ctx, PLUS_X, PLUS_Y, 900, P(t, 6.43, 6.95), '#fff', 16); CL.ring(ctx, PLUS_X, PLUS_Y, 700, P(t, 6.46, 6.9), C.pink, 44);
-      const [px, py] = logoPt(470, 190, px0), pk = P(t, 6.43, 6.85);
+    if (t >= 6.54) {
+      CL.ring(ctx, PLUS_X, PLUS_Y, 900, P(t, 6.54, 7.06), '#fff', 16); CL.ring(ctx, PLUS_X, PLUS_Y, 700, P(t, 6.57, 7.0), C.pink, 44);
+      const [px, py] = logoPt(470, 190, px0), pk = P(t, 6.54, 6.96);
       for (let i = 0; i < 9; i++) { const a = i / 9 * TAU + .3, d = eo(pk) * (150 + 90 * hash(i)); CL.spark(ctx, px + Math.cos(a) * d, py + Math.sin(a) * d, 24 * (1 - pk) * (.6 + hash(i + 2)), t * 4 + i, i % 2 ? '#fff' : C.yellow); }
       for (let i = 0; i < 14; i++) { const a = i / 14 * TAU + hash(i) * .5, d = eo(pk) * (260 + 260 * hash(i + 5)); CL.spark(ctx, PLUS_X + Math.cos(a) * d, PLUS_Y + Math.sin(a) * d * .8, 38 * (1 - pk * .8) * (.5 + hash(i + 8)), t * 3 + i, ['#fff', C.cyan, C.yellow, C.pink][i % 4]); }
     }
@@ -220,15 +220,15 @@
     ctx.save();
     if (wp < 1) { frontPath(ctx, t, SCENE_OFF, 0); ctx.clip(); }
     // camera: punch + shake on every impact
-    const sh = [CL.shake(t, 3.41, .35, 9), CL.shake(t, 4.34, .55, 30), CL.shake(t, 5.99, .4, 15), CL.shake(t, 6.43, .45, 22)];
+    const sh = [CL.shake(t, 3.41, .35, 9), CL.shake(t, 4.36, .55, 30), CL.shake(t, 6.06, .4, 15), CL.shake(t, 6.54, .45, 22)];
     const sx = sh.reduce((a, v) => a + v[0], 0), sy = sh.reduce((a, v) => a + v[1], 0);
-    const z = 1.06 + (t > 4.34 ? .05 * Math.exp(-(t - 4.34) * 9) : 0) + (t > 5.99 ? .03 * Math.exp(-(t - 5.99) * 9) : 0) + (t > 6.43 ? .04 * Math.exp(-(t - 6.43) * 9) : 0);
+    const z = 1.06 + (t > 4.36 ? .05 * Math.exp(-(t - 4.36) * 9) : 0) + (t > 6.06 ? .03 * Math.exp(-(t - 6.06) * 9) : 0) + (t > 6.54 ? .04 * Math.exp(-(t - 6.54) * 9) : 0);
     ctx.translate(CX + sx, 540 + sy); ctx.scale(z, z); ctx.translate(-CX, -540);
-    if (t < 5.75) world1(ctx, t);
+    if (t < 5.95) world1(ctx, t);
     world2(ctx, t);
     ctx.restore();
     // impact flashes
-    const fl = Math.max(t >= 4.34 ? .45 * (1 - P(t, 4.34, 4.5)) : 0, t >= 5.99 ? .4 * (1 - P(t, 5.99, 6.15)) : 0, t >= 6.43 ? .3 * (1 - P(t, 6.43, 6.55)) : 0, t >= 3.41 ? .25 * (1 - P(t, 3.41, 3.5)) : 0);
+    const fl = Math.max(t >= 4.36 ? .45 * (1 - P(t, 4.36, 4.52)) : 0, t >= 6.06 ? .4 * (1 - P(t, 6.06, 6.22)) : 0, t >= 6.54 ? .3 * (1 - P(t, 6.54, 6.66)) : 0, t >= 3.41 ? .25 * (1 - P(t, 3.41, 3.5)) : 0);
     if (fl > 0) { ctx.fillStyle = `rgba(255,255,255,${fl})`; ctx.fillRect(0, 0, W, H); }
   } });
 })();

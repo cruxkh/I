@@ -8,7 +8,7 @@ async function page(b) {
   await p.goto('file://' + path.resolve(__dirname, 'index.html')); await p.evaluate(() => window.gReady); await p.evaluate(() => new Promise(r => setTimeout(r, 300))); return p;
 }
 const FAST = !!args.fast;
-const grab = (p, f, png) => p.evaluate(async ([f, png, FAST]) => { await G.draw(f, { fast: !!FAST }); return document.getElementById('c').toDataURL(png ? 'image/png' : 'image/jpeg', 0.93); }, [f, !!args.png, FAST]);
+const grab = (p, f, png) => p.evaluate(async ([f, png, FAST, FPS, N, SH]) => { await G.draw(f, { fast: !!FAST, fps: FPS, n: N, shutter: SH }); return document.getElementById('c').toDataURL(png ? 'image/png' : 'image/jpeg', 0.93); }, [f, !!args.png, FAST, +(args.fps || 30), args.n ? +args.n : undefined, args.shutter ? +args.shutter : undefined]);
 const save = (u, file) => fs.writeFileSync(file, Buffer.from(u.split(',')[1], 'base64'));
 (async () => {
   const b = await chromium.launch({ args: ['--allow-file-access-from-files', '--disable-web-security', '--enable-gpu-rasterization', '--ignore-gpu-blocklist'] });
