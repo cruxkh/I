@@ -1,0 +1,4 @@
+samples_extra/
+sf/
+*.raw
+*.npy

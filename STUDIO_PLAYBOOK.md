@@ -3,7 +3,7 @@
 > **בעברית בקצרה:** זה המסמך המלא של הסרטון של GOTV (גרסה 7): הסגנון, הכלים, הסוכנים, סדר העבודה, הפקודות המדויקות, מה עבד ומה לא.
 > **לסשן חדש:** פותחים סשן, מדביקים את הפרומפט מסעיף 12 ומצרפים קובץ קריינות (WAV) וסרטון של עצמך.
 
-Reference result: GOTV ad v7. Files: `gotv5/out/gotv_v7_mobile.mp4` (vertical) and `gotv5l/out/gotv_v7_landscape_tv.mp4` (landscape). Both are 46.2 s long and use one audio master, `gotv5/audio/v7/master_v7.wav`.
+Reference result: GOTV ad v9 (smooth motion, flowing holds). Files: `gotv5/out/gotv_v9_mobile.mp4` (vertical) and `gotv5l/out/gotv_v9_landscape_tv.mp4` (landscape). Both are 44.6 s long and use one audio master, `gotv5/audio/v7/master_v7t.wav`, which is `master_v7.wav` after `tighten_v7.py`.
 Code: `/home/user/I/gotv5` (vertical 1080x1920) and `/home/user/I/gotv5l` (landscape 1920x1080). Git branch `claude/israeli-iptv-animation-8qu3xo` of `cruxkh/I`.
 
 ---
@@ -21,7 +21,7 @@ Code: `/home/user/I/gotv5` (vertical 1080x1920) and `/home/user/I/gotv5l` (lands
 - **Look ("PAPER COLLAGE stop-motion"):**
   - Paper and props: kraft and cream paper, torn-edge scraps, tape, and white die-cut sticker outlines with hard (no-blur) shadows.
   - Marks and lettering: marker marks, halftone dots, and ransom-note cut-out word chips as captions.
-  - Motion: decorations "boil" at 12 fps, and pop-ins use stepped easing.
+  - Motion: SMOOTH, continuous 30 fps with motion blur (v8). The original 12 fps stop-motion stepping (boil, stepped pops, 8-12 fps moves) read as LAG to the client and was removed: see section 7.2.
   - Forbidden: glow, bloom, blur, neon and gradients as the main look.
 - **Brand elements:**
   - Real logos (Netflix, Disney+, Apple TV+, Sport 1-5, Israeli channels) as taped paper cards.
@@ -44,7 +44,7 @@ Code: `/home/user/I/gotv5` (vertical 1080x1920) and `/home/user/I/gotv5l` (lands
 | Fast and smooth (speedometer, river, progress bar), then suspense curtains and "?" | 20.5-25.9 |
 | "אין תקיעות. נקודה." giant stamps, buffering wheel crossed out, goal that never freezes | 25.4-30.5 |
 | Remote press, TV on, recap of logos, thumbs up | 29.9-36.9 |
-| End card: GOTV logo, "הטלוויזיה של ישראל", "(התקנת אפליקציה על המסך החכם)" | 36.9-40 (+ holds = 46.2 total) |
+| End card: GOTV logo, "הטלוויזיה של ישראל", "(התקנת אפליקציה על המסך החכם)" | 36.9-40 (+ holds = 44.6 total) |
 
 ## 2. Client rules learned (keep them)
 
@@ -177,6 +177,29 @@ Brief template for a scene agent (worked well):
 - Suspense ends in DIGITAL SILENCE of about 0.32 s, then the drop on the hit.
 - Rejected earlier: marimba/ukulele "cute", a GM soundfont funk band (OK but "childish"), a synth 808 trap-pop (muddy), and public-domain classical mashups (never delivered).
 
+### 7.1 The "cinema trailer" music recipe (client favourite: the template's music, used when the client asks for this template)
+1. **Driving string ostinato:** 16th-note spiccato (violins and violas); cellos and basses accent the off-beats.
+2. **Heroic brass hook:** horns and trumpets in octaves, 6-8 notes, an upward leap in the middle, a stepwise fall (used: D D D'(octave) C A | Bb A G F).
+3. **Trailer percussion:** taiko, low booms, timpani rolls into hits, gong or cymbal swells, a real kit only in the big sections.
+4. **Braaam and low-brass stabs** on reveals, choir "ah" pad for size.
+5. **Harmony and dynamics:** minor verse (i VI III VII) lifting to the relative major at the drop. Build, suspense, ~0.3 s digital silence, then the drop on a downbeat. The final cadence must land on the end-card logo hit.
+6. **Real samples are mandatory** for strings, brass, timpani and percussion (VSCO-2-CE + Virtuosity Drums, CC0, sparse clone from GitHub, ~1.2 GB, numpy sampler). GM soundfont only for choir, ney, glock, celesta.
+7. **Tempo map** so every key visual moment falls on a downbeat.
+
+**The quality bar is fixed for every film, even when the style changes.** A new design or a new business may call for a different genre (not a trailer), but the music must reach the same production quality as this score:
+- An original, composed piece with a clear melodic hook, real harmony and a build, not loops or a generic bed.
+- Real recorded samples for the lead instruments. GM soundfont only for colour parts. Synth-only tracks were rejected as "muddy" and "cheap".
+- A tempo map that puts the key visual moments on downbeats, and a final hit that lands on the logo.
+- The hold and continuity rules of section 8.2.
+- Not childish (no marimba or ukulele "cute"), unless the client asks for it.
+
+### 7.2 Smooth motion (v8, client: "the video lags, it is not smooth")
+- `CL.SMOOTH = true` in `cl.js`: `CL.q(t)` returns continuous time, `CL.j` is a slow continuous noise drift (not a random jump every 1/12 s), `CL.pop` is a continuous `outBack` pop. `CL.qs(t, fps)` keeps discrete steps ONLY for random seeds (sparks, flicker) so nothing flickers per frame.
+- `main.js` renders every frame as 3 temporal samples over a 0.5 shutter (`scenePass` x3, averaged) = natural motion blur. Captions, bubbles and overlays are drawn once on top (sharp). The host footage (23.976 fps) is blended by the samples, which removes the 24-to-30 fps judder.
+- No whole-frame jitter; the phrase punch-in is a soft continuous zoom.
+- Check: count near-identical consecutive frames (mean abs diff < 0.6 on 135x240 thumbs). v7 had 13-17 per 200 frames; v8 has 0.
+- Cost: with no other load, ~150 ms per frame per worker at 3 samples (1386 frames x 2 formats in ~4 min).
+
 ## 8. Sound design and mix: what worked
 
 - **VO:** use the ORIGINAL client TTS file.
@@ -203,12 +226,28 @@ Brief template for a scene agent (worked well):
   - Exact digital silence before the big hit.
 - **Verification without ears:** LUFS, true peak, clip count, silence window, VO-to-bed ratio per word, spectral balance per band, spectrogram PNG, and Whisper ASR on the foreign-language voice lines. Always tell the client it was verified by measurement only.
 
+### 8.1 Late additions that the client loved
+- **Holds start ON the word:** the camera push-in toward the poster begins at the spoken word's start (`PRE` table in `main.js`) and is complete when the hold begins. The genre voice and its bubble come in right at the hold start (+0.03 to +0.07 s), with no dead air. The first version waited 0.3-0.5 s and felt "stuck".
+- **Cinema moment:** one narrator word turns into a trailer voice (WORLD pitch -5.5 st, formant warp 0.94, chest EQ, saturation, 3.6 s hall reverb, two darker echoes). On screen: letterbox bars, sepia, projector flicker, scratches, "GOTV PRESENTS".
+- **End-card tag:** "GO TV!" in the same trailer voice right after the logo slam (Kokoro `am_onyx` with phonemes `ɡˈoʊ, tˈiː vˈiː!` at speed 0.85, then the same trailer chain), with echoes "TV... TV...". Verify with Whisper ("Go TV!"). If the client can supply the real narrator (Cartesia) saying it, prefer that.
+- **Provider stickers on "השידורים החיים שאתם צריכים":** yes and HOT use real logos cropped from tv-logos (`yes-brand.png` = the "yes" part of `yes-israel-il.png`; `hot-brand.png` = `hot-vod-il.png` with the coloured square removed, on a dark card). FreeTV, Cellcom tv and Partner TV had no logo available (web blocked), so they are paper wordmarks in brand-like colours (orange, purple, teal). Ask the client for real logo images.
+
+- **Repeated small events (calendar days, list items): make them MUSIC, not UI sounds.** Synthetic clicks and notification dings sounded "metallic, not professional". The fix was `audio/v7/cal_week.py`: each torn day page plays one note of a rising phrase in the score's key, on real harp plus violin pizzicato samples, with a piano chord and a harp glissando on the last day.
+
+### 8.2 Continuity rules (v9, client: "it feels like the film ends" / "a pause after every word")
+- **A hold must never end in a hush.** A near-silent tail makes the film feel finished. Instead, end every hold with a forward pickup that lands on the downbeat where the narrator resumes. The cinema hold uses an accelerating violin/viola/cello spiccato run up the scale (16ths, then 32nds), a snare roll crescendo and a sustained choir, landing on a tutti hit plus crash, with a whoosh (`score_v7.py` `cin()`, `mix_v7.py` 13.19 whip).
+- **Keep the music energy up until the narrator actually speaks again.** In `mix_v7.py` the hold envelope stays at +6 dB until 0.35 s before the next spoken word (`nxt`), not until the hold end. Otherwise the level drops about 9 dB in the gap and reads as an ending. Re-check that the worst word keeps VO-music of at least 5 dB.
+- **Genre holds are short: about 1.0-1.2 s.** The zoom starts on the word, the genre line plays immediately, and the narrator continues. The tail after the genre line is dead air. `tighten_v7.py` splices the tails out of the finished master with 60 ms equal-power crossfades (XF-compensated so the length is exact), and `timeline.js` HOLDS d values must be changed to match (tur 1.0, kor 1.0, ani 1.2). Then re-render the video.
+- Next time, design the holds at about 1.0-1.2 s from the start, so no splicing is needed.
+
 ## 9. Known pitfalls and fixes
 
 - The canvas state leaked between frames. Fix: `cv.width = W` at the start of every frame.
 - Font loading: `gReady = Promise.all([logosReady, document.fonts.load(...)])`.
 - Frame 0 is black because of the intentional 0.15 s fade-in.
 - A scene-agent's `CL.noCap` push gets overwritten by main.js. Register it lazily inside draw().
+- The Fredoka font is not preloaded in `gReady`: using it gives a serif fallback. Use Rubik or add it to the preload list.
+- A white logo on a white card is invisible (yes, HOT): check each card on a rendered frame.
 - A symlinked `vo.wav` broke with the wrong relative path. Copy files instead of symlinking them into audio folders.
 - git refused files over 100 MB (`small.raw`). Keep `*.raw`, `*.npy`, `out/`, `previews/`, frames and samples out of git.
 - The upload tool returned 500 on files of 28 MB and more. Re-encode under 25 MB, or publish a private Artifact page with a `<video>`.
@@ -219,8 +258,9 @@ Brief template for a scene agent (worked well):
 
 ```
 T = output time, v = voice clock (words.js and // CUE comments are in v)
-HOLDS (v, d): cin 11.79 1.4 | tur 13.065 1.6 | kor 13.94 1.6 | ani 14.53 1.6   -> total 40.0 + 6.2 = 46.2 s
-T = v + sum(d for holds with hold.v < v)      (VO ends v 36.9 -> T 43.1; big hit v 25.64 -> T 31.84)
+HOLDS (v, d): cin 11.79 1.4 | tur 13.065 1.0 | kor 13.94 1.0 | ani 14.53 1.2   -> total 40.0 + 4.6 = 44.6 s  (v9)
+T = v + sum(d for holds with hold.v < v)      (VO ends v 36.9 -> T 41.5; big hit v 25.64 -> T 30.24)
+The score and mix were built on the v7 hold lengths (1.6 s each) and then tightened by splicing: see section 8.2.
 ```
 
 ## 11. Checklist before sending

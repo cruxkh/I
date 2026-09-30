@@ -37,3 +37,15 @@ gotv5l/previews/
 *.npy
 gotv5/audio/v7/samples/
 VSCO-2-CE/
+connecttv/node_modules
+connecttv/out/
+connecttv/previews/
+connecttv/audio/v7/samples/
+connecttv/audio/**/*.wav
+connecttv/audio/**/*.npy
+connecttv/audio/**/stems/
+connecttv/align/__pycache__/
+**/__pycache__/
+connecttv/host/src/
+connecttv/host/mask_rgba/
+connecttv/host/work/

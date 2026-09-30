@@ -3,9 +3,9 @@
 (() => {
   const HOLDS = [
     { v: 11.79, d: 1.4, k: 'cin' },    // after "וצ'רלטון": the narrator turns into a cinema trailer voice, letterbox + projector, echo
-    { v: 13.065, d: 1.6, k: 'tur' },   // after "טורקיות": Turkish drama sting + sob
-    { v: 13.94, d: 1.6, k: 'kor' },    // after "קוריאניות": a short spoken Korean line
-    { v: 14.53, d: 1.6, k: 'ani' },    // after "אנימה": anime voice + sting
+    { v: 13.065, d: 1.0, k: 'tur' },   // after "טורקיות": Turkish drama sting + sob
+    { v: 13.94, d: 1.0, k: 'kor' },    // after "קוריאניות": a short spoken Korean line
+    { v: 14.53, d: 1.2, k: 'ani' },    // after "אנימה": anime voice + sting
   ];
   const VDUR = 40.0, TOTAL = VDUR + HOLDS.reduce((s, h) => s + h.d, 0);
   const vOf = T => { let acc = 0; for (const h of HOLDS) { const hs = h.v + acc; if (T < hs) return T - acc; if (T < hs + h.d) return h.v; acc += h.d; } return T - acc; };

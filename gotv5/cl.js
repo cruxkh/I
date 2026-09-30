@@ -12,10 +12,13 @@
 
   // ---------- stop-motion helpers
   CL.STEP = 12;                                            // decoration frame rate
-  CL.q = (t, fps = CL.STEP) => Math.floor(t * fps + 1e-6) / fps;   // quantised time
-  CL.j = (t, seed = 0, amp = 3, fps = CL.STEP) => { const k = Math.floor(t * fps + 1e-6); return [(hash(k * 3.1 + seed * 7.7) - .5) * 2 * amp, (hash(k * 5.3 + seed * 2.9 + 40) - .5) * 2 * amp, (hash(k * 1.7 + seed * 4.1 + 90) - .5) * 2 * amp * .004]; };   // [dx, dy, rot(rad)]
+  CL.SMOOTH = true;   // client: everything must move smoothly at full 30 fps (no stop-motion stepping)
+  CL.qs = (t, fps = CL.STEP) => Math.floor(t * fps + 1e-6) / fps;   // discrete step (only for random seeds)
+  CL.q = (t, fps = CL.STEP) => CL.SMOOTH ? t : CL.qs(t, fps);        // quantised time (continuous in smooth mode)
+  CL.j = (t, seed = 0, amp = 3, fps = CL.STEP) => { if (CL.SMOOTH) { const a = amp * .55; return [A.noise1(t * 1.3 + seed * 7.7) * a, A.noise1(t * 1.1 + seed * 2.9 + 40) * a, A.noise1(t * .9 + seed * 4.1 + 90) * a * .003]; }
+    const k = Math.floor(t * fps + 1e-6); return [(hash(k * 3.1 + seed * 7.7) - .5) * 2 * amp, (hash(k * 5.3 + seed * 2.9 + 40) - .5) * 2 * amp, (hash(k * 1.7 + seed * 4.1 + 90) - .5) * 2 * amp * .004]; };   // [dx, dy, rot(rad)]
   // stepped pop-in: 0 -> 1.18 -> 0.94 -> 1 in ~4 stop-motion frames after t0
-  CL.pop = (t, t0, dur = .3) => { const u = (t - t0) / dur; if (u <= 0) return 0; if (u >= 1) return 1; const k = Math.floor(u * 4); return [0.45, 1.16, .93, 1.03][k]; };
+  CL.pop = (t, t0, dur = .3) => { const u = (t - t0) / dur; if (u <= 0) return 0; if (u >= 1) return 1; if (CL.SMOOTH) return Math.max(.001, ease.outBack(u)); const k = Math.floor(u * 4); return [0.45, 1.16, .93, 1.03][k]; };
   CL.smoothPop = (t, t0, dur = .35) => ease.outBack(clamp((t - t0) / dur));
   CL.shake = (t, t0, dur = .5, amp = 14) => { const u = t - t0; if (u < 0 || u > dur) return [0, 0]; const k = Math.exp(-u * 6 / dur) * amp, q = CL.q(t, 24); return [Math.sin(q * 91) * k, Math.cos(q * 77) * k]; };
 
@@ -84,7 +87,7 @@
   const FILES = { netflix: 'netflix.png', disney: 'disney-plus.png', appletv: 'apple-tv-plus.png', prime: 'amazon-prime-video.png', hbo: 'hbo-max.png', hulu: 'hulu.png', paramount: 'paramount-plus.png',
     sport5: '5sport-il.png', sport5live: '5live-il.png', sport5plus: '5plus-il.png', sport5gold: '5gold-il.png', sport5stars: '5stars-il.png', sport5_4k: '5sport4k-il.png', hotzone: 'hot-zone-il.png',
     sport1: 'sport1-il.png', sport2: 'sport2-il.png', sport3: 'sport3-il.png', sport4: 'sport4-il.png', one: 'one-il.png', one2: 'one2-il.png',
-    kan11: 'kan11-il.png', keshet12: 'keshet12-il.png', reshet13: 'reshet13-il.png', ch14: 'channel14-il.png', ch9: 'channel9-il.png', i24: 'i24-news-il.png', yes: 'yes-israel-il.png', hot: 'hot3-il.png' };
+    kan11: 'kan11-il.png', keshet12: 'keshet12-il.png', reshet13: 'reshet13-il.png', ch14: 'channel14-il.png', ch9: 'channel9-il.png', i24: 'i24-news-il.png', yes: 'yes-israel-il.png', yesbrand: 'yes-brand.png', hotbrand: 'hot-brand.png', hot: 'hot3-il.png' };
   const IMGS = {}; CL.logoNames = Object.keys(FILES);
   CL.logosReady = Promise.all(Object.entries(FILES).map(([k, f]) => new Promise(res => { const im = new Image(); im.onload = () => { IMGS[k] = im; res(); }; im.onerror = () => res(); im.src = 'assets/logos/' + f; })));
   CL.logoImg = k => IMGS[k] || null;
@@ -105,7 +108,7 @@
     if (p > .95) { const an = Math.atan2(y1 - pts[20][1], x1 - pts[20][0]), L = 42; marker(ctx, [[x1 + Math.cos(an + 2.6) * L, y1 + Math.sin(an + 2.6) * L], [x1, y1], [x1 + Math.cos(an - 2.6) * L, y1 + Math.sin(an - 2.6) * L]], 1, o.color || C.ink, o.lw || 9); } };
   CL.cross = (ctx, cx, cy, s, p = 1, o = {}) => { marker(ctx, [[cx - s, cy - s], [cx + s, cy + s]], clamp(p * 2), o.color || C.red, o.lw || 22); if (p > .5) marker(ctx, [[cx + s, cy - s], [cx - s, cy + s]], clamp(p * 2 - 1), o.color || C.red, o.lw || 22); };
   CL.star = (ctx, cx, cy, R, spikes = 12, o = {}) => { ctx.save(); ctx.translate(cx, cy); ctx.rotate(o.rot || 0); ctx.beginPath(); for (let i = 0; i < spikes * 2; i++) { const a = i / (spikes * 2) * A.TAU, r = i % 2 ? R * .68 : R; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath(); ctx.fillStyle = o.fill || C.yellow; ctx.fill(); ctx.lineWidth = o.lw ?? 8; ctx.strokeStyle = C.ink; ctx.lineJoin = 'round'; ctx.stroke(); ctx.restore(); };
-  CL.sparks = (ctx, cx, cy, r0, r1, n, t, o = {}) => { const q = CL.q(t, 12); ctx.save(); ctx.strokeStyle = o.color || C.ink; ctx.lineWidth = o.lw || 8; ctx.lineCap = 'round'; for (let i = 0; i < n; i++) { const a = i / n * A.TAU + hash(q + i) * .15, k = .7 + hash(q * 3 + i) * .5; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); ctx.lineTo(cx + Math.cos(a) * r1 * k, cy + Math.sin(a) * r1 * k); ctx.stroke(); } ctx.restore(); };
+  CL.sparks = (ctx, cx, cy, r0, r1, n, t, o = {}) => { const q = CL.qs(t, 8); ctx.save(); ctx.strokeStyle = o.color || C.ink; ctx.lineWidth = o.lw || 8; ctx.lineCap = 'round'; for (let i = 0; i < n; i++) { const a = i / n * A.TAU + hash(q + i) * .15, k = .7 + hash(q * 3 + i) * .5; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); ctx.lineTo(cx + Math.cos(a) * r1 * k, cy + Math.sin(a) * r1 * k); ctx.stroke(); } ctx.restore(); };
 
   // ---------- halftone dots. fade: 'none' | 'l' | 'r' | 't' | 'b' | 'radial'
   CL.halftone = (ctx, x, y, w, h, color, size = 24, ang = .5, o = {}) => {

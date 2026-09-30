@@ -1,0 +1,63 @@
+{
+ "sob_start_T": 11.95,
+ "speech_end_T": 11.98,
+ "holds": [
+  {
+   "v": 8.85,
+   "d": 1.4,
+   "k": "cin",
+   "T0": 8.85
+  },
+  {
+   "v": 9.98,
+   "d": 1.0,
+   "k": "tur",
+   "T0": 11.38
+  },
+  {
+   "v": 11.03,
+   "d": 1.1,
+   "k": "ind",
+   "T0": 13.43
+  }
+ ],
+ "total": 34.1,
+ "cuts_v": [
+  8.85,
+  9.98,
+  11.030083333333334
+ ],
+ "cinema": {
+  "word_T": [
+   8.34,
+   8.86
+  ],
+  "deep_dur": 0.59,
+  "t": 8.879999999999999,
+  "echoes": [
+   [
+    9.479999999999999,
+    0.46
+   ],
+   [
+    9.899999999999999,
+    0.24
+   ]
+  ]
+ },
+ "placements": [
+  {
+   "name": "Neden?! + child sob sequence (tur: crying girl, Kokoro if_sara + Turkish IPA + WORLD; sobs synthesised)",
+   "T": 11.41,
+   "dur": 1.0,
+   "until": 12.38
+  }
+ ],
+ "asr": {
+  "neden_tr": "Neden?",
+  "neden_it": "NEDENS!",
+  "vaah_hi": "ाहे",
+  "cinema_word_he": "...טון.",
+  "original_word_he": "סלטון"
+ }
+}

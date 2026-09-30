@@ -1,6 +1,6 @@
 ---
 name: creator-ad-studio
-description: Produce a "big-league" creator-style promo video (vertical 1080x1920 + landscape 1920x1080, 30 fps MP4) from the user's own voice-over (TTS WAV) and a talking-head clip of the user, with a hand-made paper-collage stop-motion look, real brand logos, word-exact sync, genre "hold" moments where the voice pauses, an original sample-based score and premium SFX, built by ~10-15 parallel agents. Use when the user sends a VO + a video of themselves and asks for a video / סרטון / פרסומת / "כמו הסרטון של GOTV" / "לפי הטמפלט" / "ליגות גבוהות".
+description: Produce a "big-league" creator-style promo video (vertical 1080x1920 + landscape 1920x1080, 30 fps MP4) from the user's own voice-over (TTS WAV) and a talking-head clip of the user, with a hand-made paper-collage look with smooth 30 fps motion and motion blur, real brand logos, word-exact sync, genre "hold" moments where the voice pauses, an original sample-based score and premium SFX, built by ~10-15 parallel agents. Use when the user sends a VO + a video of themselves and asks for a video / סרטון / פרסומת / "כמו הסרטון של GOTV" / "לפי הטמפלט" / "ליגות גבוהות".
 ---
 # Creator Ad Studio (the GOTV v7 template)
 
@@ -16,4 +16,5 @@ Order of work (details and exact commands in the playbook):
 5. Launch agents in parallel: 7-8 scene agents, 1 host agent, 1 composer, 1 SFX/voices/mix agent.
 6. Review a contact sheet of the whole film, fix, render, encode, send (web < 25 MB), commit + push.
 7. Landscape: copy, switch shared files to 1920x1080, re-send the SAME agents to re-compose their own scenes.
+Music: the genre may change with a new design, but the quality bar in playbook section 7.1 is fixed for every film (original composed score, real samples, tempo map, no cheap synth-only or childish tracks).
 Always: send progress images, give time estimates, report honestly what was not heard/seen.
